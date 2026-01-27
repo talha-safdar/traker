@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="Caliburn.Micro" Version="5.0.258" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.2" />
   </ItemGroup>
 
   <ItemGroup>
