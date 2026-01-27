@@ -35,7 +35,7 @@ namespace Traker
 
             _container.PerRequest<DashboardViewModel>();
 
-            LogManager.GetLog = type => new DebugLog(type); // uncomment this line for Caliburn debug messages
+            // LogManager.GetLog = type => new DebugLog(type); // uncomment this line for Caliburn debug messages
         }
 
         protected override object GetInstance(Type service, string key)

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Traker.Database
 {
@@ -16,53 +17,82 @@ namespace Traker.Database
         {
             Task.Run(() =>
             {
-                // set directory and database name
-                var folder = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "Traker");
-                Directory.CreateDirectory(folder);
-                var dbPath = Path.Combine(folder, "traker.db");
+                try
+                {
+                    // set directory and database name
+                    var folder = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "Traker");
+                    Directory.CreateDirectory(folder);
+                    var dbPath = Path.Combine(folder, "traker.db");
 
-                // creeate database
-                var connectionString = $"Data Source={dbPath}";
-                using var conn = new SqliteConnection(connectionString);
-                conn.Open();
-                var cmd = conn.CreateCommand();
-                cmd.CommandText = @"
-                    CREATE TABLE IF NOT EXISTS Clients (
-                    ClientId INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Name TEXT
-                );
+                    // creeate database
+                    var connectionString = $"Data Source={dbPath}";
+                    using var conn = new SqliteConnection(connectionString);
+                    conn.Open();
+                    var cmd = conn.CreateCommand();
+                    cmd.CommandText = @"
+                        DROP TABLE IF EXISTS Clients;
+                        DROP TABLE IF EXISTS Jobs;
+                        DROP TABLE IF EXISTS Invoices;
 
-                CREATE TABLE IF NOT EXISTS Jobs (
-                    JobId INTEGER PRIMARY KEY AUTOINCREMENT,
-                    ClientId INTEGER NOT NULL,
-                    Description TEXT,
-                    FOREIGN KEY (ClientId) REFERENCES Clients(ClientId)
-                );
+                        CREATE TABLE Clients (
+                            ClientId INT PRIMARY KEY,
+                            Name TEXT,
+                            Email TEXT,
+                            Phone TEXT
+                        );
 
-                CREATE TABLE IF NOT EXISTS Invoices (
-                    InvoiceId INTEGER PRIMARY KEY AUTOINCREMENT,
-                    JobId INTEGER NOT NULL,
-                    Amount REAL,
-                    FOREIGN KEY (JobId) REFERENCES Jobs(JobId)
-                );";
+                        CREATE TABLE Jobs (
+                            JobId INTEGER PRIMARY KEY,
+                            ClientId INTEGER,
+                            Description TEXT,
+                            Status TEXT,
+                            Price REAL,
+                            FOREIGN KEY (ClientId) REFERENCES Clients(ClientId)
+                        );
 
-                cmd.ExecuteNonQuery();
-//                cmd.CommandText = @"SELECT name 
-//                    FROM sqlite_master 
-//                    WHERE type='table'
-//AND name NOT LIKE 'sqlite_%';;
-//                    ";
+                        CREATE TABLE Invoices (
+                            InvoiceId INTEGER PRIMARY KEY,
+                            JobId INTEGER,
+                            Amount REAL,
+                            IssueDate DATETIME,
+                            IsPaid BOOLEAN,
+                            FOREIGN KEY (JobId) REFERENCES Jobs(JobId)
+                        );";
 
-//                cmd.ExecuteNonQuery();
+                    int rows = cmd.ExecuteNonQuery();
 
-//                using var reader = cmd.ExecuteReader();
+                    if (rows >= 0)
+                    {
+                        Debug.WriteLine($"Database Created");
+                    }
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show(
+                        $"An error occurred while setting up the database. Please try again.\n\n{ex.Message}", 
+                        "Database Setup", 
+                        MessageBoxButton.OK);
 
-//                while (reader.Read())
-//                {
-//                    Debug.WriteLine(reader.GetString(0));
-//                }
+                    Debug.WriteLine($"Database setup error: {ex.Message}");
+                }
+
+
+                //                cmd.CommandText = @"SELECT name 
+                //                    FROM sqlite_master 
+                //                    WHERE type='table'
+                //AND name NOT LIKE 'sqlite_%';;
+                //                    ";
+
+                //                cmd.ExecuteNonQuery();
+
+                //                using var reader = cmd.ExecuteReader();
+
+                //                while (reader.Read())
+                //                {
+                //                    Debug.WriteLine(reader.GetString(0));
+                //                }
             });
         }
         #endregion

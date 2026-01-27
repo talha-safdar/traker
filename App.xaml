@@ -15,6 +15,41 @@
             <SolidColorBrush x:Key="PrimaryTextBrush" Color="#2F3542" />
             <SolidColorBrush x:Key="SilverBorderBrush" Color="#D1D1D1" />
             <SolidColorBrush x:Key="AccentBrush" Color="#57606F" />
+
+            <!-- Green tones (business friendly) -->
+            <SolidColorBrush x:Key="SuccessBrush" Color="#2E8B57" />
+            <!-- main green (actions, paid, success) -->
+            <SolidColorBrush x:Key="SuccessSoftBrush" Color="#E6F4EC" />
+            <!-- light background highlight -->
+            <SolidColorBrush x:Key="SuccessBorderBrush" Color="#B7E0C7" />
+
+            <SolidColorBrush x:Key="PositiveTextBrush" Color="#256D47" />
+
+            <!-- Optional warning-ish green (overdue approaching / info) -->
+            <SolidColorBrush x:Key="InfoGreenBrush" Color="#6BBF8E" />
+
+
+            <!-- Core greys -->
+            <SolidColorBrush x:Key="Grey100Brush" Color="#F7F7F7" />
+            <!-- ultra light surfaces -->
+            <SolidColorBrush x:Key="Grey200Brush" Color="#ECECEC" />
+            <!-- hover backgrounds -->
+            <SolidColorBrush x:Key="Grey300Brush" Color="#D1D1D1" />
+            <!-- borders (your existing tone) -->
+            <SolidColorBrush x:Key="Grey400Brush" Color="#B5B5B5" />
+            <!-- dividers -->
+            <SolidColorBrush x:Key="Grey500Brush" Color="#9E9E9E" />
+            <!-- disabled text/icons -->
+
+            <!-- Text greys -->
+            <SolidColorBrush x:Key="SecondaryTextBrush" Color="#6B7280" />
+            <SolidColorBrush x:Key="TertiaryTextBrush" Color="#9CA3AF" />
+
+            <!-- Dark structure -->
+            <SolidColorBrush x:Key="Grey700Brush" Color="#57606F" />
+            <!-- your AccentBrush tone -->
+            <SolidColorBrush x:Key="Grey800Brush" Color="#3A3F4B" />
+            <!-- headers/strong UI -->
         </ResourceDictionary>
     </Application.Resources>
 </Application>
