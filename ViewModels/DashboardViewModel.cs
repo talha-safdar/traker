@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace Traker.ViewModels
 {
+    using Database;
+
     public class DashboardViewModel : Screen
     {
         #region Caliburn Variables
@@ -18,21 +20,38 @@ namespace Traker.ViewModels
         private ObservableCollection<string> _clientNames;
         #endregion
 
+        #region Data Variables
+        Database _database;
+        #endregion
+
         public DashboardViewModel(IEventAggregator events)
         {
             _events = events;
         }
 
-        protected override Task OnInitializedAsync(CancellationToken cancellationToken)
+        #region Caliburn Functions
+        protected override async Task OnInitializedAsync(CancellationToken cancellationToken)
         {
-            _clientNames = new ObservableCollection<string>();
+            _database = new Database(); // database
+            await _database.SetUpDatabase();
 
-            ClientNames.Add("Client A");
-            ClientNames.Add("Client B");
-            ClientNames.Add("Client C");
+            _clientNames = new ObservableCollection<string>(); // cclient names
 
-            return base.OnInitializedAsync(cancellationToken);
+            await LoadData();
+
+            //return base.OnInitializedAsync(cancellationToken);
         }
+        #endregion
+
+        #region Private Functions
+        private Task LoadData()
+        {
+            ClientNames.Clear();
+            ClientNames = new ObservableCollection<string>(_database.LoadData());
+
+            return Task.CompletedTask;
+        }
+        #endregion
 
         #region Public View Variables
         public ObservableCollection<string> ClientNames

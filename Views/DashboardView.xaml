@@ -27,154 +27,179 @@
             <!-- main body -->
             <Grid Grid.Column="1" Grid.Row="0" Margin="10,20,20,10">
                 <Border Background="{StaticResource SuccessBorderBrush}" CornerRadius="20">
-                    <Grid Margin="20">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" /> <!-- name in db          0 -->
-                            <ColumnDefinition Width="0.01*" /> <!-- spacer -->
-                            <ColumnDefinition Width="*" /> <!-- email in db         1 -->
-                            <ColumnDefinition Width="0.01*" /> <!-- spacer -->
-                            <ColumnDefinition Width="*" /> <!-- phone in db         2 -->
-                            <ColumnDefinition Width="0.01*" /> <!-- spacer -->
-                            <ColumnDefinition Width="*" /> <!-- Description in db   3 -->
-                            <ColumnDefinition Width="0.01*" /> <!-- spacer -->
-                            <ColumnDefinition Width="*" /> <!-- Status in db        4 -->
-                            <ColumnDefinition Width="0.01*" /> <!-- spacer -->
-                            <ColumnDefinition Width="*" /> <!-- Price in db         5 -->
-                            <ColumnDefinition Width="0.01*" /> <!-- spacer -->
-                            <ColumnDefinition Width="*" /> <!-- isPaid in db        6 -->    
-                        </Grid.ColumnDefinitions>
+                    <ScrollViewer VerticalScrollBarVisibility="Visible"
+                            Margin="0,0,0,0">
+                        <Grid Margin="20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <!-- name in db          0 -->
+                                <ColumnDefinition Width="0.01*" />
+                                <!-- spacer -->
+                                <ColumnDefinition Width="*" />
+                                <!-- email in db         1 -->
+                                <ColumnDefinition Width="0.01*" />
+                                <!-- spacer -->
+                                <ColumnDefinition Width="*" />
+                                <!-- phone in db         2 -->
+                                <ColumnDefinition Width="0.01*" />
+                                <!-- spacer -->
+                                <ColumnDefinition Width="*" />
+                                <!-- Description in db   3 -->
+                                <ColumnDefinition Width="0.01*" />
+                                <!-- spacer -->
+                                <ColumnDefinition Width="*" />
+                                <!-- Status in db        4 -->
+                                <ColumnDefinition Width="0.01*" />
+                                <!-- spacer -->
+                                <ColumnDefinition Width="*" />
+                                <!-- Price in db         5 -->
+                                <ColumnDefinition Width="0.01*" />
+                                <!-- spacer -->
+                                <ColumnDefinition Width="*" />
+                                <!-- isPaid in db        6 -->
+                            </Grid.ColumnDefinitions>
 
-                        <!-- get font sorted -->
-                        
-                        <Grid Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Center">
-                            <TextBlock Text="Client Name" FontSize="22" FontWeight="Medium" />
+                            <!-- get font sorted -->
 
-                            <!-- Dynamic rows -->
-                            <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding ClientNames}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding}"
-                                           FontSize="18"
-                                           Margin="0,4,0,0"/>
-                                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </Grid>
+                            <Grid Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Center">
+                                <TextBlock Text="Client Name" FontSize="22" FontWeight="Medium" />
 
-                        <!-- spacer -->
-                        <Grid Grid.Column="1" Margin="0,40,0,0">
-                            <Border Opacity="0.3" VerticalAlignment="Stretch">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1"> 
-                                        <GradientStop Color="Transparent" Offset="0"/>
-                                        <GradientStop Color="#666666" Offset="0.0"/>
-                                        <GradientStop Color="#666666" Offset="1.0"/>
-                                        <GradientStop Color="Transparent" Offset="1"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                            </Border>
-                        </Grid>
-                        
-                        <!-- email -->
-                        <Grid Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Center">
-                            <TextBlock Text="Email" FontSize="22" FontWeight="Medium" />
-                        </Grid>
+                                <!-- Dynamic rows -->
+                                <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding ClientNames}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding}"
+                                               FontSize="18"
+                                               Margin="0,4,0,0"/>
 
-                        <!-- spacer -->
-                        <Grid Grid.Column="3" Margin="0,40,0,0">
-                            <Border Opacity="0.3" VerticalAlignment="Stretch">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                        <GradientStop Color="Transparent" Offset="0"/>
-                                        <GradientStop Color="#666666" Offset="0.0"/>
-                                        <GradientStop Color="#666666" Offset="1.0"/>
-                                        <GradientStop Color="Transparent" Offset="1"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                            </Border>
-                        </Grid>
+                                                <!-- divider line -->
+                                                <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
+                                                <!-- divider line -->
+                                                <Border Height="1" Background="Red" Width="300"
+                                                Opacity="1"/>
+                                            </StackPanel>
+                                            
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
 
-                        <!-- phone -->
-                        <Grid Grid.Column="4" VerticalAlignment="Top" HorizontalAlignment="Center">
-                            <TextBlock Text="Phone" FontSize="22" FontWeight="Medium" />
-                        </Grid>
-                        
-                        <!-- spacer -->
-                        <Grid Grid.Column="5" Margin="0,40,0,0">
-                            <Border Opacity="0.3" VerticalAlignment="Stretch">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                        <GradientStop Color="Transparent" Offset="0"/>
-                                        <GradientStop Color="#666666" Offset="0.0"/>
-                                        <GradientStop Color="#666666" Offset="1.0"/>
-                                        <GradientStop Color="Transparent" Offset="1"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                            </Border>
-                        </Grid>
+                            <!-- spacer -->
+                            <Grid Grid.Column="1" Margin="0,40,0,0">
+                                <Border Opacity="0.3" VerticalAlignment="Stretch">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="Transparent" Offset="0"/>
+                                            <GradientStop Color="#666666" Offset="0.0"/>
+                                            <GradientStop Color="#666666" Offset="1.0"/>
+                                            <GradientStop Color="Transparent" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                            </Grid>
 
-                        <!-- job -->
-                        <Grid Grid.Column="6" VerticalAlignment="Top" HorizontalAlignment="Center">
-                            <TextBlock Text="Description" FontSize="22" FontWeight="Medium" />
-                        </Grid>
+                            <!-- email -->
+                            <Grid Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Center">
+                                <TextBlock Text="Email" FontSize="22" FontWeight="Medium" />
+                            </Grid>
 
-                        <!-- spacer -->
-                        <Grid Grid.Column="7" Margin="0,40,0,0">
-                            <Border Opacity="0.3" VerticalAlignment="Stretch">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                        <GradientStop Color="Transparent" Offset="0"/>
-                                        <GradientStop Color="#666666" Offset="0.0"/>
-                                        <GradientStop Color="#666666" Offset="1.0"/>
-                                        <GradientStop Color="Transparent" Offset="1"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                            </Border>
-                        </Grid>
+                            <!-- spacer -->
+                            <Grid Grid.Column="3" Margin="0,40,0,0">
+                                <Border Opacity="0.3" VerticalAlignment="Stretch">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="Transparent" Offset="0"/>
+                                            <GradientStop Color="#666666" Offset="0.0"/>
+                                            <GradientStop Color="#666666" Offset="1.0"/>
+                                            <GradientStop Color="Transparent" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                            </Grid>
 
-                        <!-- status -->
-                        <Grid Grid.Column="8" VerticalAlignment="Top" HorizontalAlignment="Center">
-                            <TextBlock Text="Status" FontSize="22" FontWeight="Medium" />
-                        </Grid>
+                            <!-- phone -->
+                            <Grid Grid.Column="4" VerticalAlignment="Top" HorizontalAlignment="Center">
+                                <TextBlock Text="Phone" FontSize="22" FontWeight="Medium" />
+                            </Grid>
 
-                        <!-- spacer -->
-                        <Grid Grid.Column="9" Margin="0,40,0,0">
-                            <Border Opacity="0.3" VerticalAlignment="Stretch">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                        <GradientStop Color="Transparent" Offset="0"/>
-                                        <GradientStop Color="#666666" Offset="0.0"/>
-                                        <GradientStop Color="#666666" Offset="1.0"/>
-                                        <GradientStop Color="Transparent" Offset="1"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                            </Border>
-                        </Grid>
+                            <!-- spacer -->
+                            <Grid Grid.Column="5" Margin="0,40,0,0">
+                                <Border Opacity="0.3" VerticalAlignment="Stretch">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="Transparent" Offset="0"/>
+                                            <GradientStop Color="#666666" Offset="0.0"/>
+                                            <GradientStop Color="#666666" Offset="1.0"/>
+                                            <GradientStop Color="Transparent" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                            </Grid>
 
-                        <!-- price -->
-                        <Grid Grid.Column="10" VerticalAlignment="Top" HorizontalAlignment="Center">
-                            <TextBlock Text="Price" FontSize="22" FontWeight="Medium" />
-                        </Grid>
+                            <!-- job -->
+                            <Grid Grid.Column="6" VerticalAlignment="Top" HorizontalAlignment="Center">
+                                <TextBlock Text="Description" FontSize="22" FontWeight="Medium" />
+                            </Grid>
 
-                        <!-- spacer -->
-                        <Grid Grid.Column="11" Margin="0,40,0,0">
-                            <Border Opacity="0.3" VerticalAlignment="Stretch">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                        <GradientStop Color="Transparent" Offset="0"/>
-                                        <GradientStop Color="#666666" Offset="0.0"/>
-                                        <GradientStop Color="#666666" Offset="1.0"/>
-                                        <GradientStop Color="Transparent" Offset="1"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                            </Border>
-                        </Grid>
+                            <!-- spacer -->
+                            <Grid Grid.Column="7" Margin="0,40,0,0">
+                                <Border Opacity="0.3" VerticalAlignment="Stretch">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="Transparent" Offset="0"/>
+                                            <GradientStop Color="#666666" Offset="0.0"/>
+                                            <GradientStop Color="#666666" Offset="1.0"/>
+                                            <GradientStop Color="Transparent" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                            </Grid>
 
-                        <!-- invoiced -->
-                        <Grid Grid.Column="12" VerticalAlignment="Top" HorizontalAlignment="Center">
-                            <TextBlock Text="Invoiced" FontSize="22" FontWeight="Medium" />
+                            <!-- status -->
+                            <Grid Grid.Column="8" VerticalAlignment="Top" HorizontalAlignment="Center">
+                                <TextBlock Text="Status" FontSize="22" FontWeight="Medium" />
+                            </Grid>
+
+                            <!-- spacer -->
+                            <Grid Grid.Column="9" Margin="0,40,0,0">
+                                <Border Opacity="0.3" VerticalAlignment="Stretch">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="Transparent" Offset="0"/>
+                                            <GradientStop Color="#666666" Offset="0.0"/>
+                                            <GradientStop Color="#666666" Offset="1.0"/>
+                                            <GradientStop Color="Transparent" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                            </Grid>
+
+                            <!-- price -->
+                            <Grid Grid.Column="10" VerticalAlignment="Top" HorizontalAlignment="Center">
+                                <TextBlock Text="Price" FontSize="22" FontWeight="Medium" />
+                            </Grid>
+
+                            <!-- spacer -->
+                            <Grid Grid.Column="11" Margin="0,40,0,0">
+                                <Border Opacity="0.3" VerticalAlignment="Stretch">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="Transparent" Offset="0"/>
+                                            <GradientStop Color="#666666" Offset="0.0"/>
+                                            <GradientStop Color="#666666" Offset="1.0"/>
+                                            <GradientStop Color="Transparent" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                            </Grid>
+
+                            <!-- invoiced -->
+                            <Grid Grid.Column="12" VerticalAlignment="Top" HorizontalAlignment="Center">
+                                <TextBlock Text="Invoiced" FontSize="22" FontWeight="Medium" />
+                            </Grid>
                         </Grid>
-                    </Grid>
+                    </ScrollViewer>
                 </Border>
             </Grid>
 
