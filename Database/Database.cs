@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using Caliburn.Micro;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,12 +14,10 @@ namespace Traker.Database
 {
     public class Database
     {
-        private SqliteCommand _sqliteCommand;
         private string _connectionString;
 
         public Database()
         {
-            _sqliteCommand = new SqliteCommand();
             _connectionString = String.Empty;
         }
 
@@ -40,7 +39,7 @@ namespace Traker.Database
                     _connectionString = $"Data Source={dbPath}";
                     using var conn = new SqliteConnection(_connectionString);
                     conn.Open();
-                    _sqliteCommand = conn.CreateCommand();
+                    var _sqliteCommand = conn.CreateCommand();
                     _sqliteCommand.CommandText = @"
                         DROP TABLE IF EXISTS Invoices;
                         DROP TABLE IF EXISTS Jobs;
@@ -229,15 +228,14 @@ namespace Traker.Database
 
         public List<Clients> FetchClientsTable()
         {
+            List<Clients> clientList = new List<Clients>();
+
             try
             {
-                List<Clients> clientList = new List<Clients>();
-
                 using (var conn = new SqliteConnection(_connectionString))
                 {
                     conn.Open();
 
-                    // 2. Create the command locally so it can't be "modified" by other parts of the app
                     using (var cmd = conn.CreateCommand())
                     {
                         cmd.CommandText = "SELECT * FROM Clients";
@@ -246,31 +244,30 @@ namespace Traker.Database
                         {
                             while (reader.Read())
                             {
-                                var clientId = reader["ClientId"];
-                                var clientName = reader["Name"];
-                                var clientEmail = reader["Email"];
-                                var clientPhone = reader["Phone"];
+                                var ClientId = reader["ClientId"];
+                                var Name = reader["Name"];
+                                var Email = reader["Email"];
+                                var Phone = reader["Phone"];
 
-                                if (string.IsNullOrEmpty(clientId.ToString()) == false ||
-                                    string.IsNullOrEmpty(clientName.ToString()) == false ||
-                                    string.IsNullOrEmpty(clientEmail.ToString()) == false ||
-                                    string.IsNullOrEmpty(clientPhone.ToString()) == false)
+                                if (string.IsNullOrEmpty(ClientId.ToString()) == false ||
+                                    string.IsNullOrEmpty(Name.ToString()) == false ||
+                                    string.IsNullOrEmpty(Email.ToString()) == false ||
+                                    string.IsNullOrEmpty(Phone.ToString()) == false)
                                 {
                                     clientList.Add(new Clients
                                     {
-                                        ClientId = Convert.ToInt32(clientId),
-                                        Name = clientName.ToString()!,
-                                        Email = clientEmail.ToString()!,
-                                        Phone = clientPhone.ToString()!
+                                        ClientId = Convert.ToInt32(ClientId),
+                                        Name = Name.ToString()!,
+                                        Email = Email.ToString()!,
+                                        Phone = Phone.ToString()!
                                     });
                                 }
-
                                 // Debug.WriteLine(clientId + " " + clientName + " " + clientEmail + " " + clientPhone);
                             }
                         }
                     }
                 }
-                return clientList;
+                return clientList;                
             }
             catch(Exception ex)
             {
@@ -281,10 +278,70 @@ namespace Traker.Database
                     MessageBoxImage.Error);
 
                 Debug.WriteLine($"Fetch Clients error: {ex.Message}");
-                // System.Windows.Application.Current.Shutdown(); // close application
                 System.Environment.Exit(1); // kill process
-                throw;
-            }            
+                throw; // necessary otherwsie cries about no return value
+            }           
+        }
+
+        public List<Jobs> FetchJobsTable()
+        {
+            List<Jobs> jobsList = new List<Jobs>();
+
+            try
+            {
+
+                using (var conn = new SqliteConnection(_connectionString))
+                {
+                    conn.Open();
+
+                    // 2. Create the command locally so it can't be "modified" by other parts of the app
+                    using (var cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = "SELECT * FROM Jobs";
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var JobId = reader["JobId"];
+                                var ClientId = reader["ClientId"];
+                                var Description = reader["Description"];
+                                var Status = reader["Status"];
+                                var Price = reader["Price"];
+
+                                if (string.IsNullOrEmpty(JobId.ToString()) == false ||
+                                    string.IsNullOrEmpty(ClientId.ToString()) == false ||
+                                    string.IsNullOrEmpty(Description.ToString()) == false ||
+                                    string.IsNullOrEmpty(Status.ToString()) == false)
+                                {
+                                    jobsList.Add(new Jobs
+                                    {
+                                        JobId = Convert.ToInt32(JobId),
+                                        ClientId = Convert.ToInt32(ClientId),
+                                        Description = Description.ToString()!,
+                                        Status = Status.ToString()!,
+                                        Price = Convert.ToDecimal(Price),
+                                    });
+                                }
+                                // Debug.WriteLine(clientId + " " + clientName + " " + clientEmail + " " + clientPhone);
+                            }
+                        }
+                    }
+                }
+                return jobsList;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while fetching 'Jobs' table. Please try again.\n\n{ex.Message}",
+                    "Fetch Jobs Tables",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+
+                Debug.WriteLine($"Fetch Jobs error: {ex.Message}");
+                System.Environment.Exit(1); // kill process
+                throw; // necessary otherwsie cries about no return value
+            }
         }
         #endregion
     }

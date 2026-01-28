@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 namespace Traker.ViewModels
 {
     using Database;
+    using System.Diagnostics;
+    using System.Windows;
     using Traker.Models;
 
     public class DashboardViewModel : Screen
@@ -36,19 +38,34 @@ namespace Traker.ViewModels
         #region Caliburn Functions
         protected override async Task OnInitializedAsync(CancellationToken cancellationToken)
         {
-            _database = new Database(); // database
-            //await _database.SetUpDatabase();
+            try
+            {
+                _database = new Database(); // database
+                await _database.SetUpDatabase();
 
-            _clients = _database.FetchClientsTable(); // clients
-            _jobs = new List<Jobs>(); // jobs
-            _invoices = new List<Invoices>(); // invoices
+                _clients = _database.FetchClientsTable(); // clients
+                _jobs = _database.FetchJobsTable(); // jobs
+                _invoices = new List<Invoices>(); // invoices
 
 
-            _clientNames = new ObservableCollection<string>(); // cclient names
+                _clientNames = new ObservableCollection<string>(); // cclient names
 
-            await LoadData();
+                await LoadData();
 
-            //return base.OnInitializedAsync(cancellationToken);
+                //return base.OnInitializedAsync(cancellationToken);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while fetching 'Clients' table. Please try again.\n\n{ex.Message}",
+                    "Fetch Clients Tables",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+
+                Debug.WriteLine($"Fetch Clients error: {ex.Message}");
+                System.Environment.Exit(1); // kill process
+            }
         }
         #endregion
 
