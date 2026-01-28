@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 namespace Traker.ViewModels
 {
     using Database;
+    using Traker.Models;
 
     public class DashboardViewModel : Screen
     {
@@ -22,6 +23,9 @@ namespace Traker.ViewModels
 
         #region Data Variables
         Database _database;
+        List<Clients> _clients;
+        List<Jobs> _jobs;
+        List<Invoices> _invoices;
         #endregion
 
         public DashboardViewModel(IEventAggregator events)
@@ -33,7 +37,12 @@ namespace Traker.ViewModels
         protected override async Task OnInitializedAsync(CancellationToken cancellationToken)
         {
             _database = new Database(); // database
-            await _database.SetUpDatabase();
+            //await _database.SetUpDatabase();
+
+            _clients = _database.FetchClientsTable(); // clients
+            _jobs = new List<Jobs>(); // jobs
+            _invoices = new List<Invoices>(); // invoices
+
 
             _clientNames = new ObservableCollection<string>(); // cclient names
 
@@ -47,7 +56,7 @@ namespace Traker.ViewModels
         private Task LoadData()
         {
             ClientNames.Clear();
-            ClientNames = new ObservableCollection<string>(_database.LoadData());
+            ClientNames = new ObservableCollection<string>(_database.FetchClientNames());
 
             return Task.CompletedTask;
         }

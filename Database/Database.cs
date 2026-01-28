@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Traker.Models;
 
 namespace Traker.Database
 {
@@ -173,8 +174,6 @@ namespace Traker.Database
                     {
                         Debug.WriteLine($"Database Created");
                     }
-
-                    LoadData();
                 }
                 catch(Exception ex)
                 {
@@ -189,7 +188,7 @@ namespace Traker.Database
             });
         }
 
-        public List<string> LoadData()
+        public List<string> FetchClientNames()
         {
             /*
              * pass whole row to the variable then show the selected one on the table so when search the databased
@@ -220,12 +219,72 @@ namespace Traker.Database
                         while (reader.Read())
                         {
                             clientNames.Add(reader.GetString(0));
-                            Debug.WriteLine(reader.GetString(0));
+                            // Debug.WriteLine(reader.GetString(0));
                         }
                     }
                 }
             }
             return clientNames;
+        }
+
+        public List<Clients> FetchClientsTable()
+        {
+            try
+            {
+                List<Clients> clientList = new List<Clients>();
+
+                using (var conn = new SqliteConnection(_connectionString))
+                {
+                    conn.Open();
+
+                    // 2. Create the command locally so it can't be "modified" by other parts of the app
+                    using (var cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = "SELECT * FROM Clients";
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var clientId = reader["ClientId"];
+                                var clientName = reader["Name"];
+                                var clientEmail = reader["Email"];
+                                var clientPhone = reader["Phone"];
+
+                                if (string.IsNullOrEmpty(clientId.ToString()) == false ||
+                                    string.IsNullOrEmpty(clientName.ToString()) == false ||
+                                    string.IsNullOrEmpty(clientEmail.ToString()) == false ||
+                                    string.IsNullOrEmpty(clientPhone.ToString()) == false)
+                                {
+                                    clientList.Add(new Clients
+                                    {
+                                        ClientId = Convert.ToInt32(clientId),
+                                        Name = clientName.ToString()!,
+                                        Email = clientEmail.ToString()!,
+                                        Phone = clientPhone.ToString()!
+                                    });
+                                }
+
+                                // Debug.WriteLine(clientId + " " + clientName + " " + clientEmail + " " + clientPhone);
+                            }
+                        }
+                    }
+                }
+                return clientList;
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while fetching 'Clients' table. Please try again.\n\n{ex.Message}",
+                    "Fetch Clients Tables",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+
+                Debug.WriteLine($"Fetch Clients error: {ex.Message}");
+                // System.Windows.Application.Current.Shutdown(); // close application
+                System.Environment.Exit(1); // kill process
+                throw;
+            }            
         }
         #endregion
     }

@@ -19,10 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Resource Include="Resources\Media\Images\Icons\close-button.png" />
     <Resource Include="Resources\Media\Images\Icons\minimise-button.png" />
   </ItemGroup>
