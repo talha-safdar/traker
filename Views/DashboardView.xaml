@@ -324,9 +324,13 @@
                 </Border>
             </Grid>
 
+            <!-- bottom section -->
             <Grid Grid.Column="1" Grid.Row="1" Margin="10,10,20,20">
                 <Border Background="{StaticResource SilverBorderBrush }" CornerRadius="20">
-
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock Text="Received:" Margin="0,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Regular" />                        
+                        <TextBlock Text="{Binding MoneyReceived}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32" FontWeight="Medium" />                        
+                    </StackPanel>
                 </Border>
             </Grid>
         </Grid>

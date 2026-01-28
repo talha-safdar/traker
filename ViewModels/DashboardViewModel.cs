@@ -27,6 +27,7 @@ namespace Traker.ViewModels
         private ObservableCollection<string> _jobStatus;
         private ObservableCollection<string> _jobPrice;
         private ObservableCollection<string> _paid; // paid by client?
+        private string _moneyReceived; // paid by client? text string
         #endregion
 
         #region Data Variables
@@ -35,6 +36,10 @@ namespace Traker.ViewModels
         List<JobsModel> _jobs;
         List<InvoicesModel> _invoices;
         List<DashboardModel> _dashboardData;
+        #endregion
+
+        #region Private Field Variables
+        private List<decimal> _paidJobs;
         #endregion
 
         public DashboardViewModel(IEventAggregator events)
@@ -48,6 +53,10 @@ namespace Traker.ViewModels
             _jobStatus = new ObservableCollection<string>(); // job status
             _jobPrice = new ObservableCollection<string>(); // job price
             _paid = new ObservableCollection<string>(); // job price
+
+            _moneyReceived = "0";
+
+            _paidJobs = new List<decimal>();
 
             _database = new Database(); // database
             _clients = new List<ClientsModel>();
@@ -154,6 +163,21 @@ namespace Traker.ViewModels
                 }
             }
 
+
+
+            for (int i = 0; i < _dashboardData.Count; i++)
+            {
+                _paidJobs.AddRange(_clients
+                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
+                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
+                    .Join(_invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.Price, inv.IsPaid })
+                    .Where(x => x.IsPaid == true)
+                    .Select(x => x.Price)
+                    .ToList());
+            }
+
+            MoneyReceived = _paidJobs.Sum().ToString("C");
+
             return Task.CompletedTask;
         }
         #endregion
@@ -225,6 +249,16 @@ namespace Traker.ViewModels
             {
                 _paid = value;
                 NotifyOfPropertyChange(() => Paid);
+            }
+        }
+
+        public String MoneyReceived
+        {
+            get { return _moneyReceived; }
+            set
+            {
+                _moneyReceived = value;
+                NotifyOfPropertyChange(() => MoneyReceived);
             }
         }
         #endregion
