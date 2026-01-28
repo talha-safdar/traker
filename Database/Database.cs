@@ -191,24 +191,21 @@ namespace Traker.Database
 
         public List<string> LoadData()
         {
+            /*
+             * pass whole row to the variable then show the selected one on the table so when search the databased
+             * already have id and other values linked to the selection
+             * 
+             * make variables like reels to collect each row e.g. 
+             * List:
+             * - Row 1:
+             *      [name, email, phone..]
+             *- Row 2:
+             *      [name, email, phone..]
+             * and so on...
+             */
+
+
             List<string> clientNames = new List<string>();
-
-
-            //using var conn = new SqliteConnection(_connectionString);
-            //conn.Open();
-
-            //_sqliteCommand.Connection = conn;
-            //_sqliteCommand.CommandText = "SELECT Name FROM Clients";
-
-            //using var reader = _sqliteCommand.ExecuteReader();
-
-            //while (reader.Read())
-            //{
-            //    //ClientNames.Add(reader.GetString(0));
-            //    //Debug.WriteLine(reader.GetString(0));
-            //    clientNames.Add(reader.GetString(0));
-            //}
-            // 1. Create and Open connection locally
             using (var conn = new SqliteConnection(_connectionString))
             {
                 conn.Open();
