@@ -103,6 +103,26 @@
                             <!-- email -->
                             <Grid Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Center">
                                 <TextBlock Text="Email" FontSize="22" FontWeight="Medium" />
+                                <!-- Dynamic rows -->
+                                <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding ClientEmails}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding}"
+                                                FontSize="18"
+                                                TextAlignment="Left"
+                                                Margin="0,4,0,0"/>
+
+                                                <!-- divider line -->
+                                                <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
+                                                <!-- divider line -->
+                                                <Border Height="1" Background="Gray" Width="300"
+                                                Opacity="1"/>
+                                            </StackPanel>
+
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </Grid>
 
                             <!-- spacer -->

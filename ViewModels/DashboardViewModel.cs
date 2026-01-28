@@ -21,18 +21,29 @@ namespace Traker.ViewModels
 
         #region Private View Variables
         private ObservableCollection<string> _clientNames;
+        private ObservableCollection<string> _clientEmails;
         #endregion
 
         #region Data Variables
         Database _database;
-        List<Clients> _clients;
-        List<Jobs> _jobs;
-        List<Invoices> _invoices;
+        List<ClientsModel> _clients;
+        List<JobsModel> _jobs;
+        List<InvoicesModel> _invoices;
+        List<DashboardModel> _dashboardData;
         #endregion
 
         public DashboardViewModel(IEventAggregator events)
         {
             _events = events;
+
+            _clientNames = new ObservableCollection<string>(); // client names
+            _clientEmails = new ObservableCollection<string>(); // client emails
+
+            _database = new Database(); // database
+            _clients = new List<ClientsModel>();
+            _jobs = new List<JobsModel>();
+            _invoices = new List<InvoicesModel>();
+            _dashboardData = new List<DashboardModel>();
         }
 
         #region Caliburn Functions
@@ -40,40 +51,60 @@ namespace Traker.ViewModels
         {
             try
             {
-                _database = new Database(); // database
+                
                 await _database.SetUpDatabase();
 
                 _clients = _database.FetchClientsTable(); // clients
                 _jobs = _database.FetchJobsTable(); // jobs
-                _invoices = new List<Invoices>(); // invoices
+                _invoices = _database.FetchInvoiceTable(); // invoices
 
+                
 
-                _clientNames = new ObservableCollection<string>(); // cclient names
-
-                await LoadData();
+                await SetupDashboardData();
 
                 //return base.OnInitializedAsync(cancellationToken);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"An error occurred while fetching 'Clients' table. Please try again.\n\n{ex.Message}",
-                    "Fetch Clients Tables",
+                    $"An error occurred while while loading Dashboard. Please try again.\n\n{ex.Message}",
+                    "Dashboard",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error
                 );
-
-                Debug.WriteLine($"Fetch Clients error: {ex.Message}");
                 System.Environment.Exit(1); // kill process
             }
         }
         #endregion
 
         #region Private Functions
-        private Task LoadData()
+        private Task SetupDashboardData()
         {
+            for (int i = 0; i < _clients.Count; i++)
+            {
+                DashboardModel dashboardEntry = new DashboardModel
+                {
+                    ClientId = _clients[i].ClientId.ToString(),
+                    ClientName = _clients[i].Name,
+                    ClientEmail = _clients[i].Email,
+                    ClientPhone = _clients[i].Phone,
+                    Jobs = _jobs.Where(job => job.ClientId == _clients[i].ClientId).ToList(),
+                    Invoices = _invoices.Where(invoice => invoice.JobId == _jobs[i].JobId).ToList()
+                };
+                _dashboardData.Add(dashboardEntry);
+            }
+
             ClientNames.Clear();
-            ClientNames = new ObservableCollection<string>(_database.FetchClientNames());
+            for (int i = 0; i < _dashboardData.Count; i++)
+            {
+                ClientNames.Add(_dashboardData[i].ClientName);
+            }
+
+            ClientEmails.Clear();
+            for (int i = 0; i < _dashboardData.Count; i++)
+            {
+                ClientEmails.Add(_dashboardData[i].ClientEmail);
+            }
 
             return Task.CompletedTask;
         }
@@ -87,6 +118,16 @@ namespace Traker.ViewModels
             {
                 _clientNames = value;
                 NotifyOfPropertyChange(() => ClientNames);
+            }
+        }
+
+        public ObservableCollection<string> ClientEmails
+        {
+            get { return _clientEmails; }
+            set
+            {
+                _clientEmails = value;
+                NotifyOfPropertyChange(() => ClientEmails);
             }
         }
         #endregion

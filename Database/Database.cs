@@ -226,9 +226,9 @@ namespace Traker.Database
             return clientNames;
         }
 
-        public List<Clients> FetchClientsTable()
+        public List<ClientsModel> FetchClientsTable()
         {
-            List<Clients> clientList = new List<Clients>();
+            List<ClientsModel> clientsList = new List<ClientsModel>();
 
             try
             {
@@ -254,7 +254,7 @@ namespace Traker.Database
                                     string.IsNullOrEmpty(Email.ToString()) == false ||
                                     string.IsNullOrEmpty(Phone.ToString()) == false)
                                 {
-                                    clientList.Add(new Clients
+                                    clientsList.Add(new ClientsModel
                                     {
                                         ClientId = Convert.ToInt32(ClientId),
                                         Name = Name.ToString()!,
@@ -267,7 +267,7 @@ namespace Traker.Database
                         }
                     }
                 }
-                return clientList;                
+                return clientsList;                
             }
             catch(Exception ex)
             {
@@ -283,9 +283,9 @@ namespace Traker.Database
             }           
         }
 
-        public List<Jobs> FetchJobsTable()
+        public List<JobsModel> FetchJobsTable()
         {
-            List<Jobs> jobsList = new List<Jobs>();
+            List<JobsModel> jobsList = new List<JobsModel>();
 
             try
             {
@@ -314,7 +314,7 @@ namespace Traker.Database
                                     string.IsNullOrEmpty(Description.ToString()) == false ||
                                     string.IsNullOrEmpty(Status.ToString()) == false)
                                 {
-                                    jobsList.Add(new Jobs
+                                    jobsList.Add(new JobsModel
                                     {
                                         JobId = Convert.ToInt32(JobId),
                                         ClientId = Convert.ToInt32(ClientId),
@@ -329,6 +329,68 @@ namespace Traker.Database
                     }
                 }
                 return jobsList;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while fetching 'Jobs' table. Please try again.\n\n{ex.Message}",
+                    "Fetch Jobs Tables",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+
+                Debug.WriteLine($"Fetch Jobs error: {ex.Message}");
+                System.Environment.Exit(1); // kill process
+                throw; // necessary otherwsie cries about no return value
+            }
+        }
+
+        public List<InvoicesModel> FetchInvoiceTable()
+        {
+            List<InvoicesModel> invoicesList = new List<InvoicesModel>();
+
+            try
+            {
+
+                using (var conn = new SqliteConnection(_connectionString))
+                {
+                    conn.Open();
+
+                    // 2. Create the command locally so it can't be "modified" by other parts of the app
+                    using (var cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = "SELECT * FROM Invoices";
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var InvoiceId = reader["InvoiceId"];
+                                var JobId = reader["JobId"];
+                                var Amount = reader["Amount"];
+                                var IssueDate = reader["IssueDate"];
+                                var IsPaid = reader["IsPaid"];
+
+                                if (string.IsNullOrEmpty(InvoiceId.ToString()) == false ||
+                                    string.IsNullOrEmpty(JobId.ToString()) == false ||
+                                    string.IsNullOrEmpty(Amount.ToString()) == false ||
+                                    string.IsNullOrEmpty(IssueDate.ToString()) == false ||
+                                    string.IsNullOrEmpty(IsPaid.ToString()) == false)
+                                {
+                                    invoicesList.Add(new InvoicesModel
+                                    {
+                                        InvoiceId = Convert.ToInt32(InvoiceId),
+                                        JobId = Convert.ToInt32(JobId),
+                                        Amount = Convert.ToDecimal(Amount),
+                                        IssueDate = Convert.ToDateTime(IssueDate),
+                                        IsPaid = Convert.ToBoolean(IsPaid),
+                                    });
+                                }
+                                // Debug.WriteLine(clientId + " " + clientName + " " + clientEmail + " " + clientPhone);
+                            }
+                        }
+                    }
+                }
+                return invoicesList;
             }
             catch (Exception ex)
             {
