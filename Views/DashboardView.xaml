@@ -142,6 +142,26 @@
                             <!-- phone -->
                             <Grid Grid.Column="4" VerticalAlignment="Top" HorizontalAlignment="Center">
                                 <TextBlock Text="Phone" FontSize="22" FontWeight="Medium" />
+                                <!-- Dynamic rows -->
+                                <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding ClientPhones}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding}"
+                                                FontSize="18"
+                                                TextAlignment="Center"
+                                                Margin="0,4,0,0"/>
+
+                                                <!-- divider line -->
+                                                <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
+                                                <!-- divider line -->
+                                                <Border Height="1" Background="Gray" Width="300"
+                                                Opacity="1"/>
+                                            </StackPanel>
+
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </Grid>
 
                             <!-- spacer -->
@@ -161,6 +181,26 @@
                             <!-- job -->
                             <Grid Grid.Column="6" VerticalAlignment="Top" HorizontalAlignment="Center">
                                 <TextBlock Text="Description" FontSize="22" FontWeight="Medium" />
+                                <!-- Dynamic rows -->
+                                <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding JobDescriptions}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding}"
+                                                FontSize="18"
+                                                TextAlignment="Left"
+                                                Margin="0,4,0,0"/>
+
+                                                <!-- divider line -->
+                                                <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
+                                                <!-- divider line -->
+                                                <Border Height="1" Background="Gray" Width="300"
+                                                Opacity="1"/>
+                                            </StackPanel>
+
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </Grid>
 
                             <!-- spacer -->
@@ -180,6 +220,26 @@
                             <!-- status -->
                             <Grid Grid.Column="8" VerticalAlignment="Top" HorizontalAlignment="Center">
                                 <TextBlock Text="Status" FontSize="22" FontWeight="Medium" />
+                                <!-- Dynamic rows -->
+                                <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding JobStatus}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding}"
+                                                FontSize="18"
+                                                TextAlignment="Center"
+                                                Margin="0,4,0,0"/>
+
+                                                <!-- divider line -->
+                                                <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
+                                                <!-- divider line -->
+                                                <Border Height="1" Background="Gray" Width="300"
+                                                Opacity="1"/>
+                                            </StackPanel>
+
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </Grid>
 
                             <!-- spacer -->
@@ -199,6 +259,26 @@
                             <!-- price -->
                             <Grid Grid.Column="10" VerticalAlignment="Top" HorizontalAlignment="Center">
                                 <TextBlock Text="Price" FontSize="22" FontWeight="Medium" />
+                                <!-- Dynamic rows -->
+                                <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding JobPrice}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding}"
+                                                FontSize="18"
+                                                TextAlignment="Left"
+                                                Margin="0,4,0,0"/>
+
+                                                <!-- divider line -->
+                                                <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
+                                                <!-- divider line -->
+                                                <Border Height="1" Background="Gray" Width="300"
+                                                Opacity="1"/>
+                                            </StackPanel>
+
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </Grid>
 
                             <!-- spacer -->
@@ -217,7 +297,27 @@
 
                             <!-- invoiced -->
                             <Grid Grid.Column="12" VerticalAlignment="Top" HorizontalAlignment="Center">
-                                <TextBlock Text="Invoiced" FontSize="22" FontWeight="Medium" />
+                                <TextBlock Text="Paid" FontSize="22" FontWeight="Medium" />
+                                <!-- Dynamic rows -->
+                                <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding Paid}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding}"
+                                                FontSize="18"
+                                                TextAlignment="Left"
+                                                Margin="0,4,0,0"/>
+
+                                                <!-- divider line -->
+                                                <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
+                                                <!-- divider line -->
+                                                <Border Height="1" Background="Gray" Width="300"
+                                                Opacity="1"/>
+                                            </StackPanel>
+
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </Grid>
                         </Grid>
                     </ScrollViewer>

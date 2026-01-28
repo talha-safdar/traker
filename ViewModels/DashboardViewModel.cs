@@ -22,6 +22,11 @@ namespace Traker.ViewModels
         #region Private View Variables
         private ObservableCollection<string> _clientNames;
         private ObservableCollection<string> _clientEmails;
+        private ObservableCollection<string> _clientPhones;
+        private ObservableCollection<string> _jobDescripions;
+        private ObservableCollection<string> _jobStatus;
+        private ObservableCollection<string> _jobPrice;
+        private ObservableCollection<string> _paid; // paid by client?
         #endregion
 
         #region Data Variables
@@ -38,6 +43,11 @@ namespace Traker.ViewModels
 
             _clientNames = new ObservableCollection<string>(); // client names
             _clientEmails = new ObservableCollection<string>(); // client emails
+            _clientPhones = new ObservableCollection<string>(); // client phones
+            _jobDescripions = new ObservableCollection<string>(); // job descriptions
+            _jobStatus = new ObservableCollection<string>(); // job status
+            _jobPrice = new ObservableCollection<string>(); // job price
+            _paid = new ObservableCollection<string>(); // job price
 
             _database = new Database(); // database
             _clients = new List<ClientsModel>();
@@ -84,7 +94,7 @@ namespace Traker.ViewModels
             {
                 DashboardModel dashboardEntry = new DashboardModel
                 {
-                    ClientId = _clients[i].ClientId.ToString(),
+                    ClientId = _clients[i].ClientId,
                     ClientName = _clients[i].Name,
                     ClientEmail = _clients[i].Email,
                     ClientPhone = _clients[i].Phone,
@@ -104,6 +114,44 @@ namespace Traker.ViewModels
             for (int i = 0; i < _dashboardData.Count; i++)
             {
                 ClientEmails.Add(_dashboardData[i].ClientEmail);
+            }
+
+            ClientPhones.Clear();
+            for (int i = 0; i < _dashboardData.Count; i++)
+            {
+                ClientPhones.Add(_dashboardData[i].ClientPhone);
+            }
+
+            JobDescriptions.Clear();
+            for (int i = 0; i < _dashboardData.Count; i++)
+            {
+                JobDescriptions.Add(_dashboardData[i].Jobs.Where(j => j.ClientId == _dashboardData[i].ClientId).Select(j => j.Description).ToList().FirstOrDefault()!);
+            }
+
+            JobStatus.Clear();
+            for (int i = 0; i < _dashboardData.Count; i++)
+            {
+                JobStatus.Add(_dashboardData[i].Jobs.Where(j => j.ClientId == _dashboardData[i].ClientId).Select(j => j.Status).ToList().FirstOrDefault()!);
+            }
+
+            JobPrice.Clear();
+            for (int i = 0; i < _dashboardData.Count; i++)
+            {
+                JobPrice.Add(_dashboardData[i].Jobs.Where(j => j.ClientId == _dashboardData[i].ClientId).Select(j => j.Price.ToString("C")).ToList().FirstOrDefault()!);
+            }
+
+            Paid.Clear();
+            for (int i = 0; i < _dashboardData.Count; i++)
+            {
+                var paid = _dashboardData[i].Invoices.Where(inv => inv.JobId == _dashboardData[i].Jobs.Where(j => j.ClientId == _dashboardData[i].ClientId).Select(j => j.JobId).FirstOrDefault()).Select(inv => inv.IsPaid).FirstOrDefault();
+                if (paid == true)
+                {
+                    Paid.Add("Yes");
+                }
+                else
+                {
+                    Paid.Add("No");
+                }
             }
 
             return Task.CompletedTask;
@@ -128,6 +176,55 @@ namespace Traker.ViewModels
             {
                 _clientEmails = value;
                 NotifyOfPropertyChange(() => ClientEmails);
+            }
+        }
+
+        public ObservableCollection<string> ClientPhones
+        {
+            get { return _clientPhones; }
+            set
+            {
+                _clientPhones = value;
+                NotifyOfPropertyChange(() => ClientPhones);
+            }
+        }
+        public ObservableCollection<string> JobDescriptions
+        {
+            get { return _jobDescripions; }
+            set
+            {
+                _jobDescripions = value;
+                NotifyOfPropertyChange(() => JobDescriptions);
+            }
+        }
+
+        public ObservableCollection<string> JobStatus
+        {
+            get { return _jobStatus; }
+            set
+            {
+                _jobStatus = value;
+                NotifyOfPropertyChange(() => JobStatus);
+            }
+        }
+
+        public ObservableCollection<string> JobPrice
+        {
+            get { return _jobPrice; }
+            set
+            {
+                _jobPrice = value;
+                NotifyOfPropertyChange(() => JobPrice);
+            }
+        }
+
+        public ObservableCollection<string> Paid
+        {
+            get { return _paid; }
+            set
+            {
+                _paid = value;
+                NotifyOfPropertyChange(() => Paid);
             }
         }
         #endregion

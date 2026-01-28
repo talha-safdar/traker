@@ -8,7 +8,7 @@ namespace Traker.Models
 {
     public class DashboardModel
     {
-        public string ClientId { get; set; } = string.Empty;
+        public int ClientId { get; set; } = 0;
         public string ClientName { get; set; } = string.Empty;
         public string ClientEmail { get; set; } = string.Empty;
         public string ClientPhone { get; set; } = string.Empty;
