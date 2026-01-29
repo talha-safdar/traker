@@ -1,0 +1,6 @@
+﻿Fonts: {
+	Headers/Titles:		Montserrat	700 (Bold)
+	Table Content:		Inter	400 (Regular)
+	Prices/IDs:			Roboto Mono	500 (Medium)
+	Labels/Captions:	Public Sans	400 (Regular)
+}

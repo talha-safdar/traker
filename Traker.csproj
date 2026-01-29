@@ -10,6 +10,16 @@
 
   <ItemGroup>
     <None Remove="Assets\Database\Schema.sql" />
+    <None Remove="Resources\Fonts\Inter-Italic.ttf" />
+    <None Remove="Resources\Fonts\Inter.ttf" />
+    <None Remove="Resources\Fonts\Montserrat-Italic.ttf" />
+    <None Remove="Resources\Fonts\Montserrat.ttf" />
+    <None Remove="Resources\Fonts\PublicSans-Italic.ttf" />
+    <None Remove="Resources\Fonts\PublicSans.ttf" />
+    <None Remove="Resources\Fonts\Roboto-Italic.ttf" />
+    <None Remove="Resources\Fonts\Roboto.ttf" />
+    <None Remove="Resources\Fonts\RobotoMono-Italic.ttf" />
+    <None Remove="Resources\Fonts\RobotoMono.ttf" />
     <None Remove="Resources\Media\Images\Icons\close-button.png" />
     <None Remove="Resources\Media\Images\Icons\minimise-button.png" />
   </ItemGroup>
@@ -24,6 +34,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\Fonts\Inter-Italic.ttf" />
+    <Resource Include="Resources\Fonts\Inter.ttf" />
+    <Resource Include="Resources\Fonts\Montserrat-Italic.ttf" />
+    <Resource Include="Resources\Fonts\Montserrat.ttf" />
+    <Resource Include="Resources\Fonts\PublicSans-Italic.ttf" />
+    <Resource Include="Resources\Fonts\PublicSans.ttf" />
+    <Resource Include="Resources\Fonts\Roboto-Italic.ttf" />
+    <Resource Include="Resources\Fonts\Roboto.ttf" />
+    <Resource Include="Resources\Fonts\RobotoMono-Italic.ttf" />
+    <Resource Include="Resources\Fonts\RobotoMono.ttf" />
     <Resource Include="Resources\Media\Images\Icons\close-button.png" />
     <Resource Include="Resources\Media\Images\Icons\minimise-button.png" />
   </ItemGroup>
