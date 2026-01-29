@@ -9,6 +9,18 @@ namespace Traker
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            try
+            {
+                base.OnStartup(e);
+            }
+            catch (Exception ex)
+            {
+                // This will tell you exactly which XAML line is broken
+                MessageBox.Show(ex.ToString());
+            }
+        }
     }
 
 }

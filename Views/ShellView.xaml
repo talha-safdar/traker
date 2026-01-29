@@ -23,7 +23,7 @@
             CornerRadius="20" />
     </WindowChrome.WindowChrome>
 
-    <Border Background="{StaticResource WindowBgBrush}">
+    <Border Background="{StaticResource MainBackgroundBrush}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.07*"/> <!-- top bar-->
@@ -31,9 +31,9 @@
             </Grid.RowDefinitions>
 
             <!-- top bar -->
-            <Grid Grid.Row="0" Background="{StaticResource SurfaceBrushHeader}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid Grid.Row="0" Background="{StaticResource TopBarBackgroundBrush}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <Grid Margin="20,0,20,0">
-                    <TextBlock Text="TRAKER" FontWeight="ExtraBlack" FontSize="25" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                    <TextBlock Text="TRAKER" FontWeight="ExtraBlack" Foreground="{StaticResource FontPrimaryBrush}" FontSize="25" VerticalAlignment="Center" HorizontalAlignment="Left" />
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <Border Margin="0, 0, 20, 0" x:Name="MinimiseWindow" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Center">
                             <Image Width="25" Source="/Resources/Media/Images/Icons/minimise-button.png" Opacity="0.9" />
@@ -46,7 +46,7 @@
             </Grid>
 
             <!-- body -->
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="1" Background="Black">
                 <ContentControl x:Name="ActiveItem" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
             </Grid>
         </Grid>

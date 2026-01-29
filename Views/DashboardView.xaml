@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:Traker.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Background="#F0F0F0">
+    <Grid Background="{StaticResource MainBackgroundBrush}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.1*" /> <!-- side panel -->
@@ -19,16 +19,15 @@
             
             <!-- side panel -->
             <Grid Grid.Column="0" Grid.RowSpan="2" Margin="20,20,5,20">
-                <Border Background="{StaticResource SilverBorderBrush }" CornerRadius="20">
+                <Border Background="{StaticResource SidePanelBackgroundBrush}" CornerRadius="20">
 
                 </Border>
             </Grid>
             
             <!-- main body -->
-            <Grid Grid.Column="1" Grid.Row="0" Margin="5,20,20,10">
-                <Border Background="{StaticResource SuccessBorderBrush}" CornerRadius="20">
-                    <ScrollViewer VerticalScrollBarVisibility="Visible"
-                            Margin="0,0,0,0">
+            <Grid Grid.Column="1" Grid.Row="0" Margin="5,20,20,10">                
+                <Border Background="{StaticResource TableHeaderBackgroundBrush}" CornerRadius="20">                    
+                    <ScrollViewer VerticalScrollBarVisibility="Hidden" CanContentScroll="True">
                         <Grid Margin="20">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -62,7 +61,7 @@
                             <!-- get font sorted -->
 
                             <Grid Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                                <TextBlock Text="Client Name" FontSize="22" FontWeight="Medium" />
+                                <TextBlock Text="Client Name" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" FontSize="22"  />
 
                                 <!-- Dynamic rows -->
                                 <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding ClientNames}">
@@ -70,6 +69,9 @@
                                         <DataTemplate>
                                             <StackPanel>
                                                 <TextBlock Text="{Binding}"
+                                                Foreground="{StaticResource FontPrimaryBrush}" 
+                                                FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" 
+                                                FontWeight="Regular" 
                                                 FontSize="18"
                                                 TextAlignment="Left"
                                                 Margin="5"/>
@@ -101,13 +103,16 @@
 
                             <!-- email -->
                             <Grid Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                                <TextBlock Text="Email" FontSize="22" FontWeight="Medium" />
+                                <TextBlock Text="Email" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" FontSize="22" />
                                 <!-- Dynamic rows -->
                                 <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding ClientEmails}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel>
                                                 <TextBlock Text="{Binding}"
+                                                Foreground="{StaticResource FontPrimaryBrush}" 
+                                                FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" 
+                                                FontWeight="Regular" 
                                                 FontSize="18"
                                                 TextAlignment="Left"
                                                 Margin="5"/>
@@ -139,13 +144,16 @@
 
                             <!-- phone -->
                             <Grid Grid.Column="4" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                                <TextBlock Text="Phone" FontSize="22" FontWeight="Medium" />
+                                <TextBlock Text="Phone" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" FontSize="22" />
                                 <!-- Dynamic rows -->
                                 <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding ClientPhones}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel>
                                                 <TextBlock Text="{Binding}"
+                                                Foreground="{StaticResource FontPrimaryBrush}" 
+                                                FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" 
+                                                FontWeight="Regular" 
                                                 FontSize="18"
                                                 TextAlignment="Center"
                                                 Margin="5"/>
@@ -177,13 +185,16 @@
 
                             <!-- job -->
                             <Grid Grid.Column="6" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                                <TextBlock Text="Description" FontSize="22" FontWeight="Medium" />
+                                <TextBlock Text="Description" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" FontSize="22" />
                                 <!-- Dynamic rows -->
                                 <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding JobDescriptions}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel>
                                                 <TextBlock Text="{Binding}"
+                                                Foreground="{StaticResource FontPrimaryBrush}" 
+                                                FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" 
+                                                FontWeight="Regular" 
                                                 FontSize="18"
                                                 TextAlignment="Left"
                                                 Margin="5"/>
@@ -215,13 +226,16 @@
 
                             <!-- status -->
                             <Grid Grid.Column="8" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                                <TextBlock Text="Status" FontSize="22" FontWeight="Medium" />
+                                <TextBlock Text="Status" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" FontSize="22" />
                                 <!-- Dynamic rows -->
                                 <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding JobStatus}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel>
                                                 <TextBlock Text="{Binding}"
+                                                Foreground="{StaticResource FontPrimaryBrush}" 
+                                                FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" 
+                                                FontWeight="Regular" 
                                                 FontSize="18"
                                                 TextAlignment="Center"
                                                 Margin="5"/>
@@ -253,13 +267,16 @@
 
                             <!-- price -->
                             <Grid Grid.Column="10" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                                <TextBlock Text="Price" FontSize="22" FontWeight="Medium" />
+                                <TextBlock Text="Price" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" FontSize="22" />
                                 <!-- Dynamic rows -->
                                 <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding JobPrice}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel>
                                                 <TextBlock Text="{Binding}"
+                                                Foreground="{StaticResource FontPrimaryBrush}" 
+                                                FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" 
+                                                FontWeight="Regular" 
                                                 FontSize="18"
                                                 TextAlignment="Left"
                                                 Margin="5"/>
@@ -291,13 +308,16 @@
 
                             <!-- invoiced -->
                             <Grid Grid.Column="12" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                                <TextBlock Text="Paid" FontSize="22" FontWeight="Medium" />
+                                <TextBlock Text="Paid" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" FontSize="22" />
                                 <!-- Dynamic rows -->
                                 <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding Paid}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel>
                                                 <TextBlock Text="{Binding}"
+                                                Foreground="{StaticResource FontPrimaryBrush}" 
+                                                FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" 
+                                                FontWeight="Regular" 
                                                 FontSize="18"
                                                 TextAlignment="Left"
                                                 Margin="5"/>
@@ -319,7 +339,7 @@
 
             <!-- bottom section -->
             <Grid Grid.Column="1" Grid.Row="1" Margin="5,0,20,20">
-                <Border Background="{StaticResource SilverBorderBrush }" CornerRadius="15">
+                <Border Background="{StaticResource BottomInfoBackgroundBrush}" CornerRadius="15">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="0.6*" /> <!-- left section -->
@@ -346,51 +366,51 @@
                             <!-- sub-left section -->
                             <Grid Grid.Row="0" Grid.Column="0">
                                 <Grid Grid.Column="0">
-                                    <TextBlock Margin="0,0,10,0" Text="New Jobs:" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="18" FontWeight="Regular" />
+                                    <TextBlock Margin="0,0,10,0" Text="New Jobs:" Foreground="{StaticResource FontSecondaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="18" FontWeight="Regular" />
                                 </Grid>                                
                             </Grid>
                             <Grid Grid.Row="0" Grid.Column="1">
                                 <Grid Grid.Column="0">
-                                    <TextBlock Text="123" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Regular" />
+                                    <TextBlock Text="123" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Regular" />
                                 </Grid>                                
                             </Grid>
                             
                             
                             <Grid Grid.Row="1">
                                 <Grid Grid.Column="0">
-                                    <TextBlock Margin="0,0,10,0" Text="In Progress:" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="18" FontWeight="Regular" />
+                                    <TextBlock Margin="0,0,10,0" Text="In Progress:" Foreground="{StaticResource FontSecondaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="18" FontWeight="Regular" />
                                 </Grid>
                             </Grid>
                             <Grid Grid.Row="1" Grid.Column="1">
                                 <Grid Grid.Column="0">
-                                    <TextBlock Text="123" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Regular" />
+                                    <TextBlock Text="123" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Regular" />
                                 </Grid>
                             </Grid>
 
 
                             <Grid Grid.Row="2">
                                 <Grid Grid.Column="0">
-                                    <TextBlock Margin="0,0,10,0" Text="Completed:" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="18" FontWeight="Regular" />
+                                    <TextBlock Margin="0,0,10,0" Text="Completed:" Foreground="{StaticResource FontSecondaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="18" FontWeight="Regular" />
                                 </Grid>
                             </Grid>
                             <Grid Grid.Row="2" Grid.Column="1">
                                 <Grid Grid.Column="0">
-                                    <TextBlock Text="123" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Regular" />
+                                    <TextBlock Text="123" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Regular" />
                                 </Grid>
                             </Grid>
 
                             <Grid Grid.Row="3">
                                 <Grid Grid.Column="0">
-                                    <TextBlock Margin="0,0,10,0" Text="Invoiced:" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="18" FontWeight="Regular" />
+                                    <TextBlock Margin="0,0,10,0" Text="Invoiced:" Foreground="{StaticResource FontSecondaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="18" FontWeight="Regular" />
                                 </Grid>
                             </Grid>
                             <Grid Grid.Row="3" Grid.Column="1">
                                 <Grid Grid.Column="0">
-                                    <TextBlock Text="123" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Regular" />
+                                    <TextBlock Text="123" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Regular" />
                                 </Grid>
                             </Grid>
                             <Grid Grid.Column="2" Grid.RowSpan="4" Margin="35,0,0,0" Width="5">
-                                <Border BorderThickness="2" Background="Black" Opacity="0.5">
+                                <Border BorderThickness="2" Background="{StaticResource FontPrimaryBrush}" Opacity="0.5">
                                     
                                 </Border>
                             </Grid>
@@ -399,24 +419,24 @@
                         <!-- middle-1 section overdue -->
                         <Grid Grid.Column="1">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Margin="0,0,20,0" Text="Overdue:" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Regular" />
-                                <TextBlock Text="{Binding MoneyOverdue}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32" FontWeight="Medium" />                                
+                                <TextBlock Margin="0,0,20,0" Text="Overdue:" Foreground="{StaticResource FontSecondaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Regular" />
+                                <TextBlock Text="{Binding MoneyOverdue}" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32" FontWeight="Medium" />                                
                             </StackPanel>
                         </Grid>
                         
                         <!-- middle-2 section received -->
                         <Grid Grid.Column="2">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Margin="0,0,20,0" Text="Received:" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Regular" />
-                                <TextBlock Text="{Binding MoneyReceived}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32" FontWeight="Medium" />                                
+                                <TextBlock Margin="0,0,20,0" Text="Received:" Foreground="{StaticResource FontSecondaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Regular" />
+                                <TextBlock Text="{Binding MoneyReceived}" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32" FontWeight="Medium" />                                
                             </StackPanel>
                         </Grid>
                         
                         <!-- right section -->
                         <Grid Grid.Column="3">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Margin="0,0,20,0" Text="Outstanding:" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Regular" />
-                                <TextBlock Text="{Binding MoneyToReceive}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="32" FontWeight="Medium" />                                
+                                <TextBlock Margin="0,0,20,0" Text="Outstanding:" Foreground="{StaticResource FontSecondaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Regular" />
+                                <TextBlock Text="{Binding MoneyToReceive}" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="32" FontWeight="Medium" />                                
                             </StackPanel>
                         </Grid>    
                     </Grid>

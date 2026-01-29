@@ -8,48 +8,94 @@
                 <ResourceDictionary>
                     <local:Bootstrapper x:Key="Bootstrapper"/>
                 </ResourceDictionary>
+                <ResourceDictionary Source="/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <SolidColorBrush x:Key="WindowBgBrush" Color="#F0F0F0" />
-            <SolidColorBrush x:Key="SurfaceBrushHeader" Color="#FFFFFF" />
+            <!--<SolidColorBrush x:Key="WindowBgBrush" Color="#F0F0F0" />
             <SolidColorBrush x:Key="PrimaryTextBrush" Color="#2F3542" />
             <SolidColorBrush x:Key="SilverBorderBrush" Color="#D1D1D1" />
             <SolidColorBrush x:Key="AccentBrush" Color="#57606F" />
 
-            <!-- Green tones (business friendly) -->
+            --><!-- Green tones (business friendly) --><!--
             <SolidColorBrush x:Key="SuccessBrush" Color="#2E8B57" />
-            <!-- main green (actions, paid, success) -->
+            --><!-- main green (actions, paid, success) --><!--
             <SolidColorBrush x:Key="SuccessSoftBrush" Color="#E6F4EC" />
-            <!-- light background highlight -->
+            --><!-- light background highlight --><!--
             <SolidColorBrush x:Key="SuccessBorderBrush" Color="#B7E0C7" />
 
             <SolidColorBrush x:Key="PositiveTextBrush" Color="#256D47" />
 
-            <!-- Optional warning-ish green (overdue approaching / info) -->
+            --><!-- Optional warning-ish green (overdue approaching / info) --><!--
             <SolidColorBrush x:Key="InfoGreenBrush" Color="#6BBF8E" />
 
 
-            <!-- Core greys -->
+            --><!-- Core greys --><!--
             <SolidColorBrush x:Key="Grey100Brush" Color="#F7F7F7" />
-            <!-- ultra light surfaces -->
+            --><!-- ultra light surfaces --><!--
             <SolidColorBrush x:Key="Grey200Brush" Color="#ECECEC" />
-            <!-- hover backgrounds -->
+            --><!-- hover backgrounds --><!--
             <SolidColorBrush x:Key="Grey300Brush" Color="#D1D1D1" />
-            <!-- borders (your existing tone) -->
+            --><!-- borders (your existing tone) --><!--
             <SolidColorBrush x:Key="Grey400Brush" Color="#B5B5B5" />
-            <!-- dividers -->
+            --><!-- dividers --><!--
             <SolidColorBrush x:Key="Grey500Brush" Color="#9E9E9E" />
-            <!-- disabled text/icons -->
+            --><!-- disabled text/icons -->
 
-            <!-- Text greys -->
+            <!-- Text greys --><!--
             <SolidColorBrush x:Key="SecondaryTextBrush" Color="#6B7280" />
             <SolidColorBrush x:Key="TertiaryTextBrush" Color="#9CA3AF" />
 
-            <!-- Dark structure -->
+            --><!-- Dark structure --><!--
             <SolidColorBrush x:Key="Grey700Brush" Color="#57606F" />
-            <!-- your AccentBrush tone -->
+            --><!-- your AccentBrush tone --><!--
             <SolidColorBrush x:Key="Grey800Brush" Color="#3A3F4B" />
-            <!-- headers/strong UI -->
+            --><!-- headers/strong UI -->
+
+
+
+            <SolidColorBrush x:Key="MainBackgroundBrush" Color="#404040" />
+            <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#1E1E1E" />
+
+            <SolidColorBrush x:Key="BorderBrush" Color="#333333" />
+            <SolidColorBrush x:Key="LightBorderBrush" Color="#444444" />
+
+            <SolidColorBrush x:Key="PrimaryTextBrush" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="SecondaryTextBrush" Color="#B0B0B0" />
+            <SolidColorBrush x:Key="DisabledTextBrush" Color="#666666" />
+
+            <SolidColorBrush x:Key="SuccessBorderBrush" Color="#2D4D3A" />
+            <SolidColorBrush x:Key="SuccessTextBrush" Color="#81C784" />
+            <SolidColorBrush x:Key="ErrorTextBrush" Color="#E57373" />
+            <SolidColorBrush x:Key="OverdueTextBrush" Color="#FFB74D" />
+            <SolidColorBrush x:Key="AccentColorBrush" Color="#007ACC" />
+            <SolidColorBrush x:Key="HighlightBrush" Color="#3D3D3D" />
+
+
+            <SolidColorBrush x:Key="TopBarBackgroundBrush" Color="#1a1a1a" />
+
+            <SolidColorBrush x:Key="SidePanelBackgroundBrush" Color="#2E2E2E" />
+
+            <SolidColorBrush x:Key="TableHeaderBackgroundBrush" Color="#252525" />
+
+            <SolidColorBrush x:Key="BottomInfoBackgroundBrush" Color="#1F1F1F" />
+
+            <SolidColorBrush x:Key="ListAccentBrush" Color="#2A2D2E" />
+
+            <SolidColorBrush x:Key="FooterBackgroundBrush" Color="#0A0A0A" />
+
+
+
+            <SolidColorBrush x:Key="FontPrimaryBrush" Color="#E0E0E0" />
+
+            <SolidColorBrush x:Key="FontSecondaryBrush" Color="#9A9A9A" />
+
+            <SolidColorBrush x:Key="FontMutedBrush" Color="#555555" />
+
+            <SolidColorBrush x:Key="FontSuccessBrush" Color="#A5D6A7" />
+            <SolidColorBrush x:Key="FontOverdueBrush" Color="#EF9A9A" />
+            <SolidColorBrush x:Key="FontWarningBrush" Color="#FFE082" />
+
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>
