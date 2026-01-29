@@ -323,7 +323,8 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" /> <!-- left section -->
-                            <ColumnDefinition Width="*" /> <!-- middle section -->
+                            <ColumnDefinition Width="*" /> <!-- middle-1 section -->
+                            <ColumnDefinition Width="*" /> <!-- middle-2 section -->
                             <ColumnDefinition Width="*" /> <!-- right section -->
                         </Grid.ColumnDefinitions>
                         
@@ -351,16 +352,24 @@
                             
                         </Grid>
                         
-                        <!-- middle section -->
+                        <!-- middle-1 section overdue -->
                         <Grid Grid.Column="1">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Margin="0,0,20,0" Text="Overdue:" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Regular" />
+                                <TextBlock Text="{Binding MoneyOverdue}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32" FontWeight="Medium" />                                
+                            </StackPanel>
+                        </Grid>
+                        
+                        <!-- middle-2 section received -->
+                        <Grid Grid.Column="2">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Margin="0,0,20,0" Text="Received:" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Regular" />
                                 <TextBlock Text="{Binding MoneyReceived}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32" FontWeight="Medium" />                                
                             </StackPanel>
                         </Grid>
                         
-                        <!-- left section -->
-                        <Grid Grid.Column="2">
+                        <!-- right section -->
+                        <Grid Grid.Column="3">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Margin="0,0,20,0" Text="Outstanding:" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Regular" />
                                 <TextBlock Text="{Binding MoneyToReceive}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="32" FontWeight="Medium" />                                

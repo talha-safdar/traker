@@ -28,14 +28,15 @@ namespace Traker.ViewModels
         private ObservableCollection<string> _jobPrice;
         private ObservableCollection<string> _paid; // paid by client?
         private string _moneyReceived; // money received value shown total
-        private string _moneyToRecieve; // money to be reveived yet
+        private string _moneyToRecieve; // money outstanding value shown total
+        private string _moneyOverdue; // money overdue value shown total
         #endregion
 
         #region Data Variables
         Database _database;
-        List<ClientsModel> _clients;
-        List<JobsModel> _jobs;
-        List<InvoicesModel> _invoices;
+        List<ClientModel> _clients;
+        List<JobModel> _jobs;
+        List<InvoiceModel> _invoices;
         List<DashboardModel> _dashboardData;
         #endregion
 
@@ -57,13 +58,14 @@ namespace Traker.ViewModels
 
             _moneyReceived = "0";
             _moneyToRecieve ="0";
+            _moneyOverdue ="0";
 
             _paidJobs = new List<decimal>();
 
             _database = new Database(); // database
-            _clients = new List<ClientsModel>();
-            _jobs = new List<JobsModel>();
-            _invoices = new List<InvoicesModel>();
+            _clients = new List<ClientModel>();
+            _jobs = new List<JobModel>();
+            _invoices = new List<InvoiceModel>();
             _dashboardData = new List<DashboardModel>();
         }
 
@@ -178,7 +180,7 @@ namespace Traker.ViewModels
                     .ToList());
             }
 
-            MoneyReceived = _paidJobs.Sum().ToString("C");
+            MoneyReceived = _paidJobs.Sum().ToString("C"); // received
 
             _paidJobs.Clear();
 
@@ -193,8 +195,23 @@ namespace Traker.ViewModels
                     .ToList());
             }
 
-            MoneyToReceive = _paidJobs.Sum().ToString("C");
+            MoneyToReceive = _paidJobs.Sum().ToString("C"); // outstanding
 
+
+            _paidJobs.Clear();
+
+            for (int i = 0; i < _dashboardData.Count; i++)
+            {
+                _paidJobs.AddRange(_clients
+                    .Where(client => client.ClientId == _dashboardData[i].ClientId)
+                    .Join(_jobs, client => client.ClientId, job => job.ClientId, (client, job) => job)
+                    .Join(_invoices, job => job.JobId, invoice => invoice.JobId, (job, invoice) => new { job.FinalPrice, invoice.IsPaid, invoice.DueDate })
+                    .Where(x => x.IsPaid == false && x.DueDate < DateTime.Now)
+                    .Select(x => x.FinalPrice)
+                    .ToList());
+            }
+
+            MoneyOverdue = _paidJobs.Sum().ToString("C"); // overdue
 
             return Task.CompletedTask;
         }
@@ -287,6 +304,16 @@ namespace Traker.ViewModels
             {
                 _moneyToRecieve = value;
                 NotifyOfPropertyChange(() => MoneyToReceive);
+            }
+        }
+
+        public String MoneyOverdue
+        {
+            get { return _moneyOverdue; }
+            set
+            {
+                _moneyOverdue = value;
+                NotifyOfPropertyChange(() => MoneyOverdue);
             }
         }
         #endregion

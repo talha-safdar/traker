@@ -166,33 +166,33 @@ CREATE TABLE Invoice (
 );
 
 INSERT INTO Invoice (InvoiceId, JobId, InvoiceNumber, Subtotal, TaxAmount, TotalAmount, IssueDate, DueDate, IsPaid, PaidDate, PaymentMethod, Notes) VALUES
-(1, 1, 'INV-0001', 1500.00, 150.00, 1650.00, CURRENT_TIMESTAMP, '2023-12-01', 0, '1900-01-01', 'Credit Card', 'Initial invoice'),
+(1, 1, 'INV-0001', 1500.00, 150.00, 1650.00, CURRENT_TIMESTAMP, '2027-12-01', 0, '1900-01-01', 'Credit Card', 'Initial invoice'),
 (2, 2, 'INV-0002', 800.00, 80.00, 880.00, CURRENT_TIMESTAMP, '2023-11-01', 0, '1900-01-01', 'PayPal', 'Invoice for SEO services'),
-(3, 3, 'INV-0003', 2000.00, 200.00, 2200.00, CURRENT_TIMESTAMP, '2023-10-01', 1, '2023-09-30', 'Bank Transfer', 'Final invoice for app development'),
+(3, 3, 'INV-0003', 2000.00, 200.00, 2200.00, CURRENT_TIMESTAMP, '2027-10-01', 1, '2023-09-30', 'Bank Transfer', 'Final invoice for app development'),
 (4, 4, 'INV-0004', 500.00, 50.00, 550.00, CURRENT_TIMESTAMP, '2023-07-01', 0, '1900-01-01', 'Credit Card', 'Invoice for design services'),
 (5, 5, 'INV-0005', 300.00, 30.00, 330.00, CURRENT_TIMESTAMP, '2023-09-15', 1, '2023-09-15', 'PayPal', 'Invoice for content writing'),
-(6, 6, 'INV-0006', 600.00, 60.00, 660.00, CURRENT_TIMESTAMP, '2023-12-15', 0, '1900-01-01', 'Credit Card', 'Initial invoice for social media management'),
+(6, 6, 'INV-0006', 600.00, 60.00, 660.00, CURRENT_TIMESTAMP, '2027-12-15', 0, '1900-01-01', 'Credit Card', 'Initial invoice for social media management'),
 (7, 7, 'INV-0007', 400.00, 40.00, 440.00, CURRENT_TIMESTAMP, '2023-11-15', 0, '1900-01-01', 'PayPal', 'Invoice for email marketing'),
 (8, 8, 'INV-0008', 2500.00, 250.00, 2750.00, CURRENT_TIMESTAMP, '2023-10-01', 1, '2023-09-30', 'Bank Transfer', 'Final invoice for e-commerce setup'),
 (9, 9, 'INV-0009', 700.00, 70.00, 770.00, CURRENT_TIMESTAMP, '2023-07-15', 0, '1900-01-01', 'Credit Card', 'Invoice for brand strategy'),
 (10, 10, 'INV-0010', 1200.00, 120.00, 1320.00, CURRENT_TIMESTAMP, '2023-09-30', 1, '2023-09-30', 'PayPal', 'Final invoice for video production'),
-(11, 11, 'INV-0011', 400.00, 40.00, 440.00, CURRENT_TIMESTAMP, '2023-12-20', 0, '1900-01-01', 'Credit Card', 'Initial invoice for website maintenance'),
+(11, 11, 'INV-0011', 400.00, 40.00, 440.00, CURRENT_TIMESTAMP, '2026-12-20', 0, '1900-01-01', 'Credit Card', 'Initial invoice for website maintenance'),
 (12, 12, 'INV-0012', 900.00, 90.00, 990.00, CURRENT_TIMESTAMP, '2023-11-20', 0, '1900-01-01', 'PayPal', 'Invoice for market research'),
-(13, 13, 'INV-0013', 300.00, 30.00, 330.00, CURRENT_TIMESTAMP, '2023-10-05', 1, '2023-10-05', 'Bank Transfer', 'Final invoice for logo design'),
+(13, 13, 'INV-0013', 300.00, 30.00, 330.00, CURRENT_TIMESTAMP, '2026-10-05', 1, '2023-10-05', 'Bank Transfer', 'Final invoice for logo design'),
 (14, 14, 'INV-0014', 500.00, 50.00, 550.00, CURRENT_TIMESTAMP, '2023-07-20', 0, '1900-01-01', 'Credit Card', 'Invoice for app maintenance'),
-(15, 15, 'INV-0015', 600.00, 60.00, 660.00, CURRENT_TIMESTAMP, '2023-09-25', 1, '2023-09-25', 'PayPal', 'Final invoice for content strategy'),
+(15, 15, 'INV-0015', 600.00, 60.00, 660.00, CURRENT_TIMESTAMP, '2027-09-25', 1, '2023-09-25', 'PayPal', 'Final invoice for content strategy'),
 (16, 16, 'INV-0016', 800.00, 80.00, 880.00, CURRENT_TIMESTAMP, '2023-12-25', 0, '1900-01-01', 'Credit Card', 'Initial invoice for PPC campaign'),
 (17, 17, 'INV-0017', 700.00, 70.00, 770.00, CURRENT_TIMESTAMP, '2023-11-25', 0, '1900-01-01', 'PayPal', 'Invoice for influencer marketing'),
-(18, 18, 'INV-0018', 400.00, 40.00, 440.00, CURRENT_TIMESTAMP, '2023-10-10', 1, '2023-10-10', 'Bank Transfer', 'Final invoice for website audit'),
+(18, 18, 'INV-0018', 400.00, 40.00, 440.00, CURRENT_TIMESTAMP, '2026-10-10', 1, '2023-10-10', 'Bank Transfer', 'Final invoice for website audit'),
 (19, 19, 'INV-0019', 300.00, 30.00, 330.00, CURRENT_TIMESTAMP, '2023-07-30', 0, '1900-01-01', 'Credit Card', 'Invoice for customer feedback'),
 (20, 20, 'INV-0020', 500.00, 50.00, 550.00, CURRENT_TIMESTAMP, '2023-09-30', 1, '2023-09-30', 'PayPal', 'Final invoice for webinar hosting'),
 (21, 21, 'INV-0021', 600.00, 60.00, 660.00, CURRENT_TIMESTAMP, '2023-12-30', 0, '1900-01-01', 'Credit Card', 'Initial invoice for user testing'),
-(22, 22, 'INV-0022', 900.00, 90.00, 990.00, CURRENT_TIMESTAMP, '2023-11-30', 0, '1900-01-01', 'PayPal', 'Invoice for sales funnel creation'),
+(22, 22, 'INV-0022', 900.00, 90.00, 990.00, CURRENT_TIMESTAMP, '2026-11-30', 0, '1900-01-01', 'PayPal', 'Invoice for sales funnel creation'),
 (23, 23, 'INV-0023', 1200.00, 120.00, 1320.00, CURRENT_TIMESTAMP, '2023-10-15', 1, '2023-10-15', 'Bank Transfer', 'Final invoice for affiliate marketing'),
-(24, 24, 'INV-0024', 400.00, 40.00, 440.00, CURRENT_TIMESTAMP, '2023-07-30', 0, '1900-01-01', 'Credit Card', 'Invoice for branding workshop'),
+(24, 24, 'INV-0024', 400.00, 40.00, 440.00, CURRENT_TIMESTAMP, '2026-07-30', 0, '1900-01-01', 'Credit Card', 'Invoice for branding workshop'),
 (25, 25, 'INV-0025', 800.00, 80.00, 880.00, CURRENT_TIMESTAMP, '2023-09-30', 1, '2023-09-30', 'PayPal', 'Final invoice for training program'),
 (26, 26, 'INV-0026', 1000.00, 100.00, 1100.00, CURRENT_TIMESTAMP, '2023-12-31', 0, '1900-01-01', 'Credit Card', 'Initial invoice for CRM setup'),
-(27, 27, 'INV-0027', 500.00, 50.00, 550.00, CURRENT_TIMESTAMP, '2023-11-30', 0, '1900-01-01', 'PayPal', 'Invoice for data analysis'),
+(27, 27, 'INV-0027', 500.00, 50.00, 550.00, CURRENT_TIMESTAMP, '2026-11-30', 0, '1900-01-01', 'PayPal', 'Invoice for data analysis'),
 (28, 28, 'INV-0028', 1500.00, 150.00, 1650.00, CURRENT_TIMESTAMP, '2023-10-20', 1, '2023-10-20', 'Bank Transfer', 'Final invoice for event planning'),
 (29, 29, 'INV-0029', 600.00, 60.00, 660.00, CURRENT_TIMESTAMP, '2023-07-31', 0, '1900-01-01', 'Credit Card', 'Invoice for product launch'),
 (30, 30, 'INV-0030', 2000.00, 200.00, 2200.00, CURRENT_TIMESTAMP, '2023-09-30', 1, '2023-09-30', 'PayPal', 'Final invoice for product launch');
@@ -263,9 +263,9 @@ PRAGMA foreign_keys = ON;
         //    return clientNames;
         //}
 
-        public List<ClientsModel> FetchClientsTable()
+        public List<ClientModel> FetchClientsTable()
         {
-            List<ClientsModel> clientsList = new List<ClientsModel>();
+            List<ClientModel> clientsList = new List<ClientModel>();
 
             try
             {
@@ -307,7 +307,7 @@ PRAGMA foreign_keys = ON;
                                     string.IsNullOrEmpty(CreatedDate.ToString()) == false ||
                                     string.IsNullOrEmpty(IsActive.ToString()) == false)
                                 {
-                                    clientsList.Add(new ClientsModel
+                                    clientsList.Add(new ClientModel
                                     {
                                         ClientId = Convert.ToInt32(ClientId),
                                         Type = Type.ToString()!,
@@ -344,9 +344,9 @@ PRAGMA foreign_keys = ON;
             }           
         }
 
-        public List<JobsModel> FetchJobsTable()
+        public List<JobModel> FetchJobsTable()
         {
-            List<JobsModel> jobsList = new List<JobsModel>();
+            List<JobModel> jobsList = new List<JobModel>();
 
             try
             {
@@ -394,7 +394,7 @@ PRAGMA foreign_keys = ON;
                                     string.IsNullOrEmpty(Notes.ToString()) == false ||
                                     string.IsNullOrEmpty(IsArchived.ToString()) == false)
                                 {
-                                    jobsList.Add(new JobsModel
+                                    jobsList.Add(new JobModel
                                     {
                                         JobId = Convert.ToInt32(JobId),
                                         ClientId = Convert.ToInt32(ClientId),
@@ -433,9 +433,9 @@ PRAGMA foreign_keys = ON;
             }
         }
 
-        public List<InvoicesModel> FetchInvoiceTable()
+        public List<InvoiceModel> FetchInvoiceTable()
         {
-            List<InvoicesModel> invoicesList = new List<InvoicesModel>();
+            List<InvoiceModel> invoicesList = new List<InvoiceModel>();
 
             try
             {
@@ -479,7 +479,7 @@ PRAGMA foreign_keys = ON;
                                     string.IsNullOrEmpty(PaymentMethod.ToString()) == false ||
                                     string.IsNullOrEmpty(Notes.ToString()) == false)
                                 {
-                                    invoicesList.Add(new InvoicesModel
+                                    invoicesList.Add(new InvoiceModel
                                     {
                                         InvoiceId = Convert.ToInt32(InvoiceId),
                                         JobId = Convert.ToInt32(JobId),

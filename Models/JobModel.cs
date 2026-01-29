@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Traker.Models
 {
-    public class JobsModel
+    public class JobModel
     {
         public int JobId { get; set; } = 0;
         public int ClientId { get; set; } = 0;

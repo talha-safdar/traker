@@ -12,7 +12,7 @@ namespace Traker.Models
         public string ClientName { get; set; } = string.Empty;
         public string ClientEmail { get; set; } = string.Empty;
         public string ClientPhone { get; set; } = string.Empty;
-        public List<JobsModel> Jobs { get; set; } = new List<JobsModel>(); // list of jobs of the client
-        public List<InvoicesModel> Invoices { get; set; } = new List<InvoicesModel>(); // list of invoices of the client
+        public List<JobModel> Jobs { get; set; } = new List<JobModel>(); // list of jobs of the client
+        public List<InvoiceModel> Invoices { get; set; } = new List<InvoiceModel>(); // list of invoices of the client
     }
 }
