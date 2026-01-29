@@ -9,8 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Database\Schema.sql" />
     <None Remove="Resources\Media\Images\Icons\close-button.png" />
     <None Remove="Resources\Media\Images\Icons\minimise-button.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Database\Schema.sql" />
   </ItemGroup>
 
   <ItemGroup>

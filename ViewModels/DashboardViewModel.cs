@@ -106,9 +106,9 @@ namespace Traker.ViewModels
                 DashboardModel dashboardEntry = new DashboardModel
                 {
                     ClientId = _clients[i].ClientId,
-                    ClientName = _clients[i].Name,
+                    ClientName = _clients[i].FullName,
                     ClientEmail = _clients[i].Email,
-                    ClientPhone = _clients[i].Phone,
+                    ClientPhone = _clients[i].PhoneNumber,
                     Jobs = _jobs.Where(job => job.ClientId == _clients[i].ClientId).ToList(),
                     Invoices = _invoices.Where(invoice => invoice.JobId == _jobs[i].JobId).ToList()
                 };
@@ -148,7 +148,7 @@ namespace Traker.ViewModels
             JobPrice.Clear();
             for (int i = 0; i < _dashboardData.Count; i++)
             {
-                JobPrice.Add(_dashboardData[i].Jobs.Where(j => j.ClientId == _dashboardData[i].ClientId).Select(j => j.Price.ToString("C")).ToList().FirstOrDefault()!);
+                JobPrice.Add(_dashboardData[i].Jobs.Where(j => j.ClientId == _dashboardData[i].ClientId).Select(j => j.FinalPrice.ToString("C")).ToList().FirstOrDefault()!);
             }
 
             Paid.Clear();
@@ -172,9 +172,9 @@ namespace Traker.ViewModels
                 _paidJobs.AddRange(_clients
                     .Where(c => c.ClientId == _dashboardData[i].ClientId)
                     .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-                    .Join(_invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.Price, inv.IsPaid })
+                    .Join(_invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.IsPaid })
                     .Where(x => x.IsPaid == true)
-                    .Select(x => x.Price)
+                    .Select(x => x.FinalPrice)
                     .ToList());
             }
 
@@ -187,9 +187,9 @@ namespace Traker.ViewModels
                 _paidJobs.AddRange(_clients
                     .Where(c => c.ClientId == _dashboardData[i].ClientId)
                     .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-                    .Join(_invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.Price, inv.IsPaid })
+                    .Join(_invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.IsPaid })
                     .Where(x => x.IsPaid == false)
-                    .Select(x => x.Price)
+                    .Select(x => x.FinalPrice)
                     .ToList());
             }
 
