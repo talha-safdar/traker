@@ -66,10 +66,13 @@ namespace Traker.Database
                             JobId INTEGER,
                             Amount REAL,
                             IssueDate DATETIME,
+                            DueDate DATETIME,
                             IsPaid BOOLEAN,
                             FOREIGN KEY (JobId) REFERENCES Jobs(JobId)
                         );
 
+
+                        -- Insert sample data into Clients
                         INSERT INTO Clients (ClientId, Name, Email, Phone) VALUES
                         (1, 'John Doe', 'john.doe@example.com', '123-456-7890'),
                         (2, 'Jane Smith', 'jane.smith@example.com', '234-567-8901'),
@@ -134,37 +137,37 @@ namespace Traker.Database
                         (29, 29, 'Virtual Assistant', 'In Progress', 500.00),
                         (30, 30, 'Translation Services', 'Pending', 400.00);
 
-                        INSERT INTO Invoices (InvoiceId, JobId, Amount, IssueDate, IsPaid) VALUES
-                        (1, 1, 1500.00, '2023-10-01 12:00:00', 1),
-                        (2, 2, 800.00, '2023-10-01 12:00:00', 0),
-                        (3, 3, 600.00, '2023-10-01 12:00:00', 0),
-                        (4, 4, 300.00, '2023-10-01 12:00:00', 1),
-                        (5, 5, 1200.00, '2023-10-01 12:00:00', 0),
-                        (6, 6, 400.00, '2023-10-01 12:00:00', 0),
-                        (7, 7, 2500.00, '2023-10-01 12:00:00', 1),
-                        (8, 8, 700.00, '2023-10-01 12:00:00', 0),
-                        (9, 9, 900.00, '2023-10-01 12:00:00', 0),
-                        (10, 10, 1800.00, '2023-10-01 12:00:00', 1),
-                        (11, 11, 1000.00, '2023-10-01 12:00:00', 0),
-                        (12, 12, 500.00, '2023-10-01 12:00:00', 0),
-                        (13, 13, 2200.00, '2023-10-01 12:00:00', 1),
-                        (14, 14, 950.00, '2023-10-01 12:00:00', 0),
-                        (15, 15, 750.00, '2023-10-01 12:00:00', 0),
-                        (16, 16, 350.00, '2023-10-01 12:00:00', 1),
-                        (17, 17, 450.00, '2023-10-01 12:00:00', 0),
-                        (18, 18, 1300.00, '2023-10-01 12:00:00', 0),
-                        (19, 19, 1100.00, '2023-10-01 12:00:00', 1),
-                        (20, 20, 1400.00, '2023-10-01 12:00:00', 0),
-                        (21, 21, 800.00, '2023-10-01 12:00:00', 1),
-                        (22, 22, 3000.00, '2023-10-01 12:00:00', 0),
-                        (23, 23, 600.00, '2023-10-01 12:00:00', 0),
-                        (24, 24, 900.00, '2023-10-01 12:00:00', 1),
-                        (25, 25, 2000.00, '2023-10-01 12:00:00', 0),
-                        (26, 26, 1700.00, '2023-10-01 12:00:00', 1),
-                        (27, 27, 2500.00, '2023-10-01 12:00:00', 0),
-                        (28, 28, 3000.00, '2023-10-01 12:00:00', 1),
-                        (29, 29, 500.00, '2023-10-01 12:00:00', 0),
-                        (30, 30, 400.00, '2023-10-01 12:00:00', 1);
+                        INSERT INTO Invoices (InvoiceId, JobId, Amount, IssueDate, DueDate, IsPaid) VALUES
+                        (1, 1, 1500.00, '2023-10-01 12:00:00', '2023-10-15', 1),
+                        (2, 2, 800.00, '2023-10-01 12:00:00', '2023-10-15', 0),
+                        (3, 3, 600.00, '2023-10-01 12:00:00', '2023-10-15', 0),
+                        (4, 4, 300.00, '2023-10-01 12:00:00', '2023-10-15', 1),
+                        (5, 5, 1200.00, '2023-10-01 12:00:00', '2023-10-15', 0),
+                        (6, 6, 400.00, '2023-10-01 12:00:00', '2023-10-15', 0),
+                        (7, 7, 2500.00, '2023-10-01 12:00:00', '2023-10-15', 1),
+                        (8, 8, 700.00, '2023-10-01 12:00:00', '2023-10-15', 0),
+                        (9, 9, 900.00, '2023-10-01 12:00:00', '2023-10-15', 0),
+                        (10, 10, 1800.00, '2023-10-01 12:00:00', '2023-10-15', 1),
+                        (11, 11, 1000.00, '2023-10-01 12:00:00', '2023-10-15', 0),
+                        (12, 12, 500.00, '2023-10-01 12:00:00', '2023-10-15', 0),
+                        (13, 13, 2200.00, '2023-10-01 12:00:00', '2023-10-15', 1),
+                        (14, 14, 950.00, '2023-10-01 12:00:00', '2023-10-15', 0),
+                        (15, 15, 750.00, '2023-10-01 12:00:00', '2023-10-15', 0),
+                        (16, 16, 350.00, '2023-10-01 12:00:00', '2023-10-15', 1),
+                        (17, 17, 450.00, '2023-10-01 12:00:00', '2023-10-15', 0),
+                        (18, 18, 1300.00, '2023-10-01 12:00:00', '2023-10-15', 0),
+                        (19, 19, 1100.00, '2023-10-01 12:00:00', '2023-10-15', 1),
+                        (20, 20, 1400.00, '2023-10-01 12:00:00', '2023-10-15', 0),
+                        (21, 21, 800.00, '2023-10-01 12:00:00', '2023-10-15', 1),
+                        (22, 22, 3000.00, '2023-10-01 12:00:00', '2023-10-15', 0),
+                        (23, 23, 600.00, '2023-10-01 12:00:00', '2023-10-15', 0),
+                        (24, 24, 900.00, '2023-10-01 12:00:00', '2023-10-15', 1),
+                        (25, 25, 2000.00, '2023-10-01 12:00:00', '2023-10-15', 0),
+                        (26, 26, 1700.00, '2023-10-01 12:00:00', '2023-10-15', 1),
+                        (27, 27, 2500.00, '2023-10-01 12:00:00', '2023-10-15', 0),
+                        (28, 28, 3000.00, '2023-10-01 12:00:00', '2023-10-15', 1),
+                        (29, 29, 500.00, '2023-10-01 12:00:00', '2023-10-15', 0),
+                        (30, 30, 400.00, '2023-10-01 12:00:00', '2023-10-15', 1);
                         ";
 
                     int rows = _sqliteCommand.ExecuteNonQuery();
@@ -187,44 +190,44 @@ namespace Traker.Database
             });
         }
 
-        public List<string> FetchClientNames()
-        {
-            /*
-             * pass whole row to the variable then show the selected one on the table so when search the databased
-             * already have id and other values linked to the selection
-             * 
-             * make variables like reels to collect each row e.g. 
-             * List:
-             * - Row 1:
-             *      [name, email, phone..]
-             *- Row 2:
-             *      [name, email, phone..]
-             * and so on...
-             */
+        //public List<string> FetchClientNames()
+        //{
+        //    /*
+        //     * pass whole row to the variable then show the selected one on the table so when search the databased
+        //     * already have id and other values linked to the selection
+        //     * 
+        //     * make variables like reels to collect each row e.g. 
+        //     * List:
+        //     * - Row 1:
+        //     *      [name, email, phone..]
+        //     *- Row 2:
+        //     *      [name, email, phone..]
+        //     * and so on...
+        //     */
 
 
-            List<string> clientNames = new List<string>();
-            using (var conn = new SqliteConnection(_connectionString))
-            {
-                conn.Open();
+        //    List<string> clientNames = new List<string>();
+        //    using (var conn = new SqliteConnection(_connectionString))
+        //    {
+        //        conn.Open();
 
-                // 2. Create the command locally so it can't be "modified" by other parts of the app
-                using (var cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = "SELECT Name FROM Clients";
+        //        // 2. Create the command locally so it can't be "modified" by other parts of the app
+        //        using (var cmd = conn.CreateCommand())
+        //        {
+        //            cmd.CommandText = "SELECT Name FROM Clients";
 
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            clientNames.Add(reader.GetString(0));
-                            // Debug.WriteLine(reader.GetString(0));
-                        }
-                    }
-                }
-            }
-            return clientNames;
-        }
+        //            using (var reader = cmd.ExecuteReader())
+        //            {
+        //                while (reader.Read())
+        //                {
+        //                    clientNames.Add(reader.GetString(0));
+        //                    // Debug.WriteLine(reader.GetString(0));
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return clientNames;
+        //}
 
         public List<ClientsModel> FetchClientsTable()
         {
@@ -368,12 +371,14 @@ namespace Traker.Database
                                 var JobId = reader["JobId"];
                                 var Amount = reader["Amount"];
                                 var IssueDate = reader["IssueDate"];
+                                var DueDate = reader["DueDate"];
                                 var IsPaid = reader["IsPaid"];
 
                                 if (string.IsNullOrEmpty(InvoiceId.ToString()) == false ||
                                     string.IsNullOrEmpty(JobId.ToString()) == false ||
                                     string.IsNullOrEmpty(Amount.ToString()) == false ||
                                     string.IsNullOrEmpty(IssueDate.ToString()) == false ||
+                                    string.IsNullOrEmpty(DueDate.ToString()) == false ||
                                     string.IsNullOrEmpty(IsPaid.ToString()) == false)
                                 {
                                     invoicesList.Add(new InvoicesModel
@@ -382,6 +387,7 @@ namespace Traker.Database
                                         JobId = Convert.ToInt32(JobId),
                                         Amount = Convert.ToDecimal(Amount),
                                         IssueDate = Convert.ToDateTime(IssueDate),
+                                        DueDate = Convert.ToDateTime(DueDate),
                                         IsPaid = Convert.ToBoolean(IsPaid),
                                     });
                                 }

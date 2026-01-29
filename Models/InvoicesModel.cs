@@ -12,6 +12,7 @@ namespace Traker.Models
         public int JobId { get; set; } = 0;
         public decimal Amount { get; set; } = 0.0m;
         public DateTime IssueDate { get; set; } = new DateTime();
+        public DateTime DueDate { get; set; } = new DateTime();
         public bool IsPaid { get; set; } = false;
     }
 }

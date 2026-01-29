@@ -39,7 +39,7 @@
                                 <!-- email in db         1 -->
                                 <ColumnDefinition Width="0.01*" />
                                 <!-- spacer -->
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="0.5*" />
                                 <!-- phone in db         2 -->
                                 <ColumnDefinition Width="0.01*" />
                                 <!-- spacer -->
@@ -47,21 +47,21 @@
                                 <!-- Description in db   3 -->
                                 <ColumnDefinition Width="0.01*" />
                                 <!-- spacer -->
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="0.5*" />
                                 <!-- Status in db        4 -->
                                 <ColumnDefinition Width="0.01*" />
                                 <!-- spacer -->
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="0.5*" />
                                 <!-- Price in db         5 -->
                                 <ColumnDefinition Width="0.01*" />
                                 <!-- spacer -->
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="0.2*" />
                                 <!-- isPaid in db        6 -->
                             </Grid.ColumnDefinitions>
 
                             <!-- get font sorted -->
 
-                            <Grid Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Center">
+                            <Grid Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                                 <TextBlock Text="Client Name" FontSize="22" FontWeight="Medium" />
 
                                 <!-- Dynamic rows -->
@@ -72,13 +72,12 @@
                                                 <TextBlock Text="{Binding}"
                                                 FontSize="18"
                                                 TextAlignment="Left"
-                                                Margin="0,4,0,0"/>
+                                                Margin="5"/>
 
                                                 <!-- divider line -->
                                                 <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
                                                 <!-- divider line -->
-                                                <Border Height="1" Background="Gray" Width="300"
-                                                Opacity="1"/>
+                                                <Border Height="1" Background="Gray" Opacity="1"/>
                                             </StackPanel>
                                             
                                         </DataTemplate>
@@ -101,7 +100,7 @@
                             </Grid>
 
                             <!-- email -->
-                            <Grid Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Center">
+                            <Grid Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                                 <TextBlock Text="Email" FontSize="22" FontWeight="Medium" />
                                 <!-- Dynamic rows -->
                                 <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding ClientEmails}">
@@ -111,13 +110,12 @@
                                                 <TextBlock Text="{Binding}"
                                                 FontSize="18"
                                                 TextAlignment="Left"
-                                                Margin="0,4,0,0"/>
+                                                Margin="5"/>
 
                                                 <!-- divider line -->
                                                 <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
                                                 <!-- divider line -->
-                                                <Border Height="1" Background="Gray" Width="300"
-                                                Opacity="1"/>
+                                                <Border Height="1" Background="Gray" Opacity="1"/>
                                             </StackPanel>
 
                                         </DataTemplate>
@@ -140,7 +138,7 @@
                             </Grid>
 
                             <!-- phone -->
-                            <Grid Grid.Column="4" VerticalAlignment="Top" HorizontalAlignment="Center">
+                            <Grid Grid.Column="4" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                                 <TextBlock Text="Phone" FontSize="22" FontWeight="Medium" />
                                 <!-- Dynamic rows -->
                                 <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding ClientPhones}">
@@ -150,13 +148,12 @@
                                                 <TextBlock Text="{Binding}"
                                                 FontSize="18"
                                                 TextAlignment="Center"
-                                                Margin="0,4,0,0"/>
+                                                Margin="5"/>
 
                                                 <!-- divider line -->
                                                 <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
                                                 <!-- divider line -->
-                                                <Border Height="1" Background="Gray" Width="300"
-                                                Opacity="1"/>
+                                                <Border Height="1" Background="Gray" Opacity="1"/>
                                             </StackPanel>
 
                                         </DataTemplate>
@@ -179,7 +176,7 @@
                             </Grid>
 
                             <!-- job -->
-                            <Grid Grid.Column="6" VerticalAlignment="Top" HorizontalAlignment="Center">
+                            <Grid Grid.Column="6" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                                 <TextBlock Text="Description" FontSize="22" FontWeight="Medium" />
                                 <!-- Dynamic rows -->
                                 <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding JobDescriptions}">
@@ -189,13 +186,12 @@
                                                 <TextBlock Text="{Binding}"
                                                 FontSize="18"
                                                 TextAlignment="Left"
-                                                Margin="0,4,0,0"/>
+                                                Margin="5"/>
 
                                                 <!-- divider line -->
                                                 <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
                                                 <!-- divider line -->
-                                                <Border Height="1" Background="Gray" Width="300"
-                                                Opacity="1"/>
+                                                <Border Height="1" Background="Gray" Opacity="1"/>
                                             </StackPanel>
 
                                         </DataTemplate>
@@ -218,7 +214,7 @@
                             </Grid>
 
                             <!-- status -->
-                            <Grid Grid.Column="8" VerticalAlignment="Top" HorizontalAlignment="Center">
+                            <Grid Grid.Column="8" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                                 <TextBlock Text="Status" FontSize="22" FontWeight="Medium" />
                                 <!-- Dynamic rows -->
                                 <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding JobStatus}">
@@ -228,13 +224,12 @@
                                                 <TextBlock Text="{Binding}"
                                                 FontSize="18"
                                                 TextAlignment="Center"
-                                                Margin="0,4,0,0"/>
+                                                Margin="5"/>
 
                                                 <!-- divider line -->
                                                 <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
                                                 <!-- divider line -->
-                                                <Border Height="1" Background="Gray" Width="300"
-                                                Opacity="1"/>
+                                                <Border Height="1" Background="Gray" Opacity="1"/>
                                             </StackPanel>
 
                                         </DataTemplate>
@@ -257,7 +252,7 @@
                             </Grid>
 
                             <!-- price -->
-                            <Grid Grid.Column="10" VerticalAlignment="Top" HorizontalAlignment="Center">
+                            <Grid Grid.Column="10" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                                 <TextBlock Text="Price" FontSize="22" FontWeight="Medium" />
                                 <!-- Dynamic rows -->
                                 <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding JobPrice}">
@@ -267,13 +262,12 @@
                                                 <TextBlock Text="{Binding}"
                                                 FontSize="18"
                                                 TextAlignment="Left"
-                                                Margin="0,4,0,0"/>
+                                                Margin="5"/>
 
                                                 <!-- divider line -->
                                                 <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
                                                 <!-- divider line -->
-                                                <Border Height="1" Background="Gray" Width="300"
-                                                Opacity="1"/>
+                                                <Border Height="1" Background="Gray" Opacity="1"/>
                                             </StackPanel>
 
                                         </DataTemplate>
@@ -296,7 +290,7 @@
                             </Grid>
 
                             <!-- invoiced -->
-                            <Grid Grid.Column="12" VerticalAlignment="Top" HorizontalAlignment="Center">
+                            <Grid Grid.Column="12" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                                 <TextBlock Text="Paid" FontSize="22" FontWeight="Medium" />
                                 <!-- Dynamic rows -->
                                 <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding Paid}">
@@ -306,13 +300,12 @@
                                                 <TextBlock Text="{Binding}"
                                                 FontSize="18"
                                                 TextAlignment="Left"
-                                                Margin="0,4,0,0"/>
+                                                Margin="5"/>
 
                                                 <!-- divider line -->
                                                 <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
                                                 <!-- divider line -->
-                                                <Border Height="1" Background="Gray" Width="300"
-                                                Opacity="1"/>
+                                                <Border Height="1" Background="Gray" Opacity="1"/>
                                             </StackPanel>
 
                                         </DataTemplate>
@@ -327,10 +320,53 @@
             <!-- bottom section -->
             <Grid Grid.Column="1" Grid.Row="1" Margin="10,10,20,20">
                 <Border Background="{StaticResource SilverBorderBrush }" CornerRadius="20">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <TextBlock Text="Received:" Margin="0,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Regular" />                        
-                        <TextBlock Text="{Binding MoneyReceived}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32" FontWeight="Medium" />                        
-                    </StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" /> <!-- left section -->
+                            <ColumnDefinition Width="*" /> <!-- middle section -->
+                            <ColumnDefinition Width="*" /> <!-- right section -->
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- left section -->
+                        <Grid Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            
+                            <!-- sub-left section -->
+                            <Grid Grid.Row="0">
+                                
+                            </Grid>
+                            
+                            <Grid Grid.Row="1">
+                                
+                            </Grid>
+                            
+                            <Grid Grid.Row="2">
+                                
+                            </Grid>
+                            
+                            
+                        </Grid>
+                        
+                        <!-- middle section -->
+                        <Grid Grid.Column="1">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Margin="0,0,20,0" Text="Received:" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Regular" />
+                                <TextBlock Text="{Binding MoneyReceived}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32" FontWeight="Medium" />                                
+                            </StackPanel>
+                        </Grid>
+                        
+                        <!-- left section -->
+                        <Grid Grid.Column="2">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Margin="0,0,20,0" Text="Outstanding:" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Regular" />
+                                <TextBlock Text="{Binding MoneyToReceive}" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="32" FontWeight="Medium" />                                
+                            </StackPanel>
+                        </Grid>    
+                    </Grid>
                 </Border>
             </Grid>
         </Grid>

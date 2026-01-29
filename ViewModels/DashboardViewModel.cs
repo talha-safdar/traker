@@ -27,7 +27,8 @@ namespace Traker.ViewModels
         private ObservableCollection<string> _jobStatus;
         private ObservableCollection<string> _jobPrice;
         private ObservableCollection<string> _paid; // paid by client?
-        private string _moneyReceived; // paid by client? text string
+        private string _moneyReceived; // money received value shown total
+        private string _moneyToRecieve; // money to be reveived yet
         #endregion
 
         #region Data Variables
@@ -55,6 +56,7 @@ namespace Traker.ViewModels
             _paid = new ObservableCollection<string>(); // job price
 
             _moneyReceived = "0";
+            _moneyToRecieve ="0";
 
             _paidJobs = new List<decimal>();
 
@@ -163,7 +165,7 @@ namespace Traker.ViewModels
                 }
             }
 
-
+            _paidJobs.Clear();
 
             for (int i = 0; i < _dashboardData.Count; i++)
             {
@@ -177,6 +179,22 @@ namespace Traker.ViewModels
             }
 
             MoneyReceived = _paidJobs.Sum().ToString("C");
+
+            _paidJobs.Clear();
+
+            for (int i = 0; i < _dashboardData.Count; i++)
+            {
+                _paidJobs.AddRange(_clients
+                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
+                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
+                    .Join(_invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.Price, inv.IsPaid })
+                    .Where(x => x.IsPaid == false)
+                    .Select(x => x.Price)
+                    .ToList());
+            }
+
+            MoneyToReceive = _paidJobs.Sum().ToString("C");
+
 
             return Task.CompletedTask;
         }
@@ -259,6 +277,16 @@ namespace Traker.ViewModels
             {
                 _moneyReceived = value;
                 NotifyOfPropertyChange(() => MoneyReceived);
+            }
+        }
+
+        public String MoneyToReceive
+        {
+            get { return _moneyToRecieve; }
+            set
+            {
+                _moneyToRecieve = value;
+                NotifyOfPropertyChange(() => MoneyToReceive);
             }
         }
         #endregion
