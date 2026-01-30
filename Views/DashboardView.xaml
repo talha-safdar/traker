@@ -371,7 +371,7 @@
                             </Grid>
                             <Grid Grid.Row="0" Grid.Column="1">
                                 <Grid Grid.Column="0">
-                                    <TextBlock Text="123" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Regular" />
+                                    <TextBlock Text="{Binding NewJobsCount}" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Regular" />
                                 </Grid>                                
                             </Grid>
                             
@@ -383,7 +383,7 @@
                             </Grid>
                             <Grid Grid.Row="1" Grid.Column="1">
                                 <Grid Grid.Column="0">
-                                    <TextBlock Text="123" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Regular" />
+                                    <TextBlock Text="{Binding InProgressJobsCount}" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Regular" />
                                 </Grid>
                             </Grid>
 
@@ -395,7 +395,7 @@
                             </Grid>
                             <Grid Grid.Row="2" Grid.Column="1">
                                 <Grid Grid.Column="0">
-                                    <TextBlock Text="123" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Regular" />
+                                    <TextBlock Text="{Binding CompletedJobsCount}" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Regular" />
                                 </Grid>
                             </Grid>
 
@@ -406,7 +406,7 @@
                             </Grid>
                             <Grid Grid.Row="3" Grid.Column="1">
                                 <Grid Grid.Column="0">
-                                    <TextBlock Text="123" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Regular" />
+                                    <TextBlock Text="{Binding InvoicedJobsCount}" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Regular" />
                                 </Grid>
                             </Grid>
                             <Grid Grid.Column="2" Grid.RowSpan="4" Margin="35,0,0,0" Width="5">
