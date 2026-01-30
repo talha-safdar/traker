@@ -6,7 +6,7 @@
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         xmlns:local="clr-namespace:Traker.Views"
         mc:Ignorable="d"
-        Title="Traker" MinHeight="800" MinWidth="1200"
+        Title="Traker" MinHeight="900" MinWidth="1400"
         WindowStyle="None"
         ResizeMode="CanResize"
         AllowsTransparency="False"

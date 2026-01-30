@@ -3,18 +3,21 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:cal="http://caliburnmicro.com"
              xmlns:local="clr-namespace:Traker.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    
     <Grid Background="{StaticResource MainBackgroundBrush}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.1*" /> <!-- side panel -->
-                <ColumnDefinition Width="*" /> <!-- main panel -->
+                <ColumnDefinition Width="*" />
+                <!-- main panel / info panel -->
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="10*" /> <!--main part -->
-                <RowDefinition Height="1.5*" /> <!-- footer -->
+                <RowDefinition Height="10*" /> <!--main part / side panel -->
+                <RowDefinition Height="1.5*" /> <!-- info panel / side panel -->
             </Grid.RowDefinitions>
             
             <!-- side panel -->
@@ -25,316 +28,30 @@
             </Grid>
             
             <!-- main body -->
-            <Grid Grid.Column="1" Grid.Row="0" Margin="5,20,20,10">                
-                <Border Background="{StaticResource TableHeaderBackgroundBrush}" CornerRadius="20">                    
-                    <ScrollViewer VerticalScrollBarVisibility="Hidden" CanContentScroll="True">
-                        <Grid Margin="20">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <!-- name in db          0 -->
-                                <ColumnDefinition Width="0.01*" />
-                                <!-- spacer -->
-                                <ColumnDefinition Width="*" />
-                                <!-- email in db         1 -->
-                                <ColumnDefinition Width="0.01*" />
-                                <!-- spacer -->
-                                <ColumnDefinition Width="0.5*" />
-                                <!-- phone in db         2 -->
-                                <ColumnDefinition Width="0.01*" />
-                                <!-- spacer -->
-                                <ColumnDefinition Width="*" />
-                                <!-- Description in db   3 -->
-                                <ColumnDefinition Width="0.01*" />
-                                <!-- spacer -->
-                                <ColumnDefinition Width="0.5*" />
-                                <!-- Status in db        4 -->
-                                <ColumnDefinition Width="0.01*" />
-                                <!-- spacer -->
-                                <ColumnDefinition Width="0.5*" />
-                                <!-- Price in db         5 -->
-                                <ColumnDefinition Width="0.01*" />
-                                <!-- spacer -->
-                                <ColumnDefinition Width="0.2*" />
-                                <!-- isPaid in db        6 -->
-                            </Grid.ColumnDefinitions>
-
-                            <!-- get font sorted -->
-
-                            <Grid Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                                <TextBlock Text="Client Name" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" FontSize="22"  />
-
-                                <!-- Dynamic rows -->
-                                <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding ClientNames}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel>
-                                                <TextBlock Text="{Binding}"
-                                                Foreground="{StaticResource FontPrimaryBrush}" 
-                                                FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" 
-                                                FontWeight="Regular" 
-                                                FontSize="18"
-                                                TextAlignment="Left"
-                                                Margin="5"/>
-
-                                                <!-- divider line -->
-                                                <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
-                                                <!-- divider line -->
-                                                <Border Height="1" Background="Gray" Opacity="1"/>
-                                            </StackPanel>
-                                            
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </Grid>
-
-                            <!-- spacer -->
-                            <Grid Grid.Column="1" Margin="0,40,0,0">
-                                <Border Opacity="0.3" VerticalAlignment="Stretch">
-                                    <Border.Background>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Color="Transparent" Offset="0"/>
-                                            <GradientStop Color="#666666" Offset="0.0"/>
-                                            <GradientStop Color="#666666" Offset="1.0"/>
-                                            <GradientStop Color="Transparent" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Border.Background>
-                                </Border>
-                            </Grid>
-
-                            <!-- email -->
-                            <Grid Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                                <TextBlock Text="Email" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" FontSize="22" />
-                                <!-- Dynamic rows -->
-                                <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding ClientEmails}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel>
-                                                <TextBlock Text="{Binding}"
-                                                Foreground="{StaticResource FontPrimaryBrush}" 
-                                                FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" 
-                                                FontWeight="Regular" 
-                                                FontSize="18"
-                                                TextAlignment="Left"
-                                                Margin="5"/>
-
-                                                <!-- divider line -->
-                                                <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
-                                                <!-- divider line -->
-                                                <Border Height="1" Background="Gray" Opacity="1"/>
-                                            </StackPanel>
-
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </Grid>
-
-                            <!-- spacer -->
-                            <Grid Grid.Column="3" Margin="0,40,0,0">
-                                <Border Opacity="0.3" VerticalAlignment="Stretch">
-                                    <Border.Background>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Color="Transparent" Offset="0"/>
-                                            <GradientStop Color="#666666" Offset="0.0"/>
-                                            <GradientStop Color="#666666" Offset="1.0"/>
-                                            <GradientStop Color="Transparent" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Border.Background>
-                                </Border>
-                            </Grid>
-
-                            <!-- phone -->
-                            <Grid Grid.Column="4" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                                <TextBlock Text="Phone" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" FontSize="22" />
-                                <!-- Dynamic rows -->
-                                <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding ClientPhones}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel>
-                                                <TextBlock Text="{Binding}"
-                                                Foreground="{StaticResource FontPrimaryBrush}" 
-                                                FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" 
-                                                FontWeight="Regular" 
-                                                FontSize="18"
-                                                TextAlignment="Center"
-                                                Margin="5"/>
-
-                                                <!-- divider line -->
-                                                <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
-                                                <!-- divider line -->
-                                                <Border Height="1" Background="Gray" Opacity="1"/>
-                                            </StackPanel>
-
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </Grid>
-
-                            <!-- spacer -->
-                            <Grid Grid.Column="5" Margin="0,40,0,0">
-                                <Border Opacity="0.3" VerticalAlignment="Stretch">
-                                    <Border.Background>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Color="Transparent" Offset="0"/>
-                                            <GradientStop Color="#666666" Offset="0.0"/>
-                                            <GradientStop Color="#666666" Offset="1.0"/>
-                                            <GradientStop Color="Transparent" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Border.Background>
-                                </Border>
-                            </Grid>
-
-                            <!-- job -->
-                            <Grid Grid.Column="6" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                                <TextBlock Text="Description" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" FontSize="22" />
-                                <!-- Dynamic rows -->
-                                <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding JobDescriptions}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel>
-                                                <TextBlock Text="{Binding}"
-                                                Foreground="{StaticResource FontPrimaryBrush}" 
-                                                FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" 
-                                                FontWeight="Regular" 
-                                                FontSize="18"
-                                                TextAlignment="Left"
-                                                Margin="5"/>
-
-                                                <!-- divider line -->
-                                                <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
-                                                <!-- divider line -->
-                                                <Border Height="1" Background="Gray" Opacity="1"/>
-                                            </StackPanel>
-
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </Grid>
-
-                            <!-- spacer -->
-                            <Grid Grid.Column="7" Margin="0,40,0,0">
-                                <Border Opacity="0.3" VerticalAlignment="Stretch">
-                                    <Border.Background>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Color="Transparent" Offset="0"/>
-                                            <GradientStop Color="#666666" Offset="0.0"/>
-                                            <GradientStop Color="#666666" Offset="1.0"/>
-                                            <GradientStop Color="Transparent" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Border.Background>
-                                </Border>
-                            </Grid>
-
-                            <!-- status -->
-                            <Grid Grid.Column="8" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                                <TextBlock Text="Status" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" FontSize="22" />
-                                <!-- Dynamic rows -->
-                                <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding JobStatus}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel>
-                                                <TextBlock Text="{Binding}"
-                                                Foreground="{StaticResource FontPrimaryBrush}" 
-                                                FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" 
-                                                FontWeight="Regular" 
-                                                FontSize="18"
-                                                TextAlignment="Center"
-                                                Margin="5"/>
-
-                                                <!-- divider line -->
-                                                <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
-                                                <!-- divider line -->
-                                                <Border Height="1" Background="Gray" Opacity="1"/>
-                                            </StackPanel>
-
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </Grid>
-
-                            <!-- spacer -->
-                            <Grid Grid.Column="9" Margin="0,40,0,0">
-                                <Border Opacity="0.3" VerticalAlignment="Stretch">
-                                    <Border.Background>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Color="Transparent" Offset="0"/>
-                                            <GradientStop Color="#666666" Offset="0.0"/>
-                                            <GradientStop Color="#666666" Offset="1.0"/>
-                                            <GradientStop Color="Transparent" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Border.Background>
-                                </Border>
-                            </Grid>
-
-                            <!-- price -->
-                            <Grid Grid.Column="10" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                                <TextBlock Text="Price" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" FontSize="22" />
-                                <!-- Dynamic rows -->
-                                <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding JobPrice}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel>
-                                                <TextBlock Text="{Binding}"
-                                                Foreground="{StaticResource FontPrimaryBrush}" 
-                                                FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" 
-                                                FontWeight="Regular" 
-                                                FontSize="18"
-                                                TextAlignment="Left"
-                                                Margin="5"/>
-
-                                                <!-- divider line -->
-                                                <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
-                                                <!-- divider line -->
-                                                <Border Height="1" Background="Gray" Opacity="1"/>
-                                            </StackPanel>
-
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </Grid>
-
-                            <!-- spacer -->
-                            <Grid Grid.Column="11" Margin="0,40,0,0">
-                                <Border Opacity="0.3" VerticalAlignment="Stretch">
-                                    <Border.Background>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Color="Transparent" Offset="0"/>
-                                            <GradientStop Color="#666666" Offset="0.0"/>
-                                            <GradientStop Color="#666666" Offset="1.0"/>
-                                            <GradientStop Color="Transparent" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Border.Background>
-                                </Border>
-                            </Grid>
-
-                            <!-- invoiced -->
-                            <Grid Grid.Column="12" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                                <TextBlock Text="Paid" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" FontSize="22" />
-                                <!-- Dynamic rows -->
-                                <ItemsControl Margin="0,40,0,0" ItemsSource="{Binding Paid}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel>
-                                                <TextBlock Text="{Binding}"
-                                                Foreground="{StaticResource FontPrimaryBrush}" 
-                                                FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" 
-                                                FontWeight="Regular" 
-                                                FontSize="18"
-                                                TextAlignment="Left"
-                                                Margin="5"/>
-
-                                                <!-- divider line -->
-                                                <!--<Rectangle Height="1" Fill="Gray" HorizontalAlignment="Stretch" Width="300" />-->
-                                                <!-- divider line -->
-                                                <Border Height="1" Background="Gray" Opacity="1"/>
-                                            </StackPanel>
-
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </Grid>
-                        </Grid>
-                    </ScrollViewer>
-                </Border>
+             <!-- SelectionMode= extended // multi row select -->
+            <DataGrid ItemsSource="{Binding DashboardData}" 
+                      SelectedItem="{Binding SelectedDataRow}" 
+                      AutoGenerateColumns="False" 
+                      SelectionMode="Single">
+                
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Client Name" Binding="{Binding ClientName}" Width="*" />
+                    <DataGridTextColumn Header="Email" Binding="{Binding ClientEmail}" Width="*" />
+                    <DataGridTextColumn Header="Phone" Binding="{Binding ClientPhone}" Width="0.5*" />
+                    <!--<DataGridTextColumn Header="Description" Binding="{Binding JobDescription}" Width="*" />
+                    <DataGridTextColumn Header="Status" Binding="{Binding JobStatus}" Width="0.5*" />
+                    <DataGridTextColumn Header="Price" Binding="{Binding JobPrice}" Width="0.5*" />
+                    <DataGridCheckBoxColumn Header="Paid" Binding="{Binding IsPaid}" Width="0.2*" />-->
+                </DataGrid.Columns>
+            </DataGrid>            
+            
+            <Grid Grid.Column="1" Grid.Row="0" Margin="5,20,20,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" MinHeight="60" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" Margin="20,20,20,0" >
+                </Grid>      
             </Grid>
 
             <!-- bottom section -->

@@ -33,7 +33,9 @@ namespace Traker.ViewModels
         private string _newJobsCount;
         private string _inProgressJobsCount; 
         private string _completedJobsCount; 
-        private string _invoicedJobsCount; 
+        private string _invoicedJobsCount;
+        ObservableCollection<DashboardModel> _dashboardData; // listo of data shown on the data grid
+        public DashboardModel _selectedDataRow; // selected data row
         #endregion
 
         #region Data Variables
@@ -41,7 +43,6 @@ namespace Traker.ViewModels
         List<ClientModel> _clients;
         List<JobModel> _jobs;
         List<InvoiceModel> _invoices;
-        List<DashboardModel> _dashboardData;
         #endregion
 
         #region Private Field Variables
@@ -82,15 +83,15 @@ namespace Traker.ViewModels
             _clients = new List<ClientModel>();
             _jobs = new List<JobModel>();
             _invoices = new List<InvoiceModel>();
-            _dashboardData = new List<DashboardModel>();
+            _dashboardData = new ObservableCollection<DashboardModel>();
+            _selectedDataRow = new DashboardModel();
         }
 
         #region Caliburn Functions
         protected override async Task OnInitializedAsync(CancellationToken cancellationToken)
         {
             try
-            {
-                
+            {               
                 await _database.SetUpDatabase();
 
                 _clients = _database.FetchClientsTable(); // clients
@@ -133,55 +134,55 @@ namespace Traker.ViewModels
                 _dashboardData.Add(dashboardEntry);
             }
 
-            ClientNames.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                ClientNames.Add(_dashboardData[i].ClientName);
-            }
+            //ClientNames.Clear();
+            //for (int i = 0; i < _dashboardData.Count; i++)
+            //{
+            //    ClientNames.Add(_dashboardData[i].ClientName);
+            //}
 
-            ClientEmails.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                ClientEmails.Add(_dashboardData[i].ClientEmail);
-            }
+            //ClientEmails.Clear();
+            //for (int i = 0; i < _dashboardData.Count; i++)
+            //{
+            //    ClientEmails.Add(_dashboardData[i].ClientEmail);
+            //}
 
-            ClientPhones.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                ClientPhones.Add(_dashboardData[i].ClientPhone);
-            }
+            //ClientPhones.Clear();
+            //for (int i = 0; i < _dashboardData.Count; i++)
+            //{
+            //    ClientPhones.Add(_dashboardData[i].ClientPhone);
+            //}
 
-            JobDescriptions.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                JobDescriptions.Add(_dashboardData[i].Jobs.Where(j => j.ClientId == _dashboardData[i].ClientId).Select(j => j.Description).ToList().FirstOrDefault()!);
-            }
+            //JobDescriptions.Clear();
+            //for (int i = 0; i < _dashboardData.Count; i++)
+            //{
+            //    JobDescriptions.Add(_dashboardData[i].Jobs.Where(j => j.ClientId == _dashboardData[i].ClientId).Select(j => j.Description).ToList().FirstOrDefault()!);
+            //}
 
-            JobStatus.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                JobStatus.Add(_dashboardData[i].Jobs.Where(j => j.ClientId == _dashboardData[i].ClientId).Select(j => j.Status).ToList().FirstOrDefault()!);
-            }
+            //JobStatus.Clear();
+            //for (int i = 0; i < _dashboardData.Count; i++)
+            //{
+            //    JobStatus.Add(_dashboardData[i].Jobs.Where(j => j.ClientId == _dashboardData[i].ClientId).Select(j => j.Status).ToList().FirstOrDefault()!);
+            //}
 
-            JobPrice.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                JobPrice.Add(_dashboardData[i].Jobs.Where(j => j.ClientId == _dashboardData[i].ClientId).Select(j => j.FinalPrice.ToString("C")).ToList().FirstOrDefault()!);
-            }
+            //JobPrice.Clear();
+            //for (int i = 0; i < _dashboardData.Count; i++)
+            //{
+            //    JobPrice.Add(_dashboardData[i].Jobs.Where(j => j.ClientId == _dashboardData[i].ClientId).Select(j => j.FinalPrice.ToString("C")).ToList().FirstOrDefault()!);
+            //}
 
-            Paid.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                var paid = _dashboardData[i].Invoices.Where(inv => inv.JobId == _dashboardData[i].Jobs.Where(j => j.ClientId == _dashboardData[i].ClientId).Select(j => j.JobId).FirstOrDefault()).Select(inv => inv.IsPaid).FirstOrDefault();
-                if (paid == true)
-                {
-                    Paid.Add("Yes");
-                }
-                else
-                {
-                    Paid.Add("No");
-                }
-            }
+            //Paid.Clear();
+            //for (int i = 0; i < _dashboardData.Count; i++)
+            //{
+            //    var paid = _dashboardData[i].Invoices.Where(inv => inv.JobId == _dashboardData[i].Jobs.Where(j => j.ClientId == _dashboardData[i].ClientId).Select(j => j.JobId).FirstOrDefault()).Select(inv => inv.IsPaid).FirstOrDefault();
+            //    if (paid == true)
+            //    {
+            //        Paid.Add("Yes");
+            //    }
+            //    else
+            //    {
+            //        Paid.Add("No");
+            //    }
+            //}
 
 
 
@@ -284,6 +285,14 @@ namespace Traker.ViewModels
             return Task.CompletedTask;
         }
         #endregion
+
+
+
+        public void Selection()
+        {
+            Debug.WriteLine("HOLA");
+        }
+
 
         #region Public View Variables
         public ObservableCollection<string> ClientNames
@@ -422,6 +431,27 @@ namespace Traker.ViewModels
             {
                 _invoicedJobsCount = value;
                 NotifyOfPropertyChange(() => InvoicedJobsCount);
+            }
+        }
+
+        public ObservableCollection<DashboardModel> DashboardData
+        {
+            get { return new ObservableCollection<DashboardModel>(_dashboardData); }
+            set
+            {
+                _dashboardData = value;
+                NotifyOfPropertyChange(() => DashboardData);
+            }
+        }
+
+        public DashboardModel SelectedDataRow
+        {
+            get { return _selectedDataRow; }
+            set
+            {
+                _selectedDataRow = value;
+                Debug.WriteLine(_selectedDataRow.ClientName + " " + _selectedDataRow.ClientId);
+                NotifyOfPropertyChange(() => SelectedDataRow);
             }
         }
         #endregion
