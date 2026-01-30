@@ -10,13 +10,17 @@ namespace Traker.ViewModels
 {
     using Database;
     using System.Diagnostics;
+    using System.Dynamic;
     using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Media;
     using Traker.Models;
 
     public class DashboardViewModel : Screen
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
+        private readonly IWindowManager _windowManager;
         #endregion
 
         #region Private View Variables
@@ -53,11 +57,13 @@ namespace Traker.ViewModels
         private List<int> _inProgressJobs; // in progress jobs
         private List<int> _completedJobs; // completed jobs
         private List<int> _invoicedJobs; // completed jobs
+        JobDetailsViewModel _jobDetailsViewModel;
         #endregion
 
-        public DashboardViewModel(IEventAggregator events)
+        public DashboardViewModel(IEventAggregator events, IWindowManager windowManager)
         {
             _events = events;
+            _windowManager = windowManager;
 
             _clientNames = new ObservableCollection<string>(); // client names
             _clientEmails = new ObservableCollection<string>(); // client emails
@@ -85,6 +91,8 @@ namespace Traker.ViewModels
             _invoices = new List<InvoiceModel>();
             _dashboardData = new ObservableCollection<DashboardModel>();
             _selectedDataRow = new DashboardModel();
+
+            _jobDetailsViewModel = new JobDetailsViewModel();
         }
 
         #region Caliburn Functions
@@ -215,9 +223,6 @@ namespace Traker.ViewModels
             MoneyToReceive = _outstandingdMoney.Sum().ToString("C"); // outstanding
 
 
-
-
-
             for (int i = 0; i < _dashboardData.Count; i++)
             {
                 _overdueMoney.AddRange(_clients
@@ -287,11 +292,45 @@ namespace Traker.ViewModels
         #endregion
 
 
-
-        public void Selection()
+        public async Task OpenJobDetails(DashboardModel selectedJob)
         {
-            Debug.WriteLine("HOLA");
+            Debug.WriteLine("OPEN MENU");
+            Debug.WriteLine(selectedJob.ClientName + " " + selectedJob.Jobs.Select(j => j.Description).FirstOrDefault()!.ToString());
+            
+            if (_jobDetailsViewModel != null && _jobDetailsViewModel.IsActive == true)
+            {
+                await _jobDetailsViewModel.TryCloseAsync(true);
+                _jobDetailsViewModel = null;
+            }
+            _jobDetailsViewModel = new JobDetailsViewModel();
+            await _windowManager.ShowPopupAsync(_jobDetailsViewModel, null, SettingsForDialog(500, 500));
         }
+
+        public async Task OnMouseEnterOrDownEvent(Grid gridSource)
+        {
+            if (_jobDetailsViewModel != null)
+            {
+                // close create report pop menu
+                await _jobDetailsViewModel.TryCloseAsync(true);
+                _jobDetailsViewModel = null;
+            }
+        }
+
+
+        private dynamic SettingsForDialog(int height, int width)
+        {
+            dynamic settings = new ExpandoObject();
+            settings.Title = string.Empty;
+            settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            settings.WindowStyle = WindowStyle.None;
+            settings.AllowsTransparency = true;
+            settings.Background = Brushes.Transparent;
+            settings.ResizeMode = ResizeMode.CanResize;
+            settings.MinHeight = height;
+            settings.MinWidth = width;
+            return settings;
+        }
+
 
 
         #region Public View Variables

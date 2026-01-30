@@ -15,7 +15,8 @@
     
     -->
     
-    <Grid Background="{StaticResource MainBackgroundBrush}">
+    <Grid Background="{StaticResource MainBackgroundBrush}"
+          cal:Message.Attach="[Event MouseEnter] = [Action OnMouseEnterOrDownEvent($source)]; [Event PreviewMouseDown] = [Action OnMouseEnterOrDownEvent($source)]">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.1*" /> <!-- side panel -->
             <ColumnDefinition Width="*" />
@@ -54,10 +55,13 @@
                                 SelectionMode="Single"
                                 FontSize="22"
                                 VerticalScrollBarVisibility="Visible"
-                              HorizontalScrollBarVisibility="Hidden"
-                              ScrollViewer.CanContentScroll="False"
-
-                                >
+                              HorizontalScrollBarVisibility="Hidden">
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Setter Property="cal:Message.Attach" 
+                                    Value="[Event MouseRightButtonDown] = [Action OpenJobDetails($dataContext)]" />
+                            </Style>
+                        </DataGrid.RowStyle>
 
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Client Name" Binding="{Binding ClientName}" Width="*" />

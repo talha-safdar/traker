@@ -19,6 +19,7 @@
     <SolidColorBrush x:Key="OverdueTextBrush" Color="#FFB74D" />
     <SolidColorBrush x:Key="AccentColorBrush" Color="#007ACC" />
     <SolidColorBrush x:Key="HighlightBrush" Color="#3D3D3D" />
+    <SolidColorBrush x:Key="TableHeader" Color="#1A1A1A" />
 
 
     <SolidColorBrush x:Key="TopBarBackgroundBrush" Color="#1a1a1a" />
@@ -51,7 +52,7 @@
     <SolidColorBrush x:Key="Grey200Brush" Color="#ECECEC"/>
 
     <Style TargetType="DataGrid">
-        <Setter Property="Background" Value="#1E1E1E"/>
+        <Setter Property="Background" Value="{StaticResource TableHeaderBackgroundBrush}"/>
         <Setter Property="Foreground" Value="#E6E6E6"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="RowBackground" Value="#1E1E1E"/>
@@ -92,10 +93,10 @@
     </Style>
 
     <Style TargetType="DataGridColumnHeader">
-        <Setter Property="Background" Value="{StaticResource SurfaceBrushHeader}" />
-        <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
+        <Setter Property="Background" Value="{StaticResource TableHeader}" />
+        <Setter Property="Foreground" Value="{StaticResource FontPrimaryBrush}" />
         <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Padding" Value="12,8"/>
+        <Setter Property="Padding" Value="0,8"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -119,35 +120,106 @@
     <Style TargetType="ScrollBar">
         <Setter Property="Width" Value="10"/>
         <Setter Property="Background" Value="Transparent"/>
-    </Style>
-
-    <Style TargetType="Thumb">
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="Thumb">
-                    <Border x:Name="ThumbBorder"
-                        Background="#3A3F4B"
-                        CornerRadius="6"/>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Grid Background="Transparent">
 
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="ThumbBorder"
-                                Property="Background"
-                                Value="#4A5060"/>
-                        </Trigger>
+                        <Track x:Name="PART_Track"
+                           IsDirectionReversed="True">
 
-                        <Trigger Property="IsDragging" Value="True">
-                            <Setter TargetName="ThumbBorder"
-                                Property="Background"
-                                Value="#5A6070"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
+                            <Track.Thumb>
+                                <Thumb>
+                                    <Thumb.Template>
+                                        <ControlTemplate TargetType="Thumb">
+                                            <Border x:Name="ThumbBorder"
+                                                Background="#3A3F4B"
+                                                CornerRadius="8"/>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="ThumbBorder"
+                                                        Property="Background"
+                                                        Value="#4A5060"/>
+                                                </Trigger>
+                                                <Trigger Property="IsDragging" Value="True">
+                                                    <Setter TargetName="ThumbBorder"
+                                                        Property="Background"
+                                                        Value="#5A6070"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track.Thumb>
 
+                        </Track>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
+    <Style TargetType="RepeatButton">
+        <Setter Property="Visibility" Value="Collapsed"/>
+    </Style>
+
+    <Style TargetType="CheckBox">
+        <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Center">
+
+                        <!-- box -->
+                        <Border x:Name="Box"
+                            Width="18"
+                            Height="18"
+                            Background="#2A2A2A"
+                            BorderBrush="#3A3F4B"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            VerticalAlignment="Center">
+
+                            <!-- check mark -->
+                            <Path x:Name="Check"
+                              Data="M2,9 L7,14 L16,3"
+                              Stroke="White"
+                              StrokeThickness="2"
+                              Visibility="Collapsed"/>
+                        </Border>
+
+                        <!-- text -->
+                        <ContentPresenter VerticalAlignment="Center"/>
+
+                    </StackPanel>
+
+                    <ControlTemplate.Triggers>
+
+                        <!-- checked -->
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Box" Property="Background" Value="#2E8B57"/>
+                            <Setter TargetName="Check" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="Box" Property="BorderBrush" Value="#2E8B57"/>
+                        </Trigger>
+
+                        <!-- hover -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Box" Property="BorderBrush" Value="#6A707F"/>
+                        </Trigger>
+
+                        <!-- disabled -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Box" Property="Opacity" Value="0.4"/>
+                            <Setter Property="Opacity" Value="0.6"/>
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
 
 </ResourceDictionary>

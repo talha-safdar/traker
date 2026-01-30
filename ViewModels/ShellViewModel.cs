@@ -24,7 +24,7 @@ namespace Traker.ViewModels
 
         protected override async Task OnInitializedAsync(CancellationToken cancellationToken)
         {
-            DashboardViewModel dashboardViewModel = new DashboardViewModel(_events);
+            DashboardViewModel dashboardViewModel = new DashboardViewModel(_events, _windowManager);
             await ActivateItemAsync(dashboardViewModel, cancellationToken);
         }
     }
