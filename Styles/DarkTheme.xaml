@@ -1,0 +1,153 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+
+
+    <SolidColorBrush x:Key="MainBackgroundBrush" Color="#404040" />
+    <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#1E1E1E" />
+
+    <SolidColorBrush x:Key="BorderBrush" Color="#333333" />
+    <SolidColorBrush x:Key="LightBorderBrush" Color="#444444" />
+
+    <!--<SolidColorBrush x:Key="PrimaryTextBrush" Color="#FFFFFF" />-->
+    <SolidColorBrush x:Key="SecondaryTextBrush" Color="#B0B0B0" />
+    <SolidColorBrush x:Key="DisabledTextBrush" Color="#666666" />
+
+    <SolidColorBrush x:Key="SuccessBorderBrush" Color="#2D4D3A" />
+    <SolidColorBrush x:Key="SuccessTextBrush" Color="#81C784" />
+    <SolidColorBrush x:Key="ErrorTextBrush" Color="#E57373" />
+    <SolidColorBrush x:Key="OverdueTextBrush" Color="#FFB74D" />
+    <SolidColorBrush x:Key="AccentColorBrush" Color="#007ACC" />
+    <SolidColorBrush x:Key="HighlightBrush" Color="#3D3D3D" />
+
+
+    <SolidColorBrush x:Key="TopBarBackgroundBrush" Color="#1a1a1a" />
+
+    <SolidColorBrush x:Key="SidePanelBackgroundBrush" Color="#2E2E2E" />
+
+    <SolidColorBrush x:Key="TableHeaderBackgroundBrush" Color="#252525" />
+
+    <SolidColorBrush x:Key="BottomInfoBackgroundBrush" Color="#1F1F1F" />
+
+    <SolidColorBrush x:Key="ListAccentBrush" Color="#2A2D2E" />
+
+    <SolidColorBrush x:Key="FooterBackgroundBrush" Color="#0A0A0A" />
+
+
+
+    <SolidColorBrush x:Key="FontPrimaryBrush" Color="#E0E0E0" />
+
+    <SolidColorBrush x:Key="FontSecondaryBrush" Color="#9A9A9A" />
+
+    <SolidColorBrush x:Key="FontMutedBrush" Color="#555555" />
+
+    <SolidColorBrush x:Key="FontSuccessBrush" Color="#A5D6A7" />
+    <SolidColorBrush x:Key="FontOverdueBrush" Color="#EF9A9A" />
+    <SolidColorBrush x:Key="FontWarningBrush" Color="#FFE082" />
+
+
+    <SolidColorBrush x:Key="SurfaceBrushHeader" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="PrimaryTextBrush" Color="#2F3542"/>
+    <SolidColorBrush x:Key="Grey200Brush" Color="#ECECEC"/>
+
+    <Style TargetType="DataGrid">
+        <Setter Property="Background" Value="#1E1E1E"/>
+        <Setter Property="Foreground" Value="#E6E6E6"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="RowBackground" Value="#1E1E1E"/>
+        <Setter Property="AlternatingRowBackground" Value="#252525"/>
+        <Setter Property="GridLinesVisibility" Value="None"/>
+        <Setter Property="HeadersVisibility" Value="Column"/>
+        <Setter Property="Padding" Value="8"/>
+    </Style>
+
+    <Style TargetType="DataGridRow">
+        <!--<Setter Property="Background" Value="Transparent"/>-->
+        <Setter Property="Margin" Value="0,2"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridRow">
+                    <Border x:Name="RowBorder"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="6"
+                        Padding="2">
+
+                        <DataGridCellsPresenter/>
+
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="RowBorder" Property="Background" Value="#2A2A2A"/>
+                        </Trigger>
+
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="RowBorder" Property="Background" Value="#2E8B57"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="DataGridColumnHeader">
+        <Setter Property="Background" Value="{StaticResource SurfaceBrushHeader}" />
+        <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Padding" Value="12,8"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridColumnHeader">
+                    <Border Background="{TemplateBinding Background}"
+                            CornerRadius="8"
+                            Margin="4,4,4,6"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource Grey200Brush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="ScrollBar">
+        <Setter Property="Width" Value="10"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <Style TargetType="Thumb">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Border x:Name="ThumbBorder"
+                        Background="#3A3F4B"
+                        CornerRadius="6"/>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ThumbBorder"
+                                Property="Background"
+                                Value="#4A5060"/>
+                        </Trigger>
+
+                        <Trigger Property="IsDragging" Value="True">
+                            <Setter TargetName="ThumbBorder"
+                                Property="Background"
+                                Value="#5A6070"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+
+</ResourceDictionary>

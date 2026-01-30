@@ -436,7 +436,7 @@ namespace Traker.ViewModels
 
         public ObservableCollection<DashboardModel> DashboardData
         {
-            get { return new ObservableCollection<DashboardModel>(_dashboardData); }
+            get { return _dashboardData; }
             set
             {
                 _dashboardData = value;
@@ -450,7 +450,7 @@ namespace Traker.ViewModels
             set
             {
                 _selectedDataRow = value;
-                Debug.WriteLine(_selectedDataRow.ClientName + " " + _selectedDataRow.ClientId);
+                Debug.WriteLine(_selectedDataRow.ClientName + " " + _selectedDataRow.Jobs.Select(j => j.Description).FirstOrDefault()!.ToString());
                 NotifyOfPropertyChange(() => SelectedDataRow);
             }
         }

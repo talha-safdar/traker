@@ -9,6 +9,7 @@
                     <local:Bootstrapper x:Key="Bootstrapper"/>
                 </ResourceDictionary>
                 <ResourceDictionary Source="/Styles/Styles.xaml" />
+                <ResourceDictionary Source="/Styles/DarkTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <!--<SolidColorBrush x:Key="WindowBgBrush" Color="#F0F0F0" />
@@ -53,47 +54,7 @@
 
 
 
-            <SolidColorBrush x:Key="MainBackgroundBrush" Color="#404040" />
-            <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#1E1E1E" />
 
-            <SolidColorBrush x:Key="BorderBrush" Color="#333333" />
-            <SolidColorBrush x:Key="LightBorderBrush" Color="#444444" />
-
-            <SolidColorBrush x:Key="PrimaryTextBrush" Color="#FFFFFF" />
-            <SolidColorBrush x:Key="SecondaryTextBrush" Color="#B0B0B0" />
-            <SolidColorBrush x:Key="DisabledTextBrush" Color="#666666" />
-
-            <SolidColorBrush x:Key="SuccessBorderBrush" Color="#2D4D3A" />
-            <SolidColorBrush x:Key="SuccessTextBrush" Color="#81C784" />
-            <SolidColorBrush x:Key="ErrorTextBrush" Color="#E57373" />
-            <SolidColorBrush x:Key="OverdueTextBrush" Color="#FFB74D" />
-            <SolidColorBrush x:Key="AccentColorBrush" Color="#007ACC" />
-            <SolidColorBrush x:Key="HighlightBrush" Color="#3D3D3D" />
-
-
-            <SolidColorBrush x:Key="TopBarBackgroundBrush" Color="#1a1a1a" />
-
-            <SolidColorBrush x:Key="SidePanelBackgroundBrush" Color="#2E2E2E" />
-
-            <SolidColorBrush x:Key="TableHeaderBackgroundBrush" Color="#252525" />
-
-            <SolidColorBrush x:Key="BottomInfoBackgroundBrush" Color="#1F1F1F" />
-
-            <SolidColorBrush x:Key="ListAccentBrush" Color="#2A2D2E" />
-
-            <SolidColorBrush x:Key="FooterBackgroundBrush" Color="#0A0A0A" />
-
-
-
-            <SolidColorBrush x:Key="FontPrimaryBrush" Color="#E0E0E0" />
-
-            <SolidColorBrush x:Key="FontSecondaryBrush" Color="#9A9A9A" />
-
-            <SolidColorBrush x:Key="FontMutedBrush" Color="#555555" />
-
-            <SolidColorBrush x:Key="FontSuccessBrush" Color="#A5D6A7" />
-            <SolidColorBrush x:Key="FontOverdueBrush" Color="#EF9A9A" />
-            <SolidColorBrush x:Key="FontWarningBrush" Color="#FFE082" />
 
 
         </ResourceDictionary>
