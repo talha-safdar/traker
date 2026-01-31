@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
              xmlns:cal="http://caliburnmicro.com"
              xmlns:local="clr-namespace:Traker.Views"
              mc:Ignorable="d" 
@@ -18,32 +19,29 @@
     <Grid Background="{StaticResource MainBackgroundBrush}"
           cal:Message.Attach="[Event PreviewMouseDown] = [Action OnMouseDownEvent($source)]">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.1*" /> <!-- side panel -->
+            <ColumnDefinition Width="0.05*" /> <!-- side panel -->
             <ColumnDefinition Width="*" />
             <!-- main panel / info panel -->
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="10*" /> <!--main part / side panel -->
+            <RowDefinition Height="0.5*" /> <!-- table option panel -->
             <RowDefinition Height="1.5*" /> <!-- info panel / side panel -->
         </Grid.RowDefinitions>
             
         <!-- side panel -->
-        <Grid Grid.Column="0" Grid.RowSpan="2" Margin="20,20,5,20">
+        <Grid Grid.Column="0" Grid.RowSpan="3" Margin="20,20,5,20">
             <Border Background="{StaticResource SidePanelBackgroundBrush}" CornerRadius="20">
 
             </Border>
         </Grid>
             
         <!-- main body -->
-
-
-
-        <Grid Grid.Column="1" Grid.Row="0" Margin="5,0,20,10">
+        <Grid Grid.Column="1" Grid.RowSpan="1" Margin="5,0,20,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="1" Margin="0,20,0,0" >
-
                 <Border Background="{StaticResource TableHeaderBackgroundBrush}" CornerRadius="20">
                     <!--SelectionMode= extended // multi row select-->
                     <DataGrid Margin="10"
@@ -94,20 +92,25 @@
 
             </Grid>      
         </Grid>
+        
+        <!-- table options -->
+        <Grid Grid.Column="1" Grid.Row="1">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddRowEntry()]" Background="{StaticResource SecondaryBackgroundBrush}" CornerRadius="20" Padding="8" Margin="0,0,30,0">
+                    <svg:SvgViewbox Source="/Resources/Media/Images/Icons/Lucide/plus.svg" Width="15" Height="15"/>                    
+                </Border>
+            </StackPanel>
+        </Grid>
 
         <!-- bottom section -->
-        <Grid Grid.Column="1" Grid.Row="1" Margin="5,0,20,20">
+        <Grid Grid.Column="1" Grid.Row="2" Margin="5,0,20,20">
             <Border Background="{StaticResource BottomInfoBackgroundBrush}" CornerRadius="15">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="0.6*" />
-                        <!-- left section -->
-                        <ColumnDefinition Width="*" />
-                        <!-- middle-1 section -->
-                        <ColumnDefinition Width="*" />
-                        <!-- middle-2 section -->
-                        <ColumnDefinition Width="*" />
-                        <!-- right section -->
+                        <ColumnDefinition Width="0.6*" /> <!-- left section (with 4 rows) -->
+                        <ColumnDefinition Width="*" /> <!-- middle-1 section -->
+                        <ColumnDefinition Width="*" /> <!-- middle-2 section -->                        
+                        <ColumnDefinition Width="*" /> <!-- right section -->                        
                     </Grid.ColumnDefinitions>
 
                     <!-- left section -->
@@ -118,26 +121,25 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="2*" MinWidth="110" /> <!-- titles -->
+                            <ColumnDefinition Width="*" /> <!-- values -->
+                            <ColumnDefinition Width="*" /> <!-- line spacer -->
                         </Grid.ColumnDefinitions>
 
-                        <!-- sub-left section -->
+                        <!-- new jobs -->
                         <Grid Grid.Row="0" Grid.Column="0">
                             <Grid Grid.Column="0">
                                 <TextBlock Margin="0,0,10,0" Text="New Jobs:" Foreground="{StaticResource FontSecondaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="18" FontWeight="Regular" />
                             </Grid>
-                        </Grid>
+                        </Grid>                        
                         <Grid Grid.Row="0" Grid.Column="1">
                             <Grid Grid.Column="0">
                                 <TextBlock Text="{Binding NewJobsCount}" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Regular" />
                             </Grid>
                         </Grid>
-
-
+                        
+                        <!-- in progress -->
                         <Grid Grid.Row="1">
                             <Grid Grid.Column="0">
                                 <TextBlock Margin="0,0,10,0" Text="In Progress:" Foreground="{StaticResource FontSecondaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="18" FontWeight="Regular" />
@@ -149,7 +151,7 @@
                             </Grid>
                         </Grid>
 
-
+                        <!-- completed -->
                         <Grid Grid.Row="2">
                             <Grid Grid.Column="0">
                                 <TextBlock Margin="0,0,10,0" Text="Completed:" Foreground="{StaticResource FontSecondaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="18" FontWeight="Regular" />
@@ -161,6 +163,7 @@
                             </Grid>
                         </Grid>
 
+                        <!-- invoiced -->
                         <Grid Grid.Row="3">
                             <Grid Grid.Column="0">
                                 <TextBlock Margin="0,0,10,0" Text="Invoiced:" Foreground="{StaticResource FontSecondaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="18" FontWeight="Regular" />
@@ -171,14 +174,15 @@
                                 <TextBlock Text="{Binding InvoicedJobsCount}" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Regular" />
                             </Grid>
                         </Grid>
+                        
+                        <!-- line spacer -->
                         <Grid Grid.Column="2" Grid.RowSpan="4" Margin="35,0,0,0" Width="5">
                             <Border BorderThickness="2" Background="{StaticResource FontPrimaryBrush}" Opacity="0.5">
-
                             </Border>
                         </Grid>
                     </Grid>
 
-                    <!-- middle-1 section overdue -->
+                    <!-- overdue -->
                     <Grid Grid.Column="1">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Margin="0,0,20,0" Text="Overdue:" Foreground="{StaticResource FontSecondaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Regular" />
@@ -186,7 +190,7 @@
                         </StackPanel>
                     </Grid>
 
-                    <!-- middle-2 section received -->
+                    <!-- received -->
                     <Grid Grid.Column="2">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Margin="0,0,20,0" Text="Received:" Foreground="{StaticResource FontSecondaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Regular" />

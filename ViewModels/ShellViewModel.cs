@@ -42,7 +42,11 @@ namespace Traker.ViewModels
             if (State.PopUpMenu != null)
             {
                 // close create report pop menu
-                await State.PopUpMenu.TryCloseAsync(true);
+                if (State.PopUpMenu is IScreen screen)
+                {
+                    await screen.TryCloseAsync(true);
+                    State.PopUpMenu = null;
+                }
                 State.PopUpMenu = null;
             }
         }

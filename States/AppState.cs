@@ -11,11 +11,11 @@ namespace Traker.States
     public class AppState : PropertyChangedBase
     {
         #region Private View State Variables
-        private JobDetailsViewModel _popUpMenu = new JobDetailsViewModel();
+        private Object _popUpMenu = new JobDetailsViewModel();
         #endregion
 
         #region Public View State Variables
-        public JobDetailsViewModel PopUpMenu
+        public Object PopUpMenu
         {
             get => _popUpMenu;
             set

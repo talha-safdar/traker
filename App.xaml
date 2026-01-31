@@ -8,7 +8,8 @@
                 <ResourceDictionary>
                     <local:Bootstrapper x:Key="Bootstrapper"/>
                 </ResourceDictionary>
-                <ResourceDictionary Source="/Styles/Styles.xaml" />
+                <ResourceDictionary Source="/Styles/Styles.xaml"/>
+                <ResourceDictionary Source="/Styles/Icons.xaml"/>
                 <ResourceDictionary Source="/Styles/DarkTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 

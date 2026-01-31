@@ -4,3 +4,8 @@
 	Prices/IDs:			Roboto Mono	500 (Medium)
 	Labels/Captions:	Public Sans	400 (Regular)
 }
+
+
+
+TO-DO:
+Esc button: to exit popup window

@@ -258,10 +258,14 @@ namespace Traker.ViewModels
             // Debug.WriteLine(selectedJob.ClientName);
             //Debug.WriteLine(selectedJob.ClientName + " " + selectedJob.Jobs.Select(j => j.Description).FirstOrDefault()!.ToString());
             
-            if (State.PopUpMenu != null && State.PopUpMenu.IsActive == true)
+            if (State.PopUpMenu != null && State.PopUpMenu is IActivate activator && activator.IsActive)
             {
-                await State.PopUpMenu.TryCloseAsync(true);
-                State.PopUpMenu = null;
+                // Cast to IScreen (this covers TryCloseAsync, IsActive, and Deactivate)
+                if (State.PopUpMenu is IScreen screen)
+                {
+                    await screen.TryCloseAsync(true);
+                    State.PopUpMenu = null;
+                }
             }
 
             // if using client name then it must be required at all the time
@@ -287,9 +291,33 @@ namespace Traker.ViewModels
             if (State.PopUpMenu != null)
             {
                 // close create report pop menu
-                await State.PopUpMenu.TryCloseAsync(true);
+                if (State.PopUpMenu is IScreen screen)
+                {
+                    await screen.TryCloseAsync(true);
+                    State.PopUpMenu = null;
+                }
                 State.PopUpMenu = null;
             }
+        }
+
+        public async Task AddRowEntry()
+        {
+            Debug.WriteLine("ADDING..");
+
+
+            // if State.popup is not free then report it with a message box
+            if (State.PopUpMenu != null && State.PopUpMenu is IActivate activator && activator.IsActive)
+            {
+                // Cast to IScreen (this covers TryCloseAsync, IsActive, and Deactivate)
+                if (State.PopUpMenu is IScreen screen)
+                {
+                    await screen.TryCloseAsync(true);
+                    State.PopUpMenu = null;
+                }
+            }
+
+            State.PopUpMenu = new AddRowEntryViewModel();
+            await _windowManager.ShowPopupAsync(State.PopUpMenu, null, SettingsForDialog(300, 250));
         }
 
 
