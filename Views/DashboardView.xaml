@@ -76,7 +76,6 @@
                             </DataGridTextColumn>
                             <DataGridTextColumn Header="Job Description" Binding="{Binding JobDescription}" Width="*" />
                             <DataGridTextColumn Header="Price" Binding="{Binding Price, StringFormat=£{0:N2}}" Width="0.5*" />
-                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="0.5*" />
                             <DataGridTextColumn Header="DueDate" Binding="{Binding DueDate, StringFormat={}{0:dd/MM/yyyy}}" Width="0.4*">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
@@ -85,6 +84,7 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="0.5*" />
                             <DataGridTextColumn Header="Paid" Binding="{Binding Paid}" Width="0.15*" />
                         </DataGrid.Columns>
                     </DataGrid>

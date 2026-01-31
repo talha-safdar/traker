@@ -54,7 +54,9 @@
     <Resource Include="Resources\Fonts\RobotoMono-Italic.ttf" />
     <Resource Include="Resources\Fonts\RobotoMono.ttf" />
     <Resource Include="Resources\Media\Images\Icons\close-button.png" />
-    <Resource Include="Resources\Media\Images\Icons\Lucide\plus.svg" />
+    <Resource Include="Resources\Media\Images\Icons\Lucide\plus.svg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\Media\Images\Icons\minimise-button.png" />
   </ItemGroup>
 

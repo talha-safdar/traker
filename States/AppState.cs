@@ -11,7 +11,8 @@ namespace Traker.States
     public class AppState : PropertyChangedBase
     {
         #region Private View State Variables
-        private Object _popUpMenu = new JobDetailsViewModel();
+        private Object _popUpMenu = new JobDetailsViewModel(); // for any view model as it must be showing up one at a time
+        private bool _isAddRowEntryOpen = false;
         #endregion
 
         #region Public View State Variables
@@ -22,6 +23,16 @@ namespace Traker.States
             {
                 _popUpMenu = value;
                 NotifyOfPropertyChange(() => PopUpMenu);
+            }
+        }
+
+        public bool IsAddRowEntryOpen
+        {
+            get { return _isAddRowEntryOpen; }
+            set
+            {
+                _isAddRowEntryOpen = value;
+                NotifyOfPropertyChange(() => IsAddRowEntryOpen);
             }
         }
         #endregion

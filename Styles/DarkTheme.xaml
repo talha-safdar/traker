@@ -253,5 +253,62 @@ Since you have a specific grid and those spacer columns, you don't want your but
         </Setter>
     </Style>
 
+    <Style TargetType="TextBox">
+        <Setter Property="Foreground" Value="#E6E6E6"/>
+        <Setter Property="Background" Value="#2A2A2A"/>
+        <Setter Property="BorderBrush" Value="#3A3F4B"/>
+        <Setter Property="BorderThickness" Value="3"/>
+        <Setter Property="Padding" Value="8,6"/>
+        <Setter Property="CaretBrush" Value="White"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border x:Name="Border"
+                        Background="#141414"
+                        BorderBrush="{StaticResource LightBorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="8">
+
+                        <ScrollViewer x:Name="PART_ContentHost"/>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+
+                        <!-- focus glow -->
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter TargetName="Border"
+                                Property="BorderBrush"
+                                Value="#2E8B57"/>
+                        </Trigger>
+
+                        <!-- disabled -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5"/>
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="DatePickerTextBox">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DatePickerTextBox">
+                    <Grid>
+                        <TextBox x:Name="PART_TextBox"
+                             Text="{Binding Path=Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                             Background="#252525"
+                             Foreground="White"
+                             BorderThickness="0"
+                             VerticalContentAlignment="Center"
+                             Padding="5,0"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
 </ResourceDictionary>

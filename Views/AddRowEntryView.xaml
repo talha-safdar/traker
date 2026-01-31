@@ -4,11 +4,60 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Traker.Views"
+             xmlns:behaviours="clr-namespace:Traker.Behaviours"
              mc:Ignorable="d" 
-             d:DesignHeight="300" 
-             d:DesignWidth="250">
-    <Border Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
-        <Grid>
+             d:DesignHeight="600" 
+             d:DesignWidth="500"
+             MaxHeight="600"
+             MaxWidth="500"
+             >
+    <Border  Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
+        <Grid Margin="20,40,20,40">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" /> <!-- labels-->
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" /> <!-- client name -->
+                <RowDefinition Height="*" /> <!-- job description -->
+                <RowDefinition Height="*" /> <!-- price -->
+                <RowDefinition Height="*" /> <!-- due date -->
+            </Grid.RowDefinitions>
+
+            <!-- client name -->
+            <Grid Grid.Row="0">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Margin="5,0,0,0" Text="Client Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                    <TextBox MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                </StackPanel>
+            </Grid>
+            
+            <!-- job description -->
+            <Grid Grid.Row="1">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Margin="5,0,0,0" Text="Job Description" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                    <TextBox MaxLength="66" AcceptsReturn="True" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                </StackPanel>
+            </Grid>
+
+            <!-- price -->
+            <Grid Grid.Row="2">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Margin="5,0,0,0" Text="Price" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                    <TextBox MaxLength="12" AcceptsReturn="False" Padding="10" Text="{Binding Price, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                </StackPanel>
+            </Grid>
+            
+            <!-- due date -->
+            <Grid Grid.Row="3">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Margin="5,0,0,0" Text="Due Date" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                    <TextBox 
+                        MaxLength="10" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                        behaviours:TextboxFilter.EnableFilter="True"
+                        behaviours:TextboxFilter.MaxLength="10"
+                        behaviours:TextboxFilter.FilterMode="DateDDMMYYYY" />
+                </StackPanel>
+            </Grid>
         </Grid>
     </Border>
 </UserControl>

@@ -304,20 +304,30 @@ namespace Traker.ViewModels
         {
             Debug.WriteLine("ADDING..");
 
-
-            // if State.popup is not free then report it with a message box
-            if (State.PopUpMenu != null && State.PopUpMenu is IActivate activator && activator.IsActive)
+            
+            if (State.IsAddRowEntryOpen == false)
             {
-                // Cast to IScreen (this covers TryCloseAsync, IsActive, and Deactivate)
-                if (State.PopUpMenu is IScreen screen)
+                // if State.popup is not free then report it with a message box
+                if (State.PopUpMenu != null && State.PopUpMenu is IActivate activator && activator.IsActive)
                 {
-                    await screen.TryCloseAsync(true);
-                    State.PopUpMenu = null;
+                    // Cast to IScreen (this covers TryCloseAsync, IsActive, and Deactivate)
+                    if (State.PopUpMenu is IScreen screen)
+                    {
+                        await screen.TryCloseAsync(true);
+                        State.PopUpMenu = null;
+                    }
                 }
+
+                State.PopUpMenu = new AddRowEntryViewModel();
+                await _windowManager.ShowWindowAsync(State.PopUpMenu, null, SettingsForDialog(600, 500));
+                State.IsAddRowEntryOpen = true; // flag as open accross the project
             }
 
-            State.PopUpMenu = new AddRowEntryViewModel();
-            await _windowManager.ShowPopupAsync(State.PopUpMenu, null, SettingsForDialog(300, 250));
+            // the state State.IsAddRowEntryOpen will be false again from addrowentryVM when user closes the window
+            else if (State.IsAddRowEntryOpen == true)
+            {
+                return; // do nothing
+            }
         }
 
 
