@@ -254,16 +254,32 @@ namespace Traker.ViewModels
 
         public async Task OpenJobDetails(DashboardModel selectedJob)
         {
-            Debug.WriteLine("OPEN MENU");
-            Debug.WriteLine(selectedJob.ClientName + " " + selectedJob.Jobs.Select(j => j.Description).FirstOrDefault()!.ToString());
+            Debug.WriteLine("OPEN MENU" + " | " + SelectedDataRow.ClientName + " - " + selectedJob.ClientName);
+            // Debug.WriteLine(selectedJob.ClientName);
+            //Debug.WriteLine(selectedJob.ClientName + " " + selectedJob.Jobs.Select(j => j.Description).FirstOrDefault()!.ToString());
             
             if (State.PopUpMenu != null && State.PopUpMenu.IsActive == true)
             {
                 await State.PopUpMenu.TryCloseAsync(true);
                 State.PopUpMenu = null;
             }
-            State.PopUpMenu = new JobDetailsViewModel();
-            await _windowManager.ShowPopupAsync(State.PopUpMenu, null, SettingsForDialog(300, 250));
+
+            // if using client name then it must be required at all the time
+
+            /*
+             * there are two variables to get the data from the row
+             * 1 - on the right click (datagrid approach)
+             * 2 - on the left click (to pass row's current object 'selectedJob')
+             * to open the popup the datagrid selection object must match with the right-clicked onwe
+             * we use the clientName for matching for now, but might use unique id in the future.
+             * and the latter must become required hence Id seems perfect.
+             * In fact we just swapped to clientId :)
+             */
+            if (SelectedDataRow.ClientId == selectedJob.ClientId)
+            {
+                State.PopUpMenu = new JobDetailsViewModel();
+                await _windowManager.ShowPopupAsync(State.PopUpMenu, null, SettingsForDialog(300, 250));
+            }
         }
 
         public async Task OnMouseDownEvent(Grid gridSource)
