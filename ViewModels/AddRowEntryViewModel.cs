@@ -15,16 +15,25 @@ namespace Traker.ViewModels
         private decimal _price;
         #endregion
 
-        public AddRowEntryViewModel()
+        #region Public State Variable
+        public AppState State { get; } // state binding variable accessible from other viewmodels
+        #endregion
+
+        public AddRowEntryViewModel(AppState appState)
         {
             Price = 0.00M;
+
+            State = appState;
         }
 
         public async Task Exit()
         {
             Debug.WriteLine("EXIT ADD");
 
-            await TryCloseAsync(true);
+            // argument true only for dialogs
+            // false for the rest
+            State.IsAddRowEntryOpen = false;
+            await TryCloseAsync();
         }
 
         //void SaveRow(DashboardRow row)

@@ -15,13 +15,13 @@ namespace Traker.ViewModels
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Media;
+    using Traker.Events;
     using Traker.Models;
     using Traker.States;
 
     public class DashboardViewModel : Screen
     {
         #region Caliburn Variables
-        private readonly IEventAggregator _events;
         private readonly IWindowManager _windowManager;
         #endregion
 
@@ -67,9 +67,8 @@ namespace Traker.ViewModels
         private AddRowEntryViewModel _addRowEntryViewModel;
         #endregion
 
-        public DashboardViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState)
+        public DashboardViewModel(IWindowManager windowManager, AppState appState)
         {
-            _events = events;
             _windowManager = windowManager;
 
             _clientNames = new ObservableCollection<string>(); // client names
@@ -100,7 +99,7 @@ namespace Traker.ViewModels
             _selectedDataRow = new DashboardModel();
 
             _jobDetailsViewModel = new JobDetailsViewModel();
-            _addRowEntryViewModel = new AddRowEntryViewModel();
+            _addRowEntryViewModel = new AddRowEntryViewModel(State);
 
             State = appState;
         }
@@ -270,7 +269,7 @@ namespace Traker.ViewModels
             
             if (_jobDetailsViewModel != null)
             {
-                await _jobDetailsViewModel.TryCloseAsync(true);
+                await _jobDetailsViewModel.TryCloseAsync(false);
             }
 
             // if using client name then it must be required at all the time
@@ -295,7 +294,7 @@ namespace Traker.ViewModels
         {
             if (_jobDetailsViewModel != null)
             {
-                await _jobDetailsViewModel.TryCloseAsync(true);
+                await _jobDetailsViewModel.TryCloseAsync(false);
                 _jobDetailsViewModel = null;
             }
         }
@@ -310,11 +309,11 @@ namespace Traker.ViewModels
                 // if State.popup is not free then report it with a message box
                 if (_jobDetailsViewModel != null )
                 {
-                    await _jobDetailsViewModel.TryCloseAsync(true);
+                    await _jobDetailsViewModel.TryCloseAsync(false);
                     _jobDetailsViewModel = null;
                 }
 
-                _addRowEntryViewModel = new AddRowEntryViewModel();
+                _addRowEntryViewModel = new AddRowEntryViewModel(State);
                 await _windowManager.ShowWindowAsync(_addRowEntryViewModel, null, SettingsForDialog(600, 500));
                 State.IsAddRowEntryOpen = true; // flag as open accross the project
             }
@@ -340,6 +339,32 @@ namespace Traker.ViewModels
             settings.MinWidth = width;
             return settings;
         }
+
+        //public async Task HandleAsync(CloseWindow message, CancellationToken cancellationToken)
+        //{
+        //    // add if else checks and try/catch
+        //    if (message != null)
+        //    {
+        //        if (message.WindowName == "AddRowEntry")
+        //        {
+        //            if (_addRowEntryViewModel != null)
+        //            {
+        //                try
+        //                {
+        //                    await _addRowEntryViewModel.TryCloseAsync();
+        //                    _addRowEntryViewModel = null;
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    var real = ex.InnerException ?? ex;
+        //                    Debug.WriteLine(real.Message);
+        //                    Debug.WriteLine(real.StackTrace);
+        //                }
+
+        //            }
+        //        }
+        //    }
+        //}
 
 
 
