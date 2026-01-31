@@ -91,13 +91,16 @@
             </Setter.Value>
         </Setter>
     </Style>
-
+    
     <Style TargetType="DataGridColumnHeader">
         <Setter Property="Background" Value="{StaticResource TableHeader}" />
         <Setter Property="Foreground" Value="{StaticResource FontPrimaryBrush}" />
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="Padding" Value="0,8"/>
         <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FontFamily" Value="pack://Traker:,,,/Resources/Fonts/#Montserrat"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontSize" Value="22"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="DataGridColumnHeader">

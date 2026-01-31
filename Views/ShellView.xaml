@@ -25,14 +25,14 @@
     </WindowChrome.WindowChrome>
 
     <Border Background="{StaticResource MainBackgroundBrush}" cal:Message.Attach="[Event PreviewMouseDown] = [Action OnMouseDownEvent($source)]">
-        <Grid cal:Message.Attach="[Event PreviewMouseDown] = [Action OnMouseDownEvent($source)]">
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.07*"/> <!-- top bar-->
                 <RowDefinition Height="*"/> <!-- body -->
             </Grid.RowDefinitions>
 
             <!-- top bar -->
-            <Grid Grid.Row="0" Background="{StaticResource TopBarBackgroundBrush}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" cal:Message.Attach="[Event PreviewMouseDown] = [Action OnMouseDownEvent($source)]">
+            <Grid Grid.Row="0" Background="{StaticResource TopBarBackgroundBrush}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <Grid Margin="20,0,20,0">
                     <TextBlock Text="TRAKER" FontWeight="ExtraBlack" Foreground="{StaticResource FontPrimaryBrush}" FontSize="25" VerticalAlignment="Center" HorizontalAlignment="Left" />
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

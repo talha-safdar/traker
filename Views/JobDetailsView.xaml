@@ -7,9 +7,15 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" 
              d:DesignWidth="250">
-    <Border Background="Red" CornerRadius="20">
+    <Border Background="{StaticResource BorderBrush}" CornerRadius="20">
         <Grid>
-            
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" /> <!-- status -->
+                <RowDefinition Height="*" /> <!-- spacer -->
+                <RowDefinition Height="*" /> <!-- folder / invoice -->
+                <RowDefinition Height="*" /> <!-- spacer -->
+                <RowDefinition Height="*" /> <!-- edit / cancel -->
+            </Grid.RowDefinitions>
         </Grid>
     </Border>
 </UserControl>
