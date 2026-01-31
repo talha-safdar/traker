@@ -47,12 +47,16 @@
                 <Border Background="{StaticResource TableHeaderBackgroundBrush}" CornerRadius="20">
                     <!--SelectionMode= extended // multi row select-->
                     <DataGrid Margin="10"
+                              RowHeight="40"
                               VerticalAlignment="Center"
                               HorizontalAlignment="Center"
                                 ItemsSource="{Binding DashboardData}" 
                                 SelectedItem="{Binding SelectedDataRow}" 
                                 AutoGenerateColumns="False" 
                                 SelectionMode="Single"
+                                Foreground="{StaticResource FontPrimaryBrush}" 
+                                FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" 
+                                FontWeight="Regular" 
                                 FontSize="22"
                                 VerticalScrollBarVisibility="Visible"
                               HorizontalScrollBarVisibility="Hidden">
@@ -64,13 +68,26 @@
                         </DataGrid.RowStyle>
 
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Client Name" Binding="{Binding ClientName}" Width="*" />
-                            <DataGridTextColumn Header="Email" Binding="{Binding ClientEmail}" Width="*" />
-                            <DataGridTextColumn Header="Phone" Binding="{Binding ClientPhone}" Width="0.5*" />
-                            <DataGridTextColumn Header="Description" Binding="{Binding JobDescription}" Width="*" />
-                            <DataGridTextColumn Header="Status" Binding="{Binding JobStatus}" Width="0.5*" />
-                            <DataGridTextColumn Header="Price" Binding="{Binding JobPrice}" Width="0.5*" />
-                            <DataGridCheckBoxColumn Header="Paid" Binding="{Binding IsPaid}" Width="0.2*" />
+                            <DataGridTextColumn Header="Client Name" Binding="{Binding ClientName}" Width="0.5*" >
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        <Setter Property="TextAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Job Description" Binding="{Binding JobDescription}" Width="*" />
+                            <DataGridTextColumn Header="Price" Binding="{Binding Price, StringFormat=£{0:N2}}" Width="0.5*" />
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="0.5*" />
+                            <DataGridTextColumn Header="DueDate" Binding="{Binding DueDate, StringFormat={}{0:dd/MM/yyyy}}" Width="0.4*">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        <Setter Property="TextAlignment" Value="Left"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Paid" Binding="{Binding Paid}" Width="0.15*" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Border>

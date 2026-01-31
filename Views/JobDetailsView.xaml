@@ -7,15 +7,85 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" 
              d:DesignWidth="250">
-    <Border Background="{StaticResource BorderBrush}" CornerRadius="20">
+    <Border Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" /> <!-- status -->
-                <RowDefinition Height="*" /> <!-- spacer -->
+                <RowDefinition Height="0.2*" /> <!-- spacer -->
                 <RowDefinition Height="*" /> <!-- folder / invoice -->
-                <RowDefinition Height="*" /> <!-- spacer -->
+                <RowDefinition Height="0.2*" /> <!-- spacer -->
                 <RowDefinition Height="*" /> <!-- edit / cancel -->
             </Grid.RowDefinitions>
+
+            <!-- status -->
+            <Grid Grid.Row="0">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Margin="20" Text="Status" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Border Background="{StaticResource ErrorTextBrush}" CornerRadius="10" Margin="5 ,0" Height="20" Width="60">
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="New" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" FontSize="14" />
+                        </Border>
+                        <Border Background="{StaticResource OverdueTextBrush}" CornerRadius="10" Margin="5 ,0" Height="20" Width="60">
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Active" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" FontSize="14" />
+                        </Border>
+                        <Border Background="{StaticResource SuccessTextBrush}" CornerRadius="10" Margin="5 ,0" Height="20" Width="60">
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Done" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" FontSize="14" />
+                        </Border>
+                    </StackPanel>                    
+                </StackPanel>
+            </Grid>
+
+            <!-- spacer -->
+            <Grid Grid.Row="1" Margin="0,20">
+                <Rectangle Height="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="20,0">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="Transparent" Offset="0" />
+                            <GradientStop Color="White" Offset="0.5" />
+                            <GradientStop Color="Transparent" Offset="1" />
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+            </Grid>
+            
+            <!-- folder / invoice -->
+            <Grid Grid.Row="2">
+                <StackPanel Orientation="Vertical">
+                    <Border Background="{StaticResource ButtonBackgroundBrush}" CornerRadius="20" Height="35" Margin="20,0,20,10" BorderThickness="2" BorderBrush="{StaticResource ButtonDefaultBorderBrush}">
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Folder" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="14" />
+                    </Border>
+                    <Border Background="{StaticResource ButtonBackgroundBrush}" CornerRadius="20" Height="35" Margin="20,0,20,0" BorderThickness="2" BorderBrush="{StaticResource ButtonDefaultBorderBrush}">
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Invoice" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="14" />
+                    </Border>
+                </StackPanel>
+            </Grid>
+
+            <!-- spacer -->
+            <Grid Grid.Row="3" Margin="0,20">
+                <Rectangle Height="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="20,0">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="Transparent" Offset="0" />
+                            <GradientStop Color="White" Offset="0.5" />
+                            <GradientStop Color="Transparent" Offset="1" />
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+            </Grid>
+
+            <!-- edit / delete -->
+            <Grid Grid.Row="4">
+                <StackPanel Orientation="Vertical" Margin="0, 0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Border Background="{StaticResource OverdueTextBrush}" CornerRadius="10" Margin="5 ,0" Height="20" Width="80">
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Edit" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" FontSize="14" />
+                        </Border>
+                        <Border Background="{StaticResource ErrorTextBrush}" CornerRadius="10" Margin="5 ,0" Height="20" Width="80">
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Delete" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" FontSize="14" />
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
         </Grid>
     </Border>
 </UserControl>

@@ -138,8 +138,14 @@ namespace Traker.ViewModels
             {
                 DashboardModel dashboardEntry = new DashboardModel
                 {
-                    ClientId = _clients[i].ClientId,
                     ClientName = _clients[i].FullName,
+                    JobDescription = _jobs.Where(j => j.ClientId == _clients[i].ClientId).Select(j => j.Description).FirstOrDefault()!.ToString()!,
+                    Price = _jobs.Where(j => j.ClientId == _clients[i].ClientId).Select(j => j.FinalPrice).FirstOrDefault().ToString()!,
+                    Status = _jobs.Where(j => j.ClientId == _clients[i].ClientId).Select(j => j.Status).FirstOrDefault()!.ToString()!,
+                    DueDate = _jobs.Where(j => j.ClientId == _clients[i].ClientId).Select(j => j.DueDate).FirstOrDefault()!,
+                    Paid = _invoices.Where(inv => inv.JobId == _jobs[i].JobId).Select(inv => inv.IsPaid).FirstOrDefault().ToString()!,
+
+                    ClientId = _clients[i].ClientId,
                     ClientEmail = _clients[i].Email,
                     ClientPhone = _clients[i].PhoneNumber,
                     Jobs = _jobs.Where(job => job.ClientId == _clients[i].ClientId).ToList(),
@@ -147,58 +153,6 @@ namespace Traker.ViewModels
                 };
                 _dashboardData.Add(dashboardEntry);
             }
-
-            //ClientNames.Clear();
-            //for (int i = 0; i < _dashboardData.Count; i++)
-            //{
-            //    ClientNames.Add(_dashboardData[i].ClientName);
-            //}
-
-            //ClientEmails.Clear();
-            //for (int i = 0; i < _dashboardData.Count; i++)
-            //{
-            //    ClientEmails.Add(_dashboardData[i].ClientEmail);
-            //}
-
-            //ClientPhones.Clear();
-            //for (int i = 0; i < _dashboardData.Count; i++)
-            //{
-            //    ClientPhones.Add(_dashboardData[i].ClientPhone);
-            //}
-
-            //JobDescriptions.Clear();
-            //for (int i = 0; i < _dashboardData.Count; i++)
-            //{
-            //    JobDescriptions.Add(_dashboardData[i].Jobs.Where(j => j.ClientId == _dashboardData[i].ClientId).Select(j => j.Description).ToList().FirstOrDefault()!);
-            //}
-
-            //JobStatus.Clear();
-            //for (int i = 0; i < _dashboardData.Count; i++)
-            //{
-            //    JobStatus.Add(_dashboardData[i].Jobs.Where(j => j.ClientId == _dashboardData[i].ClientId).Select(j => j.Status).ToList().FirstOrDefault()!);
-            //}
-
-            //JobPrice.Clear();
-            //for (int i = 0; i < _dashboardData.Count; i++)
-            //{
-            //    JobPrice.Add(_dashboardData[i].Jobs.Where(j => j.ClientId == _dashboardData[i].ClientId).Select(j => j.FinalPrice.ToString("C")).ToList().FirstOrDefault()!);
-            //}
-
-            //Paid.Clear();
-            //for (int i = 0; i < _dashboardData.Count; i++)
-            //{
-            //    var paid = _dashboardData[i].Invoices.Where(inv => inv.JobId == _dashboardData[i].Jobs.Where(j => j.ClientId == _dashboardData[i].ClientId).Select(j => j.JobId).FirstOrDefault()).Select(inv => inv.IsPaid).FirstOrDefault();
-            //    if (paid == true)
-            //    {
-            //        Paid.Add("Yes");
-            //    }
-            //    else
-            //    {
-            //        Paid.Add("No");
-            //    }
-            //}
-
-
 
             for (int i = 0; i < _dashboardData.Count; i++)
             {
@@ -495,7 +449,6 @@ namespace Traker.ViewModels
             set
             {
                 _selectedDataRow = value;
-                Debug.WriteLine(_selectedDataRow.ClientName + " " + _selectedDataRow.Jobs.Select(j => j.Description).FirstOrDefault()!.ToString());
                 NotifyOfPropertyChange(() => SelectedDataRow);
             }
         }

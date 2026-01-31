@@ -51,6 +51,35 @@
     <SolidColorBrush x:Key="PrimaryTextBrush" Color="#2F3542"/>
     <SolidColorBrush x:Key="Grey200Brush" Color="#ECECEC"/>
 
+
+
+    <!-- border -->
+    <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="#252525" />
+    <SolidColorBrush x:Key="ButtonHoverBackgroundBrush" Color="#3D3D3D" />
+    <SolidColorBrush x:Key="ButtonPressedBackgroundBrush" Color="#121212" />
+
+    <SolidColorBrush x:Key="ButtonDefaultBorderBrush" Color="#444444" />
+    <SolidColorBrush x:Key="ButtonHoverBorderBrush" Color="#007ACC" />
+    <SolidColorBrush x:Key="DoneButtonBorderBrush" Color="#2D4D3A" />
+    <SolidColorBrush x:Key="ActiveButtonBorderBrush" Color="#007ACC" />
+
+    <!--### 2. The Correct Way to Use Them
+Since you have a specific grid and those spacer columns, you don't want your buttons touching each other. Use your `LightBorderBrush` for the default look.
+
+**Example for your "Active" (formerly In Progress) button:**
+```xml-->
+    <!--<Button x:Name="ActiveAction"
+        Content="ACTIVE"
+        Background="{StaticResource SecondaryBackgroundBrush}"
+        BorderBrush="{StaticResource AccentColorBrush}"
+        Foreground="{StaticResource FontPrimaryBrush}"
+        BorderThickness="1"
+        Padding="10,4"
+        Grid.Column="4" />-->
+
+
+
+
     <Style TargetType="DataGrid">
         <Setter Property="Background" Value="{StaticResource TableHeaderBackgroundBrush}"/>
         <Setter Property="Foreground" Value="#E6E6E6"/>
