@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         xmlns:local="clr-namespace:Traker.Views"
+        xmlns:cal="http://caliburnmicro.com"
         mc:Ignorable="d"
         Title="Traker" MinHeight="900" MinWidth="1400"
         WindowStyle="None"
@@ -23,15 +24,15 @@
             CornerRadius="20" />
     </WindowChrome.WindowChrome>
 
-    <Border Background="{StaticResource MainBackgroundBrush}">
-        <Grid>
+    <Border Background="{StaticResource MainBackgroundBrush}" cal:Message.Attach="[Event PreviewMouseDown] = [Action OnMouseDownEvent($source)]">
+        <Grid cal:Message.Attach="[Event PreviewMouseDown] = [Action OnMouseDownEvent($source)]">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.07*"/> <!-- top bar-->
                 <RowDefinition Height="*"/> <!-- body -->
             </Grid.RowDefinitions>
 
             <!-- top bar -->
-            <Grid Grid.Row="0" Background="{StaticResource TopBarBackgroundBrush}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid Grid.Row="0" Background="{StaticResource TopBarBackgroundBrush}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" cal:Message.Attach="[Event PreviewMouseDown] = [Action OnMouseDownEvent($source)]">
                 <Grid Margin="20,0,20,0">
                     <TextBlock Text="TRAKER" FontWeight="ExtraBlack" Foreground="{StaticResource FontPrimaryBrush}" FontSize="25" VerticalAlignment="Center" HorizontalAlignment="Left" />
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

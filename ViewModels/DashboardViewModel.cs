@@ -11,16 +11,22 @@ namespace Traker.ViewModels
     using Database;
     using System.Diagnostics;
     using System.Dynamic;
+    using System.Net.NetworkInformation;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Media;
     using Traker.Models;
+    using Traker.States;
 
     public class DashboardViewModel : Screen
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
         private readonly IWindowManager _windowManager;
+        #endregion
+
+        #region Public State Variable
+        public AppState State { get; } // state binding variable accessible from other viewmodels
         #endregion
 
         #region Private View Variables
@@ -57,10 +63,9 @@ namespace Traker.ViewModels
         private List<int> _inProgressJobs; // in progress jobs
         private List<int> _completedJobs; // completed jobs
         private List<int> _invoicedJobs; // completed jobs
-        JobDetailsViewModel _jobDetailsViewModel;
         #endregion
 
-        public DashboardViewModel(IEventAggregator events, IWindowManager windowManager)
+        public DashboardViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState)
         {
             _events = events;
             _windowManager = windowManager;
@@ -92,7 +97,8 @@ namespace Traker.ViewModels
             _dashboardData = new ObservableCollection<DashboardModel>();
             _selectedDataRow = new DashboardModel();
 
-            _jobDetailsViewModel = new JobDetailsViewModel();
+
+            State = appState;
         }
 
         #region Caliburn Functions
@@ -297,22 +303,22 @@ namespace Traker.ViewModels
             Debug.WriteLine("OPEN MENU");
             Debug.WriteLine(selectedJob.ClientName + " " + selectedJob.Jobs.Select(j => j.Description).FirstOrDefault()!.ToString());
             
-            if (_jobDetailsViewModel != null && _jobDetailsViewModel.IsActive == true)
+            if (State.PopUpMenu != null && State.PopUpMenu.IsActive == true)
             {
-                await _jobDetailsViewModel.TryCloseAsync(true);
-                _jobDetailsViewModel = null;
+                await State.PopUpMenu.TryCloseAsync(true);
+                State.PopUpMenu = null;
             }
-            _jobDetailsViewModel = new JobDetailsViewModel();
-            await _windowManager.ShowPopupAsync(_jobDetailsViewModel, null, SettingsForDialog(500, 500));
+            State.PopUpMenu = new JobDetailsViewModel();
+            await _windowManager.ShowPopupAsync(State.PopUpMenu, null, SettingsForDialog(300, 250));
         }
 
-        public async Task OnMouseEnterOrDownEvent(Grid gridSource)
+        public async Task OnMouseDownEvent(Grid gridSource)
         {
-            if (_jobDetailsViewModel != null)
+            if (State.PopUpMenu != null)
             {
                 // close create report pop menu
-                await _jobDetailsViewModel.TryCloseAsync(true);
-                _jobDetailsViewModel = null;
+                await State.PopUpMenu.TryCloseAsync(true);
+                State.PopUpMenu = null;
             }
         }
 

@@ -16,7 +16,7 @@
     -->
     
     <Grid Background="{StaticResource MainBackgroundBrush}"
-          cal:Message.Attach="[Event MouseEnter] = [Action OnMouseEnterOrDownEvent($source)]; [Event PreviewMouseDown] = [Action OnMouseEnterOrDownEvent($source)]">
+          cal:Message.Attach="[Event PreviewMouseDown] = [Action OnMouseDownEvent($source)]">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.1*" /> <!-- side panel -->
             <ColumnDefinition Width="*" />

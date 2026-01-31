@@ -7,6 +7,8 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Xml.Linq;
+using Traker.States;
 using Traker.ViewModels;
 
 namespace Traker
@@ -32,6 +34,7 @@ namespace Traker
             _container.Singleton<IWindowManager, WindowManager>();
             _container.Singleton<IEventAggregator, EventAggregator>();
             _container.Singleton<ShellViewModel>();
+            _container.Singleton<AppState>();
 
             _container.PerRequest<DashboardViewModel>();
 
