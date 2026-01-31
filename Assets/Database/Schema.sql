@@ -1,33 +1,33 @@
 ﻿PRAGMA foreign_keys = OFF;
 
-DROP TABLE IF EXISTS Client;
-DROP TABLE IF EXISTS Job;
-DROP TABLE IF EXISTS Invoice;
+DROP TABLE IF EXISTS Clients;
+DROP TABLE IF EXISTS Jobs;
+DROP TABLE IF EXISTS Invoices;
 
 
-CREATE TABLE Client (
-    ClientId INT PRIMARY KEY,
-    Type VARCHAR(20) NOT NULL CHECK (Type IN ('company', 'individual')),
+CREATE TABLE Clients (
+    ClientId INTEGER PRIMARY KEY AUTOINCREMENT,
+    Type VARCHAR(20) CHECK (Type IN ('company', 'individual')),
     FullName VARCHAR(100) NOT NULL,
-    CompanyName VARCHAR(100) NULL,
-    Email VARCHAR(100) NULL,
-    PhoneNumber VARCHAR(20) NULL,
+    CompanyName VARCHAR(100),
+    Email VARCHAR(100),
+    PhoneNumber VARCHAR(20),
     BillingAddress VARCHAR(255),
     City VARCHAR(50),
     Postcode VARCHAR(20),
     Country VARCHAR(50),
     CreatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-    IsActive BIT NOT NULL DEFAULT 1
+    IsActive BIT DEFAULT 1
 );
 
-CREATE TABLE Job (
-    JobId INTEGER PRIMARY KEY,
+CREATE TABLE Jobs (
+    JobId INTEGER PRIMARY KEY AUTOINCREMENT,
     ClientId INTEGER NOT NULL,
     Title TEXT,
     Description TEXT,
     Status VARCHAR(20) CHECK (Status IN ('New', 'InProgress', 'Completed', 'Invoiced', 'Paid')),
-    EstimatedPrice REAL,
-    FinalPrice REAL,
+    EstimatedPrice TEXT,
+    FinalPrice TEXT,
     CreatedDate DATETIME,
     StartDate DATETIME,
     CompletedDate DATETIME,
@@ -35,10 +35,58 @@ CREATE TABLE Job (
     FolderPath TEXT,
     Notes TEXT,
     IsArchived BOOLEAN,
-    FOREIGN KEY (ClientId) REFERENCES Client(ClientId)
+    FOREIGN KEY (ClientId) REFERENCES Clients(ClientId)
 );
 
-INSERT INTO Job (JobId, ClientId, Title, Description, Status, EstimatedPrice, FinalPrice, CreatedDate, StartDate, CompletedDate, DueDate, FolderPath, Notes, IsArchived) VALUES
+CREATE TABLE Invoices (
+    InvoiceId INTEGER PRIMARY KEY AUTOINCREMENT,
+    JobId INTEGER NOT NULL,
+    InvoiceNumber TEXT,
+    Subtotal TEXT,
+    TaxAmount TEXT,
+    TotalAmount TEXT,
+    IssueDate DATETIME,
+    DueDate DATETIME,
+    IsPaid BOOLEAN,
+    PaidDate DATETIME,
+    PaymentMethod TEXT,
+    Notes TEXT,
+    FOREIGN KEY (JobId) REFERENCES Jobs(JobId)
+);
+
+INSERT INTO Clients (ClientId, Type, FullName, CompanyName, Email, PhoneNumber, BillingAddress, City, Postcode, Country, CreatedDate, IsActive) VALUES
+(1, 'individual', 'John Doe', NULL, 'john.doe@example.com', '1234567890', '123 Elm St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(2, 'company', 'Jane Smith', 'Smith Enterprises', 'jane.smith@example.com', '0987654321', '456 Oak St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(3, 'individual', 'Alice Johnson', NULL, 'alice.johnson@example.com', '2345678901', '789 Pine St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(4, 'company', 'Bob Brown', 'Brown LLC', 'bob.brown@example.com', '3456789012', '321 Maple St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(5, 'individual', 'Charlie Davis', NULL, 'charlie.davis@example.com', '4567890123', '654 Cedar St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(6, 'company', 'Diana Evans', 'Evans Corp', 'diana.evans@example.com', '5678901234', '987 Birch St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(7, 'individual', 'Ethan Foster', NULL, 'ethan.foster@example.com', '6789012345', '159 Spruce St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(8, 'company', 'Fiona Green', 'Green Solutions', 'fiona.green@example.com', '7890123456', '753 Fir St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(9, 'individual', 'George Harris', NULL, 'george.harris@example.com', '8901234567', '852 Willow St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(10, 'company', 'Hannah Ives', 'Ives Industries', 'hannah.ives@example.com', '9012345678', '951 Chestnut St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(11, 'individual', 'Ian Johnson', NULL, 'ian.johnson@example.com', '1234567890', '123 Elm St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(12, 'company', 'Jack King', 'King Enterprises', 'jack.king@example.com', '0987654321', '456 Oak St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(13, 'individual', 'Laura Lee', NULL, 'laura.lee@example.com', '2345678901', '789 Pine St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(14, 'company', 'Mike Moore', 'Moore LLC', 'mike.moore@example.com', '3456789012', '321 Maple St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(15, 'individual', 'Nina Nelson', NULL, 'nina.nelson@example.com', '4567890123', '654 Cedar St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(16, 'company', 'Oscar Owens', 'Owens Corp', 'oscar.owens@example.com', '5678901234', '987 Birch St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(17, 'individual', 'Paula Parker', NULL, 'paula.parker@example.com', '6789012345', '159 Spruce St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(18, 'company', 'Quinn Reed', 'Reed Solutions', 'quinn.reed@example.com', '7890123456', '753 Fir St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(19, 'individual', 'Ryan Scott', NULL, 'ryan.scott@example.com', '8901234567', '852 Willow St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(20, 'company', 'Sara Taylor', 'Taylor Industries', 'sara.taylor@example.com', '9012345678', '951 Chestnut St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(21, 'individual', 'Tommy Upton', NULL, 'tommy.upton@example.com', '1234567890', '123 Elm St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(22, 'company', 'Uma Vance', 'Vance Enterprises', 'uma.vance@example.com', '0987654321', '456 Oak St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(23, 'individual', 'Victor White', NULL, 'victor.white@example.com', '2345678901', '789 Pine St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(24, 'company', 'Wendy Young', 'Young LLC', 'wendy.young@example.com', '3456789012', '321 Maple St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(25, 'individual', 'Xander Zane', NULL, 'xander.zane@example.com', '4567890123', '654 Cedar St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(26, 'company', 'Yara Adams', 'Adams Corp', 'yara.adams@example.com', '5678901234', '987 Birch St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(27, 'individual', 'Zoe Baker', NULL, 'zoe.baker@example.com', '6789012345', '159 Spruce St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(28, 'company', 'Aaron Clark', 'Clark Solutions', 'aaron.clark@example.com', '7890123456', '753 Fir St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(29, 'individual', 'Bella Diaz', NULL, 'bella.diaz@example.com', '8901234567', '852 Willow St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1),
+(30, 'company', 'Cody Evans', 'Evans Industries', 'cody.evans@example.com', '9012345678', '951 Chestnut St', 'Springfield', '12345', 'USA', CURRENT_TIMESTAMP, 1);
+
+INSERT INTO Jobs (JobId, ClientId, Title, Description, Status, EstimatedPrice, FinalPrice, CreatedDate, StartDate, CompletedDate, DueDate, FolderPath, Notes, IsArchived) VALUES
 (1, 1, 'Website Development', 'Develop a new company website', 'Invoiced', 1545.00, 67.0, CURRENT_TIMESTAMP, '2023-01-01', '2023-01-01', '2023-12-01', '/projects/website', 'Initial project setup', 0),
 (2, 2, 'SEO Optimization', 'Optimize website for search engines', 'InProgress', 800.00, 44.50, CURRENT_TIMESTAMP, '2023-10-01', '2023-10-01', '2023-11-01', '/projects/seo', 'Focus on keywords', 0),
 (3, 3, 'Mobile App', 'Create a mobile application', 'Completed', 2000.00, 1800.00, CURRENT_TIMESTAMP, '2023-05-01', '2023-09-01', '2023-10-01', '/projects/app', 'Final version delivered', 0),
@@ -70,23 +118,7 @@ INSERT INTO Job (JobId, ClientId, Title, Description, Status, EstimatedPrice, Fi
 (29, 29, 'Training Program', 'Develop training program', 'Invoiced', 600.00, 630.00, CURRENT_TIMESTAMP, '2023-06-25', '2023-07-25', '2023-07-31', '/projects/training', 'Invoice sent', 0),
 (30, 30, 'Product Launch', 'Launch new product', 'Paid', 2000.00, 2010.00, CURRENT_TIMESTAMP, '2023-08-31', '2023-09-30', '2023-09-30', '/projects/launch', 'Payment received', 0);
 
-CREATE TABLE Invoice (
-    InvoiceId INTEGER PRIMARY KEY,
-    JobId INTEGER NOT NULL,
-    InvoiceNumber TEXT,
-    Subtotal REAL,
-    TaxAmount REAL,
-    TotalAmount REAL,
-    IssueDate DATETIME,
-    DueDate DATETIME,
-    IsPaid BOOLEAN,
-    PaidDate DATETIME,
-    PaymentMethod TEXT,
-    Notes TEXT,
-    FOREIGN KEY (JobId) REFERENCES Job(JobId)
-);
-
-INSERT INTO Invoice (InvoiceId, JobId, InvoiceNumber, Subtotal, TaxAmount, TotalAmount, IssueDate, DueDate, IsPaid, PaidDate, PaymentMethod, Notes) VALUES
+INSERT INTO Invoices (InvoiceId, JobId, InvoiceNumber, Subtotal, TaxAmount, TotalAmount, IssueDate, DueDate, IsPaid, PaidDate, PaymentMethod, Notes) VALUES
 (1, 1, 'INV-0001', 1500.00, 150.00, 1653.00, CURRENT_TIMESTAMP, '2027-12-01', 0, '1900-01-01', 'Credit Card', 'Initial invoice'),
 (2, 2, 'INV-0002', 800.00, 80.00, 880.00, CURRENT_TIMESTAMP, '2023-11-01', 0, '1900-01-01', 'PayPal', 'Invoice for SEO services'),
 (3, 3, 'INV-0003', 2000.00, 200.00, 2200.00, CURRENT_TIMESTAMP, '2027-10-01', 1, '2023-09-30', 'Bank Transfer', 'Final invoice for app development'),

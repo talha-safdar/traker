@@ -19,9 +19,10 @@ namespace Traker.ViewModels
     using Traker.Models;
     using Traker.States;
 
-    public class DashboardViewModel : Screen
+    public class DashboardViewModel : Screen, IHandle<RefreshDatabase>
     {
         #region Caliburn Variables
+        private readonly IEventAggregator _events;
         private readonly IWindowManager _windowManager;
         #endregion
 
@@ -49,10 +50,9 @@ namespace Traker.ViewModels
         #endregion
 
         #region Data Variables
-        Database _database;
-        List<ClientModel> _clients;
-        List<JobModel> _jobs;
-        List<InvoiceModel> _invoices;
+        List<ClientsModel> _clients;
+        List<JobsModel> _jobs;
+        List<InvoicesModel> _invoices;
         #endregion
 
         #region Private Field Variables
@@ -67,8 +67,11 @@ namespace Traker.ViewModels
         private AddRowEntryViewModel _addRowEntryViewModel;
         #endregion
 
-        public DashboardViewModel(IWindowManager windowManager, AppState appState)
+        public DashboardViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState)
         {
+            _events = events;
+
+
             _windowManager = windowManager;
 
             _clientNames = new ObservableCollection<string>(); // client names
@@ -91,29 +94,32 @@ namespace Traker.ViewModels
             _completedJobs = new List<int>();
             _invoicedJobs = new List<int>();
 
-            _database = new Database(); // database
-            _clients = new List<ClientModel>();
-            _jobs = new List<JobModel>();
-            _invoices = new List<InvoiceModel>();
+            //_database = new Database(State); // database
+            _clients = new List<ClientsModel>();
+            _jobs = new List<JobsModel>();
+            _invoices = new List<InvoicesModel>();
             _dashboardData = new ObservableCollection<DashboardModel>();
             _selectedDataRow = new DashboardModel();
 
             _jobDetailsViewModel = new JobDetailsViewModel();
-            _addRowEntryViewModel = new AddRowEntryViewModel(State);
+            _addRowEntryViewModel = new AddRowEntryViewModel(_events, State);
 
             State = appState;
+
+            _events.SubscribeOnPublishedThread(this);
         }
 
         #region Caliburn Functions
         protected override async Task OnInitializedAsync(CancellationToken cancellationToken)
         {
             try
-            {               
-                await _database.SetUpDatabase();
+            {
+                //await _database.SetUpDatabase();
+                await Database.SetUpDatabase();
 
-                _clients = _database.FetchClientsTable(); // clients
-                _jobs = _database.FetchJobsTable(); // jobs
-                _invoices = _database.FetchInvoiceTable(); // invoices
+                _clients = Database.FetchClientsTable(); // clients
+                _jobs = Database.FetchJobsTable(); // jobs
+                _invoices = Database.FetchInvoiceTable(); // invoices
 
                 
 
@@ -132,6 +138,13 @@ namespace Traker.ViewModels
                 System.Environment.Exit(1); // kill process
             }
         }
+
+        protected override Task OnDeactivateAsync(bool close, CancellationToken cancellationToken)
+        {
+            _events.Unsubscribe(this);
+            return base.OnDeactivateAsync(close, cancellationToken);
+        }
+
         #endregion
 
         #region Private Functions
@@ -313,7 +326,7 @@ namespace Traker.ViewModels
                     _jobDetailsViewModel = null;
                 }
 
-                _addRowEntryViewModel = new AddRowEntryViewModel(State);
+                _addRowEntryViewModel = new AddRowEntryViewModel(_events, State);
                 await _windowManager.ShowWindowAsync(_addRowEntryViewModel, null, SettingsForDialog(600, 500));
                 State.IsAddRowEntryOpen = true; // flag as open accross the project
             }
@@ -338,6 +351,17 @@ namespace Traker.ViewModels
             settings.MinHeight = height;
             settings.MinWidth = width;
             return settings;
+        }
+
+        public Task HandleAsync(RefreshDatabase message, CancellationToken cancellationToken)
+        {
+            _clients = Database.FetchClientsTable(); // clients
+            _jobs = Database.FetchJobsTable(); // jobs
+            _invoices = Database.FetchInvoiceTable(); // invoices
+
+            SetupDashboardData();
+
+            return Task.CompletedTask;
         }
 
         //public async Task HandleAsync(CloseWindow message, CancellationToken cancellationToken)

@@ -10,3 +10,37 @@
 TO-DO:
 Esc button: to exit popup window
 add window shadow for cool effect
+
+
+
+
+DateTime:
+from string to DateTime:
+    DateTime dueDate = DateTime.ParseExact(
+    DueDate,
+    "dd/MM/yyyy",
+    CultureInfo.InvariantCulture
+
+back to string:
+<TextBox Text="{Binding DueDate, StringFormat={}{0:dd/MM/yyyy}}"
+         IsReadOnly="True"/>
+dueDate.ToString("yyyy-MM-dd")
+
+
+
+
+
+cmd.Parameters.AddWithValue(
+    "@due",
+    dueDate.ToString("yyyy-MM-dd")
+);
+
+
+DateTime dueDate = DateTime.ParseExact(
+    dbValue,
+    "yyyy-MM-dd",
+    CultureInfo.InvariantCulture
+);
+
+
+DateTime.ParseExact(input, "dd/MM/yyyy", CultureInfo.InvariantCulture)

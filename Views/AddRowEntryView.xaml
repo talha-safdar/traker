@@ -24,7 +24,7 @@
                 <RowDefinition Height="*" /> <!-- job description   3 -->
                 <RowDefinition Height="*" /> <!-- price             4 -->
                 <RowDefinition Height="*" /> <!-- due date          5 -->
-                <RowDefinition Height="0.5*" /> <!-- due date       6 -->
+                <RowDefinition Height="0.5*" /> <!-- buttons        6 -->
             </Grid.RowDefinitions>
 
             <!-- top bar -->
@@ -38,7 +38,7 @@
             <Grid Grid.Row="1">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="5,0,0,0" Text="Client Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                    <TextBox Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                 </StackPanel>
             </Grid>
             
@@ -46,7 +46,7 @@
             <Grid Grid.Row="2">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="5,0,0,0" Text="Job Description" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox MaxLength="66" AcceptsReturn="True" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                    <TextBox Text="{Binding JobDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="66" AcceptsReturn="True" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                 </StackPanel>
             </Grid>
 
@@ -54,15 +54,16 @@
             <Grid Grid.Row="3">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="5,0,0,0" Text="Price" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox MaxLength="12" AcceptsReturn="False" Padding="10" Text="{Binding Price, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                    <TextBox Text="{Binding Price, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="12" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                 </StackPanel>
             </Grid>
             
             <!-- due date -->
             <Grid Grid.Row="4">
                 <StackPanel Orientation="Vertical">
-                    <TextBlock Margin="5,0,0,0" Text="Due Date" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                    <TextBlock Margin="5,0,0,0" Text="Due Date (dd/mm/yyyy)" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
                     <TextBox 
+                        Text="{Binding DueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         MaxLength="10" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                         behaviours:TextboxFilter.EnableFilter="True"
                         behaviours:TextboxFilter.MaxLength="10"
@@ -72,7 +73,7 @@
             
             <!-- butons -->
             <Grid Grid.Row="5">
-                <Border Background="{StaticResource ButtonBackgroundBrush}" CornerRadius="25" Height="45" Margin="80,0,80,0" BorderThickness="2" BorderBrush="{StaticResource ButtonDefaultBorderBrush}">
+                <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddRow()]" Background="{StaticResource ButtonBackgroundBrush}" CornerRadius="25" Height="45" Margin="80,0,80,0" BorderThickness="2" BorderBrush="{StaticResource ButtonDefaultBorderBrush}">
                     <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Add" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="14" />
                 </Border>
             </Grid>
