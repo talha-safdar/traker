@@ -1,9 +1,11 @@
 ﻿using Caliburn.Micro;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Traker.States;
 
 namespace Traker.ViewModels
 {
@@ -17,6 +19,31 @@ namespace Traker.ViewModels
         {
             Price = 0.00M;
         }
+
+        public async Task Exit()
+        {
+            Debug.WriteLine("EXIT ADD");
+
+            await TryCloseAsync(true);
+        }
+
+        //void SaveRow(DashboardRow row)
+        //{
+        //    using var cmd = conn.CreateCommand();
+        //    cmd.CommandText = @"
+        //INSERT OR REPLACE INTO Jobs
+        //(ClientName, Description, Amount, Status, DueDate, IsPaid)
+        //VALUES (@client, @desc, @amount, @status, @due, @paid)";
+
+        //    cmd.Parameters.AddWithValue("@client", row.ClientName);
+        //    cmd.Parameters.AddWithValue("@desc", row.Description);
+        //    cmd.Parameters.AddWithValue("@amount", row.Amount);
+        //    cmd.Parameters.AddWithValue("@status", row.Status);
+        //    cmd.Parameters.AddWithValue("@due", row.DueDate);
+        //    cmd.Parameters.AddWithValue("@paid", row.IsPaid);
+
+        //    cmd.ExecuteNonQuery();
+        //}
 
         #region Public View Variables
         public decimal Price

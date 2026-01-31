@@ -9,3 +9,4 @@
 
 TO-DO:
 Esc button: to exit popup window
+add window shadow for cool effect

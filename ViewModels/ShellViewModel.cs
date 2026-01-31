@@ -39,16 +39,7 @@ namespace Traker.ViewModels
 
         public async Task OnMouseDownEvent(Grid gridSource)
         {
-            if (State.PopUpMenu != null)
-            {
-                // close create report pop menu
-                if (State.PopUpMenu is IScreen screen)
-                {
-                    await screen.TryCloseAsync(true);
-                    State.PopUpMenu = null;
-                }
-                State.PopUpMenu = null;
-            }
+            
         }
     }
 }

@@ -63,6 +63,8 @@ namespace Traker.ViewModels
         private List<int> _inProgressJobs; // in progress jobs
         private List<int> _completedJobs; // completed jobs
         private List<int> _invoicedJobs; // completed jobs
+        private JobDetailsViewModel _jobDetailsViewModel;
+        private AddRowEntryViewModel _addRowEntryViewModel;
         #endregion
 
         public DashboardViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState)
@@ -97,6 +99,8 @@ namespace Traker.ViewModels
             _dashboardData = new ObservableCollection<DashboardModel>();
             _selectedDataRow = new DashboardModel();
 
+            _jobDetailsViewModel = new JobDetailsViewModel();
+            _addRowEntryViewModel = new AddRowEntryViewModel();
 
             State = appState;
         }
@@ -254,18 +258,19 @@ namespace Traker.ViewModels
 
         public async Task OpenJobDetails(DashboardModel selectedJob)
         {
+            // if add menu open do nothing
+            if (State.IsAddRowEntryOpen == true)
+            {
+                return;
+            }
+
             Debug.WriteLine("OPEN MENU" + " | " + SelectedDataRow.ClientName + " - " + selectedJob.ClientName);
             // Debug.WriteLine(selectedJob.ClientName);
             //Debug.WriteLine(selectedJob.ClientName + " " + selectedJob.Jobs.Select(j => j.Description).FirstOrDefault()!.ToString());
             
-            if (State.PopUpMenu != null && State.PopUpMenu is IActivate activator && activator.IsActive)
+            if (_jobDetailsViewModel != null)
             {
-                // Cast to IScreen (this covers TryCloseAsync, IsActive, and Deactivate)
-                if (State.PopUpMenu is IScreen screen)
-                {
-                    await screen.TryCloseAsync(true);
-                    State.PopUpMenu = null;
-                }
+                await _jobDetailsViewModel.TryCloseAsync(true);
             }
 
             // if using client name then it must be required at all the time
@@ -281,22 +286,17 @@ namespace Traker.ViewModels
              */
             if (SelectedDataRow.ClientId == selectedJob.ClientId)
             {
-                State.PopUpMenu = new JobDetailsViewModel();
-                await _windowManager.ShowPopupAsync(State.PopUpMenu, null, SettingsForDialog(300, 250));
+                _jobDetailsViewModel = new JobDetailsViewModel();
+                await _windowManager.ShowPopupAsync(_jobDetailsViewModel, null, SettingsForDialog(300, 250));
             }
         }
 
         public async Task OnMouseDownEvent(Grid gridSource)
         {
-            if (State.PopUpMenu != null)
+            if (_jobDetailsViewModel != null)
             {
-                // close create report pop menu
-                if (State.PopUpMenu is IScreen screen)
-                {
-                    await screen.TryCloseAsync(true);
-                    State.PopUpMenu = null;
-                }
-                State.PopUpMenu = null;
+                await _jobDetailsViewModel.TryCloseAsync(true);
+                _jobDetailsViewModel = null;
             }
         }
 
@@ -308,18 +308,14 @@ namespace Traker.ViewModels
             if (State.IsAddRowEntryOpen == false)
             {
                 // if State.popup is not free then report it with a message box
-                if (State.PopUpMenu != null && State.PopUpMenu is IActivate activator && activator.IsActive)
+                if (_jobDetailsViewModel != null )
                 {
-                    // Cast to IScreen (this covers TryCloseAsync, IsActive, and Deactivate)
-                    if (State.PopUpMenu is IScreen screen)
-                    {
-                        await screen.TryCloseAsync(true);
-                        State.PopUpMenu = null;
-                    }
+                    await _jobDetailsViewModel.TryCloseAsync(true);
+                    _jobDetailsViewModel = null;
                 }
 
-                State.PopUpMenu = new AddRowEntryViewModel();
-                await _windowManager.ShowWindowAsync(State.PopUpMenu, null, SettingsForDialog(600, 500));
+                _addRowEntryViewModel = new AddRowEntryViewModel();
+                await _windowManager.ShowWindowAsync(_addRowEntryViewModel, null, SettingsForDialog(600, 500));
                 State.IsAddRowEntryOpen = true; // flag as open accross the project
             }
 

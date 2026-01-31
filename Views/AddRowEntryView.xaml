@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Traker.Views"
+             xmlns:cal="http://caliburnmicro.com"
+             xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
              xmlns:behaviours="clr-namespace:Traker.Behaviours"
              mc:Ignorable="d" 
              d:DesignHeight="600" 
@@ -12,19 +14,28 @@
              MaxWidth="500"
              >
     <Border  Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
-        <Grid Margin="20,40,20,40">
+        <Grid Margin="30,20,30,20">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" /> <!-- labels-->
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" /> <!-- client name -->
-                <RowDefinition Height="*" /> <!-- job description -->
-                <RowDefinition Height="*" /> <!-- price -->
-                <RowDefinition Height="*" /> <!-- due date -->
+                <RowDefinition Height="0.5*" /> <!-- top bar        0 -->
+                <RowDefinition Height="*" /> <!-- client name       1 -->
+                <RowDefinition Height="*" /> <!-- job description   3 -->
+                <RowDefinition Height="*" /> <!-- price             4 -->
+                <RowDefinition Height="*" /> <!-- due date          5 -->
+                <RowDefinition Height="0.5*" /> <!-- due date       6 -->
             </Grid.RowDefinitions>
 
-            <!-- client name -->
+            <!-- top bar -->
             <Grid Grid.Row="0">
+                <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action Exit()]" Background="Transparent"  HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="20" Width="20">
+                    <svg:SvgViewbox Source="/Resources/Media/Images/Icons/Lucide/x.svg" Width="15" Height="15"/>                    
+                </Border>
+            </Grid>
+            
+            <!-- client name -->
+            <Grid Grid.Row="1">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="5,0,0,0" Text="Client Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
                     <TextBox MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
@@ -32,7 +43,7 @@
             </Grid>
             
             <!-- job description -->
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="2">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="5,0,0,0" Text="Job Description" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
                     <TextBox MaxLength="66" AcceptsReturn="True" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
@@ -40,7 +51,7 @@
             </Grid>
 
             <!-- price -->
-            <Grid Grid.Row="2">
+            <Grid Grid.Row="3">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="5,0,0,0" Text="Price" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
                     <TextBox MaxLength="12" AcceptsReturn="False" Padding="10" Text="{Binding Price, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
@@ -48,7 +59,7 @@
             </Grid>
             
             <!-- due date -->
-            <Grid Grid.Row="3">
+            <Grid Grid.Row="4">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="5,0,0,0" Text="Due Date" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
                     <TextBox 
@@ -57,6 +68,13 @@
                         behaviours:TextboxFilter.MaxLength="10"
                         behaviours:TextboxFilter.FilterMode="DateDDMMYYYY" />
                 </StackPanel>
+            </Grid>
+            
+            <!-- butons -->
+            <Grid Grid.Row="5">
+                <Border Background="{StaticResource ButtonBackgroundBrush}" CornerRadius="25" Height="45" Margin="80,0,80,0" BorderThickness="2" BorderBrush="{StaticResource ButtonDefaultBorderBrush}">
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Add" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="14" />
+                </Border>
             </Grid>
         </Grid>
     </Border>
