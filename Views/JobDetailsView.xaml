@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:cal="http://caliburnmicro.com"
              xmlns:local="clr-namespace:Traker.Views"
              mc:Ignorable="d" 
              d:DesignHeight="300" 
@@ -22,7 +23,7 @@
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="20" Text="Status" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <Border Background="{StaticResource ErrorTextBrush}" CornerRadius="10" Margin="5 ,0" Height="20" Width="60">
+                        <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action setStatus('New')]" Background="{StaticResource ErrorTextBrush}" CornerRadius="10" Margin="5 ,0" Height="20" Width="60">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="New" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" FontSize="14" />
                         </Border>
                         <Border Background="{StaticResource OverdueTextBrush}" CornerRadius="10" Margin="5 ,0" Height="20" Width="60">

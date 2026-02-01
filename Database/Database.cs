@@ -214,22 +214,22 @@ namespace Traker.Database
 
                             while (reader.Read())
                             {
-                                Debug.WriteLine(reader["JobId"] + " "
-                                    + reader["ClientId"] + " "
-                                    + reader["Title"] + " "
-                                    + reader["Description"] + " "
-                                    + reader["Status"] + " "
-                                    + reader["EstimatedPrice"] + " "
-                                    + reader["FinalPrice"] + " "
-                                    + reader["CreatedDate"] + " "
-                                    + reader["StartDate"] + " "
-                                    + reader["CompletedDate"] + " "
-                                    + reader["DueDate"] + " "
-                                    + reader["FolderPath"] + " "
-                                    + reader["Notes"] + " "
-                                    + reader["IsArchived"] + " "
+                                //Debug.WriteLine(reader["JobId"] + " "
+                                //    + reader["ClientId"] + " "
+                                //    + reader["Title"] + " "
+                                //    + reader["Description"] + " "
+                                //    + reader["Status"] + " "
+                                //    + reader["EstimatedPrice"] + " "
+                                //    + reader["FinalPrice"] + " "
+                                //    + reader["CreatedDate"] + " "
+                                //    + reader["StartDate"] + " "
+                                //    + reader["CompletedDate"] + " "
+                                //    + reader["DueDate"] + " "
+                                //    + reader["FolderPath"] + " "
+                                //    + reader["Notes"] + " "
+                                //    + reader["IsArchived"] + " "
                                     
-                                    );
+                                //    );
 
 
                                 var JobId = reader["JobId"];
@@ -393,8 +393,6 @@ namespace Traker.Database
 
              */
 
-
-
             long clientId = 0;
 
             using var conn = new SqliteConnection(_connectionString);
@@ -469,6 +467,42 @@ namespace Traker.Database
             tx.Commit();
 
             return Task.CompletedTask;
+        }
+
+        public static async Task SetStatus(string status)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+
+                using (var pragma = conn.CreateCommand())
+                {
+                    pragma.CommandText = "PRAGMA foreign_keys = ON;";
+                    pragma.ExecuteNonQuery();
+
+                    using (var jobStatusCmd = conn.CreateCommand())
+                    {
+                        jobStatusCmd.CommandText = @"
+    
+                        UPDATE Jobs
+                        SET Status = @status,
+                            StartDate = @startDate
+                        WHERE JobId = @jobId;
+                        
+                        ";
+
+                        //jobStatusCmd.Parameters.AddWithValue("@status", clientId);
+                        //jobStatusCmd.Parameters.AddWithValue("@startDate", clientId);
+                        //jobStatusCmd.Parameters.AddWithValue("@jobId", clientId);
+                        //jobStatusCmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch
+            {
+
+            }
         }
         #endregion
     }

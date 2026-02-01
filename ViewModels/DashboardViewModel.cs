@@ -12,6 +12,7 @@ namespace Traker.ViewModels
     using System.Diagnostics;
     using System.Dynamic;
     using System.Net.NetworkInformation;
+    using System.Reflection;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Media;
@@ -154,27 +155,65 @@ namespace Traker.ViewModels
         #region Private Functions
         private Task SetupDashboardData()
         {
+
             _dashboardData.Clear();
-            for (int i = 0; i < _clients.Count; i++)
+            int index = 0;
+            foreach (var job in _jobs)
             {
+                var client = _clients.First(c => c.ClientId == job.ClientId);
 
                 DashboardModel dashboardEntry = new DashboardModel
                 {
-                    ClientName = _clients[i].FullName,
-                    JobDescription = _jobs.Where(j => j.ClientId == _clients[i].ClientId).Select(j => j.Description).FirstOrDefault()!.ToString()!,
-                    Price = _jobs.Where(j => j.ClientId == _clients[i].ClientId).Select(j => j.FinalPrice).FirstOrDefault().ToString()!,
-                    Status = _jobs.Where(j => j.ClientId == _clients[i].ClientId).Select(j => j.Status).FirstOrDefault()!.ToString()!,
-                    DueDate = _jobs.Where(j => j.ClientId == _clients[i].ClientId).Select(j => j.DueDate).FirstOrDefault()!,
-                    Paid = _invoices.Where(inv => inv.JobId == _jobs[i].JobId).Select(inv => inv.IsPaid).FirstOrDefault().ToString()!,
+                    ClientName = client.FullName,
+                    JobDescription = job.Description,
+                    Price = job.FinalPrice.ToString("C"),
+                    Status = job.Status.ToString(),
+                    DueDate = job.DueDate,
 
-                    ClientId = _clients[i].ClientId,
-                    ClientEmail = _clients[i].Email,
-                    ClientPhone = _clients[i].PhoneNumber,
-                    Jobs = _jobs.Where(job => job.ClientId == _clients[i].ClientId).ToList(),
-                    Invoices = _invoices.Where(invoice => invoice.JobId == _jobs[i].JobId).ToList()
+                    Paid = _invoices.Where(inv => inv.JobId == _jobs[index].JobId).Select(inv => inv.IsPaid).FirstOrDefault().ToString()!,
+
+                    ClientId = client.ClientId,
+                    ClientEmail = client.Email,
+                    ClientPhone = client.PhoneNumber,
+                    JobId = job.JobId,
+                    Invoices = _invoices.Where(invoice => invoice.JobId == _jobs[index].JobId).ToList()
                 };
                 _dashboardData.Add(dashboardEntry);
+                index++;
             }
+
+
+
+
+
+
+
+
+
+
+
+            //for (int i = 0; i < _jobs.Count; i++)
+            //{
+            //    var job = _jobs[i];
+            //    var client = _clients.First(c => c.ClientId == job.ClientId);
+
+            //    DashboardModel dashboardEntry = new DashboardModel
+            //    {
+            //        ClientName = _clients[i].FullName,
+            //        JobDescription = _jobs.Where(j => j.ClientId == _clients[i].ClientId).Select(j => j.Description).FirstOrDefault()!.ToString()!,
+            //        Price = _jobs.Where(j => j.ClientId == _clients[i].ClientId).Select(j => j.FinalPrice).FirstOrDefault().ToString()!,
+            //        Status = _jobs.Where(j => j.ClientId == _clients[i].ClientId).Select(j => j.Status).FirstOrDefault()!.ToString()!,
+            //        DueDate = _jobs.Where(j => j.ClientId == _clients[i].ClientId).Select(j => j.DueDate).FirstOrDefault()!,
+            //        Paid = _invoices.Where(inv => inv.JobId == _jobs[i].JobId).Select(inv => inv.IsPaid).FirstOrDefault().ToString()!,
+
+            //        ClientId = _clients[i].ClientId,
+            //        ClientEmail = _clients[i].Email,
+            //        ClientPhone = _clients[i].PhoneNumber,
+            //        Jobs = _jobs.Where(j => j.JobId == job.JobId).ToList(),
+            //        Invoices = _invoices.Where(invoice => invoice.JobId == _jobs[i].JobId).ToList()
+            //    };
+            //    _dashboardData.Add(dashboardEntry);
+            //}
 
             _receviedMoney.Clear();
             for (int i = 0; i < _dashboardData.Count; i++)
@@ -314,6 +353,7 @@ namespace Traker.ViewModels
             if (SelectedDataRow.ClientId == selectedJob.ClientId)
             {
                 _jobDetailsViewModel = new JobDetailsViewModel();
+                _jobDetailsViewModel.selectedRow = selectedJob;
                 await _windowManager.ShowPopupAsync(_jobDetailsViewModel, null, SettingsForDialog(300, 250));
             }
         }
