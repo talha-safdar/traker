@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS Jobs (
     ClientId INTEGER NOT NULL,
     Title TEXT,
     Description TEXT,
-    Status VARCHAR(20) CHECK (Status IN ('New', 'InProgress', 'Completed', 'Invoiced', 'Paid')),
+    Status VARCHAR(20),
     EstimatedPrice TEXT,
     FinalPrice TEXT,
     CreatedDate DATETIME,

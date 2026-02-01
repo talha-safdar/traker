@@ -106,10 +106,11 @@ namespace Traker.ViewModels
             _dashboardData = new ObservableCollection<DashboardModel>();
             _selectedDataRow = new DashboardModel();
 
-            _jobDetailsViewModel = new JobDetailsViewModel();
+            State = appState;
+
+            _jobDetailsViewModel = new JobDetailsViewModel(_events);
             _addRowEntryViewModel = new AddRowEntryViewModel(_events, State);
 
-            State = appState;
 
             _events.SubscribeOnPublishedThread(this);
         }
@@ -352,7 +353,7 @@ namespace Traker.ViewModels
              */
             if (SelectedDataRow.ClientId == selectedJob.ClientId)
             {
-                _jobDetailsViewModel = new JobDetailsViewModel();
+                _jobDetailsViewModel = new JobDetailsViewModel(_events);
                 _jobDetailsViewModel.selectedRow = selectedJob;
                 await _windowManager.ShowPopupAsync(_jobDetailsViewModel, null, SettingsForDialog(300, 250));
             }

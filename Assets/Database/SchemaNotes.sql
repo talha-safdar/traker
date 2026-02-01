@@ -16,7 +16,7 @@ CREATE TABLE Clients (
     City VARCHAR(50),
     Postcode VARCHAR(20),
     Country VARCHAR(50),
-    CreatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CreatedDate DATETIME DEFAULT CURRENT_TIMESTAMP, # on add new row (auto)
     IsActive BIT DEFAULT 1
 );
 
@@ -25,10 +25,10 @@ CREATE TABLE Jobs (
     ClientId INTEGER NOT NULL,
     Title TEXT,
     Description TEXT,
-    Status VARCHAR(20) CHECK (Status IN ('New', 'InProgress', 'Completed', 'Invoiced', 'Paid')),
+    Status VARCHAR(20) CHECK (Status IN ('New', 'InProgress', 'Completed', 'Invoiced', 'Paid')), # on add new row (auto)
     EstimatedPrice TEXT,
     FinalPrice TEXT,
-    CreatedDate DATETIME,
+    CreatedDate DATETIME, # on add new row (auto)
     StartDate DATETIME,
     CompletedDate DATETIME,
     DueDate DATETIME,
@@ -47,7 +47,7 @@ CREATE TABLE Invoices (
     TotalAmount TEXT,
     IssueDate DATETIME,
     DueDate DATETIME,
-    IsPaid BOOLEAN,
+    IsPaid BOOLEAN, # on add new row (auto)
     PaidDate DATETIME,
     PaymentMethod TEXT,
     Notes TEXT,

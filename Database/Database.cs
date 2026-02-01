@@ -36,6 +36,7 @@ namespace Traker.Database
 
                         PRAGMA foreign_keys = OFF;
 
+
                         CREATE TABLE IF NOT EXISTS Clients (
                             ClientId INTEGER PRIMARY KEY AUTOINCREMENT,
                             Type VARCHAR(20) CHECK (Type IN ('company', 'individual')),
@@ -56,7 +57,7 @@ namespace Traker.Database
                             ClientId INTEGER NOT NULL,
                             Title TEXT,
                             Description TEXT,
-                            Status VARCHAR(20) CHECK (Status IN ('New', 'InProgress', 'Completed', 'Invoiced', 'Paid')),
+                            Status VARCHAR(20),
                             EstimatedPrice TEXT,
                             FinalPrice TEXT,
                             CreatedDate DATETIME,
@@ -321,18 +322,33 @@ namespace Traker.Database
                         {
                             while (reader.Read())
                             {
+                                Debug.WriteLine(reader["InvoiceId"] + " | "
+                                + reader["JobId"] + " | "
+                                + reader["InvoiceNumber"] + " | "
+                                + reader["Subtotal"] + " | "
+                                + reader["TaxAmount"] + " | "
+                                + reader["TotalAmount"] + " | "
+                                + reader["IssueDate"] + " | "
+                                + reader["DueDate"] + " | "
+                                + reader["IsPaid"] + " | "
+                                + reader["PaidDate"] + " | "
+                                + reader["PaymentMethod"] + " | "
+                                + reader["Notes"] + " | "
+
+                                    );
+
                                 var InvoiceId = reader["InvoiceId"];
                                 var JobId = reader["JobId"];
-                                var InvoiceNumber = reader["InvoiceNumber"];
-                                var Subtotal = reader["Subtotal"];
-                                var TaxAmount = reader["TaxAmount"];
-                                var TotalAmount = reader["TotalAmount"];
-                                var IssueDate = reader["IssueDate"];
-                                var DueDate = reader["DueDate"];
-                                var IsPaid = reader["IsPaid"];
-                                var PaidDate = reader["PaidDate"];
-                                var PaymentMethod = reader["PaymentMethod"];
-                                var Notes = reader["Notes"];
+                                var InvoiceNumber = reader["InvoiceNumber"] == DBNull.Value ? String.Empty : reader["InvoiceNumber"];
+                                var Subtotal = reader["Subtotal"] == DBNull.Value ? "0" : reader["Subtotal"];
+                                var TaxAmount = reader["TaxAmount"] == DBNull.Value ? "0" : reader["TaxAmount"];
+                                var TotalAmount = reader["TotalAmount"] == DBNull.Value ? "0" : reader["TotalAmount"];
+                                var IssueDate = reader["IssueDate"] == DBNull.Value ? DateTime.MinValue : reader["IssueDate"];
+                                var DueDate = reader["DueDate"] == DBNull.Value ? DateTime.MinValue : reader["DueDate"];
+                                var IsPaid = reader["IsPaid"] == DBNull.Value ? String.Empty : reader["IsPaid"];
+                                var PaidDate = reader["PaidDate"] == DBNull.Value ? DateTime.MinValue : reader["PaidDate"];
+                                var PaymentMethod = reader["PaymentMethod"] == DBNull.Value ? String.Empty : reader["PaymentMethod"];
+                                var Notes = reader["Notes"] == DBNull.Value ? String.Empty : reader["Notes"];
 
                                 if (string.IsNullOrEmpty(InvoiceId.ToString()) == false ||
                                     string.IsNullOrEmpty(JobId.ToString()) == false ||
@@ -394,6 +410,7 @@ namespace Traker.Database
              */
 
             long clientId = 0;
+            long jobId = 0;
 
             using var conn = new SqliteConnection(_connectionString);
             conn.Open();
@@ -433,12 +450,12 @@ namespace Traker.Database
             }
 
             // debug
-            using (var textCmd = conn.CreateCommand())
-            {
-                // SELECT COUNT(*) FROM Clients WHERE ClientId = 31;
-                textCmd.CommandText = "SELECT FullName FROM Clients WHERE ClientId = 31";
-                var exists = textCmd.ExecuteScalar();
-            }
+            //using (var textCmd = conn.CreateCommand())
+            //{
+            //    // SELECT COUNT(*) FROM Clients WHERE ClientId = 31;
+            //    textCmd.CommandText = "SELECT FullName FROM Clients WHERE ClientId = 31";
+            //    var exists = textCmd.ExecuteScalar();
+            //}
 
 
             // insert into jobs table
@@ -463,39 +480,100 @@ namespace Traker.Database
                 jobsCmd.ExecuteNonQuery();
             }
 
+
+            // get last inserted job id based on current clientId
+            using (var jobIdCmd = conn.CreateCommand())
+            {
+                jobIdCmd.CommandText = @"
+                    SELECT JobId
+                    FROM Jobs
+                    WHERE ClientId = @clientId
+                    ORDER BY JobId DESC
+                    LIMIT 1;
+                ";
+                jobIdCmd.Parameters.AddWithValue("@clientId", clientId);
+                jobId = (long)jobIdCmd.ExecuteScalar()!;
+            }
+
+
+            using (var invoiceCmd = conn.CreateCommand())
+            {
+                invoiceCmd.CommandText = @"
+
+                INSERT INTO Invoices
+                (JobId, IsPaid)
+
+                VALUES
+                (@jobId, @isPaid);
+
+                ";
+
+                invoiceCmd.Parameters.AddWithValue("@jobId", jobId);
+                invoiceCmd.Parameters.AddWithValue("@isPaid", false);
+                invoiceCmd.ExecuteNonQuery();
+            }
+
             // Commit both together
             tx.Commit();
 
             return Task.CompletedTask;
         }
 
-        public static async Task SetStatus(string status)
+        public static async Task SetStatus(string status, int clientId, int jobId)
         {
             try
             {
                 using var conn = new SqliteConnection(_connectionString);
                 conn.Open();
 
-                using (var pragma = conn.CreateCommand())
+                if (status == "New")
                 {
-                    pragma.CommandText = "PRAGMA foreign_keys = ON;";
-                    pragma.ExecuteNonQuery();
-
-                    using (var jobStatusCmd = conn.CreateCommand())
+                    using (var pragma = conn.CreateCommand())
                     {
-                        jobStatusCmd.CommandText = @"
-    
-                        UPDATE Jobs
-                        SET Status = @status,
-                            StartDate = @startDate
-                        WHERE JobId = @jobId;
-                        
-                        ";
+                        pragma.CommandText = "PRAGMA foreign_keys = ON;";
+                        pragma.ExecuteNonQuery();
 
-                        //jobStatusCmd.Parameters.AddWithValue("@status", clientId);
-                        //jobStatusCmd.Parameters.AddWithValue("@startDate", clientId);
-                        //jobStatusCmd.Parameters.AddWithValue("@jobId", clientId);
-                        //jobStatusCmd.ExecuteNonQuery();
+                        using (var jobStatusCmd = conn.CreateCommand())
+                        {
+                            jobStatusCmd.CommandText = @"
+    
+                            UPDATE Jobs
+                            SET Status = @status,
+                                StartDate = @startDate
+                            WHERE JobId = @jobId;
+                        
+                            ";
+
+                            jobStatusCmd.Parameters.AddWithValue("@status", status);
+                            jobStatusCmd.Parameters.AddWithValue("@startDate", DateTime.MinValue); // then you can check if new if less than today
+                            jobStatusCmd.Parameters.AddWithValue("@jobId", jobId);
+                            jobStatusCmd.ExecuteNonQuery();
+                        }
+                    }
+                }
+                else if (status == "Active")
+                {
+                    using (var pragma = conn.CreateCommand())
+                    {
+                        pragma.CommandText = "PRAGMA foreign_keys = ON;";
+                        pragma.ExecuteNonQuery();
+
+                        using (var jobStatusCmd = conn.CreateCommand())
+                        {
+                            jobStatusCmd.CommandText = @"
+    
+                            UPDATE Jobs
+                            SET Status = @status,
+                                StartDate = @startDate
+                            WHERE JobId = @jobId;
+                        
+                            ";
+
+                            jobStatusCmd.Parameters.AddWithValue("@status", status);
+                            jobStatusCmd.Parameters.AddWithValue("@startDate", DateTime.Now.Date);
+                            jobStatusCmd.Parameters.AddWithValue("@jobId", jobId);
+                            jobStatusCmd.ExecuteNonQuery();
+                        }
                     }
                 }
             }
