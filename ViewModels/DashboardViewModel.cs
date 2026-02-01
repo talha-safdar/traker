@@ -41,6 +41,7 @@ namespace Traker.ViewModels
         private string _moneyReceived; // money received value shown total
         private string _moneyToRecieve; // money outstanding value shown total
         private string _moneyOverdue; // money overdue value shown total
+        private string _moneyPrice; // money price = the final amount for a job (not invoiced)
         private string _newJobsCount;
         private string _inProgressJobsCount; 
         private string _completedJobsCount; 
@@ -59,6 +60,7 @@ namespace Traker.ViewModels
         private List<decimal> _receviedMoney; // money received
         private List<decimal> _outstandingdMoney; // mnoney to receive yet
         private List<decimal> _overdueMoney; // mnoney overdue (not paid + past due date)
+        private List<decimal> _priceMoney; // mnoney overdue (not paid + past due date)
         private List<int> _newJobs; // new jobs
         private List<int> _inProgressJobs; // in progress jobs
         private List<int> _completedJobs; // completed jobs
@@ -85,10 +87,12 @@ namespace Traker.ViewModels
             _moneyReceived = "0";
             _moneyToRecieve ="0";
             _moneyOverdue ="0";
+            _moneyPrice = "0";
 
             _receviedMoney = new List<decimal>();
             _outstandingdMoney = new List<decimal>();
             _overdueMoney = new List<decimal>();
+            _priceMoney = new List<decimal>();
             _newJobs = new List<int>();
             _inProgressJobs = new List<int>();
             _completedJobs = new List<int>();
@@ -172,6 +176,7 @@ namespace Traker.ViewModels
                 _dashboardData.Add(dashboardEntry);
             }
 
+            _receviedMoney.Clear();
             for (int i = 0; i < _dashboardData.Count; i++)
             {
                 _receviedMoney.AddRange(_clients
@@ -185,9 +190,7 @@ namespace Traker.ViewModels
             MoneyReceived = _receviedMoney.Sum().ToString("C"); // received
 
 
-
-
-
+            _outstandingdMoney.Clear();
             for (int i = 0; i < _dashboardData.Count; i++)
             {
                 _outstandingdMoney.AddRange(_clients
@@ -200,7 +203,7 @@ namespace Traker.ViewModels
             }
             MoneyToReceive = _outstandingdMoney.Sum().ToString("C"); // outstanding
 
-
+            _overdueMoney.Clear();
             for (int i = 0; i < _dashboardData.Count; i++)
             {
                 _overdueMoney.AddRange(_clients
@@ -211,10 +214,19 @@ namespace Traker.ViewModels
                     .Select(x => x.FinalPrice)
                     .ToList());
             }
-
             MoneyOverdue = _overdueMoney.Sum().ToString("C"); // overdue
 
+            _priceMoney.Clear();
+            for (int i = 0; i < _dashboardData.Count; i++)
+            {
+                _priceMoney.AddRange(_jobs
+                    .Where(j => j.ClientId == _dashboardData[i].ClientId)
+                    .Select(x => x.FinalPrice)
+                    .ToList());
+            }
+            MoneyPrice = _priceMoney.Sum().ToString("C"); // gross
 
+            _newJobs.Clear();
             for (int i = 0; i < _dashboardData.Count; i++)
             {
                 _newJobs.AddRange(_clients
@@ -227,6 +239,7 @@ namespace Traker.ViewModels
 
             NewJobsCount = _newJobs.Count().ToString(); // new jobs count
 
+            _inProgressJobs.Clear();
             for (int i = 0; i < _dashboardData.Count; i++)
             {
                 _inProgressJobs.AddRange(_clients
@@ -239,7 +252,7 @@ namespace Traker.ViewModels
 
             InProgressJobsCount = _inProgressJobs.Count().ToString(); // in progress jobs count
 
-
+            _completedJobs.Clear();
             for (int i = 0; i < _dashboardData.Count; i++)
             {
                 _completedJobs.AddRange(_clients
@@ -495,6 +508,16 @@ namespace Traker.ViewModels
             {
                 _moneyOverdue = value;
                 NotifyOfPropertyChange(() => MoneyOverdue);
+            }
+        }
+
+        public String MoneyPrice
+        {
+            get { return _moneyPrice; }
+            set
+            {
+                _moneyPrice = value;
+                NotifyOfPropertyChange(() => MoneyPrice);
             }
         }
 

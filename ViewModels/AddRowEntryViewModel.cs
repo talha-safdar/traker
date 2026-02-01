@@ -79,6 +79,9 @@ namespace Traker.ViewModels
         {
             // add checks
             // remove white spaces 
+            // price textbox only number
+            // money format use commas and dots
+            // empty boxes on press add
 
             DateTime dueDate = DateTime.ParseExact(
             DueDate,

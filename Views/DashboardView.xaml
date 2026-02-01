@@ -108,9 +108,10 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="0.6*" /> <!-- left section (with 4 rows) -->
-                        <ColumnDefinition Width="*" /> <!-- middle-1 section -->
-                        <ColumnDefinition Width="*" /> <!-- middle-2 section -->                        
-                        <ColumnDefinition Width="*" /> <!-- right section -->                        
+                        <ColumnDefinition Width="*" /> <!-- price -->
+                        <ColumnDefinition Width="*" /> <!-- overdue -->
+                        <ColumnDefinition Width="*" /> <!-- received -->                        
+                        <ColumnDefinition Width="*" /> <!-- outstanding -->                        
                     </Grid.ColumnDefinitions>
 
                     <!-- left section -->
@@ -182,8 +183,16 @@
                         </Grid>
                     </Grid>
 
-                    <!-- overdue -->
+                    <!-- price -->
                     <Grid Grid.Column="1">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Margin="0,0,20,0" Text="Gross:" Foreground="{StaticResource FontSecondaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Regular" />
+                            <TextBlock Text="{Binding MoneyPrice}" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32" FontWeight="Medium" />
+                        </StackPanel>
+                    </Grid>
+                    
+                    <!-- overdue -->
+                    <Grid Grid.Column="2">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Margin="0,0,20,0" Text="Overdue:" Foreground="{StaticResource FontSecondaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Regular" />
                             <TextBlock Text="{Binding MoneyOverdue}" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32" FontWeight="Medium" />
@@ -191,7 +200,7 @@
                     </Grid>
 
                     <!-- received -->
-                    <Grid Grid.Column="2">
+                    <Grid Grid.Column="3">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Margin="0,0,20,0" Text="Received:" Foreground="{StaticResource FontSecondaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Regular" />
                             <TextBlock Text="{Binding MoneyReceived}" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32" FontWeight="Medium" />
@@ -199,7 +208,7 @@
                     </Grid>
 
                     <!-- right section -->
-                    <Grid Grid.Column="3">
+                    <Grid Grid.Column="4">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Margin="0,0,20,0" Text="Outstanding:" Foreground="{StaticResource FontSecondaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Regular" />
                             <TextBlock Text="{Binding MoneyToReceive}" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="32" FontWeight="Medium" />
