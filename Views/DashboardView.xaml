@@ -46,8 +46,10 @@
                     <!--SelectionMode= extended // multi row select-->
                     <DataGrid Margin="10"
                               RowHeight="40"
+                              IsReadOnly="True"
                               VerticalAlignment="Top"
                               HorizontalAlignment="Center"
+                              SelectionUnit="FullRow"
                                 ItemsSource="{Binding DashboardData}" 
                                 SelectedItem="{Binding SelectedDataRow}" 
                                 AutoGenerateColumns="False" 
@@ -76,7 +78,7 @@
                             </DataGridTextColumn>
                             <DataGridTextColumn Header="Job Description" Binding="{Binding JobDescription}" Width="*" />
                             <DataGridTextColumn Header="Price" Binding="{Binding Price, StringFormat=£{0:N2}}" Width="0.5*" />
-                            <DataGridTextColumn Header="DueDate" Binding="{Binding DueDate, StringFormat={}{0:dd/MM/yyyy}}" Width="0.4*">
+                            <DataGridTextColumn Header="Due Date" Binding="{Binding DueDate, StringFormat={}{0:dd/MM/yyyy}}" Width="0.4*">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="HorizontalAlignment" Value="Left"/>
