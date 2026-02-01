@@ -43,6 +43,13 @@ namespace Traker.ViewModels
             State = appState;
         }
 
+        protected override Task OnDeactivateAsync(bool close, CancellationToken cancellationToken)
+        {
+            _events.Unsubscribe(this);
+            return base.OnDeactivateAsync(close, cancellationToken);
+        }
+
+
         public async Task Exit()
         {
             // argument true only for dialogs

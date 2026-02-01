@@ -150,8 +150,10 @@ namespace Traker.ViewModels
         #region Private Functions
         private Task SetupDashboardData()
         {
+            _dashboardData.Clear();
             for (int i = 0; i < _clients.Count; i++)
             {
+
                 DashboardModel dashboardEntry = new DashboardModel
                 {
                     ClientName = _clients[i].FullName,
@@ -355,6 +357,10 @@ namespace Traker.ViewModels
 
         public Task HandleAsync(RefreshDatabase message, CancellationToken cancellationToken)
         {
+            _clients.Clear();
+            _jobs.Clear();
+            _invoices.Clear();
+
             _clients = Database.FetchClientsTable(); // clients
             _jobs = Database.FetchJobsTable(); // jobs
             _invoices = Database.FetchInvoiceTable(); // invoices

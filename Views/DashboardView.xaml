@@ -46,7 +46,7 @@
                     <!--SelectionMode= extended // multi row select-->
                     <DataGrid Margin="10"
                               RowHeight="40"
-                              VerticalAlignment="Center"
+                              VerticalAlignment="Top"
                               HorizontalAlignment="Center"
                                 ItemsSource="{Binding DashboardData}" 
                                 SelectedItem="{Binding SelectedDataRow}" 
