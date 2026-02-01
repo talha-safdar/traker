@@ -34,59 +34,58 @@ namespace Traker.Database
                     var _sqliteCommand = conn.CreateCommand();
                     _sqliteCommand.CommandText = @"
 
-                        PRAGMA foreign_keys = OFF;
+                    PRAGMA foreign_keys = OFF;
 
+                    CREATE TABLE IF NOT EXISTS Clients (
+                        ClientId INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Type VARCHAR(20) CHECK (Type IN ('company', 'individual')),
+                        FullName VARCHAR(100) NOT NULL,
+                        CompanyName VARCHAR(100),
+                        Email VARCHAR(100),
+                        PhoneNumber VARCHAR(20),
+                        BillingAddress VARCHAR(255),
+                        City VARCHAR(50),
+                        Postcode VARCHAR(20),
+                        Country VARCHAR(50),
+                        CreatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        IsActive BIT DEFAULT 1
+                    );
 
-                        CREATE TABLE IF NOT EXISTS Clients (
-                            ClientId INTEGER PRIMARY KEY AUTOINCREMENT,
-                            Type VARCHAR(20) CHECK (Type IN ('company', 'individual')),
-                            FullName VARCHAR(100) NOT NULL,
-                            CompanyName VARCHAR(100),
-                            Email VARCHAR(100),
-                            PhoneNumber VARCHAR(20),
-                            BillingAddress VARCHAR(255),
-                            City VARCHAR(50),
-                            Postcode VARCHAR(20),
-                            Country VARCHAR(50),
-                            CreatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-                            IsActive BIT DEFAULT 1
-                        );
+                    CREATE TABLE IF NOT EXISTS Jobs (
+                        JobId INTEGER PRIMARY KEY AUTOINCREMENT,
+                        ClientId INTEGER NOT NULL,
+                        Title TEXT,
+                        Description TEXT,
+                        Status VARCHAR(20),
+                        EstimatedPrice TEXT,
+                        FinalPrice TEXT,
+                        CreatedDate DATETIME,
+                        StartDate DATETIME,
+                        CompletedDate DATETIME,
+                        DueDate DATETIME,
+                        FolderPath TEXT,
+                        Notes TEXT,
+                        IsArchived BOOLEAN,
+                        FOREIGN KEY (ClientId) REFERENCES Clients(ClientId) ON DELETE CASCADE
+                    );
 
-                        CREATE TABLE IF NOT EXISTS Jobs (
-                            JobId INTEGER PRIMARY KEY AUTOINCREMENT,
-                            ClientId INTEGER NOT NULL,
-                            Title TEXT,
-                            Description TEXT,
-                            Status VARCHAR(20),
-                            EstimatedPrice TEXT,
-                            FinalPrice TEXT,
-                            CreatedDate DATETIME,
-                            StartDate DATETIME,
-                            CompletedDate DATETIME,
-                            DueDate DATETIME,
-                            FolderPath TEXT,
-                            Notes TEXT,
-                            IsArchived BOOLEAN,
-                            FOREIGN KEY (ClientId) REFERENCES Clients(ClientId)
-                        );
+                    CREATE TABLE IF NOT EXISTS Invoices (
+                        InvoiceId INTEGER PRIMARY KEY AUTOINCREMENT,
+                        JobId INTEGER NOT NULL,
+                        InvoiceNumber TEXT,
+                        Subtotal TEXT,
+                        TaxAmount TEXT,
+                        TotalAmount TEXT,
+                        IssueDate DATETIME,
+                        DueDate DATETIME,
+                        IsPaid BOOLEAN,
+                        PaidDate DATETIME,
+                        PaymentMethod TEXT,
+                        Notes TEXT,
+                        FOREIGN KEY (JobId) REFERENCES Jobs(JobId) ON DELETE CASCADE
+                    );
 
-                        CREATE TABLE IF NOT EXISTS Invoices (
-                            InvoiceId INTEGER PRIMARY KEY AUTOINCREMENT,
-                            JobId INTEGER NOT NULL,
-                            InvoiceNumber TEXT,
-                            Subtotal TEXT,
-                            TaxAmount TEXT,
-                            TotalAmount TEXT,
-                            IssueDate DATETIME,
-                            DueDate DATETIME,
-                            IsPaid BOOLEAN,
-                            PaidDate DATETIME,
-                            PaymentMethod TEXT,
-                            Notes TEXT,
-                            FOREIGN KEY (JobId) REFERENCES Jobs(JobId)
-                        );
-
-                        PRAGMA foreign_keys = ON;
+                    PRAGMA foreign_keys = ON;
 
                         ";
 
@@ -215,22 +214,22 @@ namespace Traker.Database
 
                             while (reader.Read())
                             {
-                                //Debug.WriteLine(reader["JobId"] + " "
-                                //    + reader["ClientId"] + " "
-                                //    + reader["Title"] + " "
-                                //    + reader["Description"] + " "
-                                //    + reader["Status"] + " "
-                                //    + reader["EstimatedPrice"] + " "
-                                //    + reader["FinalPrice"] + " "
-                                //    + reader["CreatedDate"] + " "
-                                //    + reader["StartDate"] + " "
-                                //    + reader["CompletedDate"] + " "
-                                //    + reader["DueDate"] + " "
-                                //    + reader["FolderPath"] + " "
-                                //    + reader["Notes"] + " "
-                                //    + reader["IsArchived"] + " "
-                                    
-                                //    );
+                                Debug.WriteLine(reader["JobId"] + " "
+                                    + reader["ClientId"] + " "
+                                    + reader["Title"] + " "
+                                    + reader["Description"] + " "
+                                    + reader["Status"] + " "
+                                    + reader["EstimatedPrice"] + " "
+                                    + reader["FinalPrice"] + " "
+                                    + reader["CreatedDate"] + " "
+                                    + reader["StartDate"] + " "
+                                    + reader["CompletedDate"] + " "
+                                    + reader["DueDate"] + " "
+                                    + reader["FolderPath"] + " "
+                                    + reader["Notes"] + " "
+                                    + reader["IsArchived"] + " "
+
+                                    );
 
 
                                 var JobId = reader["JobId"];
@@ -322,20 +321,20 @@ namespace Traker.Database
                         {
                             while (reader.Read())
                             {
-                                Debug.WriteLine(reader["InvoiceId"] + " | "
-                                + reader["JobId"] + " | "
-                                + reader["InvoiceNumber"] + " | "
-                                + reader["Subtotal"] + " | "
-                                + reader["TaxAmount"] + " | "
-                                + reader["TotalAmount"] + " | "
-                                + reader["IssueDate"] + " | "
-                                + reader["DueDate"] + " | "
-                                + reader["IsPaid"] + " | "
-                                + reader["PaidDate"] + " | "
-                                + reader["PaymentMethod"] + " | "
-                                + reader["Notes"] + " | "
+                                //Debug.WriteLine(reader["InvoiceId"] + " | "
+                                //+ reader["JobId"] + " | "
+                                //+ reader["InvoiceNumber"] + " | "
+                                //+ reader["Subtotal"] + " | "
+                                //+ reader["TaxAmount"] + " | "
+                                //+ reader["TotalAmount"] + " | "
+                                //+ reader["IssueDate"] + " | "
+                                //+ reader["DueDate"] + " | "
+                                //+ reader["IsPaid"] + " | "
+                                //+ reader["PaidDate"] + " | "
+                                //+ reader["PaymentMethod"] + " | "
+                                //+ reader["Notes"] + " | "
 
-                                    );
+                                //    );
 
                                 var InvoiceId = reader["InvoiceId"];
                                 var JobId = reader["JobId"];
@@ -539,13 +538,15 @@ namespace Traker.Database
     
                             UPDATE Jobs
                             SET Status = @status,
-                                StartDate = @startDate
+                                StartDate = @startDate,
+                                CompletedDate = @completedDate
                             WHERE JobId = @jobId;
                         
                             ";
 
                             jobStatusCmd.Parameters.AddWithValue("@status", status);
                             jobStatusCmd.Parameters.AddWithValue("@startDate", DateTime.MinValue); // then you can check if new if less than today
+                            jobStatusCmd.Parameters.AddWithValue("@completedDate", DateTime.MinValue); // then you can check if new if less than today
                             jobStatusCmd.Parameters.AddWithValue("@jobId", jobId);
                             jobStatusCmd.ExecuteNonQuery();
                         }
@@ -576,6 +577,66 @@ namespace Traker.Database
                         }
                     }
                 }
+                else if (status == "Done")
+                {
+                    using (var pragma = conn.CreateCommand())
+                    {
+                        pragma.CommandText = "PRAGMA foreign_keys = ON;";
+                        pragma.ExecuteNonQuery();
+
+                        using (var jobStatusCmd = conn.CreateCommand())
+                        {
+                            jobStatusCmd.CommandText = @"
+    
+                            UPDATE Jobs
+                            SET Status = @status,
+                                CompletedDate = @completedDate
+                            WHERE JobId = @jobId;
+                        
+                            ";
+
+                            jobStatusCmd.Parameters.AddWithValue("@status", status);
+                            jobStatusCmd.Parameters.AddWithValue("@completedDate", DateTime.Now.Date);
+                            jobStatusCmd.Parameters.AddWithValue("@jobId", jobId);
+                            jobStatusCmd.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
+        public static async Task DeleteRow(int clientId)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+
+                using (var pragma = conn.CreateCommand())
+                {
+                    pragma.CommandText = "PRAGMA foreign_keys = ON;";
+                    pragma.ExecuteNonQuery();
+                }
+
+                using var tx = conn.BeginTransaction();
+
+                using (var deleteRowCmd = conn.CreateCommand())
+                {
+                    deleteRowCmd.CommandText = @"
+    
+                        DELETE FROM Clients
+                        WHERE ClientId = @clientId;
+                        ";
+
+                    deleteRowCmd.Parameters.AddWithValue("@clientId", clientId);
+                    deleteRowCmd.ExecuteNonQuery();
+                }
+
+                tx.Commit();
             }
             catch
             {

@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS Jobs (
     FolderPath TEXT,
     Notes TEXT,
     IsArchived BOOLEAN,
-    FOREIGN KEY (ClientId) REFERENCES Clients(ClientId)
+    FOREIGN KEY (ClientId) REFERENCES Clients(ClientId) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Invoices (
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS Invoices (
     PaidDate DATETIME,
     PaymentMethod TEXT,
     Notes TEXT,
-    FOREIGN KEY (JobId) REFERENCES Jobs(JobId)
+    FOREIGN KEY (JobId) REFERENCES Jobs(JobId) ON DELETE CASCADE
 );
 
 PRAGMA foreign_keys = ON;

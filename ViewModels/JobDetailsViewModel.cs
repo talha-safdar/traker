@@ -25,26 +25,16 @@ namespace Traker.ViewModels
             _events = events;
         }
 
-        public async Task setStatus(string status)
+        public async Task SetStatus(string status)
         {
-            if (status == "New")
-            {
-                Debug.WriteLine("Status set to New");
-                await Database.SetStatus(status, selectedRow.ClientId, selectedRow.JobId);
+            await Database.SetStatus(status, selectedRow.ClientId, selectedRow.JobId);
+            await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
+        }
 
-                await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
-            }
-            else if (status == "Active")
-            {
-                Debug.WriteLine("Status set to Active");
-
-                var a = selectedRow.ClientId;
-                //var b = selectedRow.Jobs.Where(j => j.Cl)
-            }
-            else if (status == "Done")
-            {
-                Debug.WriteLine("Status set to Done");
-            }
+        public async Task DeleteRow()
+        {
+            await Database.DeleteRow(selectedRow.ClientId);
+            await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
         }
     }
 }
