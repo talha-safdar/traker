@@ -25,7 +25,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="10*" /> <!--main part / side panel -->
-            <RowDefinition Height="0.5*" /> <!-- table option panel -->
+            <RowDefinition Height="0.5*" MinHeight="40" /> <!-- table option panel -->
             <RowDefinition Height="1.5*" /> <!-- info panel / side panel -->
         </Grid.RowDefinitions>
             
@@ -99,9 +99,26 @@
         <!-- table options -->
         <Grid Grid.Column="1" Grid.Row="1">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
-                <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddRowEntry()]" Background="{StaticResource SecondaryBackgroundBrush}" CornerRadius="20" Padding="8" Margin="0,0,30,0">
-                    <svg:SvgViewbox Source="/Resources/Media/Images/Icons/Lucide/plus.svg" Width="15" Height="15"/>                    
+                
+                <!-- add job -->
+                <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddJob()]" Background="{StaticResource SecondaryBackgroundBrush}" CornerRadius="20" Padding="10" Margin="0,0,10,0">
+                    <Grid Margin="5,0,5,0">
+                        <StackPanel Orientation="Horizontal">
+                            <svg:SvgViewbox Source="/Resources/Media/Images/Icons/Lucide/plus.svg" Width="15" Height="15"/>
+                            <TextBlock Margin="10,0,0,0" Text="Add Job to Client" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="13" FontWeight="Regular" />
+                        </StackPanel>
+                    </Grid>
                 </Border>
+                
+                <!-- add client -->
+                <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" Background="{StaticResource SecondaryBackgroundBrush}" CornerRadius="20" Padding="10" Margin="0,0,20,0">
+                    <Grid Margin="5,0,5,0">
+                        <StackPanel Orientation="Horizontal">
+                            <svg:SvgViewbox Source="/Resources/Media/Images/Icons/Lucide/plus.svg" Width="15" Height="15"/>
+                            <TextBlock Margin="10,0,0,0" Text="New Client" Foreground="{StaticResource FontPrimaryBrush}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="13" FontWeight="Regular" />
+                        </StackPanel>
+                    </Grid>
+                </Border>                
             </StackPanel>
         </Grid>
 

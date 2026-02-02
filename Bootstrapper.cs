@@ -37,7 +37,7 @@ namespace Traker
             _container.Singleton<AppState>();
 
             _container.PerRequest<DashboardViewModel>();
-            _container.PerRequest<AddRowEntryViewModel>();
+            _container.PerRequest<AddClientViewModel>();
 
             // LogManager.GetLog = type => new DebugLog(type); // uncomment this line for Caliburn debug messages
         }

@@ -311,4 +311,115 @@ Since you have a specific grid and those spacer columns, you don't want your but
         </Setter>
     </Style>
 
+    <!--<Style TargetType="ComboBox">
+        <Setter Property="Foreground" Value="#EAEAEA"/>
+        <Setter Property="Background" Value="#2B2F3A"/>
+        <Setter Property="BorderBrush" Value="#3F4554"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="8,4"/>
+        <Setter Property="MinHeight" Value="34"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Border x:Name="Border"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="8">
+                        <Grid>
+                            <ToggleButton
+                            x:Name="ToggleButton"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"/>
+
+                            <ContentPresenter
+                            Margin="10,2,30,2"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left"/>
+
+                            <Path
+                            HorizontalAlignment="Right"
+                            Margin="0,0,12,0"
+                            VerticalAlignment="Center"
+                            Fill="#B0B6C3"
+                            Data="M 0 0 L 4 4 L 8 0 Z"/>
+                        </Grid>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="BorderBrush" Value="#5A6FFF"/>
+                        </Trigger>
+
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter TargetName="Border" Property="BorderBrush" Value="#5A6FFF"/>
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>-->
+
+    <Style TargetType="ComboBox">
+        <Setter Property="Foreground" Value="#EAEAEA"/>
+        <Setter Property="Background" Value="#2B2F3A"/>
+        <Setter Property="BorderBrush" Value="#3F4554"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="8,4"/>
+        <Setter Property="MinHeight" Value="34"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Border x:Name="Border"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="8">
+                        <Grid>
+                            <ToggleButton
+                            x:Name="ToggleButton"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"/>
+
+                            <ContentPresenter
+                            Margin="10,2,30,2"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left"/>
+
+                            <Path
+                            HorizontalAlignment="Right"
+                            Margin="0,0,12,0"
+                            VerticalAlignment="Center"
+                            Fill="#B0B6C3"
+                            Data="M 0 0 L 4 4 L 8 0 Z"/>
+                        </Grid>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="BorderBrush" Value="#5A6FFF"/>
+                        </Trigger>
+
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter TargetName="Border" Property="BorderBrush" Value="#5A6FFF"/>
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
 </ResourceDictionary>

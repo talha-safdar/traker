@@ -67,7 +67,8 @@ namespace Traker.ViewModels
         private List<int> _completedJobs; // completed jobs
         private List<int> _invoicedJobs; // completed jobs
         private JobDetailsViewModel _jobDetailsViewModel;
-        private AddRowEntryViewModel _addRowEntryViewModel;
+        private AddClientViewModel _addClientViewModel;
+        private AddJobViewModel _addJobViewModel;
         #endregion
 
         public DashboardViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState)
@@ -109,7 +110,8 @@ namespace Traker.ViewModels
             State = appState;
 
             _jobDetailsViewModel = new JobDetailsViewModel(_events);
-            _addRowEntryViewModel = new AddRowEntryViewModel(_events, State);
+            _addClientViewModel = new AddClientViewModel(_events, State);
+            _addJobViewModel = new AddJobViewModel();
 
 
             _events.SubscribeOnPublishedThread(this);
@@ -368,22 +370,57 @@ namespace Traker.ViewModels
             }
         }
 
-        public async Task AddRowEntry()
+        public async Task AddClient()
         {
-            Debug.WriteLine("ADDING..");
-
+            Debug.WriteLine("ADDING client..");
             
             if (State.IsAddRowEntryOpen == false)
             {
-                // if State.popup is not free then report it with a message box
+                // if is not free then report it with a message box
+                // move this to a private function later
                 if (_jobDetailsViewModel != null )
                 {
                     await _jobDetailsViewModel.TryCloseAsync(false);
                     _jobDetailsViewModel = null;
                 }
+                if (_addJobViewModel != null)
+                {
+                    await _addJobViewModel.TryCloseAsync(false);
+                    _addJobViewModel = null;
+                }
 
-                _addRowEntryViewModel = new AddRowEntryViewModel(_events, State);
-                await _windowManager.ShowWindowAsync(_addRowEntryViewModel, null, SettingsForDialog(600, 500));
+                _addClientViewModel = new AddClientViewModel(_events, State);
+                await _windowManager.ShowWindowAsync(_addClientViewModel, null, SettingsForDialog(600, 500));
+                State.IsAddRowEntryOpen = true; // flag as open accross the project
+            }
+
+            // the state State.IsAddRowEntryOpen will be false again from addrowentryVM when user closes the window
+            else if (State.IsAddRowEntryOpen == true)
+            {
+                return; // do nothing
+            }
+        }
+
+        public async Task AddJob()
+        {
+            Debug.WriteLine("ADDING job..");
+
+            if (State.IsAddRowEntryOpen == false)
+            {
+                // if State.popup is not free then report it with a message box
+                if (_jobDetailsViewModel != null)
+                {
+                    await _jobDetailsViewModel.TryCloseAsync(false);
+                    _jobDetailsViewModel = null;
+                }
+                if (_addClientViewModel != null)
+                {
+                    await _addClientViewModel.TryCloseAsync(false);
+                    _addClientViewModel = null;
+                }
+
+                _addJobViewModel = new AddJobViewModel();
+                await _windowManager.ShowWindowAsync(_addJobViewModel, null, SettingsForDialog(600, 500));
                 State.IsAddRowEntryOpen = true; // flag as open accross the project
             }
 

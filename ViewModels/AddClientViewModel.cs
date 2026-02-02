@@ -14,7 +14,7 @@ namespace Traker.ViewModels
     using System.Globalization;
     using Traker.Events;
 
-    public class AddRowEntryViewModel : Screen
+    public class AddClientViewModel : Screen
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
@@ -31,7 +31,7 @@ namespace Traker.ViewModels
         public AppState State { get; } // state binding variable accessible from other viewmodels
         #endregion
 
-        public AddRowEntryViewModel(IEventAggregator events, AppState appState)
+        public AddClientViewModel(IEventAggregator events, AppState appState)
         {
             _events = events;
 
@@ -83,16 +83,25 @@ namespace Traker.ViewModels
             // money format use commas and dots
             // empty boxes on press add
 
-            DateTime dueDate = DateTime.ParseExact(
-            DueDate,
-            "dd/MM/yyyy",
-            CultureInfo.InvariantCulture
-            );
+            var dueDate = DateTime.MinValue;
+            decimal amount = 0;
 
-            decimal amount = decimal.Parse(
-                Price,
+            if (DueDate != String.Empty)
+            {
+                dueDate = DateTime.ParseExact(
+                DueDate,
+                "dd/MM/yyyy",
                 CultureInfo.InvariantCulture
-            );
+                );
+            }
+
+            if (Price != String.Empty)
+            {
+                amount = decimal.Parse(
+                    Price,
+                    CultureInfo.InvariantCulture
+                );
+            }
 
             Database.AddRow(ClientName, JobDescription, amount, dueDate);
 

@@ -18,9 +18,9 @@ namespace Traker.Views
     /// <summary>
     /// Interaction logic for AddRowEntryView.xaml
     /// </summary>
-    public partial class AddRowEntryView : UserControl
+    public partial class AddClientView : UserControl
     {
-        public AddRowEntryView()
+        public AddClientView()
         {
             InitializeComponent();
         }

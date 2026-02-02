@@ -14,8 +14,8 @@ database export/import?
 on popup menu open and clicked one option close the menu
 allow multi database selection
 - logics: create extra column in a txt file/settings and disable rest keep the one you want ( maybe using 1 and 0)
-
-
+- if no date use DateTime.MinValue then replace that with custom text after checking e.g.
+if datetime is less than today then show "to set"
 
 
 
