@@ -643,6 +643,75 @@ namespace Traker.Database
 
             }
         }
+
+        public static Task AddNewJobToClient(int clientId, string jobDescription, decimal finalPrice, DateTime dueDate)
+        {
+            //long clientId = 0;
+            long jobId = 0;
+
+            using var conn = new SqliteConnection(_connectionString);
+            conn.Open();
+
+            //using (var pragma = conn.CreateCommand())
+            //{
+            //    pragma.CommandText = "PRAGMA foreign_keys = ON;";
+            //    pragma.ExecuteNonQuery();
+            //}
+
+            //using var tx = conn.BeginTransaction();
+
+            // insert into jobs table
+            using (var jobsCmd = conn.CreateCommand())
+            {
+                jobsCmd.CommandText = @"
+
+                INSERT INTO Jobs
+                (ClientId, Description, Status, FinalPrice, CreatedDate, DueDate)
+
+                VALUES
+                (@clientId, @description, @status, @finalPrice, @createdDate, @dueDate);
+
+                ";
+
+                jobsCmd.Parameters.AddWithValue("@clientId", clientId);
+                jobsCmd.Parameters.AddWithValue("@description", jobDescription);
+                jobsCmd.Parameters.AddWithValue("@status", "New");
+                jobsCmd.Parameters.AddWithValue("@finalPrice", finalPrice);
+                jobsCmd.Parameters.AddWithValue("@createdDate", DateTime.Now.Date);
+                jobsCmd.Parameters.AddWithValue("@dueDate", dueDate.ToString("yyyy-MM-dd"));
+                jobsCmd.ExecuteNonQuery();
+            }
+
+            //// get last inserted job id based on current clientId
+            using (var jobIdCmd = conn.CreateCommand())
+            {
+                jobIdCmd.CommandText = "SELECT last_insert_rowid();";
+                jobId = (long)jobIdCmd.ExecuteScalar()!;
+            }
+
+
+            using (var invoiceCmd = conn.CreateCommand())
+            {
+                invoiceCmd.CommandText = @"
+
+                INSERT INTO Invoices
+                (JobId, IsPaid)
+
+                VALUES
+                (@jobId, @isPaid);
+
+                ";
+
+                invoiceCmd.Parameters.AddWithValue("@jobId", jobId);
+                invoiceCmd.Parameters.AddWithValue("@isPaid", false);
+                invoiceCmd.ExecuteNonQuery();
+            }
+
+            // Commit both together
+            //tx.Commit();
+
+            return Task.CompletedTask;
+        }
         #endregion
     }
 }

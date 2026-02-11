@@ -111,7 +111,7 @@ namespace Traker.ViewModels
 
             _jobDetailsViewModel = new JobDetailsViewModel(_events);
             _addClientViewModel = new AddClientViewModel(_events, State);
-            _addJobViewModel = new AddJobViewModel();
+            _addJobViewModel = new AddJobViewModel(_events);
 
 
             _events.SubscribeOnPublishedThread(this);
@@ -419,7 +419,8 @@ namespace Traker.ViewModels
                     _addClientViewModel = null;
                 }
 
-                _addJobViewModel = new AddJobViewModel();
+                _addJobViewModel = new AddJobViewModel(_events);
+                _addJobViewModel.dashboardData = _dashboardData; // pass dashboard data to AddJob
                 await _windowManager.ShowWindowAsync(_addJobViewModel, null, SettingsForDialog(600, 500));
                 State.IsAddRowEntryOpen = true; // flag as open accross the project
             }

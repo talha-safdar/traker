@@ -366,7 +366,7 @@ Since you have a specific grid and those spacer columns, you don't want your but
         </Setter>
     </Style>-->
 
-    <Style TargetType="ComboBox">
+    <!--<Style TargetType="ComboBox">
         <Setter Property="Foreground" Value="#EAEAEA"/>
         <Setter Property="Background" Value="#2B2F3A"/>
         <Setter Property="BorderBrush" Value="#3F4554"/>
@@ -419,7 +419,7 @@ Since you have a specific grid and those spacer columns, you don't want your but
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
+    </Style>-->
 
 
 </ResourceDictionary>

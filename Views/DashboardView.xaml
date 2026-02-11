@@ -68,6 +68,14 @@
                         </DataGrid.RowStyle>
 
                         <DataGrid.Columns>
+                            <DataGridTextColumn Header="Id" Binding="{Binding ClientId}" Width="0.1*" >
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        <Setter Property="TextAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
                             <DataGridTextColumn Header="Client Name" Binding="{Binding ClientName}" Width="0.5*" >
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
