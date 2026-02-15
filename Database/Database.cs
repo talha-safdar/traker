@@ -217,22 +217,22 @@ PRAGMA foreign_keys = ON;
 
                             while (reader.Read())
                             {
-                                Debug.WriteLine(reader["JobId"] + " "
-                                    + reader["ClientId"] + " "
-                                    + reader["Title"] + " "
-                                    + reader["Description"] + " "
-                                    + reader["Status"] + " "
-                                    + reader["EstimatedPrice"] + " "
-                                    + reader["FinalPrice"] + " "
-                                    + reader["CreatedDate"] + " "
-                                    + reader["StartDate"] + " "
-                                    + reader["CompletedDate"] + " "
-                                    + reader["DueDate"] + " "
-                                    + reader["FolderPath"] + " "
-                                    + reader["Notes"] + " "
-                                    + reader["IsArchived"] + " "
+                                //Debug.WriteLine(reader["JobId"] + " "
+                                //    + reader["ClientId"] + " "
+                                //    + reader["Title"] + " "
+                                //    + reader["Description"] + " "
+                                //    + reader["Status"] + " "
+                                //    + reader["EstimatedPrice"] + " "
+                                //    + reader["FinalPrice"] + " "
+                                //    + reader["CreatedDate"] + " "
+                                //    + reader["StartDate"] + " "
+                                //    + reader["CompletedDate"] + " "
+                                //    + reader["DueDate"] + " "
+                                //    + reader["FolderPath"] + " "
+                                //    + reader["Notes"] + " "
+                                //    + reader["IsArchived"] + " "
 
-                                    );
+                                //    );
 
 
                                 var JobId = reader["JobId"];
@@ -695,22 +695,22 @@ PRAGMA foreign_keys = ON;
             }
 
 
-            using (var invoiceCmd = conn.CreateCommand())
-            {
-                invoiceCmd.CommandText = @"
+            //using (var invoiceCmd = conn.CreateCommand())
+            //{
+            //    invoiceCmd.CommandText = @"
 
-                INSERT INTO Invoices
-                (JobId, IsPaid)
+            //    INSERT INTO Invoices
+            //    (JobId, IsPaid)
 
-                VALUES
-                (@jobId, @isPaid);
+            //    VALUES
+            //    (@jobId, @isPaid);
 
-                ";
+            //    ";
 
-                invoiceCmd.Parameters.AddWithValue("@jobId", jobId);
-                invoiceCmd.Parameters.AddWithValue("@isPaid", false);
-                invoiceCmd.ExecuteNonQuery();
-            }
+            //    invoiceCmd.Parameters.AddWithValue("@jobId", jobId);
+            //    invoiceCmd.Parameters.AddWithValue("@isPaid", false);
+            //    invoiceCmd.ExecuteNonQuery();
+            //}
 
             // Commit both together
             //tx.Commit();

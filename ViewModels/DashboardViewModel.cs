@@ -31,14 +31,19 @@ namespace Traker.ViewModels
         public AppState State { get; } // state binding variable accessible from other viewmodels
         #endregion
 
+        #region Public View Variables
+        public List<string> JobStatusEdit { get; set; } = new List<string> { "New", "Active", "Done" };
+        public List<string> InvoiceStatusEdit { get; set; } = new List<string> { "Not invoiced", "Sent", "Paid", "Overdue" };
+        #endregion
+
         #region Private View Variables
-        private ObservableCollection<string> _clientNames;
-        private ObservableCollection<string> _clientEmails;
-        private ObservableCollection<string> _clientPhones;
-        private ObservableCollection<string> _jobDescripions;
-        private ObservableCollection<string> _jobStatus;
-        private ObservableCollection<string> _jobPrice;
-        private ObservableCollection<string> _paid; // paid by client?
+        //private ObservableCollection<string> _clientNames;
+        //private ObservableCollection<string> _clientEmails;
+        //private ObservableCollection<string> _clientPhones;
+        //private ObservableCollection<string> _jobDescripions;
+        //private ObservableCollection<string> _jobStatus;
+        //private ObservableCollection<string> _jobPrice;
+        //private ObservableCollection<string> _paid; // paid by client?
         private string _moneyReceived; // money received value shown total
         private string _moneyToRecieve; // money outstanding value shown total
         private string _moneyOverdue; // money overdue value shown total
@@ -47,7 +52,7 @@ namespace Traker.ViewModels
         private string _inProgressJobsCount; 
         private string _completedJobsCount; 
         private string _invoicedJobsCount;
-        ObservableCollection<DashboardModel> _dashboardData; // listo of data shown on the data grid
+        private ObservableCollection<DashboardModel> _dashboardData; // listo of data shown on the data grid
         public DashboardModel _selectedDataRow; // selected data row
         #endregion
 
@@ -78,13 +83,13 @@ namespace Traker.ViewModels
 
             _windowManager = windowManager;
 
-            _clientNames = new ObservableCollection<string>(); // client names
-            _clientEmails = new ObservableCollection<string>(); // client emails
-            _clientPhones = new ObservableCollection<string>(); // client phones
-            _jobDescripions = new ObservableCollection<string>(); // job descriptions
-            _jobStatus = new ObservableCollection<string>(); // job status
-            _jobPrice = new ObservableCollection<string>(); // job price
-            _paid = new ObservableCollection<string>(); // job price
+            //_clientNames = new ObservableCollection<string>(); // client names
+            //_clientEmails = new ObservableCollection<string>(); // client emails
+            //_clientPhones = new ObservableCollection<string>(); // client phones
+            //_jobDescripions = new ObservableCollection<string>(); // job descriptions
+            //_jobStatus = new ObservableCollection<string>(); // job status
+            //_jobPrice = new ObservableCollection<string>(); // job price
+            //_paid = new ObservableCollection<string>(); // job price
 
             _moneyReceived = "0";
             _moneyToRecieve ="0";
@@ -490,74 +495,74 @@ namespace Traker.ViewModels
 
 
         #region Public View Variables
-        public ObservableCollection<string> ClientNames
-        {
-            get { return _clientNames; }
-            set
-            {
-                _clientNames = value;
-                NotifyOfPropertyChange(() => ClientNames);
-            }
-        }
+        //public ObservableCollection<string> ClientNames
+        //{
+        //    get { return _clientNames; }
+        //    set
+        //    {
+        //        _clientNames = value;
+        //        NotifyOfPropertyChange(() => ClientNames);
+        //    }
+        //}
 
-        public ObservableCollection<string> ClientEmails
-        {
-            get { return _clientEmails; }
-            set
-            {
-                _clientEmails = value;
-                NotifyOfPropertyChange(() => ClientEmails);
-            }
-        }
+        //public ObservableCollection<string> ClientEmails
+        //{
+        //    get { return _clientEmails; }
+        //    set
+        //    {
+        //        _clientEmails = value;
+        //        NotifyOfPropertyChange(() => ClientEmails);
+        //    }
+        //}
 
-        public ObservableCollection<string> ClientPhones
-        {
-            get { return _clientPhones; }
-            set
-            {
-                _clientPhones = value;
-                NotifyOfPropertyChange(() => ClientPhones);
-            }
-        }
-        public ObservableCollection<string> JobDescriptions
-        {
-            get { return _jobDescripions; }
-            set
-            {
-                _jobDescripions = value;
-                NotifyOfPropertyChange(() => JobDescriptions);
-            }
-        }
+        //public ObservableCollection<string> ClientPhones
+        //{
+        //    get { return _clientPhones; }
+        //    set
+        //    {
+        //        _clientPhones = value;
+        //        NotifyOfPropertyChange(() => ClientPhones);
+        //    }
+        //}
+        //public ObservableCollection<string> JobDescriptions
+        //{
+        //    get { return _jobDescripions; }
+        //    set
+        //    {
+        //        _jobDescripions = value;
+        //        NotifyOfPropertyChange(() => JobDescriptions);
+        //    }
+        //}
 
-        public ObservableCollection<string> JobStatus
-        {
-            get { return _jobStatus; }
-            set
-            {
-                _jobStatus = value;
-                NotifyOfPropertyChange(() => JobStatus);
-            }
-        }
+        //public ObservableCollection<string> JobStatus
+        //{
+        //    get { return _jobStatus; }
+        //    set
+        //    {
+        //        _jobStatus = value;
+        //        NotifyOfPropertyChange(() => JobStatus);
+        //    }
+        //}
 
-        public ObservableCollection<string> JobPrice
-        {
-            get { return _jobPrice; }
-            set
-            {
-                _jobPrice = value;
-                NotifyOfPropertyChange(() => JobPrice);
-            }
-        }
+        //public ObservableCollection<string> JobPrice
+        //{
+        //    get { return _jobPrice; }
+        //    set
+        //    {
+        //        _jobPrice = value;
+        //        NotifyOfPropertyChange(() => JobPrice);
+        //    }
+        //}
 
-        public ObservableCollection<string> Paid
-        {
-            get { return _paid; }
-            set
-            {
-                _paid = value;
-                NotifyOfPropertyChange(() => Paid);
-            }
-        }
+        //public ObservableCollection<string> Paid
+        //{
+        //    get { return _paid; }
+        //    set
+        //    {
+        //        _paid = value;
+        //        NotifyOfPropertyChange(() => Paid);
+        //    }
+        //}
 
         public String MoneyReceived
         {

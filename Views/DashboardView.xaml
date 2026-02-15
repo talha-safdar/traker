@@ -46,7 +46,7 @@
                     <!--SelectionMode= extended // multi row select-->
                     <DataGrid Margin="10"
                               RowHeight="40"
-                              IsReadOnly="True"
+                              IsReadOnly="False"
                               VerticalAlignment="Top"
                               HorizontalAlignment="Center"
                               SelectionUnit="FullRow"
@@ -62,13 +62,12 @@
                               HorizontalScrollBarVisibility="Hidden">
                         <DataGrid.RowStyle>
                             <Style TargetType="DataGridRow">
-                                <Setter Property="cal:Message.Attach" 
-                                    Value="[Event MouseRightButtonDown] = [Action OpenJobDetails($dataContext)]" />
+                                <Setter Property="cal:Message.Attach" Value="[Event MouseRightButtonDown] = [Action OpenJobDetails($dataContext)]" />
                             </Style>
                         </DataGrid.RowStyle>
 
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Id" Binding="{Binding ClientId}" Width="0.1*" >
+                            <DataGridTextColumn Header="Id" Binding="{Binding ClientId}" Width="0.1*" IsReadOnly="True">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -76,7 +75,7 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Client Name" Binding="{Binding ClientName}" Width="0.3*" >
+                            <DataGridTextColumn Header="Client Name" Binding="{Binding ClientName}" Width="0.5*" >
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -84,10 +83,22 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Job Description" Binding="{Binding JobDescription}" Width="0.35*" />
+                            <DataGridTextColumn Header="Job Description" Binding="{Binding JobDescription}" Width="500">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
                             <!--<DataGridTextColumn Header="Price" Binding="{Binding Price, StringFormat=£{0:N2}}" Width="0.5*" />-->
-                            <DataGridTextColumn Header="Price" Binding="{Binding Price}" Width="0.5*" />
-                            <DataGridTextColumn Header="Due Date" Binding="{Binding DueDate, StringFormat={}{0:dd/MM/yyyy}}" Width="0.4*">
+                            <DataGridTextColumn Header="Price" Binding="{Binding Price}" Width="300" />
+                            <DataGridTextColumn Header="Due Date" Binding="{Binding DueDate, StringFormat={}{0:dd/MM/yyyy}}" Width="200">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -95,8 +106,45 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Job Status" Binding="{Binding Status}" Width="0.5*" />
-                            <DataGridTextColumn Header="Invoice Status" Binding="{Binding IsInvoiced}" Width="0.5*" />
+
+
+                            <!-- job status -->
+                            <DataGridComboBoxColumn Header="Job Status" SelectedItemBinding="{Binding JobStatus, Mode=TwoWay}" Width="200">
+                                <!-- Display mode -->
+                                <DataGridComboBoxColumn.ElementStyle>
+                                    <Style TargetType="ComboBox">
+                                        <Setter Property="ItemsSource" Value="{Binding DataContext.JobStatusEdit, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+                                        <Setter Property="IsHitTestVisible" Value="False"/>
+                                        <Setter Property="Focusable" Value="False"/>
+                                    </Style>
+                                </DataGridComboBoxColumn.ElementStyle>
+
+                                <!-- Edit mode -->
+                                <DataGridComboBoxColumn.EditingElementStyle>
+                                    <Style TargetType="ComboBox">
+                                        <Setter Property="ItemsSource" Value="{Binding DataContext.JobStatusEdit, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+                                    </Style>
+                                </DataGridComboBoxColumn.EditingElementStyle>
+                            </DataGridComboBoxColumn>
+
+
+                            <DataGridComboBoxColumn Header="Invoice Status" SelectedItemBinding="{Binding InvoiceStatus, Mode=TwoWay}" Width="200">
+                                <!-- Display mode -->
+                                <DataGridComboBoxColumn.ElementStyle>
+                                    <Style TargetType="ComboBox">
+                                        <Setter Property="ItemsSource" Value="{Binding DataContext.InvoiceStatusEdit, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+                                        <Setter Property="IsHitTestVisible" Value="False"/>
+                                        <Setter Property="Focusable" Value="False"/>
+                                    </Style>
+                                </DataGridComboBoxColumn.ElementStyle>
+
+                                <!-- Edit mode -->
+                                <DataGridComboBoxColumn.EditingElementStyle>
+                                    <Style TargetType="ComboBox">
+                                        <Setter Property="ItemsSource" Value="{Binding DataContext.InvoiceStatusEdit, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+                                    </Style>
+                                </DataGridComboBoxColumn.EditingElementStyle>
+                            </DataGridComboBoxColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Border>

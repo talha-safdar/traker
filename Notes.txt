@@ -26,11 +26,16 @@ if datetime is less than today then show "to set"
 
 
 NOTES:
+Job status:
+- New
+- Active
+- Done
+
 Invoice status:
-Not invoiced
-Sent
-Paid
-Overdue
+- Not invoiced
+- Sent
+- Paid
+- Overdue
 
 Not invoiced: if not created invoice
 sent: invoice created and due date set up
