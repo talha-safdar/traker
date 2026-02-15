@@ -12,11 +12,13 @@ namespace Traker.ViewModels
     using Database;
     using Traker.Data;
     using Traker.Events;
+    using Traker.Helper;
 
-    public class JobDetailsViewModel : Screen
+    public class RowContextMenuViewModel : Screen
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
+        private readonly IWindowManager _windowManager;
         #endregion
 
         public DashboardModel SelectedRow; // data passed by DashboardVM
@@ -24,9 +26,23 @@ namespace Traker.ViewModels
         public List<JobsModel> Jobs;
         public List<InvoicesModel> Invoices;
 
-        public JobDetailsViewModel(IEventAggregator events)
+        #region Private Field Vairables
+        private CreateInvoiceViewModel _createInvoice;
+        #endregion
+        public RowContextMenuViewModel(IEventAggregator events, IWindowManager windowManager)
         {
             _events = events;
+            _windowManager = windowManager;
+
+            _createInvoice = new CreateInvoiceViewModel();
+        }
+
+        public Task CreateInvoice()
+        {
+            _createInvoice = new CreateInvoiceViewModel();
+            _windowManager.ShowWindowAsync(_createInvoice, null, CustomWindow.SettingsForDialog(800, 500));
+
+            return Task.CompletedTask;
         }
 
         public Task OpenFolder()

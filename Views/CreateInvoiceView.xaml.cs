@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace Traker.Views
 {
     /// <summary>
-    /// Interaction logic for JobDetailsView.xaml
+    /// Interaction logic for CreateInvoiceView.xaml
     /// </summary>
-    public partial class JobDetailsView : UserControl
+    public partial class CreateInvoiceView : UserControl
     {
-        public JobDetailsView()
+        public CreateInvoiceView()
         {
             InitializeComponent();
         }

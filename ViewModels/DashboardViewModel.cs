@@ -17,6 +17,7 @@ namespace Traker.ViewModels
     using System.Windows.Controls;
     using System.Windows.Media;
     using Traker.Events;
+    using Traker.Helper;
     using Traker.Models;
     using Traker.States;
 
@@ -71,7 +72,7 @@ namespace Traker.ViewModels
         private List<int> _inProgressJobs; // in progress jobs
         private List<int> _completedJobs; // completed jobs
         private List<int> _invoicedJobs; // completed jobs
-        private JobDetailsViewModel _jobDetailsViewModel;
+        private RowContextMenuViewModel _jobDetailsViewModel;
         private AddClientViewModel _addClientViewModel;
         private AddJobViewModel _addJobViewModel;
         #endregion
@@ -114,7 +115,7 @@ namespace Traker.ViewModels
 
             State = appState;
 
-            _jobDetailsViewModel = new JobDetailsViewModel(_events);
+            _jobDetailsViewModel = new RowContextMenuViewModel(_events, _windowManager);
             _addClientViewModel = new AddClientViewModel(_events, State);
             _addJobViewModel = new AddJobViewModel(_events, State);
 
@@ -371,12 +372,12 @@ namespace Traker.ViewModels
              */
             if (SelectedDataRow.ClientId == selectedJob.ClientId)
             {
-                _jobDetailsViewModel = new JobDetailsViewModel(_events);
+                _jobDetailsViewModel = new RowContextMenuViewModel(_events, _windowManager);
                 _jobDetailsViewModel.SelectedRow = selectedJob; // pass row selected
                 _jobDetailsViewModel.Clients = _clients;
                 _jobDetailsViewModel.Jobs = _jobs;
                 _jobDetailsViewModel.Invoices = _invoices;
-                await _windowManager.ShowPopupAsync(_jobDetailsViewModel, null, SettingsForDialog(200, 200)); // vertical, horizontal
+                await _windowManager.ShowPopupAsync(_jobDetailsViewModel, null, CustomWindow.SettingsForDialog(200, 200)); // vertical, horizontal
             }
         }
 
@@ -409,7 +410,7 @@ namespace Traker.ViewModels
                 }
 
                 _addClientViewModel = new AddClientViewModel(_events, State);
-                await _windowManager.ShowWindowAsync(_addClientViewModel, null, SettingsForDialog(600, 500));
+                await _windowManager.ShowWindowAsync(_addClientViewModel, null, CustomWindow.SettingsForDialog(600, 500));
                 State.IsWindowOpen = true; // flag as open accross the project
             }
 
@@ -440,7 +441,7 @@ namespace Traker.ViewModels
 
                 _addJobViewModel = new AddJobViewModel(_events, State);
                 _addJobViewModel.dashboardData = _dashboardData; // pass dashboard data to AddJob
-                await _windowManager.ShowWindowAsync(_addJobViewModel, null, SettingsForDialog(600, 500));
+                await _windowManager.ShowWindowAsync(_addJobViewModel, null, CustomWindow.SettingsForDialog(600, 500));
                 State.IsWindowOpen = true; // flag as open accross the project
             }
 
@@ -452,19 +453,19 @@ namespace Traker.ViewModels
         }
 
 
-        private dynamic SettingsForDialog(int height, int width)
-        {
-            dynamic settings = new ExpandoObject();
-            settings.Title = string.Empty;
-            settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            settings.WindowStyle = WindowStyle.None;
-            settings.AllowsTransparency = true;
-            settings.Background = Brushes.Transparent;
-            settings.ResizeMode = ResizeMode.CanResize;
-            settings.MinHeight = height;
-            settings.MinWidth = width;
-            return settings;
-        }
+        //private dynamic SettingsForDialog(int height, int width)
+        //{
+        //    dynamic settings = new ExpandoObject();
+        //    settings.Title = string.Empty;
+        //    settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        //    settings.WindowStyle = WindowStyle.None;
+        //    settings.AllowsTransparency = true;
+        //    settings.Background = Brushes.Transparent;
+        //    settings.ResizeMode = ResizeMode.CanResize;
+        //    settings.MinHeight = height;
+        //    settings.MinWidth = width;
+        //    return settings;
+        //}
 
         public Task HandleAsync(RefreshDatabase message, CancellationToken cancellationToken)
         {

@@ -128,9 +128,24 @@ ID = InvoiceID: Invoice Number (e.g. INV-0001)
 Date Create = IssueDate (default = Today)
 Client Name = from DB (read-only, pulled from DB)
 Job Title = from DB (read-only)
-
-
 user input:
-amount = FinalPrice
+amount = TotalAmount
 due date = DueDate
 Client Address = from DB (auto-filled from Client table)
+
+InvoiceId
+JobId
+Invoicenumber: INV-0001
+IssueDate
+BillingName TEXT,
+BillingAddress TEXT,
+BillingCity, TEXT,
+BillingPostcode TEXT,
+BillingCountry TEXT,
+Job Title/desctption
+PaidDate
+DueDate
+subtotal: £100
+tax: 20%
+total: subtotal+ (100*20%=0.20 (£20)) // £120 // 100 own and 20 for HMRC
+i only fill: billing shit due date subtotal and VAT
