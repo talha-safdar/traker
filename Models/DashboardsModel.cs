@@ -19,6 +19,10 @@ namespace Traker.Models
         private DateTime _dueDate = new DateTime();
         private string _invoiceStatus = string.Empty;
 
+        /*
+         * to add information that could potentially pre-fill the invoice form
+         */
+
         // to show or not to show dropdown menu box for invoice status
         public bool HasInvoice { get; set; } = false;
 

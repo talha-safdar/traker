@@ -27,7 +27,7 @@ he selected not invoiced then confirmation box yes/no. that row with invoice det
 format and have a button maybe to access deleted clients, jobs, invoices (however this is out of scope for the first version)
 - on delete row delete folder too
 - add location based activities (e.g. invoice created at company on a map)
-
+- check use of override function and correct wether before or after the return thingg
 
 
 

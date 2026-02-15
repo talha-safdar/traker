@@ -40,6 +40,7 @@ namespace Traker.ViewModels
         public Task CreateInvoice()
         {
             _createInvoice = new CreateInvoiceViewModel();
+            _createInvoice.SelectedRow = SelectedRow;
             _windowManager.ShowWindowAsync(_createInvoice, null, CustomWindow.SettingsForDialog(800, 500));
 
             return Task.CompletedTask;
