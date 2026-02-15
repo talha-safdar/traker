@@ -44,12 +44,16 @@
             <Grid Grid.Row="1" Margin="0,20,0,0" >
                 <Border Background="{StaticResource TableHeaderBackgroundBrush}" CornerRadius="20">
                     <!--SelectionMode= extended // multi row select-->
-                    <DataGrid Margin="10"
+                    <DataGrid 
+                         x:Name="MainGrid"
+                                Margin="10"
                               RowHeight="40"
                               IsReadOnly="False"
                               VerticalAlignment="Top"
                               HorizontalAlignment="Center"
                               SelectionUnit="FullRow"
+                              BeginningEdit="DataGrid_BeginningEdit"
+
                                 ItemsSource="{Binding DashboardData}" 
                                 SelectedItem="{Binding SelectedDataRow}" 
                                 AutoGenerateColumns="False" 
@@ -128,23 +132,24 @@
                             </DataGridComboBoxColumn>
 
 
-                            <DataGridComboBoxColumn Header="Invoice Status" SelectedItemBinding="{Binding InvoiceStatus, Mode=TwoWay}" Width="200">
+                            <DataGridTemplateColumn  Header="Invoice Status" Width="200">
                                 <!-- Display mode -->
-                                <DataGridComboBoxColumn.ElementStyle>
-                                    <Style TargetType="ComboBox">
-                                        <Setter Property="ItemsSource" Value="{Binding DataContext.InvoiceStatusEdit, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
-                                        <Setter Property="IsHitTestVisible" Value="False"/>
-                                        <Setter Property="Focusable" Value="False"/>
-                                    </Style>
-                                </DataGridComboBoxColumn.ElementStyle>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding InvoiceStatus}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
 
                                 <!-- Edit mode -->
-                                <DataGridComboBoxColumn.EditingElementStyle>
-                                    <Style TargetType="ComboBox">
-                                        <Setter Property="ItemsSource" Value="{Binding DataContext.InvoiceStatusEdit, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
-                                    </Style>
-                                </DataGridComboBoxColumn.EditingElementStyle>
-                            </DataGridComboBoxColumn>
+                                <DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate>
+                                        <ComboBox ItemsSource="{Binding DataContext.InvoiceStatusEdit,
+                                            ElementName=MainGrid}"
+                                          SelectedItem="{Binding InvoiceStatus, Mode=TwoWay}"
+                                          IsEnabled="{Binding HasInvoice}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellEditingTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Border>

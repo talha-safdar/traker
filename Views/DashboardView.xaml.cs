@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Traker.Models;
+using Traker.ViewModels;
 
 namespace Traker.Views
 {
@@ -23,6 +25,19 @@ namespace Traker.Views
         public DashboardView()
         {
             InitializeComponent();
+        }
+
+        // it does not allow the user to change invoice status if invoice not created
+        private void DataGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
+        {
+            if (e.Row.Item is DashboardModel row)
+            {
+                if (!row.HasInvoice &&
+                    e.Column.Header?.ToString() == "Invoice Status")
+                {
+                    e.Cancel = true;
+                }
+            }
         }
     }
 }

@@ -80,15 +80,15 @@ CREATE TABLE IF NOT EXISTS Invoices (
     TotalAmount TEXT,
     IssueDate DATETIME,
     DueDate DATETIME,
+    Status VARCHAR(20),
+    IsDeleted BIT DEFAULT 0,
     PaidDate DATETIME,
     PaymentMethod TEXT,
-    Status VARCHAR(20),
     Notes TEXT,
     FOREIGN KEY (JobId) REFERENCES Jobs(JobId) ON DELETE CASCADE
 );
 
 PRAGMA foreign_keys = ON;
-
 
                         ";
 
@@ -348,6 +348,7 @@ PRAGMA foreign_keys = ON;
                                 var IssueDate = reader["IssueDate"] == DBNull.Value ? DateTime.MinValue : reader["IssueDate"];
                                 var DueDate = reader["DueDate"] == DBNull.Value ? DateTime.MinValue : reader["DueDate"];
                                 var Status = reader["Status"] == DBNull.Value ? String.Empty : reader["Status"];
+                                var IsDeleted = reader["IsDeleted"] == DBNull.Value ? String.Empty : reader["IsDeleted"];
                                 var PaidDate = reader["PaidDate"] == DBNull.Value ? DateTime.MinValue : reader["PaidDate"];
                                 var PaymentMethod = reader["PaymentMethod"] == DBNull.Value ? String.Empty : reader["PaymentMethod"];
                                 var Notes = reader["Notes"] == DBNull.Value ? String.Empty : reader["Notes"];
@@ -361,6 +362,7 @@ PRAGMA foreign_keys = ON;
                                     string.IsNullOrEmpty(IssueDate.ToString()) == false ||
                                     string.IsNullOrEmpty(DueDate.ToString()) == false ||
                                     string.IsNullOrEmpty(Status.ToString()) == false ||
+                                    string.IsNullOrEmpty(IsDeleted.ToString()) == false ||
                                     string.IsNullOrEmpty(PaidDate.ToString()) == false ||
                                     string.IsNullOrEmpty(PaymentMethod.ToString()) == false ||
                                     string.IsNullOrEmpty(Notes.ToString()) == false)
@@ -376,6 +378,7 @@ PRAGMA foreign_keys = ON;
                                         IssueDate = Convert.ToDateTime(IssueDate),
                                         DueDate = Convert.ToDateTime(DueDate),
                                         Status = Status.ToString()!,
+                                        IsDeleted = Convert.ToBoolean(IsDeleted),
                                         PaidDate = Convert.ToDateTime(PaidDate),
                                         PaymentMethod = PaymentMethod.ToString()!,
                                         Notes = Notes.ToString()!,
@@ -717,6 +720,8 @@ PRAGMA foreign_keys = ON;
 
             return Task.CompletedTask;
         }
+
+        //public static Task UpdateRow(int clientId, )
         #endregion
     }
 }

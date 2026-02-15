@@ -43,9 +43,10 @@ CREATE TABLE IF NOT EXISTS Invoices (
     TotalAmount TEXT,
     IssueDate DATETIME,
     DueDate DATETIME,
+    Status VARCHAR(20),
+    IsDeleted BIT DEFAULT 0,
     PaidDate DATETIME,
     PaymentMethod TEXT,
-    Status VARCHAR(20),
     Notes TEXT,
     FOREIGN KEY (JobId) REFERENCES Jobs(JobId) ON DELETE CASCADE
 );

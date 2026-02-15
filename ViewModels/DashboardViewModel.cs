@@ -33,7 +33,7 @@ namespace Traker.ViewModels
 
         #region Public View Variables
         public List<string> JobStatusEdit { get; set; } = new List<string> { "New", "Active", "Done" };
-        public List<string> InvoiceStatusEdit { get; set; } = new List<string> { "Not invoiced", "Sent", "Paid", "Overdue" };
+        public List<string> InvoiceStatusEdit { get; set; } = new List<string> { "Draft", "Sent", "Paid", "Overdue" };
         #endregion
 
         #region Private View Variables
@@ -182,7 +182,12 @@ namespace Traker.ViewModels
                     ClientEmail = client.Email,
                     ClientPhone = client.PhoneNumber,
                     JobId = job.JobId,
-                    InvoiceStatus = _invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? "Not Invoiced"
+
+                    HasInvoice = Convert.ToBoolean(_invoices.FirstOrDefault(i => i.JobId == job.JobId && i.IsDeleted == false)),
+
+                    // "Not invoiced" = invoice missing, invoice.Stauts the invoice exists
+                    // if invoice deleted then show "Not invoiced"
+                    InvoiceStatus = _invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? "Not invoiced"
                     //Invoices = _invoices.Where(invoice => invoice.JobId == _jobs[index].JobId).ToList()
                 };
                 _dashboardData.Add(dashboardEntry);
@@ -327,6 +332,13 @@ namespace Traker.ViewModels
             return Task.CompletedTask;
         }
         #endregion
+
+
+        public Task UpdateJobStatus(DashboardModel row)
+        {
+            // update DB here
+            return Task.CompletedTask;
+        }
 
 
         public async Task OpenJobDetails(DashboardModel selectedJob)

@@ -16,9 +16,10 @@ namespace Traker.Models
         public decimal TotalAmount { get; set; } = 0.0m;
         public DateTime IssueDate { get; set; } = new DateTime();
         public DateTime DueDate { get; set; } = new DateTime();
+        public string Status { get; set; } = String.Empty;
+        public bool IsDeleted { get; set; } = false;
         public DateTime PaidDate { get; set; } = new DateTime();
         public string PaymentMethod { get; set; } = String.Empty;
-        public string Status { get; set; } = String.Empty;
         public string Notes { get; set; } = String.Empty;
     }
 }
