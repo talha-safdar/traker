@@ -26,7 +26,7 @@ Not finalised
 he selected not invoiced then confirmation box yes/no. that row with invoice details will be saved in a e.g. "rubbish" folder in txt. 
 format and have a button maybe to access deleted clients, jobs, invoices (however this is out of scope for the first version)
 - on delete row delete folder too
-
+- add location based activities (e.g. invoice created at company on a map)
 
 
 
@@ -118,3 +118,19 @@ Tracker/
 │   ├── 0002_ACME_Ltd/
 │
 └── Exports/
+
+
+
+####
+Invoice creation:
+1Auto-Generated (User should NOT type these)
+ID = InvoiceID: Invoice Number (e.g. INV-0001)
+Date Create = IssueDate (default = Today)
+Client Name = from DB (read-only, pulled from DB)
+Job Title = from DB (read-only)
+
+
+user input:
+amount = FinalPrice
+due date = DueDate
+Client Address = from DB (auto-filled from Client table)

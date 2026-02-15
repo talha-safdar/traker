@@ -83,6 +83,11 @@ CREATE TABLE IF NOT EXISTS Invoices (
     TotalAmount TEXT,
     IssueDate DATETIME,
     DueDate DATETIME,
+    BillingName TEXT,
+    BillingAddress TEXT,
+    BillingCity, TEXT,
+    BillingPostcode TEXT,
+    BillingCountry TEXT,
     Status VARCHAR(20),
     IsDeleted BIT DEFAULT 0,
     PaidDate DATETIME,
@@ -350,6 +355,11 @@ PRAGMA foreign_keys = ON;
                                 var TotalAmount = reader["TotalAmount"] == DBNull.Value ? "0" : reader["TotalAmount"];
                                 var IssueDate = reader["IssueDate"] == DBNull.Value ? DateTime.MinValue : reader["IssueDate"];
                                 var DueDate = reader["DueDate"] == DBNull.Value ? DateTime.MinValue : reader["DueDate"];
+                                var BillingName = reader["BillingName"] == DBNull.Value ? String.Empty : reader["BillingName"];
+                                var BillingAddress = reader["BillingAddress"] == DBNull.Value ? String.Empty : reader["BillingAddress"];
+                                var BillingCity = reader["BillingCity"] == DBNull.Value ? String.Empty : reader["BillingCity"];
+                                var BillingPostcode = reader["BillingPostcode"] == DBNull.Value ? String.Empty : reader["BillingPostcode"];
+                                var BillingCountry = reader["BillingCountry"] == DBNull.Value ? String.Empty : reader["BillingCountry"];
                                 var Status = reader["Status"] == DBNull.Value ? String.Empty : reader["Status"];
                                 var IsDeleted = reader["IsDeleted"] == DBNull.Value ? String.Empty : reader["IsDeleted"];
                                 var PaidDate = reader["PaidDate"] == DBNull.Value ? DateTime.MinValue : reader["PaidDate"];
@@ -364,6 +374,11 @@ PRAGMA foreign_keys = ON;
                                     string.IsNullOrEmpty(TotalAmount.ToString()) == false ||
                                     string.IsNullOrEmpty(IssueDate.ToString()) == false ||
                                     string.IsNullOrEmpty(DueDate.ToString()) == false ||
+                                    string.IsNullOrEmpty(BillingName.ToString()) == false ||
+                                    string.IsNullOrEmpty(BillingAddress.ToString()) == false ||
+                                    string.IsNullOrEmpty(BillingCity.ToString()) == false ||
+                                    string.IsNullOrEmpty(BillingPostcode.ToString()) == false ||
+                                    string.IsNullOrEmpty(BillingCountry.ToString()) == false ||
                                     string.IsNullOrEmpty(Status.ToString()) == false ||
                                     string.IsNullOrEmpty(IsDeleted.ToString()) == false ||
                                     string.IsNullOrEmpty(PaidDate.ToString()) == false ||
@@ -381,6 +396,11 @@ PRAGMA foreign_keys = ON;
                                         IssueDate = Convert.ToDateTime(IssueDate),
                                         DueDate = Convert.ToDateTime(DueDate),
                                         Status = Status.ToString()!,
+                                        BillingName = BillingName.ToString()!,
+                                        BillingAddress = BillingAddress.ToString()!,
+                                        BillingCity = BillingCity.ToString()!,
+                                        BillingPostcode = BillingPostcode.ToString()!,
+                                        BillingCountry = BillingCountry.ToString()!,
                                         IsDeleted = Convert.ToBoolean(IsDeleted),
                                         PaidDate = Convert.ToDateTime(PaidDate),
                                         PaymentMethod = PaymentMethod.ToString()!,

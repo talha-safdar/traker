@@ -42,7 +42,7 @@ namespace Traker.Data
             // Documents/Traker/Clients/ID_clientName/Jobs/ID_jobTitle
             foreach (var job in jobs)
             {
-                string safeJobTitle = MakeSafeFolderName(job.Description);
+                string safeJobTitle = MakeSafeFolderName(job.Description); // use Title in the future
                 string jobFolderName = $"{job.JobId:D4}_{safeJobTitle}";
                 string jobFolder = Path.Combine(jobsFolder, jobFolderName);
 
