@@ -12,6 +12,7 @@ namespace Traker.ViewModels
     using Database;
     using System.Globalization;
     using Traker.Events;
+    using Traker.States;
 
     // try use inheritance or a design pattern to avoid repetation
 
@@ -30,6 +31,10 @@ namespace Traker.ViewModels
         // public BindableCollection<string> ClientsList { get; } = new BindableCollection<string>();
         #endregion
 
+        #region Public State Variable
+        public AppState State { get; } // state binding variable accessible from other viewmodels
+        #endregion
+
         #region Private View Variables
         // dont need private as it only displays names with IDs
         private AddJobModel _selectedClient;
@@ -41,10 +46,12 @@ namespace Traker.ViewModels
 
         private ObservableCollection<AddJobModel> _addJob;
 
-        public AddJobViewModel(IEventAggregator events)
+        public AddJobViewModel(IEventAggregator events, AppState appState)
         {
             _events = events;
             _addJob = new ObservableCollection<AddJobModel>();
+
+            State = appState;
         }
 
         //protected override Task OnInitializedAsync(CancellationToken cancellationToken)
@@ -58,7 +65,7 @@ namespace Traker.ViewModels
 
         protected override void OnViewLoaded(object view)
         {
-            foreach (var client in dashboardData)
+            foreach (var client in dashboardData.DistinctBy(x => x.ClientId))
             {
                 //ClientsList.Add(client.ClientName);
                 AddJob.Add(new AddJobModel
@@ -104,6 +111,12 @@ namespace Traker.ViewModels
             _events.PublishOnUIThreadAsync(new RefreshDatabase());
 
             return Task.CompletedTask;
+        }
+
+        public async Task Exit()
+        {
+            State.IsWindowOpen = false;
+            await TryCloseAsync();
         }
 
         #region View Variables

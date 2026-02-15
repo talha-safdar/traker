@@ -111,7 +111,7 @@ namespace Traker.ViewModels
 
             _jobDetailsViewModel = new JobDetailsViewModel(_events);
             _addClientViewModel = new AddClientViewModel(_events, State);
-            _addJobViewModel = new AddJobViewModel(_events);
+            _addJobViewModel = new AddJobViewModel(_events, State);
 
 
             _events.SubscribeOnPublishedThread(this);
@@ -328,7 +328,7 @@ namespace Traker.ViewModels
         public async Task OpenJobDetails(DashboardModel selectedJob)
         {
             // if add menu open do nothing
-            if (State.IsAddRowEntryOpen == true)
+            if (State.IsWindowOpen == true)
             {
                 return;
             }
@@ -374,7 +374,7 @@ namespace Traker.ViewModels
         {
             Debug.WriteLine("ADDING client..");
             
-            if (State.IsAddRowEntryOpen == false)
+            if (State.IsWindowOpen == false)
             {
                 // if is not free then report it with a message box
                 // move this to a private function later
@@ -391,11 +391,11 @@ namespace Traker.ViewModels
 
                 _addClientViewModel = new AddClientViewModel(_events, State);
                 await _windowManager.ShowWindowAsync(_addClientViewModel, null, SettingsForDialog(600, 500));
-                State.IsAddRowEntryOpen = true; // flag as open accross the project
+                State.IsWindowOpen = true; // flag as open accross the project
             }
 
             // the state State.IsAddRowEntryOpen will be false again from addrowentryVM when user closes the window
-            else if (State.IsAddRowEntryOpen == true)
+            else if (State.IsWindowOpen == true)
             {
                 return; // do nothing
             }
@@ -405,7 +405,7 @@ namespace Traker.ViewModels
         {
             Debug.WriteLine("ADDING job..");
 
-            if (State.IsAddRowEntryOpen == false)
+            if (State.IsWindowOpen == false)
             {
                 // if State.popup is not free then report it with a message box
                 if (_jobDetailsViewModel != null)
@@ -419,14 +419,14 @@ namespace Traker.ViewModels
                     _addClientViewModel = null;
                 }
 
-                _addJobViewModel = new AddJobViewModel(_events);
+                _addJobViewModel = new AddJobViewModel(_events, State);
                 _addJobViewModel.dashboardData = _dashboardData; // pass dashboard data to AddJob
                 await _windowManager.ShowWindowAsync(_addJobViewModel, null, SettingsForDialog(600, 500));
-                State.IsAddRowEntryOpen = true; // flag as open accross the project
+                State.IsWindowOpen = true; // flag as open accross the project
             }
 
             // the state State.IsAddRowEntryOpen will be false again from addrowentryVM when user closes the window
-            else if (State.IsAddRowEntryOpen == true)
+            else if (State.IsWindowOpen == true)
             {
                 return; // do nothing
             }

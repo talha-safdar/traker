@@ -30,7 +30,10 @@
             <!-- top bar -->
             <Grid Grid.Row="0">
                 <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action Exit()]" Background="Transparent"  HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="20" Width="20">
-                    <svg:SvgViewbox Source="/Resources/Media/Images/Icons/Lucide/x.svg" Width="15" Height="15"/>                    
+                    <svg:SvgViewbox                         
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        SnapsToDevicePixels="True"
+                        Source="/Resources/Media/Images/Icons/Lucide/x.svg" Width="15" Height="15"/>                    
                 </Border>
             </Grid>
             

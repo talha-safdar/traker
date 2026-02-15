@@ -11,17 +11,17 @@ namespace Traker.States
     public class AppState : PropertyChangedBase
     {
         #region Private View State Variables
-        private bool _isAddRowEntryOpen = false;
+        private bool _isWindowOpen = false;
         #endregion
 
         #region Public View State Variables
-        public bool IsAddRowEntryOpen
+        public bool IsWindowOpen
         {
-            get { return _isAddRowEntryOpen; }
+            get { return _isWindowOpen; }
             set
             {
-                _isAddRowEntryOpen = value;
-                NotifyOfPropertyChange(() => IsAddRowEntryOpen);
+                _isWindowOpen = value;
+                NotifyOfPropertyChange(() => IsWindowOpen);
             }
         }
         #endregion

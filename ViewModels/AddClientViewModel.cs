@@ -52,26 +52,7 @@ namespace Traker.ViewModels
 
         public async Task Exit()
         {
-            // argument true only for dialogs
-            // empty for the rest
-
-            // debug
-            //DateTime dueDate = DateTime.ParseExact(
-            //"12/12/2026",
-            //"dd/MM/yyyy",
-            //CultureInfo.InvariantCulture
-            //);
-
-            //decimal amount = decimal.Parse(
-            //    "12342",
-            //    CultureInfo.InvariantCulture
-            //);
-
-            //await Database.AddRow("Luca", "Rapina", amount, dueDate);
-
-            //await _events.PublishOnUIThreadAsync(new RefreshDatabase());
-
-            State.IsAddRowEntryOpen = false;
+            State.IsWindowOpen = false;
             await TryCloseAsync();
         }
 

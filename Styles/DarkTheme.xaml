@@ -421,5 +421,113 @@ Since you have a specific grid and those spacer columns, you don't want your but
         </Setter>
     </Style>-->
 
+    <!-- DARK COMBOBOX -->
+
+    <Style TargetType="ComboBox">
+        <Setter Property="Foreground" Value="#EAEAEA"/>
+        <Setter Property="Background" Value="#2B2F3A"/>
+        <Setter Property="BorderBrush" Value="#3F4554"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Height" Value="45"/>
+        <Setter Property="Padding" Value="4"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid>
+
+                        <!-- Main border -->
+                        <Border x:Name="Border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="6"/>
+
+                        <Grid Margin="8,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="30"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Selected content -->
+                            <ContentPresenter
+                            Grid.Column="0"
+                            Margin="0,0,4,0"
+                            VerticalAlignment="Center"
+                            Content="{TemplateBinding SelectionBoxItem}"
+                            ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"/>
+
+                            <!-- Toggle button -->
+                            <ToggleButton Grid.Column="1"
+                                      Focusable="False"
+                                      Background="Transparent"
+                                      BorderThickness="0"
+                                      IsChecked="{Binding IsDropDownOpen,
+                                          Mode=TwoWay,
+                                          RelativeSource={RelativeSource TemplatedParent}}">
+
+                                <Path Fill="#B0B6C3"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  Data="M 0 0 L 4 4 L 8 0 Z"/>
+                            </ToggleButton>
+                        </Grid>
+
+                        <!-- Dropdown popup -->
+                        <Popup x:Name="PART_Popup"
+                           Placement="Bottom"
+                           IsOpen="{TemplateBinding IsDropDownOpen}"
+                           AllowsTransparency="True"
+                           Focusable="False"
+                           PopupAnimation="Fade">
+
+                            <Border Background="#2B2F3A"
+                                BorderBrush="#3F4554"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                Margin="0,4,0,0">
+
+                                <ScrollViewer CanContentScroll="True">
+                                    <ItemsPresenter/>
+                                </ScrollViewer>
+
+                            </Border>
+                        </Popup>
+
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border"
+                                Property="BorderBrush"
+                                Value="#5A6FFF"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <Style TargetType="ComboBoxItem">
+        <Setter Property="Background" Value="#2B2F3A"/>
+        <Setter Property="Foreground" Value="#EAEAEA"/>
+        <Setter Property="Padding" Value="8"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+
+        <Style.Triggers>
+            <Trigger Property="IsHighlighted" Value="True">
+                <Setter Property="Background" Value="#3A3F4B"/>
+            </Trigger>
+
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="#5A6FFF"/>
+                <Setter Property="Foreground" Value="White"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
 
 </ResourceDictionary>

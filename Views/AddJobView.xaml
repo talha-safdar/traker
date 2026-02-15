@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
              xmlns:cal="http://caliburnmicro.com"
-             xmlns:local="clr-namespace:Traker.Views"
+             xmlns:local="clr-namespace:Traker.Views" xmlns:viewmodels="clr-namespace:Traker.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:AddJobViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="600" 
              d:DesignWidth="500"
@@ -16,7 +16,7 @@
         <Grid Margin="30,20,30,20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" /> <!-- top bar -->
-                <RowDefinition Height="*" /> <!-- client selection -->
+                <RowDefinition Height="1.1*" /> <!-- client selection -->
                 <RowDefinition Height="*" /> <!-- job description -->
                 <RowDefinition Height="*" /> <!-- price -->
                 <RowDefinition Height="*" /> <!-- due date -->
@@ -26,34 +26,46 @@
             <!-- top bar -->
             <Grid Grid.Row="0">
                 <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action Exit()]" Background="Transparent"  HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="20" Width="20">
-                    <svg:SvgViewbox Source="/Resources/Media/Images/Icons/Lucide/x.svg" Width="15" Height="15"/>
+                    <svg:SvgViewbox                         
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        SnapsToDevicePixels="True"
+                        Source="/Resources/Media/Images/Icons/Lucide/x.svg" Width="15" Height="15"/>
                 </Border>
             </Grid>
 
             <!-- client seleciton -->
             <Grid Grid.Row="1">
                 <StackPanel Orientation="Vertical">
-                    <TextBlock Margin="5,0,0,0" Text="{Binding ClientsList.Count}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                    <TextBlock Margin="5,0,0,5" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22">
+                        <Run Text="Number of Clients: " />
+                        <Run Text="{Binding AddJob.Count, Mode=OneWay}" />
+                    </TextBlock>
                     <ComboBox
+                              IsEditable="False"
                               FontWeight="Regular"
                               HorizontalAlignment="Stretch" 
-                              Margin="25,0,0,0" Background="White" 
-                              Padding="5"
+                              Margin="5,0,0,0" Background="Transparent" 
                               FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                               ItemsSource="{Binding AddJob}"
                               SelectedItem="{Binding SelectedClient, Mode=TwoWay}">
 
+                        <!--<ComboBox.ItemContainerStyle>
+                            <Style TargetType="ComboBoxItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            </Style>
+                        </ComboBox.ItemContainerStyle>-->
+
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel>
-                                    <TextBlock Text="{Binding ClientId}" />
+                                <StackPanel Margin="0,10" HorizontalAlignment="Stretch">
+                                    <TextBlock Text="{Binding ClientId}" FontSize="14" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" FontWeight="Medium"  />
                                     <TextBlock Text="{Binding FullName}"
-                                       FontSize="12"
-                                       Opacity="0.7"/>
+                                    FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Regular" 
+                                    FontSize="22"
+                                    Opacity="0.7"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
-
                     </ComboBox>
                 </StackPanel>
             </Grid>
