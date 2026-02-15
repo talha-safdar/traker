@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Traker.Models;
 
 namespace Traker.Data
 {
@@ -13,7 +14,7 @@ namespace Traker.Data
     /// </summary>
     public static class FileStore
     {
-        public static Task LocateFolder(int clientId, string fullname)
+        public static Task LocateFolder(int clientId, string fullname, List<JobsModel> jobs)
         {
             // ClientId + "_" + SafeName
 
@@ -38,13 +39,23 @@ namespace Traker.Data
             string jobsFolder = Path.Combine(clientFolder, "Jobs");
             Directory.CreateDirectory(jobsFolder);
 
+            // Documents/Traker/Clients/ID_clientName/Jobs/ID_jobTitle
+            foreach (var job in jobs)
+            {
+                string safeJobTitle = MakeSafeFolderName(job.Description);
+                string jobFolderName = $"{job.JobId:D4}_{safeJobTitle}";
+                string jobFolder = Path.Combine(jobsFolder, jobFolderName);
+
+                Directory.CreateDirectory(jobFolder);
+            }
+
             // Documents/Traker/Clients/ID_clientName/Invoices
             string invoicesFolder = Path.Combine(clientFolder, "Invoices");
             Directory.CreateDirectory(invoicesFolder);
 
             // Documents/Traker/Clients/ID_clientName/Notes
             string notesFolder = Path.Combine(clientFolder, "Notes");
-            Directory.CreateDirectory(invoicesFolder);
+            Directory.CreateDirectory(notesFolder);
 
             // Open folder in Explorer
             Process.Start(new ProcessStartInfo

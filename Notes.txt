@@ -25,7 +25,7 @@ Not finalised
 - cancel makes no sense, I'd say if the user selected not invoiced after he sent it for some reason that he changed mind. 
 he selected not invoiced then confirmation box yes/no. that row with invoice details will be saved in a e.g. "rubbish" folder in txt. 
 format and have a button maybe to access deleted clients, jobs, invoices (however this is out of scope for the first version)
-
+- on delete row delete folder too
 
 
 

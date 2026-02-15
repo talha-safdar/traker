@@ -19,7 +19,10 @@ namespace Traker.ViewModels
         private readonly IEventAggregator _events;
         #endregion
 
-        public DashboardModel selectedRow; // data passed by DashboardVM
+        public DashboardModel SelectedRow; // data passed by DashboardVM
+        public List<ClientsModel> Clients;
+        public List<JobsModel> Jobs;
+        public List<InvoicesModel> Invoices;
 
         public JobDetailsViewModel(IEventAggregator events)
         {
@@ -30,20 +33,24 @@ namespace Traker.ViewModels
         {
             Debug.WriteLine("Open folder");
 
-            FileStore.LocateFolder(selectedRow.ClientId, selectedRow.ClientName);
+            // get list of jobs under the client ID
+            List<JobsModel> jobDetails = new List<JobsModel>();
+            jobDetails = Jobs.Where(j => j.ClientId == SelectedRow.ClientId).ToList();
+
+            FileStore.LocateFolder(SelectedRow.ClientId, SelectedRow.ClientName, jobDetails);
 
             return Task.CompletedTask;
         }
 
         public async Task SetStatus(string status)
         {
-            await Database.SetStatus(status, selectedRow.ClientId, selectedRow.JobId);
+            await Database.SetStatus(status, SelectedRow.ClientId, SelectedRow.JobId);
             await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
         }
 
         public async Task DeleteRow()
         {
-            await Database.DeleteRow(selectedRow.ClientId);
+            await Database.DeleteRow(SelectedRow.ClientId);
             await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
         }
     }

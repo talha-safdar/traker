@@ -372,7 +372,10 @@ namespace Traker.ViewModels
             if (SelectedDataRow.ClientId == selectedJob.ClientId)
             {
                 _jobDetailsViewModel = new JobDetailsViewModel(_events);
-                _jobDetailsViewModel.selectedRow = selectedJob;
+                _jobDetailsViewModel.SelectedRow = selectedJob; // pass row selected
+                _jobDetailsViewModel.Clients = _clients;
+                _jobDetailsViewModel.Jobs = _jobs;
+                _jobDetailsViewModel.Invoices = _invoices;
                 await _windowManager.ShowPopupAsync(_jobDetailsViewModel, null, SettingsForDialog(200, 200)); // vertical, horizontal
             }
         }
