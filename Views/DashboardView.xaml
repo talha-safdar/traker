@@ -76,7 +76,7 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Client Name" Binding="{Binding ClientName}" Width="0.5*" >
+                            <DataGridTextColumn Header="Client Name" Binding="{Binding ClientName}" Width="0.3*" >
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -84,7 +84,7 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Job Description" Binding="{Binding JobDescription}" Width="*" />
+                            <DataGridTextColumn Header="Job Description" Binding="{Binding JobDescription}" Width="0.35*" />
                             <!--<DataGridTextColumn Header="Price" Binding="{Binding Price, StringFormat=£{0:N2}}" Width="0.5*" />-->
                             <DataGridTextColumn Header="Price" Binding="{Binding Price}" Width="0.5*" />
                             <DataGridTextColumn Header="Due Date" Binding="{Binding DueDate, StringFormat={}{0:dd/MM/yyyy}}" Width="0.4*">
@@ -95,8 +95,8 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="0.5*" />
-                            <DataGridTextColumn Header="Paid" Binding="{Binding Paid}" Width="0.15*" />
+                            <DataGridTextColumn Header="Job Status" Binding="{Binding Status}" Width="0.5*" />
+                            <DataGridTextColumn Header="Invoice Status" Binding="{Binding IsInvoiced}" Width="0.5*" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Border>

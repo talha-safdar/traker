@@ -25,6 +25,17 @@ if datetime is less than today then show "to set"
 
 
 
+NOTES:
+Invoice status:
+Not invoiced
+Sent
+Paid
+Overdue
+
+Not invoiced: if not created invoice
+sent: invoice created and due date set up
+paid: money received before due date (not paid)
+overdue: money not received before due date (not paid + missed deadline)
 
 
 

@@ -11,8 +11,9 @@ namespace Traker.Models
         public string ClientName { get; set; } = string.Empty;
         public string JobDescription { get; set; } = string.Empty;
         public string Price { get; set; } = string.Empty;
-        public string Status { get; set; } = string.Empty;
+        public string JobStatus { get; set; } = string.Empty;
         public DateTime DueDate { get; set; } = new DateTime();
+        public string InvoiceStatus { get; set; } = String.Empty;
         public string Paid { get; set; } = string.Empty;
 
 

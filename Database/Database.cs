@@ -34,58 +34,61 @@ namespace Traker.Database
                     var _sqliteCommand = conn.CreateCommand();
                     _sqliteCommand.CommandText = @"
 
-                    PRAGMA foreign_keys = OFF;
 
-                    CREATE TABLE IF NOT EXISTS Clients (
-                        ClientId INTEGER PRIMARY KEY AUTOINCREMENT,
-                        Type VARCHAR(20) CHECK (Type IN ('company', 'individual')),
-                        FullName VARCHAR(100) NOT NULL,
-                        CompanyName VARCHAR(100),
-                        Email VARCHAR(100),
-                        PhoneNumber VARCHAR(20),
-                        BillingAddress VARCHAR(255),
-                        City VARCHAR(50),
-                        Postcode VARCHAR(20),
-                        Country VARCHAR(50),
-                        CreatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-                        IsActive BIT DEFAULT 1
-                    );
+PRAGMA foreign_keys = OFF;
 
-                    CREATE TABLE IF NOT EXISTS Jobs (
-                        JobId INTEGER PRIMARY KEY AUTOINCREMENT,
-                        ClientId INTEGER NOT NULL,
-                        Title TEXT,
-                        Description TEXT,
-                        Status VARCHAR(20),
-                        EstimatedPrice TEXT,
-                        FinalPrice TEXT,
-                        CreatedDate DATETIME,
-                        StartDate DATETIME,
-                        CompletedDate DATETIME,
-                        DueDate DATETIME,
-                        FolderPath TEXT,
-                        Notes TEXT,
-                        IsArchived BOOLEAN,
-                        FOREIGN KEY (ClientId) REFERENCES Clients(ClientId) ON DELETE CASCADE
-                    );
 
-                    CREATE TABLE IF NOT EXISTS Invoices (
-                        InvoiceId INTEGER PRIMARY KEY AUTOINCREMENT,
-                        JobId INTEGER NOT NULL,
-                        InvoiceNumber TEXT,
-                        Subtotal TEXT,
-                        TaxAmount TEXT,
-                        TotalAmount TEXT,
-                        IssueDate DATETIME,
-                        DueDate DATETIME,
-                        IsPaid BOOLEAN,
-                        PaidDate DATETIME,
-                        PaymentMethod TEXT,
-                        Notes TEXT,
-                        FOREIGN KEY (JobId) REFERENCES Jobs(JobId) ON DELETE CASCADE
-                    );
+CREATE TABLE IF NOT EXISTS Clients (
+    ClientId INTEGER PRIMARY KEY AUTOINCREMENT,
+    Type VARCHAR(20) CHECK (Type IN ('company', 'individual')),
+    FullName VARCHAR(100) NOT NULL,
+    CompanyName VARCHAR(100),
+    Email VARCHAR(100),
+    PhoneNumber VARCHAR(20),
+    BillingAddress VARCHAR(255),
+    City VARCHAR(50),
+    Postcode VARCHAR(20),
+    Country VARCHAR(50),
+    CreatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    IsActive BIT DEFAULT 1
+);
 
-                    PRAGMA foreign_keys = ON;
+CREATE TABLE IF NOT EXISTS Jobs (
+    JobId INTEGER PRIMARY KEY AUTOINCREMENT,
+    ClientId INTEGER NOT NULL,
+    Title TEXT,
+    Description TEXT,
+    Status VARCHAR(20),
+    EstimatedPrice TEXT,
+    FinalPrice TEXT,
+    CreatedDate DATETIME,
+    StartDate DATETIME,
+    CompletedDate DATETIME,
+    DueDate DATETIME,
+    FolderPath TEXT,
+    Notes TEXT,
+    IsArchived BOOLEAN,
+    FOREIGN KEY (ClientId) REFERENCES Clients(ClientId) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Invoices (
+    InvoiceId INTEGER PRIMARY KEY AUTOINCREMENT,
+    JobId INTEGER NOT NULL,
+    InvoiceNumber TEXT,
+    Subtotal TEXT,
+    TaxAmount TEXT,
+    TotalAmount TEXT,
+    IssueDate DATETIME,
+    DueDate DATETIME,
+    PaidDate DATETIME,
+    PaymentMethod TEXT,
+    Status VARCHAR(20),
+    Notes TEXT,
+    FOREIGN KEY (JobId) REFERENCES Jobs(JobId) ON DELETE CASCADE
+);
+
+PRAGMA foreign_keys = ON;
+
 
                         ";
 
@@ -344,7 +347,7 @@ namespace Traker.Database
                                 var TotalAmount = reader["TotalAmount"] == DBNull.Value ? "0" : reader["TotalAmount"];
                                 var IssueDate = reader["IssueDate"] == DBNull.Value ? DateTime.MinValue : reader["IssueDate"];
                                 var DueDate = reader["DueDate"] == DBNull.Value ? DateTime.MinValue : reader["DueDate"];
-                                var IsPaid = reader["IsPaid"] == DBNull.Value ? String.Empty : reader["IsPaid"];
+                                var Status = reader["Status"] == DBNull.Value ? String.Empty : reader["Status"];
                                 var PaidDate = reader["PaidDate"] == DBNull.Value ? DateTime.MinValue : reader["PaidDate"];
                                 var PaymentMethod = reader["PaymentMethod"] == DBNull.Value ? String.Empty : reader["PaymentMethod"];
                                 var Notes = reader["Notes"] == DBNull.Value ? String.Empty : reader["Notes"];
@@ -357,7 +360,7 @@ namespace Traker.Database
                                     string.IsNullOrEmpty(TotalAmount.ToString()) == false ||
                                     string.IsNullOrEmpty(IssueDate.ToString()) == false ||
                                     string.IsNullOrEmpty(DueDate.ToString()) == false ||
-                                    string.IsNullOrEmpty(IsPaid.ToString()) == false ||
+                                    string.IsNullOrEmpty(Status.ToString()) == false ||
                                     string.IsNullOrEmpty(PaidDate.ToString()) == false ||
                                     string.IsNullOrEmpty(PaymentMethod.ToString()) == false ||
                                     string.IsNullOrEmpty(Notes.ToString()) == false)
@@ -372,7 +375,7 @@ namespace Traker.Database
                                         TotalAmount = Convert.ToDecimal(TotalAmount),
                                         IssueDate = Convert.ToDateTime(IssueDate),
                                         DueDate = Convert.ToDateTime(DueDate),
-                                        IsPaid = Convert.ToBoolean(IsPaid),
+                                        Status = Status.ToString()!,
                                         PaidDate = Convert.ToDateTime(PaidDate),
                                         PaymentMethod = PaymentMethod.ToString()!,
                                         Notes = Notes.ToString()!,
@@ -420,6 +423,8 @@ namespace Traker.Database
                 pragma.ExecuteNonQuery();
             }
 
+            // work all at once, if one query fails it rolls back
+            // if you don't care about failures you can avoid transaction
             using var tx = conn.BeginTransaction();
 
 
@@ -495,22 +500,22 @@ namespace Traker.Database
             }
 
 
-            using (var invoiceCmd = conn.CreateCommand())
-            {
-                invoiceCmd.CommandText = @"
+            //using (var invoiceCmd = conn.CreateCommand())
+            //{
+            //    invoiceCmd.CommandText = @"
 
-                INSERT INTO Invoices
-                (JobId, IsPaid)
+            //    INSERT INTO Invoices
+            //    (JobId, IsPaid)
 
-                VALUES
-                (@jobId, @isPaid);
+            //    VALUES
+            //    (@jobId, @isPaid);
 
-                ";
+            //    ";
 
-                invoiceCmd.Parameters.AddWithValue("@jobId", jobId);
-                invoiceCmd.Parameters.AddWithValue("@isPaid", false);
-                invoiceCmd.ExecuteNonQuery();
-            }
+            //    invoiceCmd.Parameters.AddWithValue("@jobId", jobId);
+            //    invoiceCmd.Parameters.AddWithValue("@isPaid", false);
+            //    invoiceCmd.ExecuteNonQuery();
+            //}
 
             // Commit both together
             tx.Commit();

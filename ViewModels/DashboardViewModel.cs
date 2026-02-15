@@ -170,16 +170,15 @@ namespace Traker.ViewModels
                     ClientName = client.FullName,
                     JobDescription = job.Description,
                     Price = job.FinalPrice.ToString("C"),
-                    Status = job.Status.ToString(),
+                    JobStatus = job.Status.ToString(),
                     DueDate = job.DueDate,
-
-                    Paid = _invoices.Where(inv => inv.JobId == _jobs[index].JobId).Select(inv => inv.IsPaid).FirstOrDefault().ToString()!,
 
                     ClientId = client.ClientId,
                     ClientEmail = client.Email,
                     ClientPhone = client.PhoneNumber,
                     JobId = job.JobId,
-                    Invoices = _invoices.Where(invoice => invoice.JobId == _jobs[index].JobId).ToList()
+                    InvoiceStatus = _invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? "Not Invoiced"
+                    //Invoices = _invoices.Where(invoice => invoice.JobId == _jobs[index].JobId).ToList()
                 };
                 _dashboardData.Add(dashboardEntry);
                 index++;
@@ -224,8 +223,8 @@ namespace Traker.ViewModels
                 _receviedMoney.AddRange(_clients
                     .Where(c => c.ClientId == _dashboardData[i].ClientId)
                     .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-                    .Join(_invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.IsPaid })
-                    .Where(x => x.IsPaid == true)
+                    .Join(_invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.Status })
+                    .Where(x => x.Status == "Paid")
                     .Select(x => x.FinalPrice)
                     .ToList());
             }
@@ -238,8 +237,8 @@ namespace Traker.ViewModels
                 _outstandingdMoney.AddRange(_clients
                     .Where(c => c.ClientId == _dashboardData[i].ClientId)
                     .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-                    .Join(_invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.IsPaid, inv.IssueDate, inv.DueDate })
-                    .Where(x => x.IsPaid == false && x.IssueDate < DateTime.Now.Date && x.DueDate > DateTime.Now.Date)
+                    .Join(_invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.Status, inv.IssueDate, inv.DueDate })
+                    .Where(x => x.Status == "Sent" && x.IssueDate < DateTime.Now.Date && x.DueDate > DateTime.Now.Date)
                     .Select(x => x.FinalPrice)
                     .ToList());
             }
@@ -251,8 +250,8 @@ namespace Traker.ViewModels
                 _overdueMoney.AddRange(_clients
                     .Where(client => client.ClientId == _dashboardData[i].ClientId)
                     .Join(_jobs, client => client.ClientId, job => job.ClientId, (client, job) => job)
-                    .Join(_invoices, job => job.JobId, invoice => invoice.JobId, (job, invoice) => new { job.FinalPrice, invoice.IsPaid, invoice.DueDate })
-                    .Where(x => x.IsPaid == false && x.DueDate > DateTime.Now.Date)
+                    .Join(_invoices, job => job.JobId, invoice => invoice.JobId, (job, invoice) => new { job.FinalPrice, invoice.Status, invoice.DueDate })
+                    .Where(x => x.Status == "Overdue" && x.DueDate > DateTime.Now.Date)
                     .Select(x => x.FinalPrice)
                     .ToList());
             }
