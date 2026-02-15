@@ -33,7 +33,7 @@ namespace Traker.ViewModels
 
         #region Public View Variables
         public List<string> JobStatusEdit { get; set; } = new List<string> { "New", "Active", "Done" };
-        public List<string> InvoiceStatusEdit { get; set; } = new List<string> { "Draft", "Sent", "Paid", "Overdue" };
+        public List<string> InvoiceStatusEdit { get; set; } = new List<string> { "Sent", "Paid", "Overdue" };
         #endregion
 
         #region Private View Variables
@@ -373,7 +373,7 @@ namespace Traker.ViewModels
             {
                 _jobDetailsViewModel = new JobDetailsViewModel(_events);
                 _jobDetailsViewModel.selectedRow = selectedJob;
-                await _windowManager.ShowPopupAsync(_jobDetailsViewModel, null, SettingsForDialog(300, 250));
+                await _windowManager.ShowPopupAsync(_jobDetailsViewModel, null, SettingsForDialog(200, 200)); // vertical, horizontal
             }
         }
 

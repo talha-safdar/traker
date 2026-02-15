@@ -10,6 +10,7 @@ using Traker.Models;
 namespace Traker.ViewModels
 {
     using Database;
+    using Traker.Data;
     using Traker.Events;
 
     public class JobDetailsViewModel : Screen
@@ -18,11 +19,20 @@ namespace Traker.ViewModels
         private readonly IEventAggregator _events;
         #endregion
 
-        public DashboardModel selectedRow;
+        public DashboardModel selectedRow; // data passed by DashboardVM
 
         public JobDetailsViewModel(IEventAggregator events)
         {
             _events = events;
+        }
+
+        public Task OpenFolder()
+        {
+            Debug.WriteLine("Open folder");
+
+            FileStore.LocateFolder(selectedRow.ClientId, selectedRow.ClientName);
+
+            return Task.CompletedTask;
         }
 
         public async Task SetStatus(string status)

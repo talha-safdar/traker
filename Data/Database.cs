@@ -9,6 +9,9 @@ using Traker.States;
 
 namespace Traker.Database
 {
+    /// <summary>
+    /// Handle relationships between the Ui and the database itself.
+    /// </summary>
     public static class Database
     {
         private static string _connectionString = String.Empty; // location of the database file

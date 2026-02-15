@@ -96,3 +96,25 @@ DateTime dueDate = DateTime.ParseExact(
 
 
 DateTime.ParseExact(input, "dd/MM/yyyy", CultureInfo.InvariantCulture)
+
+
+
+
+
+folder structure:
+Tracker/
+│
+├── Clients/
+│   ├── 0001_John_Smith/
+│   │   ├── Jobs/
+│   │   │   ├── 0001_Kitchen_Renovation/
+│   │   │   ├── 0002_Bathroom_Remodel/
+│   │   │
+│   │   ├── Invoices/
+│   │   │   ├── INV-0001.pdf
+│   │   │
+│   │   └── Notes/
+│   │
+│   ├── 0002_ACME_Ltd/
+│
+└── Exports/
