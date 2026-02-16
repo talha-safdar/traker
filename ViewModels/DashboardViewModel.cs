@@ -34,7 +34,7 @@ namespace Traker.ViewModels
 
         #region Public View Variables
         public List<string> JobStatusEdit { get; set; } = new List<string> { "New", "Active", "Done" };
-        public List<string> InvoiceStatusEdit { get; set; } = new List<string> { "Sent", "Paid", "Overdue" };
+        public List<string> InvoiceStatusEdit { get; set; } = new List<string> { "Created", "Sent", "Paid", "Overdue" };
         #endregion
 
         #region Private View Variables
@@ -184,7 +184,7 @@ namespace Traker.ViewModels
                     ClientPhone = client.PhoneNumber,
                     JobId = job.JobId,
 
-                    HasInvoice = Convert.ToBoolean(_invoices.FirstOrDefault(i => i.JobId == job.JobId && i.IsDeleted == false)),
+                    HasInvoice = _invoices.Any(i => i.JobId == job.JobId && i.IsDeleted == false),
 
                     // "Not invoiced" = invoice missing, invoice.Stauts the invoice exists
                     // if invoice deleted then show "Not invoiced"

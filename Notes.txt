@@ -149,3 +149,8 @@ subtotal: £100
 tax: 20%
 total: subtotal+ (100*20%=0.20 (£20)) // £120 // 100 own and 20 for HMRC
 i only fill: billing shit due date subtotal and VAT
+
+
+
+Invoice number to UI:
+string formatted = $"INV-{invoiceNumber:D4}";

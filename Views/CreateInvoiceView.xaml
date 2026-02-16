@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
              xmlns:behaviours="clr-namespace:Traker.Behaviours"
              xmlns:cal="http://caliburnmicro.com"
              xmlns:local="clr-namespace:Traker.Views"
@@ -26,10 +27,12 @@
 
             <!-- top bar -->
             <Grid Grid.Row="0">
-                <StackPanel Orientation="Vertical">
-                    <TextBlock Margin="5,0,0,0" Text="Billing Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox Text="{Binding BillingName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
-                </StackPanel>
+                <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action Exit()]" Background="Transparent"  HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="20" Width="20">
+                    <svg:SvgViewbox                         
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        SnapsToDevicePixels="True"
+                        Source="/Resources/Media/Images/Icons/Lucide/x.svg" Width="15" Height="15"/>
+                </Border>
             </Grid>
             
             <!-- Billing name -->
@@ -52,7 +55,7 @@
             <Grid Grid.Row="3">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="5,10,0,0" Text="Billing city" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox Text="{Binding Price, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="12" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                    <TextBox Text="{Binding BillingCity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="12" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                 </StackPanel>
             </Grid>
 
@@ -60,7 +63,7 @@
             <Grid Grid.Row="4">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="5,10,0,0" Text="Billing postcode" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox Text="{Binding Price, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="12" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                    <TextBox Text="{Binding BillingPostcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="12" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                 </StackPanel>
             </Grid>
 
@@ -68,12 +71,12 @@
             <Grid Grid.Row="5">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="5,10,0,0" Text="Billing country" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox Text="{Binding Price, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="12" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                    <TextBox Text="{Binding BillingCountry, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="12" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                 </StackPanel>
             </Grid>
             
 
-            <!-- subtotal -->
+            <!-- due date -->
             <Grid Grid.Row="6">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="5,10,0,0" Text="Due Date (dd/mm/yyyy)" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
@@ -90,29 +93,26 @@
             <Grid Grid.Row="7">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="5,10,0,0" Text="Subtotal" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox Text="{Binding Price, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="12" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                    <TextBox Text="{Binding Subtotal, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="12" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                 </StackPanel>
             </Grid>
 
             <!-- VAT selection -->
-            <Grid Grid.Row="7">
-                <StackPanel Orientation="Vertical">
-                    <TextBlock Margin="5,10,0,0" Text="VAT selection" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox Text="{Binding Price, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="12" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
-                </StackPanel>
+            <Grid Grid.Row="8">
+                <ComboBox ItemsSource="{Binding InvoiceStatusEdit}" SelectedItem="{Binding VatValue, Mode=TwoWay}" />
             </Grid>
 
             <!-- Total textblock -->
-            <Grid Grid.Row="8">
+            <Grid Grid.Row="9">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="5,10,0,0" Text="Total textblock" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox IsReadOnly="True" Text="{Binding Price, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="12" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                    <TextBox IsReadOnly="False" Text="{Binding TotalAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="12" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                 </StackPanel>
             </Grid>
 
             <!-- butons -->
-            <Grid Grid.Row="9">
-                <Border Margin="80,10,80,0"  cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddRow()]" Background="{StaticResource ButtonBackgroundBrush}" CornerRadius="18" Height="35" BorderThickness="2" BorderBrush="{StaticResource ButtonDefaultBorderBrush}">
+            <Grid Grid.Row="10">
+                <Border Margin="80,10,80,0"  cal:Message.Attach="[Event MouseLeftButtonUp] = [Action CreateInvoice()]" Background="{StaticResource ButtonBackgroundBrush}" CornerRadius="18" Height="35" BorderThickness="2" BorderBrush="{StaticResource ButtonDefaultBorderBrush}">
                     <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Create Invoice" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="14" />
                 </Border>
             </Grid>

@@ -34,13 +34,16 @@ namespace Traker.ViewModels
             _events = events;
             _windowManager = windowManager;
 
-            _createInvoice = new CreateInvoiceViewModel();
+            _createInvoice = new CreateInvoiceViewModel(_events);
         }
 
         public Task CreateInvoice()
         {
-            _createInvoice = new CreateInvoiceViewModel();
+            _createInvoice = new CreateInvoiceViewModel(_events);
             _createInvoice.SelectedRow = SelectedRow;
+            _createInvoice.Clients = Clients;
+            _createInvoice.Jobs = Jobs;
+            _createInvoice.Invoices = Invoices;
             _windowManager.ShowWindowAsync(_createInvoice, null, CustomWindow.SettingsForDialog(800, 500));
 
             return Task.CompletedTask;

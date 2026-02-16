@@ -77,9 +77,9 @@ CREATE TABLE IF NOT EXISTS Jobs (
 CREATE TABLE IF NOT EXISTS Invoices (
     InvoiceId INTEGER PRIMARY KEY AUTOINCREMENT,
     JobId INTEGER NOT NULL,
-    InvoiceNumber TEXT,
+    InvoiceNumber INTEGER UNIQUE NOT NULL,
     Subtotal TEXT,
-    TaxAmount TEXT,
+    TaxAmount INTEGER,
     TotalAmount TEXT,
     IssueDate DATETIME,
     DueDate DATETIME,
@@ -97,6 +97,7 @@ CREATE TABLE IF NOT EXISTS Invoices (
 );
 
 PRAGMA foreign_keys = ON;
+
 
                         ";
 
@@ -745,6 +746,88 @@ PRAGMA foreign_keys = ON;
         }
 
         //public static Task UpdateRow(int clientId, )
+
+        public static Task CreateInvoice(int jobId, decimal subtotal, int taxAmount, decimal totalAmount, DateTime dueDate, string billingName, string billingAddress, string billingCity, string billingPostcode, string billingCountry)
+        {
+            using var conn = new SqliteConnection(_connectionString);
+            conn.Open();
+
+            using (var pragma = conn.CreateCommand())
+            {
+                pragma.CommandText = "PRAGMA foreign_keys = ON;";
+                pragma.ExecuteNonQuery();
+            }
+
+            // work all at once, if one query fails it rolls back
+            // if you don't care about failures you can avoid transaction
+            using var transaction = conn.BeginTransaction();
+
+            long nextNumber;
+
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.Transaction = transaction;
+                cmd.CommandText = "SELECT IFNULL(MAX(InvoiceNumber), 0) FROM Invoices;";
+                nextNumber = (long)cmd.ExecuteScalar()! + 1;
+            }
+
+            // insert into Clients table
+            using (var invoicesCmd = conn.CreateCommand())
+            {
+                invoicesCmd.CommandText = @"
+
+                INSERT INTO Invoices
+                (JobId, 
+                InvoiceNumber, 
+                Subtotal, 
+                TaxAmount, 
+                TotalAmount, 
+                IssueDate, 
+                DueDate,    
+                BillingName, 
+                BillingAddress,
+                BillingCity,
+                BillingPostcode,
+                BillingCountry,
+                Status)
+
+                VALUES
+                (@jobId, 
+                @invoiceNumber, 
+                @subtotal,
+                @taxAmount,
+                @totalAmount,
+                @issueDate,
+                @dueDate,
+                @billingName,
+                @billingAddress,
+                @billingCity,
+                @billingPostcode,
+                @billingCountry,
+                @status);
+
+                ";
+                invoicesCmd.Parameters.AddWithValue("@jobId", jobId);
+                invoicesCmd.Parameters.AddWithValue("@invoiceNumber", nextNumber);
+                invoicesCmd.Parameters.AddWithValue("@subtotal", subtotal);
+                invoicesCmd.Parameters.AddWithValue("@taxAmount", taxAmount);
+                invoicesCmd.Parameters.AddWithValue("@totalAmount", totalAmount);
+                invoicesCmd.Parameters.AddWithValue("@issueDate", DateTime.Now.Date);
+                invoicesCmd.Parameters.AddWithValue("@dueDate", dueDate.ToString("yyyy-MM-dd"));
+                invoicesCmd.Parameters.AddWithValue("@billingName", billingName);
+                invoicesCmd.Parameters.AddWithValue("@billingAddress", billingAddress);
+                invoicesCmd.Parameters.AddWithValue("@billingCity", billingCity);
+                invoicesCmd.Parameters.AddWithValue("@billingPostcode", billingPostcode);
+                invoicesCmd.Parameters.AddWithValue("@billingCountry", billingCountry);
+                invoicesCmd.Parameters.AddWithValue("@status", "Created");
+
+                invoicesCmd.ExecuteNonQuery();
+            }
+
+            transaction.Commit();
+
+            return Task.CompletedTask;
+        }
         #endregion
     }
 }
