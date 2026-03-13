@@ -1,18 +1,13 @@
 ﻿using Caliburn.Micro;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Traker.Models;
 using Traker.States;
 
 namespace Traker.ViewModels
 {
     using Database;
     using System.Globalization;
+    using System.Windows;
     using Traker.Events;
+    using Traker.Services;
 
     public class AddClientViewModel : Screen
     {
@@ -43,17 +38,32 @@ namespace Traker.ViewModels
             State = appState;
         }
 
+        #region Caliburn Functions
         protected override Task OnDeactivateAsync(bool close, CancellationToken cancellationToken)
         {
             _events.Unsubscribe(this);
             return base.OnDeactivateAsync(close, cancellationToken);
         }
+        #endregion
 
-
+        #region Public View Functions
         public async Task Exit()
         {
-            State.IsWindowOpen = false;
-            await TryCloseAsync();
+            try
+            {
+                State.IsWindowOpen = false;
+                await TryCloseAsync();
+                Logger.LogActivity(Logger.ERROR, $"AddClientViewModel: Exit() OK");
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while exiting app. Please try again.\n\n{ex.Message}",
+                    "Exit App",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"AddClientViewModel: Exit() FAIL");
+            }
         }
 
         public Task AddRow()
@@ -90,6 +100,7 @@ namespace Traker.ViewModels
 
             return Task.CompletedTask;
         }
+        #endregion
 
         #region Public View Variables
         public string ClientName
@@ -131,7 +142,6 @@ namespace Traker.ViewModels
                 NotifyOfPropertyChange(() => DueDate);
             }
         }
-
         #endregion
     }
 }

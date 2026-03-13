@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Traker.Models
+﻿namespace Traker.Models
 {
+    /// <summary>
+    /// Represents the data required to add a new job for a client.
+    /// </summary>
+    /// <remarks>This model is typically used to capture user input when creating a new job entry, such as in
+    /// a form submission scenario.</remarks>
     public class AddJobModel
     {
         public int ClientId { get; set; } = 0;

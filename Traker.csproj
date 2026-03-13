@@ -23,6 +23,7 @@
     <None Remove="Resources\Fonts\RobotoMono.ttf" />
     <None Remove="Resources\Media\Images\Icons\close-button.png" />
     <None Remove="Resources\Media\Images\Icons\Lucide\plus.svg" />
+    <None Remove="Resources\Media\Images\Icons\Lucide\user-pen.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\x.svg" />
     <None Remove="Resources\Media\Images\Icons\minimise-button.png" />
   </ItemGroup>
@@ -58,6 +59,7 @@
     <Resource Include="Resources\Media\Images\Icons\Lucide\plus.svg">
       <CopyToOutputDirectory></CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\Media\Images\Icons\Lucide\user-pen.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\x.svg" />
     <Resource Include="Resources\Media\Images\Icons\minimise-button.png" />
   </ItemGroup>

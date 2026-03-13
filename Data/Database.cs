@@ -1,22 +1,25 @@
 ﻿using Microsoft.Data.Sqlite;
-using Microsoft.VisualBasic;
-using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Windows;
-using System.Windows.Media.Animation;
 using Traker.Models;
-using Traker.States;
+using Traker.Services;
 
 namespace Traker.Database
 {
     /// <summary>
-    /// Handle relationships between the Ui and the database itself.
+    /// Handle relationships between the UI and the database.
     /// </summary>
     public static class Database
     {
+        #region Private Static Variables
         private static string _connectionString = String.Empty; // location of the database file
+        #endregion
 
-        #region Public Functions
+        #region Public Static Functions
+        /// <summary>
+        /// Set up the database by creating the database file and tables if they don't exist. This is done by reading the Schema.sql file and executing the SQL commands within it. If any errors occur during this process, an error message is displayed to the user and the application is closed. If the database is set up successfully, a log entry is made indicating that the database is connected.
+        /// </summary>
         public static async Task SetUpDatabase()
         {
             await Task.Run(() =>
@@ -25,8 +28,7 @@ namespace Traker.Database
                 {
                     // set directory and database name
                     var folder = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "Traker");
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Traker");
                     Directory.CreateDirectory(folder);
                     var dbPath = Path.Combine(folder, "traker.db");
 
@@ -34,77 +36,31 @@ namespace Traker.Database
                     _connectionString = $"Data Source={dbPath}";
                     using var conn = new SqliteConnection(_connectionString);
                     conn.Open();
-                    var _sqliteCommand = conn.CreateCommand();
-                    _sqliteCommand.CommandText = @"
 
-
-PRAGMA foreign_keys = OFF;
-
-
-CREATE TABLE IF NOT EXISTS Clients (
-    ClientId INTEGER PRIMARY KEY AUTOINCREMENT,
-    Type VARCHAR(20) CHECK (Type IN ('company', 'individual')),
-    FullName VARCHAR(100) NOT NULL,
-    CompanyName VARCHAR(100),
-    Email VARCHAR(100),
-    PhoneNumber VARCHAR(20),
-    BillingAddress VARCHAR(255),
-    City VARCHAR(50),
-    Postcode VARCHAR(20),
-    Country VARCHAR(50),
-    CreatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-    IsActive BIT DEFAULT 1
-);
-
-CREATE TABLE IF NOT EXISTS Jobs (
-    JobId INTEGER PRIMARY KEY AUTOINCREMENT,
-    ClientId INTEGER NOT NULL,
-    Title TEXT,
-    Description TEXT,
-    Status VARCHAR(20),
-    EstimatedPrice TEXT,
-    FinalPrice TEXT,
-    CreatedDate DATETIME,
-    StartDate DATETIME,
-    CompletedDate DATETIME,
-    DueDate DATETIME,
-    FolderPath TEXT,
-    Notes TEXT,
-    IsArchived BOOLEAN,
-    FOREIGN KEY (ClientId) REFERENCES Clients(ClientId) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS Invoices (
-    InvoiceId INTEGER PRIMARY KEY AUTOINCREMENT,
-    JobId INTEGER NOT NULL,
-    InvoiceNumber TEXT,
-    Subtotal TEXT,
-    TaxAmount TEXT,
-    TotalAmount TEXT,
-    IssueDate DATETIME,
-    DueDate DATETIME,
-    BillingName TEXT,
-    BillingAddress TEXT,
-    BillingCity, TEXT,
-    BillingPostcode TEXT,
-    BillingCountry TEXT,
-    Status VARCHAR(20),
-    IsDeleted BIT DEFAULT 0,
-    PaidDate DATETIME,
-    PaymentMethod TEXT,
-    Notes TEXT,
-    FOREIGN KEY (JobId) REFERENCES Jobs(JobId) ON DELETE CASCADE
-);
-
-PRAGMA foreign_keys = ON;
-
-                        ";
-
-                    int rows = _sqliteCommand.ExecuteNonQuery();
-
-                    if (rows >= 0)
+                    // read from Schema.sql
+                    var assembly = Assembly.GetExecutingAssembly();
+                    using var stream = assembly.GetManifestResourceStream("Traker.Assets.Database.Schema.sql");
+                    if (stream != null)
                     {
-                        Debug.WriteLine($"Database Created");
+                        using var reader = new StreamReader(stream); // get Schema.sql
+
+                        string sql = reader.ReadToEnd(); // read Schema.sql
+
+                        var _sqliteCommand = conn.CreateCommand();
+                        _sqliteCommand.CommandText = sql; // set Schema.sql
+
+                        _sqliteCommand.ExecuteNonQuery(); // execute Schema.sql
+                        Logger.LogActivity(Logger.INFO, "Database: SetUpDatabase() DATABASE CONNECTED");
+                    }
+                    else
+                    {
+                        MessageBox.Show(
+                            $"An error occurred while setting up the database. Please try again.\n\nUnable to locate database schema.",
+                            "Database Setup",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
+                        Logger.LogActivity(Logger.WARNING, "Database: SetUpDatabase() DATABASE NOT CONNECTED");
+                        Environment.Exit(1); // kill process
                     }
                 }
                 catch (Exception ex)
@@ -114,12 +70,15 @@ PRAGMA foreign_keys = ON;
                         "Database Setup",
                         MessageBoxButton.OK,
                         MessageBoxImage.Error);
-
-                    Debug.WriteLine($"Database setup error: {ex.Message}");
+                    Environment.Exit(1); // kill process
+                    Logger.LogActivity(Logger.ERROR, "Database: SetUpDatabase() DATABASE ERROR");
                 }
             });
         }
 
+        /// <summary>
+        /// Fetch all data from the Clients table and return it as a list of ClientsModel objects. This is done by opening a connection to the database, executing a SQL query to select all rows from the Clients table, and then reading the results using a SqliteDataReader. For each row, a new ClientsModel object is created and added to the list. If any errors occur during this process, an error message is displayed to the user and the application is closed. If the data is fetched successfully, a log entry is made indicating that the operation was successful.
+        /// </summary>
         public static List<ClientsModel> FetchClientsTable()
         {
             List<ClientsModel> clientsList = new List<ClientsModel>();
@@ -180,11 +139,11 @@ PRAGMA foreign_keys = ON;
                                         IsActive = Convert.ToBoolean(IsActive)
                                     });
                                 }
-                                // Debug.WriteLine(clientId + " " + clientName + " " + clientEmail + " " + clientPhone);
                             }
                         }
                     }
                 }
+                Logger.LogActivity(Logger.INFO, "Database: FetchClientsTable() OK");
                 return clientsList;
             }
             catch (Exception ex)
@@ -195,54 +154,33 @@ PRAGMA foreign_keys = ON;
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
 
-                Debug.WriteLine($"Fetch Client error: {ex.Message}");
-                System.Environment.Exit(1); // kill process
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchClientsTable() FAIL");
+                Environment.Exit(1); // kill process
                 throw; // necessary otherwsie cries about no return value
             }
         }
 
+        /// <summary>
+        /// Fetch all data from the Jobs table and return it as a list of JobsModel objects. This is done by opening a connection to the database, executing a SQL query to select all rows from the Jobs table, and then reading the results using a SqliteDataReader. For each row, a new JobsModel object is created and added to the list. If any errors occur during this process, an error message is displayed to the user and the application is closed. If the data is fetched successfully, a log entry is made indicating that the operation was successful.
+        /// </summary>
         public static List<JobsModel> FetchJobsTable()
         {
             List<JobsModel> jobsList = new List<JobsModel>();
 
             try
             {
-
                 using (var conn = new SqliteConnection(_connectionString))
                 {
                     conn.Open();
 
-                    // 2. Create the command locally so it can't be "modified" by other parts of the app
                     using (var cmd = conn.CreateCommand())
                     {
                         cmd.CommandText = "SELECT * FROM Jobs";
 
                         using (var reader = cmd.ExecuteReader())
                         {
-
-
-
-
                             while (reader.Read())
                             {
-                                //Debug.WriteLine(reader["JobId"] + " "
-                                //    + reader["ClientId"] + " "
-                                //    + reader["Title"] + " "
-                                //    + reader["Description"] + " "
-                                //    + reader["Status"] + " "
-                                //    + reader["EstimatedPrice"] + " "
-                                //    + reader["FinalPrice"] + " "
-                                //    + reader["CreatedDate"] + " "
-                                //    + reader["StartDate"] + " "
-                                //    + reader["CompletedDate"] + " "
-                                //    + reader["DueDate"] + " "
-                                //    + reader["FolderPath"] + " "
-                                //    + reader["Notes"] + " "
-                                //    + reader["IsArchived"] + " "
-
-                                //    );
-
-
                                 var JobId = reader["JobId"];
                                 var ClientId = reader["ClientId"];
                                 var Title = reader["Title"] == DBNull.Value ? String.Empty : reader["Title"];
@@ -291,11 +229,11 @@ PRAGMA foreign_keys = ON;
                                         IsArchived = Convert.ToBoolean(IsArchived),
                                     });
                                 }
-                                // Debug.WriteLine(clientId + " " + clientName + " " + clientEmail + " " + clientPhone);
                             }
                         }
                     }
                 }
+                Logger.LogActivity(Logger.INFO, "Database: FetchJobsTable() OK");
                 return jobsList;
             }
             catch (Exception ex)
@@ -306,24 +244,25 @@ PRAGMA foreign_keys = ON;
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
 
-                Debug.WriteLine($"Fetch Job error: {ex.Message}");
-                System.Environment.Exit(1); // kill process
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchJobsTable() FAIL");
+                Environment.Exit(1); // kill process
                 throw; // necessary otherwsie cries about no return value
             }
         }
 
+        /// <summary>
+        /// Fetch all data from the Invoices table and return it as a list of InvoicesModel objects. This is done by opening a connection to the database, executing a SQL query to select all rows from the Invoices table, and then reading the results using a SqliteDataReader. For each row, a new InvoicesModel object is created and added to the list. If any errors occur during this process, an error message is displayed to the user and the application is closed. If the data is fetched successfully, a log entry is made indicating that the operation was successful.
+        /// </summary>
         public static List<InvoicesModel> FetchInvoiceTable()
         {
             List<InvoicesModel> invoicesList = new List<InvoicesModel>();
 
             try
             {
-
                 using (var conn = new SqliteConnection(_connectionString))
                 {
                     conn.Open();
 
-                    // 2. Create the command locally so it can't be "modified" by other parts of the app
                     using (var cmd = conn.CreateCommand())
                     {
                         cmd.CommandText = "SELECT * FROM Invoices";
@@ -332,21 +271,6 @@ PRAGMA foreign_keys = ON;
                         {
                             while (reader.Read())
                             {
-                                //Debug.WriteLine(reader["InvoiceId"] + " | "
-                                //+ reader["JobId"] + " | "
-                                //+ reader["InvoiceNumber"] + " | "
-                                //+ reader["Subtotal"] + " | "
-                                //+ reader["TaxAmount"] + " | "
-                                //+ reader["TotalAmount"] + " | "
-                                //+ reader["IssueDate"] + " | "
-                                //+ reader["DueDate"] + " | "
-                                //+ reader["IsPaid"] + " | "
-                                //+ reader["PaidDate"] + " | "
-                                //+ reader["PaymentMethod"] + " | "
-                                //+ reader["Notes"] + " | "
-
-                                //    );
-
                                 var InvoiceId = reader["InvoiceId"];
                                 var JobId = reader["JobId"];
                                 var InvoiceNumber = reader["InvoiceNumber"] == DBNull.Value ? String.Empty : reader["InvoiceNumber"];
@@ -407,11 +331,11 @@ PRAGMA foreign_keys = ON;
                                         Notes = Notes.ToString()!,
                                     });
                                 }
-                                // Debug.WriteLine(clientId + " " + clientName + " " + clientEmail + " " + clientPhone);
                             }
                         }
                     }
                 }
+                Logger.LogActivity(Logger.INFO, "Database: FetchInvoiceTable() OK");
                 return invoicesList;
             }
             catch (Exception ex)
@@ -422,134 +346,117 @@ PRAGMA foreign_keys = ON;
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
 
-                Debug.WriteLine($"Fetch Jobs error: {ex.Message}");
-                System.Environment.Exit(1); // kill process
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchInvoiceTable() FAIL");
+                Environment.Exit(1); // kill process
                 throw; // necessary otherwsie cries about no return value
             }
         }
 
+        /// <summary>
+        /// Add a new row to the Clients and Jobs tables in the database. This is done by opening a connection to the database, starting a transaction, and then executing two SQL commands: one to insert a new row into the Clients table and another to insert a new row into the Jobs table with a foreign key reference to the newly inserted client. If any errors occur during this process, an error message is displayed to the user and the transaction is rolled back. If the rows are added successfully, a log entry is made indicating that the operation was successful along with the new client and job IDs.
+        /// </summary>
         public static Task AddRow(string clientName, string jobDescription, decimal finalPrice, DateTime dueDate)
         {
-            // use this to check
-            /*
-             * if (clientId <= 0)
-                throw new Exception("Client not saved / not found");
-
-             */
-
-            long clientId = 0;
-            long jobId = 0;
-
-            using var conn = new SqliteConnection(_connectionString);
-            conn.Open();
-
-            using (var pragma = conn.CreateCommand())
+            try
             {
-                pragma.CommandText = "PRAGMA foreign_keys = ON;";
-                pragma.ExecuteNonQuery();
+                long clientId = 0;
+                long jobId = 0;
+
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+
+                using (var pragma = conn.CreateCommand())
+                {
+                    pragma.CommandText = "PRAGMA foreign_keys = ON;";
+                    pragma.ExecuteNonQuery();
+                }
+
+                // work all at once, if one query fails it rolls back
+                // if you don't care about failures you can avoid transaction
+                using var tx = conn.BeginTransaction();
+
+                // insert into Clients table
+                using (var clienstCmd = conn.CreateCommand())
+                {
+                    clienstCmd.CommandText = @"
+
+                    INSERT INTO Clients
+                    (FullName, CreatedDate)
+
+                    VALUES
+                    (@clientName, @createdDate);
+
+                    ";
+                    clienstCmd.Parameters.AddWithValue("@clientName", clientName);
+                    clienstCmd.Parameters.AddWithValue("@createdDate", DateTime.Now.Date);
+                    clienstCmd.ExecuteNonQuery();
+                }
+
+
+                // get last inserted client id
+                using (var clientIdCmd = conn.CreateCommand())
+                {
+                    clientIdCmd.CommandText = "SELECT last_insert_rowid();";
+                    clientId = (long)clientIdCmd.ExecuteScalar()!;
+                }
+
+                // insert into jobs table
+                using (var jobsCmd = conn.CreateCommand())
+                {
+                    jobsCmd.CommandText = @"
+
+                    INSERT INTO Jobs
+                    (ClientId, Description, Status, FinalPrice, CreatedDate, DueDate)
+
+                    VALUES
+                    (@clientId, @description, @status, @finalPrice, @createdDate, @dueDate);
+
+                    ";
+
+                    jobsCmd.Parameters.AddWithValue("@clientId", clientId);
+                    jobsCmd.Parameters.AddWithValue("@description", jobDescription);
+                    jobsCmd.Parameters.AddWithValue("@status", "New");
+                    jobsCmd.Parameters.AddWithValue("@finalPrice", finalPrice);
+                    jobsCmd.Parameters.AddWithValue("@createdDate", DateTime.Now.Date);
+                    jobsCmd.Parameters.AddWithValue("@dueDate", dueDate.ToString("yyyy-MM-dd"));
+                    jobsCmd.ExecuteNonQuery();
+                }
+
+                // get last inserted job id based on current clientId
+                using (var jobIdCmd = conn.CreateCommand())
+                {
+                    jobIdCmd.CommandText = @"
+                        SELECT JobId
+                        FROM Jobs
+                        WHERE ClientId = @clientId
+                        ORDER BY JobId DESC
+                        LIMIT 1;
+                    ";
+                    jobIdCmd.Parameters.AddWithValue("@clientId", clientId);
+                    jobId = (long)jobIdCmd.ExecuteScalar()!;
+                }
+
+                // Commit both together
+                tx.Commit();
+                Logger.LogActivity(Logger.INFO, $"Database: AddRow() OK - ClientId: {clientId}, JobId: {jobId}");
+                return Task.CompletedTask;
             }
-
-            // work all at once, if one query fails it rolls back
-            // if you don't care about failures you can avoid transaction
-            using var tx = conn.BeginTransaction();
-
-
-            // insert into Clients table
-            using (var clienstCmd = conn.CreateCommand())
+            catch (Exception ex)
             {
-                clienstCmd.CommandText = @"
-
-                INSERT INTO Clients
-                (FullName, CreatedDate)
-
-                VALUES
-                (@clientName, @createdDate);
-
-                ";
-                clienstCmd.Parameters.AddWithValue("@clientName", clientName);
-                clienstCmd.Parameters.AddWithValue("@createdDate", DateTime.Now.Date);
-                clienstCmd.ExecuteNonQuery();
+                MessageBox.Show(
+                    $"An error occurred while adding a new client and job. Please try again.\n\n{ex.Message}",
+                    "Add Client and Job",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: AddRow() FAIL");
+                return Task.CompletedTask;
             }
-
-
-            // get last inserted client id
-            using (var clientIdCmd = conn.CreateCommand())
-            {
-                clientIdCmd.CommandText = "SELECT last_insert_rowid();";
-                clientId = (long)clientIdCmd.ExecuteScalar()!;
-            }
-
-            // debug
-            //using (var textCmd = conn.CreateCommand())
-            //{
-            //    // SELECT COUNT(*) FROM Clients WHERE ClientId = 31;
-            //    textCmd.CommandText = "SELECT FullName FROM Clients WHERE ClientId = 31";
-            //    var exists = textCmd.ExecuteScalar();
-            //}
-
-
-            // insert into jobs table
-            using (var jobsCmd = conn.CreateCommand())
-            {
-                jobsCmd.CommandText = @"
-
-                INSERT INTO Jobs
-                (ClientId, Description, Status, FinalPrice, CreatedDate, DueDate)
-
-                VALUES
-                (@clientId, @description, @status, @finalPrice, @createdDate, @dueDate);
-
-                ";
-
-                jobsCmd.Parameters.AddWithValue("@clientId", clientId);
-                jobsCmd.Parameters.AddWithValue("@description", jobDescription);
-                jobsCmd.Parameters.AddWithValue("@status", "New");
-                jobsCmd.Parameters.AddWithValue("@finalPrice", finalPrice);
-                jobsCmd.Parameters.AddWithValue("@createdDate", DateTime.Now.Date);
-                jobsCmd.Parameters.AddWithValue("@dueDate", dueDate.ToString("yyyy-MM-dd"));
-                jobsCmd.ExecuteNonQuery();
-            }
-
-
-            // get last inserted job id based on current clientId
-            using (var jobIdCmd = conn.CreateCommand())
-            {
-                jobIdCmd.CommandText = @"
-                    SELECT JobId
-                    FROM Jobs
-                    WHERE ClientId = @clientId
-                    ORDER BY JobId DESC
-                    LIMIT 1;
-                ";
-                jobIdCmd.Parameters.AddWithValue("@clientId", clientId);
-                jobId = (long)jobIdCmd.ExecuteScalar()!;
-            }
-
-
-            //using (var invoiceCmd = conn.CreateCommand())
-            //{
-            //    invoiceCmd.CommandText = @"
-
-            //    INSERT INTO Invoices
-            //    (JobId, IsPaid)
-
-            //    VALUES
-            //    (@jobId, @isPaid);
-
-            //    ";
-
-            //    invoiceCmd.Parameters.AddWithValue("@jobId", jobId);
-            //    invoiceCmd.Parameters.AddWithValue("@isPaid", false);
-            //    invoiceCmd.ExecuteNonQuery();
-            //}
-
-            // Commit both together
-            tx.Commit();
-
-            return Task.CompletedTask;
         }
 
-        public static async Task SetStatus(string status, int clientId, int jobId)
+        /// <summary>
+        /// Set the status of a job in the Jobs table. This is done by opening a connection to the database, executing a SQL command to update the Status column of the specified job, and then closing the connection. The function takes three parameters: the new status, the client ID, and the job ID. If any errors occur during this process, an error message is displayed to the user. If the status is updated successfully, a log entry is made indicating that the operation was successful along with the client ID, job ID, and new status.
+        /// </summary>
+        public static Task SetStatus(string status, int clientId, int jobId)
         {
             try
             {
@@ -633,14 +540,24 @@ PRAGMA foreign_keys = ON;
                         }
                     }
                 }
+                Logger.LogActivity(Logger.INFO, $"Database: SetStatus() OK - ClientId: {clientId}, JobId: {jobId}, Status: {status}");
             }
-            catch
+            catch (Exception ex)
             {
-
+                MessageBox.Show(
+                    $"An error occurred while updating job status. Please try again.\n\n{ex.Message}",
+                    "Update Job Status",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: SetStatus() FAIL - ClientId: {clientId}, JobId: {jobId}, Status: {status}");
             }
+            return Task.CompletedTask;
         }
 
-        public static async Task DeleteRow(int clientId)
+        /// <summary>
+        /// Delete a row from the Clients table and all related rows from the Jobs table. This is done by opening a connection to the database, starting a transaction, and then executing a SQL command to delete the specified client from the Clients table. The command is set up to also delete any related rows from the Jobs table using a foreign key constraint with ON DELETE CASCADE. If any errors occur during this process, an error message is displayed to the user and the transaction is rolled back. If the row is deleted successfully, a log entry is made indicating that the operation was successful along with the client ID.
+        /// </summary>
+        public static Task DeleteRow(int clientId)
         {
             try
             {
@@ -668,83 +585,169 @@ PRAGMA foreign_keys = ON;
                 }
 
                 tx.Commit();
+                Logger.LogActivity(Logger.INFO, $"Database: DeleteRow() OK - ClientId: {clientId}");
             }
-            catch
+            catch (Exception ex)
             {
-
+                MessageBox.Show(
+                    $"An error occurred while deleting the client and related jobs. Please try again.\n\n{ex.Message}",
+                    "Delete Client and Jobs",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: DeleteRow() FAIL - ClientId: {clientId}");
             }
+            return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Add a new row to the Jobs table for an existing client. This is done by opening a connection to the database, executing a SQL command to insert a new row into the Jobs table with a foreign key reference to the specified client, and then closing the connection. The function takes four parameters: the client ID, job description, final price, and due date. If any errors occur during this process, an error message is displayed to the user. If the row is added successfully, a log entry is made indicating that the operation was successful along with the client ID and job ID.
+        /// </summary>
         public static Task AddNewJobToClient(int clientId, string jobDescription, decimal finalPrice, DateTime dueDate)
         {
-            //long clientId = 0;
-            long jobId = 0;
-
-            using var conn = new SqliteConnection(_connectionString);
-            conn.Open();
-
-            //using (var pragma = conn.CreateCommand())
-            //{
-            //    pragma.CommandText = "PRAGMA foreign_keys = ON;";
-            //    pragma.ExecuteNonQuery();
-            //}
-
-            //using var tx = conn.BeginTransaction();
-
-            // insert into jobs table
-            using (var jobsCmd = conn.CreateCommand())
+            try
             {
-                jobsCmd.CommandText = @"
+                long jobId = 0;
 
-                INSERT INTO Jobs
-                (ClientId, Description, Status, FinalPrice, CreatedDate, DueDate)
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
 
-                VALUES
-                (@clientId, @description, @status, @finalPrice, @createdDate, @dueDate);
+                // insert into jobs table
+                using (var jobsCmd = conn.CreateCommand())
+                {
+                    jobsCmd.CommandText = @"
 
-                ";
+                    INSERT INTO Jobs
+                    (ClientId, Description, Status, FinalPrice, CreatedDate, DueDate)
 
-                jobsCmd.Parameters.AddWithValue("@clientId", clientId);
-                jobsCmd.Parameters.AddWithValue("@description", jobDescription);
-                jobsCmd.Parameters.AddWithValue("@status", "New");
-                jobsCmd.Parameters.AddWithValue("@finalPrice", finalPrice);
-                jobsCmd.Parameters.AddWithValue("@createdDate", DateTime.Now.Date);
-                jobsCmd.Parameters.AddWithValue("@dueDate", dueDate.ToString("yyyy-MM-dd"));
-                jobsCmd.ExecuteNonQuery();
+                    VALUES
+                    (@clientId, @description, @status, @finalPrice, @createdDate, @dueDate);
+
+                    ";
+
+                    jobsCmd.Parameters.AddWithValue("@clientId", clientId);
+                    jobsCmd.Parameters.AddWithValue("@description", jobDescription);
+                    jobsCmd.Parameters.AddWithValue("@status", "New");
+                    jobsCmd.Parameters.AddWithValue("@finalPrice", finalPrice);
+                    jobsCmd.Parameters.AddWithValue("@createdDate", DateTime.Now.Date);
+                    jobsCmd.Parameters.AddWithValue("@dueDate", dueDate.ToString("yyyy-MM-dd"));
+                    jobsCmd.ExecuteNonQuery();
+                }
+
+                //// get last inserted job id based on current clientId
+                using (var jobIdCmd = conn.CreateCommand())
+                {
+                    jobIdCmd.CommandText = "SELECT last_insert_rowid();";
+                    jobId = (long)jobIdCmd.ExecuteScalar()!;
+                }
+                Logger.LogActivity(Logger.INFO, $"Database: AddNewJobToClient() OK - ClientId: {clientId}, JobId: {jobId}");
             }
-
-            //// get last inserted job id based on current clientId
-            using (var jobIdCmd = conn.CreateCommand())
+            catch (Exception ex)
             {
-                jobIdCmd.CommandText = "SELECT last_insert_rowid();";
-                jobId = (long)jobIdCmd.ExecuteScalar()!;
+                MessageBox.Show(
+                    $"An error occurred while adding a new job to the client. Please try again.\n\n{ex.Message}",
+                    "Add Job to Client",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: AddNewJobToClient() FAIL - ClientId: {clientId}");
             }
-
-
-            //using (var invoiceCmd = conn.CreateCommand())
-            //{
-            //    invoiceCmd.CommandText = @"
-
-            //    INSERT INTO Invoices
-            //    (JobId, IsPaid)
-
-            //    VALUES
-            //    (@jobId, @isPaid);
-
-            //    ";
-
-            //    invoiceCmd.Parameters.AddWithValue("@jobId", jobId);
-            //    invoiceCmd.Parameters.AddWithValue("@isPaid", false);
-            //    invoiceCmd.ExecuteNonQuery();
-            //}
-
-            // Commit both together
-            //tx.Commit();
-
             return Task.CompletedTask;
         }
 
         //public static Task UpdateRow(int clientId, )
+
+        /// <summary>
+        /// Create a new invoice for a job by adding a new row to the Invoices table. This is done by opening a connection to the database, starting a transaction, and then executing a SQL command to insert a new row into the Invoices table with the specified details. The function takes several parameters including the job ID, subtotal, tax amount, total amount, due date, billing name, billing address, billing city, billing postcode, and billing country. If any errors occur during this process, an error message is displayed to the user and the transaction is rolled back. If the invoice is created successfully, a log entry is made indicating that the operation was successful along with the job ID.
+        /// </summary>
+        public static Task CreateInvoice(int jobId, decimal subtotal, int taxAmount, decimal totalAmount, DateTime dueDate, string billingName, string billingAddress, string billingCity, string billingPostcode, string billingCountry)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+
+                using (var pragma = conn.CreateCommand())
+                {
+                    pragma.CommandText = "PRAGMA foreign_keys = ON;";
+                    pragma.ExecuteNonQuery();
+                }
+
+                using var transaction = conn.BeginTransaction();
+
+                long nextNumber;
+
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.Transaction = transaction;
+                    cmd.CommandText = "SELECT IFNULL(MAX(InvoiceNumber), 0) FROM Invoices;";
+                    nextNumber = (long)cmd.ExecuteScalar()! + 1;
+                }
+
+                // insert into Clients table
+                using (var invoicesCmd = conn.CreateCommand())
+                {
+                    invoicesCmd.CommandText = @"
+
+                    INSERT INTO Invoices
+                    (JobId, 
+                    InvoiceNumber, 
+                    Subtotal, 
+                    TaxAmount, 
+                    TotalAmount, 
+                    IssueDate, 
+                    DueDate,    
+                    BillingName, 
+                    BillingAddress,
+                    BillingCity,
+                    BillingPostcode,
+                    BillingCountry,
+                    Status)
+
+                    VALUES
+                    (@jobId, 
+                    @invoiceNumber, 
+                    @subtotal,
+                    @taxAmount,
+                    @totalAmount,
+                    @issueDate,
+                    @dueDate,
+                    @billingName,
+                    @billingAddress,
+                    @billingCity,
+                    @billingPostcode,
+                    @billingCountry,
+                    @status);
+
+                    ";
+                    invoicesCmd.Parameters.AddWithValue("@jobId", jobId);
+                    invoicesCmd.Parameters.AddWithValue("@invoiceNumber", nextNumber);
+                    invoicesCmd.Parameters.AddWithValue("@subtotal", subtotal);
+                    invoicesCmd.Parameters.AddWithValue("@taxAmount", taxAmount);
+                    invoicesCmd.Parameters.AddWithValue("@totalAmount", totalAmount);
+                    invoicesCmd.Parameters.AddWithValue("@issueDate", DateTime.Now.Date);
+                    invoicesCmd.Parameters.AddWithValue("@dueDate", dueDate.ToString("yyyy-MM-dd"));
+                    invoicesCmd.Parameters.AddWithValue("@billingName", billingName);
+                    invoicesCmd.Parameters.AddWithValue("@billingAddress", billingAddress);
+                    invoicesCmd.Parameters.AddWithValue("@billingCity", billingCity);
+                    invoicesCmd.Parameters.AddWithValue("@billingPostcode", billingPostcode);
+                    invoicesCmd.Parameters.AddWithValue("@billingCountry", billingCountry);
+                    invoicesCmd.Parameters.AddWithValue("@status", "Created");
+
+                    invoicesCmd.ExecuteNonQuery();
+                }
+                transaction.Commit();
+                Logger.LogActivity(Logger.INFO, $"Database: CreateInvoice() OK - JobId: {jobId}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while creating the invoice. Please try again.\n\n{ex.Message}",
+                    "Create Invoice",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: CreateInvoice() FAIL - JobId: {jobId}");
+            }
+            return Task.CompletedTask;
+        }
         #endregion
     }
 }

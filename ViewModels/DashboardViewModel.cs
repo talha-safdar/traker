@@ -34,7 +34,7 @@ namespace Traker.ViewModels
 
         #region Public View Variables
         public List<string> JobStatusEdit { get; set; } = new List<string> { "New", "Active", "Done" };
-        public List<string> InvoiceStatusEdit { get; set; } = new List<string> { "Sent", "Paid", "Overdue" };
+        public List<string> InvoiceStatusEdit { get; set; } = new List<string> { "Created", "Sent", "Paid", "Overdue" };
         #endregion
 
         #region Private View Variables
@@ -75,6 +75,7 @@ namespace Traker.ViewModels
         private RowContextMenuViewModel _jobDetailsViewModel;
         private AddClientViewModel _addClientViewModel;
         private AddJobViewModel _addJobViewModel;
+        private EditClientViewModel _EditClientViewModel;
         #endregion
 
         public DashboardViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState)
@@ -118,7 +119,7 @@ namespace Traker.ViewModels
             _jobDetailsViewModel = new RowContextMenuViewModel(_events, _windowManager);
             _addClientViewModel = new AddClientViewModel(_events, State);
             _addJobViewModel = new AddJobViewModel(_events, State);
-
+            _EditClientViewModel = new EditClientViewModel();
 
             _events.SubscribeOnPublishedThread(this);
         }
@@ -184,7 +185,7 @@ namespace Traker.ViewModels
                     ClientPhone = client.PhoneNumber,
                     JobId = job.JobId,
 
-                    HasInvoice = Convert.ToBoolean(_invoices.FirstOrDefault(i => i.JobId == job.JobId && i.IsDeleted == false)),
+                    HasInvoice = _invoices.Any(i => i.JobId == job.JobId && i.IsDeleted == false),
 
                     // "Not invoiced" = invoice missing, invoice.Stauts the invoice exists
                     // if invoice deleted then show "Not invoiced"
@@ -334,6 +335,12 @@ namespace Traker.ViewModels
         }
         #endregion
 
+        public async Task EditClient()
+        {
+            _EditClientViewModel = new EditClientViewModel();
+            await _windowManager.ShowWindowAsync(_EditClientViewModel, null, CustomWindow.SettingsForDialog(600, 500));
+        }
+
 
         public Task UpdateJobStatus(DashboardModel row)
         {
@@ -350,7 +357,7 @@ namespace Traker.ViewModels
                 return;
             }
 
-            Debug.WriteLine("OPEN MENU" + " | " + SelectedDataRow.ClientName + " - " + selectedJob.ClientName);
+            // Debug.WriteLine("OPEN MENU" + " | " + SelectedDataRow.ClientName + " - " + selectedJob.ClientName);
             // Debug.WriteLine(selectedJob.ClientName);
             //Debug.WriteLine(selectedJob.ClientName + " " + selectedJob.Jobs.Select(j => j.Description).FirstOrDefault()!.ToString());
             

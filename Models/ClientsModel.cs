@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Traker.Models
+﻿namespace Traker.Models
 {
+    /// <summary>
+    /// Represents a client, including personal or company details, contact information, and account status.
+    /// </summary>
+    /// <remarks>The <see cref="ClientsModel"/> class is used to store and transfer client information within
+    /// the application. It supports both individual and company clients by providing relevant fields for each
+    /// type.</remarks>
     public class ClientsModel
     {
         public int ClientId { get; set; } = 0;

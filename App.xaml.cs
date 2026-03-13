@@ -1,6 +1,7 @@
 ﻿using System.Configuration;
 using System.Data;
 using System.Windows;
+using Traker.Services;
 
 namespace Traker
 {
@@ -14,11 +15,13 @@ namespace Traker
             try
             {
                 base.OnStartup(e);
+                Logger.LogActivity(Logger.INFO, "####################################### NEW EXECUTION #######################################");
             }
             catch (Exception ex)
             {
                 // This will tell you exactly which XAML line is broken
                 MessageBox.Show(ex.ToString());
+                Logger.LogActivity(Logger.ERROR, "FAIL");
             }
         }
     }

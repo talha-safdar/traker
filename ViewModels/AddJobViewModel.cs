@@ -63,11 +63,10 @@ namespace Traker.ViewModels
         //    return base.OnInitializedAsync(cancellationToken);
         //}
 
-        protected override void OnViewLoaded(object view)
+        protected override void OnViewLoaded(object view) // REPLACE WITH INITIALISED
         {
             foreach (var client in dashboardData.DistinctBy(x => x.ClientId))
             {
-                //ClientsList.Add(client.ClientName);
                 AddJob.Add(new AddJobModel
                 {
                     ClientId = client.ClientId,
@@ -76,11 +75,13 @@ namespace Traker.ViewModels
                     Price = client.Price
                 });
             }
-
-            //SelectedClient = AddJob.FirstOrDefault()!.FullName;
-            //NotifyOfPropertyChange(() => AddJob);
-
             base.OnViewLoaded(view);
+        }
+
+        protected override Task OnDeactivateAsync(bool close, CancellationToken cancellationToken)
+        {
+            _events.Unsubscribe(this);
+            return base.OnDeactivateAsync(close, cancellationToken);
         }
 
 

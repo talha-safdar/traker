@@ -37,9 +37,9 @@ CREATE TABLE IF NOT EXISTS Jobs (
 CREATE TABLE IF NOT EXISTS Invoices (
     InvoiceId INTEGER PRIMARY KEY AUTOINCREMENT,
     JobId INTEGER NOT NULL,
-    InvoiceNumber TEXT,
+    InvoiceNumber INTEGER UNIQUE NOT NULL,
     Subtotal TEXT,
-    TaxAmount TEXT,
+    TaxAmount INTEGER,
     TotalAmount TEXT,
     IssueDate DATETIME,
     DueDate DATETIME,

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Traker.Events
+﻿namespace Traker.Events
 {
+    /// <summary>
+    /// Used to signal the closing of a window, with the name of the window to be closed as a parameter.
+    /// </summary>
     public class CloseWindow
     {
         public string WindowName { get; set; } = string.Empty;

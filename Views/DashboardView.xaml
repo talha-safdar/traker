@@ -32,7 +32,14 @@
         <!-- side panel -->
         <Grid Grid.Column="0" Grid.RowSpan="3" Margin="20,20,5,20">
             <Border Background="{StaticResource SidePanelBackgroundBrush}" CornerRadius="20">
-
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="5,20,5,10">
+                    <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditClient()]" Background="Transparent"  HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="40" Width="40">
+                        <svg:SvgViewbox                         
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        SnapsToDevicePixels="True"
+                        Source="/Resources/Media/Images/Icons/Lucide/user-pen.svg" Width="35" Height="35"/>
+                    </Border>
+                </StackPanel>
             </Border>
         </Grid>
             
