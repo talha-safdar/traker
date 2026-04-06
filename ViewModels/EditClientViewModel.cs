@@ -9,5 +9,13 @@ namespace Traker.ViewModels
 {
     class EditClientViewModel : Screen
     {
+        public EditClientViewModel()
+        {
+
+        }
+        public async Task Exit()
+        {
+            await TryCloseAsync();
+        }
     }
 }

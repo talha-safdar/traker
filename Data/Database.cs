@@ -47,7 +47,7 @@ namespace Traker.Database
                         string sql = reader.ReadToEnd(); // read Schema.sql
 
                         var _sqliteCommand = conn.CreateCommand();
-                        _sqliteCommand.CommandText = sql; // set Schema.sql
+                        _sqliteCommand.CommandText = sql; // set Schema.sqlwr
 
                         _sqliteCommand.ExecuteNonQuery(); // execute Schema.sql
                         Logger.LogActivity(Logger.INFO, "Database: SetUpDatabase() DATABASE CONNECTED");

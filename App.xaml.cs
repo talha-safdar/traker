@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using QuestPDF.Infrastructure;
+using System.Configuration;
 using System.Data;
 using System.Windows;
 using Traker.Services;
@@ -14,6 +15,7 @@ namespace Traker
         {
             try
             {
+                QuestPDF.Settings.License = LicenseType.Community;
                 base.OnStartup(e);
                 Logger.LogActivity(Logger.INFO, "####################################### NEW EXECUTION #######################################");
             }

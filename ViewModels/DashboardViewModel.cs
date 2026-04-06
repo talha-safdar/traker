@@ -338,7 +338,7 @@ namespace Traker.ViewModels
         public async Task EditClient()
         {
             _EditClientViewModel = new EditClientViewModel();
-            await _windowManager.ShowWindowAsync(_EditClientViewModel, null, CustomWindow.SettingsForDialog(600, 500));
+            await _windowManager.ShowWindowAsync(_EditClientViewModel, null, CustomWindow.SettingsForDialog(800, 700));
         }
 
 
