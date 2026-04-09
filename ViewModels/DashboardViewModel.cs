@@ -1,21 +1,12 @@
 ﻿using Caliburn.Micro;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Traker.ViewModels
 {
     using Database;
     using System.Diagnostics;
-    using System.Dynamic;
-    using System.Net.NetworkInformation;
-    using System.Reflection;
     using System.Windows;
     using System.Windows.Controls;
-    using System.Windows.Media;
     using Traker.Events;
     using Traker.Helper;
     using Traker.Models;
@@ -38,23 +29,16 @@ namespace Traker.ViewModels
         #endregion
 
         #region Private View Variables
-        //private ObservableCollection<string> _clientNames;
-        //private ObservableCollection<string> _clientEmails;
-        //private ObservableCollection<string> _clientPhones;
-        //private ObservableCollection<string> _jobDescripions;
-        //private ObservableCollection<string> _jobStatus;
-        //private ObservableCollection<string> _jobPrice;
-        //private ObservableCollection<string> _paid; // paid by client?
         private string _moneyReceived; // money received value shown total
         private string _moneyToRecieve; // money outstanding value shown total
         private string _moneyOverdue; // money overdue value shown total
         private string _moneyPrice; // money price = the final amount for a job (not invoiced)
         private string _newJobsCount;
-        private string _inProgressJobsCount; 
-        private string _completedJobsCount; 
+        private string _inProgressJobsCount;
+        private string _completedJobsCount;
         private string _invoicedJobsCount;
         private ObservableCollection<DashboardModel> _dashboardData; // listo of data shown on the data grid
-        public DashboardModel _selectedDataRow; // selected data row
+        public DashboardModel _selectedDataRow; // selected data row automatically filled on click
         #endregion
 
         #region Data Variables
@@ -81,22 +65,18 @@ namespace Traker.ViewModels
         public DashboardViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState)
         {
             _events = events;
-
-
             _windowManager = windowManager;
 
-            //_clientNames = new ObservableCollection<string>(); // client names
-            //_clientEmails = new ObservableCollection<string>(); // client emails
-            //_clientPhones = new ObservableCollection<string>(); // client phones
-            //_jobDescripions = new ObservableCollection<string>(); // job descriptions
-            //_jobStatus = new ObservableCollection<string>(); // job status
-            //_jobPrice = new ObservableCollection<string>(); // job price
-            //_paid = new ObservableCollection<string>(); // job price
+            State = appState;
 
             _moneyReceived = "0";
-            _moneyToRecieve ="0";
-            _moneyOverdue ="0";
+            _moneyToRecieve = "0";
+            _moneyOverdue = "0";
             _moneyPrice = "0";
+            _newJobsCount = "0";
+            _inProgressJobsCount = "0";
+            _completedJobsCount = "0";
+            _invoicedJobsCount = "0";
 
             _receviedMoney = new List<decimal>();
             _outstandingdMoney = new List<decimal>();
@@ -107,19 +87,17 @@ namespace Traker.ViewModels
             _completedJobs = new List<int>();
             _invoicedJobs = new List<int>();
 
-            //_database = new Database(State); // database
             _clients = new List<ClientsModel>();
             _jobs = new List<JobsModel>();
             _invoices = new List<InvoicesModel>();
             _dashboardData = new ObservableCollection<DashboardModel>();
             _selectedDataRow = new DashboardModel();
 
-            State = appState;
 
             _jobDetailsViewModel = new RowContextMenuViewModel(_events, _windowManager);
             _addClientViewModel = new AddClientViewModel(_events, State);
             _addJobViewModel = new AddJobViewModel(_events, State);
-            _EditClientViewModel = new EditClientViewModel();
+            _EditClientViewModel = new EditClientViewModel(_events);
 
             _events.SubscribeOnPublishedThread(this);
         }
@@ -129,14 +107,11 @@ namespace Traker.ViewModels
         {
             try
             {
-                //await _database.SetUpDatabase();
                 await Database.SetUpDatabase();
 
                 _clients = Database.FetchClientsTable(); // clients
                 _jobs = Database.FetchJobsTable(); // jobs
                 _invoices = Database.FetchInvoiceTable(); // invoices
-
-                
 
                 await SetupDashboardData();
 
@@ -162,193 +137,7 @@ namespace Traker.ViewModels
 
         #endregion
 
-        #region Private Functions
-        private Task SetupDashboardData()
-        {
-
-            _dashboardData.Clear();
-            int index = 0;
-            foreach (var job in _jobs)
-            {
-                var client = _clients.First(c => c.ClientId == job.ClientId);
-
-                DashboardModel dashboardEntry = new DashboardModel
-                {
-                    ClientName = client.FullName,
-                    JobDescription = job.Description,
-                    Price = job.FinalPrice.ToString("C"),
-                    JobStatus = job.Status.ToString(),
-                    DueDate = job.DueDate,
-
-                    ClientId = client.ClientId,
-                    ClientEmail = client.Email,
-                    ClientPhone = client.PhoneNumber,
-                    JobId = job.JobId,
-
-                    HasInvoice = _invoices.Any(i => i.JobId == job.JobId && i.IsDeleted == false),
-
-                    // "Not invoiced" = invoice missing, invoice.Stauts the invoice exists
-                    // if invoice deleted then show "Not invoiced"
-                    InvoiceStatus = _invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? "Not invoiced"
-                    //Invoices = _invoices.Where(invoice => invoice.JobId == _jobs[index].JobId).ToList()
-                };
-                _dashboardData.Add(dashboardEntry);
-                index++;
-            }
-
-
-
-
-
-
-
-
-
-
-
-            //for (int i = 0; i < _jobs.Count; i++)
-            //{
-            //    var job = _jobs[i];
-            //    var client = _clients.First(c => c.ClientId == job.ClientId);
-
-            //    DashboardModel dashboardEntry = new DashboardModel
-            //    {
-            //        ClientName = _clients[i].FullName,
-            //        JobDescription = _jobs.Where(j => j.ClientId == _clients[i].ClientId).Select(j => j.Description).FirstOrDefault()!.ToString()!,
-            //        Price = _jobs.Where(j => j.ClientId == _clients[i].ClientId).Select(j => j.FinalPrice).FirstOrDefault().ToString()!,
-            //        Status = _jobs.Where(j => j.ClientId == _clients[i].ClientId).Select(j => j.Status).FirstOrDefault()!.ToString()!,
-            //        DueDate = _jobs.Where(j => j.ClientId == _clients[i].ClientId).Select(j => j.DueDate).FirstOrDefault()!,
-            //        Paid = _invoices.Where(inv => inv.JobId == _jobs[i].JobId).Select(inv => inv.IsPaid).FirstOrDefault().ToString()!,
-
-            //        ClientId = _clients[i].ClientId,
-            //        ClientEmail = _clients[i].Email,
-            //        ClientPhone = _clients[i].PhoneNumber,
-            //        Jobs = _jobs.Where(j => j.JobId == job.JobId).ToList(),
-            //        Invoices = _invoices.Where(invoice => invoice.JobId == _jobs[i].JobId).ToList()
-            //    };
-            //    _dashboardData.Add(dashboardEntry);
-            //}
-
-            _receviedMoney.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                _receviedMoney.AddRange(_clients
-                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
-                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-                    .Join(_invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.Status })
-                    .Where(x => x.Status == "Paid")
-                    .Select(x => x.FinalPrice)
-                    .ToList());
-            }
-            MoneyReceived = _receviedMoney.Sum().ToString("C"); // received
-
-
-            _outstandingdMoney.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                _outstandingdMoney.AddRange(_clients
-                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
-                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-                    .Join(_invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.Status, inv.IssueDate, inv.DueDate })
-                    .Where(x => x.Status == "Sent" && x.IssueDate < DateTime.Now.Date && x.DueDate > DateTime.Now.Date)
-                    .Select(x => x.FinalPrice)
-                    .ToList());
-            }
-            MoneyToReceive = _outstandingdMoney.Sum().ToString("C"); // outstanding
-
-            _overdueMoney.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                _overdueMoney.AddRange(_clients
-                    .Where(client => client.ClientId == _dashboardData[i].ClientId)
-                    .Join(_jobs, client => client.ClientId, job => job.ClientId, (client, job) => job)
-                    .Join(_invoices, job => job.JobId, invoice => invoice.JobId, (job, invoice) => new { job.FinalPrice, invoice.Status, invoice.DueDate })
-                    .Where(x => x.Status == "Overdue" && x.DueDate > DateTime.Now.Date)
-                    .Select(x => x.FinalPrice)
-                    .ToList());
-            }
-            MoneyOverdue = _overdueMoney.Sum().ToString("C"); // overdue
-
-            _priceMoney.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                _priceMoney.AddRange(_jobs
-                    .Where(j => j.ClientId == _dashboardData[i].ClientId)
-                    .Select(x => x.FinalPrice)
-                    .ToList());
-            }
-            MoneyPrice = _priceMoney.Sum().ToString("C"); // gross
-
-            _newJobs.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                _newJobs.AddRange(_clients
-                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
-                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-                    .Where(j => j.Status == "New")
-                    .Select(j => j.ClientId)
-                    .ToList());
-            }
-
-            NewJobsCount = _newJobs.Count().ToString(); // new jobs count
-
-            _inProgressJobs.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                _inProgressJobs.AddRange(_clients
-                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
-                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-                    .Where(j => j.Status == "InProgress")
-                    .Select(j => j.ClientId)
-                    .ToList());
-            }
-
-            InProgressJobsCount = _inProgressJobs.Count().ToString(); // in progress jobs count
-
-            _completedJobs.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                _completedJobs.AddRange(_clients
-                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
-                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-                    .Where(j => j.Status == "Completed")
-                    .Select(j => j.ClientId)
-                    .ToList());
-            }
-
-            CompletedJobsCount = _completedJobs.Count().ToString(); // completed jobs count
-
-
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                _invoicedJobs.AddRange(_clients
-                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
-                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-                    .Where(j => j.Status == "Invoiced")
-                    .Select(j => j.ClientId)
-                    .ToList());
-            }
-
-            InvoicedJobsCount = _invoicedJobs.Count().ToString(); // invoiced jobs count
-
-            return Task.CompletedTask;
-        }
-        #endregion
-
-        public async Task EditClient()
-        {
-            _EditClientViewModel = new EditClientViewModel();
-            await _windowManager.ShowWindowAsync(_EditClientViewModel, null, CustomWindow.SettingsForDialog(800, 700));
-        }
-
-
-        public Task UpdateJobStatus(DashboardModel row)
-        {
-            // update DB here
-            return Task.CompletedTask;
-        }
-
-
+        #region Public View Functions
         public async Task OpenJobDetails(DashboardModel selectedJob)
         {
             // if add menu open do nothing
@@ -357,10 +146,6 @@ namespace Traker.ViewModels
                 return;
             }
 
-            // Debug.WriteLine("OPEN MENU" + " | " + SelectedDataRow.ClientName + " - " + selectedJob.ClientName);
-            // Debug.WriteLine(selectedJob.ClientName);
-            //Debug.WriteLine(selectedJob.ClientName + " " + selectedJob.Jobs.Select(j => j.Description).FirstOrDefault()!.ToString());
-            
             if (_jobDetailsViewModel != null)
             {
                 await _jobDetailsViewModel.TryCloseAsync(false);
@@ -388,24 +173,22 @@ namespace Traker.ViewModels
             }
         }
 
-        public async Task OnMouseDownEvent(Grid gridSource)
+        public async Task EditClient()
         {
-            if (_jobDetailsViewModel != null)
-            {
-                await _jobDetailsViewModel.TryCloseAsync(false);
-                _jobDetailsViewModel = null;
-            }
+            _EditClientViewModel = new EditClientViewModel(_events);
+            _EditClientViewModel.SelectedRow = SelectedDataRow; // pass selected row to EditClientViewModel
+            await _windowManager.ShowWindowAsync(_EditClientViewModel, null, CustomWindow.SettingsForDialog(800, 700));
         }
 
         public async Task AddClient()
         {
             Debug.WriteLine("ADDING client..");
-            
+
             if (State.IsWindowOpen == false)
             {
                 // if is not free then report it with a message box
                 // move this to a private function later
-                if (_jobDetailsViewModel != null )
+                if (_jobDetailsViewModel != null)
                 {
                     await _jobDetailsViewModel.TryCloseAsync(false);
                     _jobDetailsViewModel = null;
@@ -430,7 +213,7 @@ namespace Traker.ViewModels
 
         public async Task AddJob()
         {
-            Debug.WriteLine("ADDING job..");
+            //Debug.WriteLine("ADDING job..");
 
             if (State.IsWindowOpen == false)
             {
@@ -459,21 +242,164 @@ namespace Traker.ViewModels
             }
         }
 
+        public async Task OnMouseDownEvent(Grid gridSource)
+        {
+            if (_jobDetailsViewModel != null)
+            {
+                await _jobDetailsViewModel.TryCloseAsync(false);
+                _jobDetailsViewModel = null;
+            }
+        }
+        #endregion
 
-        //private dynamic SettingsForDialog(int height, int width)
-        //{
-        //    dynamic settings = new ExpandoObject();
-        //    settings.Title = string.Empty;
-        //    settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-        //    settings.WindowStyle = WindowStyle.None;
-        //    settings.AllowsTransparency = true;
-        //    settings.Background = Brushes.Transparent;
-        //    settings.ResizeMode = ResizeMode.CanResize;
-        //    settings.MinHeight = height;
-        //    settings.MinWidth = width;
-        //    return settings;
-        //}
+        #region Private Functions
+        private Task SetupDashboardData()
+        {
+            // row data
+            _dashboardData.Clear();
+            int index = 0;
+            foreach (var job in _jobs)
+            {
+                var client = _clients.First(c => c.ClientId == job.ClientId);
 
+                DashboardModel dashboardEntry = new DashboardModel
+                {
+                    ClientId = client.ClientId,
+                    ClientType = client.Type,
+                    ClientName = client.FullName,
+                    ClientEmail = client.Email,
+                    ClientPhone = client.PhoneNumber,
+                    CompanyName = client.CompanyName,
+                    BillingAddress = client.BillingAddress,
+                    City = client.City,
+                    Postcode = client.Postcode,
+                    Country = client.Country,
+                    CreatedDate = client.CreatedDate,
+                    IsActive = client.IsActive,
+
+                    JobId = job.JobId,
+                    JobDescription = job.Description,
+                    Price = job.FinalPrice.ToString("C"),
+                    JobStatus = job.Status.ToString(),
+                    DueDate = job.DueDate,
+
+                    HasInvoice = _invoices.Any(i => i.JobId == job.JobId && i.IsDeleted == false),
+                    InvoiceStatus = _invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? "Not invoiced"
+                };
+                _dashboardData.Add(dashboardEntry);
+                index++;
+            }
+
+            // received money
+            _receviedMoney.Clear();
+            for (int i = 0; i < _dashboardData.Count; i++)
+            {
+                _receviedMoney.AddRange(_clients
+                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
+                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
+                    .Join(_invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.Status })
+                    .Where(x => x.Status == "Paid")
+                    .Select(x => x.FinalPrice)
+                    .ToList());
+            }
+            MoneyReceived = _receviedMoney.Sum().ToString("C"); // received
+
+            // outstanding money
+            _outstandingdMoney.Clear();
+            for (int i = 0; i < _dashboardData.Count; i++)
+            {
+                _outstandingdMoney.AddRange(_clients
+                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
+                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
+                    .Join(_invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.Status, inv.IssueDate, inv.DueDate })
+                    .Where(x => x.Status == "Sent" && x.IssueDate < DateTime.Now.Date && x.DueDate > DateTime.Now.Date)
+                    .Select(x => x.FinalPrice)
+                    .ToList());
+            }
+            MoneyToReceive = _outstandingdMoney.Sum().ToString("C"); // outstanding
+
+            // overdue money
+            _overdueMoney.Clear();
+            for (int i = 0; i < _dashboardData.Count; i++)
+            {
+                _overdueMoney.AddRange(_clients
+                    .Where(client => client.ClientId == _dashboardData[i].ClientId)
+                    .Join(_jobs, client => client.ClientId, job => job.ClientId, (client, job) => job)
+                    .Join(_invoices, job => job.JobId, invoice => invoice.JobId, (job, invoice) => new { job.FinalPrice, invoice.Status, invoice.DueDate })
+                    .Where(x => x.Status == "Overdue" && x.DueDate > DateTime.Now.Date)
+                    .Select(x => x.FinalPrice)
+                    .ToList());
+            }
+            MoneyOverdue = _overdueMoney.Sum().ToString("C"); // overdue
+
+            // price money
+            _priceMoney.Clear();
+            for (int i = 0; i < _dashboardData.Count; i++)
+            {
+                _priceMoney.AddRange(_jobs
+                    .Where(j => j.ClientId == _dashboardData[i].ClientId)
+                    .Select(x => x.FinalPrice)
+                    .ToList());
+            }
+            MoneyPrice = _priceMoney.Sum().ToString("C"); // gross
+
+            // new jobs
+            _newJobs.Clear();
+            for (int i = 0; i < _dashboardData.Count; i++)
+            {
+                _newJobs.AddRange(_clients
+                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
+                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
+                    .Where(j => j.Status == "New")
+                    .Select(j => j.ClientId)
+                    .ToList());
+            }
+            NewJobsCount = _newJobs.Count().ToString(); // new jobs count
+
+            // in progress jobs
+            _inProgressJobs.Clear();
+            for (int i = 0; i < _dashboardData.Count; i++)
+            {
+                _inProgressJobs.AddRange(_clients
+                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
+                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
+                    .Where(j => j.Status == "InProgress")
+                    .Select(j => j.ClientId)
+                    .ToList());
+            }
+            InProgressJobsCount = _inProgressJobs.Count().ToString(); // in progress jobs count
+
+            // completed jobs
+            _completedJobs.Clear();
+            for (int i = 0; i < _dashboardData.Count; i++)
+            {
+                _completedJobs.AddRange(_clients
+                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
+                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
+                    .Where(j => j.Status == "Completed")
+                    .Select(j => j.ClientId)
+                    .ToList());
+            }
+            CompletedJobsCount = _completedJobs.Count().ToString(); // completed jobs count
+
+            // invoiced jobs
+            _invoicedJobs.Clear();
+            for (int i = 0; i < _dashboardData.Count; i++)
+            {
+                _invoicedJobs.AddRange(_clients
+                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
+                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
+                    .Where(j => j.Status == "Invoiced")
+                    .Select(j => j.ClientId)
+                    .ToList());
+            }
+            InvoicedJobsCount = _invoicedJobs.Count().ToString(); // invoiced jobs count
+
+            return Task.CompletedTask;
+        }
+        #endregion
+
+        #region Event Handlers
         public Task HandleAsync(RefreshDatabase message, CancellationToken cancellationToken)
         {
             _clients.Clear();
@@ -488,105 +414,18 @@ namespace Traker.ViewModels
 
             return Task.CompletedTask;
         }
+        #endregion
 
-        //public async Task HandleAsync(CloseWindow message, CancellationToken cancellationToken)
-        //{
-        //    // add if else checks and try/catch
-        //    if (message != null)
-        //    {
-        //        if (message.WindowName == "AddRowEntry")
-        //        {
-        //            if (_addRowEntryViewModel != null)
-        //            {
-        //                try
-        //                {
-        //                    await _addRowEntryViewModel.TryCloseAsync();
-        //                    _addRowEntryViewModel = null;
-        //                }
-        //                catch (Exception ex)
-        //                {
-        //                    var real = ex.InnerException ?? ex;
-        //                    Debug.WriteLine(real.Message);
-        //                    Debug.WriteLine(real.StackTrace);
-        //                }
-
-        //            }
-        //        }
-        //    }
-        //}
+        // TO CHECK
+        public Task UpdateJobStatus(DashboardModel row)
+        {
+            // update DB here
+            return Task.CompletedTask;
+        }
 
 
 
-        #region Public View Variables
-        //public ObservableCollection<string> ClientNames
-        //{
-        //    get { return _clientNames; }
-        //    set
-        //    {
-        //        _clientNames = value;
-        //        NotifyOfPropertyChange(() => ClientNames);
-        //    }
-        //}
-
-        //public ObservableCollection<string> ClientEmails
-        //{
-        //    get { return _clientEmails; }
-        //    set
-        //    {
-        //        _clientEmails = value;
-        //        NotifyOfPropertyChange(() => ClientEmails);
-        //    }
-        //}
-
-        //public ObservableCollection<string> ClientPhones
-        //{
-        //    get { return _clientPhones; }
-        //    set
-        //    {
-        //        _clientPhones = value;
-        //        NotifyOfPropertyChange(() => ClientPhones);
-        //    }
-        //}
-        //public ObservableCollection<string> JobDescriptions
-        //{
-        //    get { return _jobDescripions; }
-        //    set
-        //    {
-        //        _jobDescripions = value;
-        //        NotifyOfPropertyChange(() => JobDescriptions);
-        //    }
-        //}
-
-        //public ObservableCollection<string> JobStatus
-        //{
-        //    get { return _jobStatus; }
-        //    set
-        //    {
-        //        _jobStatus = value;
-        //        NotifyOfPropertyChange(() => JobStatus);
-        //    }
-        //}
-
-        //public ObservableCollection<string> JobPrice
-        //{
-        //    get { return _jobPrice; }
-        //    set
-        //    {
-        //        _jobPrice = value;
-        //        NotifyOfPropertyChange(() => JobPrice);
-        //    }
-        //}
-
-        //public ObservableCollection<string> Paid
-        //{
-        //    get { return _paid; }
-        //    set
-        //    {
-        //        _paid = value;
-        //        NotifyOfPropertyChange(() => Paid);
-        //    }
-        //}
-
+        #region Public View Variables     
         public String MoneyReceived
         {
             get { return _moneyReceived; }

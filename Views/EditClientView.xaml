@@ -38,7 +38,7 @@
             <Grid Grid.Row="1" Grid.Column="0">
                 <StackPanel Orientation="Vertical" Margin="10">
                     <TextBlock Margin="5,0,0,0" Text="Client Type" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                    <TextBox Text="{Binding ClientType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                 </StackPanel>
             </Grid>
 
@@ -54,7 +54,7 @@
             <Grid Grid.Row="2" Grid.Column="0">
                 <StackPanel Orientation="Vertical" Margin="10">
                     <TextBlock Margin="5,0,0,0" Text="Company Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                    <TextBox Text="{Binding CompanyName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                 </StackPanel>
             </Grid>
 
@@ -62,7 +62,7 @@
             <Grid Grid.Row="2" Grid.Column="1">
                 <StackPanel Orientation="Vertical" Margin="10">
                     <TextBlock Margin="5,0,0,0" Text="Client Email" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                    <TextBox Text="{Binding ClientEmail, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                 </StackPanel>
             </Grid>
 
@@ -70,7 +70,7 @@
             <Grid Grid.Row="3" Grid.Column="0">
                 <StackPanel Orientation="Vertical" Margin="10">
                     <TextBlock Margin="5,0,0,0" Text="Phone Number" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                    <TextBox Text="{Binding PhoneNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                 </StackPanel>
             </Grid>
 
@@ -78,7 +78,7 @@
             <Grid Grid.Row="3" Grid.Column="1">
                 <StackPanel Orientation="Vertical" Margin="10">
                     <TextBlock Margin="5,0,0,0" Text="Billing Address" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                    <TextBox Text="{Binding BillingAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                 </StackPanel>
             </Grid>
 
@@ -86,7 +86,7 @@
             <Grid Grid.Row="4" Grid.Column="0">
                 <StackPanel Orientation="Vertical" Margin="10">
                     <TextBlock Margin="5,0,0,0" Text="City" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                    <TextBox Text="{Binding City, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                 </StackPanel>
             </Grid>
 
@@ -94,7 +94,7 @@
             <Grid Grid.Row="4" Grid.Column="1">
                 <StackPanel Orientation="Vertical" Margin="10">
                     <TextBlock Margin="5,0,0,0" Text="Post Code" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                    <TextBox Text="{Binding Postcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                 </StackPanel>
             </Grid>
 
@@ -102,7 +102,7 @@
             <Grid Grid.Row="5" Grid.Column="0">
                 <StackPanel Orientation="Vertical" Margin="10">
                     <TextBlock Margin="5,0,0,0" Text="Country" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                    <TextBox Text="{Binding Country, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                 </StackPanel>
             </Grid>
 
@@ -110,13 +110,13 @@
             <Grid Grid.Row="5" Grid.Column="1">
                 <StackPanel Orientation="Vertical" Margin="10">
                     <TextBlock Margin="5,0,0,0" Text="Created Date" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                    <TextBox Text="{Binding CreatedDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                 </StackPanel>
             </Grid>
 
             <!-- buttons -->
             <Grid Grid.Row="6" Grid.ColumnSpan="2">
-                <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddRow()]" Background="{StaticResource ButtonBackgroundBrush}" CornerRadius="25" Height="45" Margin="80,0,80,0" BorderThickness="2" BorderBrush="{StaticResource ButtonDefaultBorderBrush}">
+                <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmEditClient()]" Background="{StaticResource ButtonBackgroundBrush}" CornerRadius="25" Height="45" Margin="80,0,80,0" BorderThickness="2" BorderBrush="{StaticResource ButtonDefaultBorderBrush}">
                     <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Confirm" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="14" />
                 </Border>
             </Grid>

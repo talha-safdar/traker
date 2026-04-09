@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
+using Microsoft.VisualBasic;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -745,6 +746,62 @@ namespace Traker.Database
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 Logger.LogActivity(Logger.ERROR, $"Database: CreateInvoice() FAIL - JobId: {jobId}");
+            }
+            return Task.CompletedTask;
+        }
+
+        public static Task EditClient(int clientId, string type, string fullName, string email, string companyName, string phoneNumber, string billingAddress, string city, string postcode, string country, DateTime createdDate, bool isActive)
+        {
+            // in the future replace the long ass arguments with a variable list :)
+
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+
+                using var cmd = conn.CreateCommand();
+
+                cmd.CommandText = @"
+                    UPDATE Clients
+                    SET Type = @type,
+                        FullName = @fullname,
+                        Email = @email,
+                        CompanyName = @companyName,
+                        PhoneNumber = @phoneNumber,
+                        BillingAddress = @billingAddress,
+                        City = @city,
+                        Postcode = @postcode,
+                        Country = @country,
+                        CreatedDate = @createdDate,
+                        IsActive = @isActive
+                    WHERE ClientId = @clientId;
+                ";
+
+                cmd.Parameters.AddWithValue("@clientId", clientId);
+                cmd.Parameters.AddWithValue("@type", type);
+                cmd.Parameters.AddWithValue("@fullname", fullName);
+                cmd.Parameters.AddWithValue("@email", email);
+                cmd.Parameters.AddWithValue("@companyName", companyName);
+                cmd.Parameters.AddWithValue("@phoneNumber", phoneNumber);
+                cmd.Parameters.AddWithValue("@billingAddress", billingAddress);
+                cmd.Parameters.AddWithValue("@city", city);
+                cmd.Parameters.AddWithValue("@postcode", postcode);
+                cmd.Parameters.AddWithValue("@country", country);
+                cmd.Parameters.AddWithValue("@createdDate", createdDate);
+                cmd.Parameters.AddWithValue("@isActive", isActive);
+
+                cmd.ExecuteNonQuery();
+
+                Logger.LogActivity(Logger.INFO, $"Database: AddNewJobToClient() OK - ClientId: {clientId}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while editing the client. Please try again.\n\n{ex.Message}",
+                    "Edit Client",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: EditClient() FAIL - ClientId: {clientId}");
             }
             return Task.CompletedTask;
         }

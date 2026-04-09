@@ -19,7 +19,7 @@ namespace Traker.Models
     public class DashboardModel : PropertyChangedBase
     {
         #region Private View Variables
-        // editable
+        // editable and shown on the data grid
         private string _clientName = string.Empty;
         private string _jobDescription = string.Empty;
         private string _price = string.Empty;
@@ -34,10 +34,18 @@ namespace Traker.Models
         // to show or not to show dropdown menu box for invoice status
         public bool HasInvoice { get; set; } = false;
 
-        // useful for data searching
+        // useful for data searching and storing extra data about the client
+        public int ClientId { get; set; } = 0;
+        public string ClientType { get; set; } = string.Empty;
+        public string CompanyName { get; set; } = string.Empty;
         public string ClientEmail { get; set; } = string.Empty;
         public string ClientPhone { get; set; } = string.Empty;
-        public int ClientId { get; set; } = 0;
+        public string BillingAddress { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
+        public string Postcode { get; set; } = string.Empty;
+        public string Country { get; set; } = string.Empty;
+        public DateTime CreatedDate { get; set; } = new DateTime();
+        public bool IsActive { get; set; } = true;
         public int JobId { get; set; } = 0;
         public List<JobsModel> Jobs { get; set; } = new List<JobsModel>(); // list of jobs of the client
         public List<InvoicesModel> Invoices { get; set; } = new List<InvoicesModel>(); // list of invoices of the client
