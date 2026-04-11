@@ -177,7 +177,7 @@ namespace Traker.ViewModels
         {
             _EditClientViewModel = new EditClientViewModel(_events);
             _EditClientViewModel.SelectedRow = SelectedDataRow; // pass selected row to EditClientViewModel
-            await _windowManager.ShowWindowAsync(_EditClientViewModel, null, CustomWindow.SettingsForDialog(800, 700));
+            await _windowManager.ShowWindowAsync(_EditClientViewModel, null, CustomWindow.SettingsForDialog(800, 1000));
         }
 
         public async Task AddClient()

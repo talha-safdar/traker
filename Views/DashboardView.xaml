@@ -55,11 +55,12 @@
                          x:Name="MainGrid"
                                 Margin="10"
                               RowHeight="40"
-                              IsReadOnly="False"
+                              IsReadOnly="True"
                               VerticalAlignment="Top"
                               HorizontalAlignment="Center"
                               SelectionUnit="FullRow"
                               BeginningEdit="DataGrid_BeginningEdit"
+                        cal:Message.Attach="[Event MouseDoubleClick] = [Action EditClient()]"
 
                                 ItemsSource="{Binding DashboardData}" 
                                 SelectedItem="{Binding SelectedDataRow}" 

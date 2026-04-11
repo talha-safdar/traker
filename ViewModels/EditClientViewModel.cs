@@ -64,18 +64,7 @@ namespace Traker.ViewModels
         #region Public View Functions
         public void ConfirmEditClient()
         {
-            var createdDate = DateTime.MinValue;
-
-            if (CreatedDate != String.Empty)
-            {
-                createdDate = DateTime.ParseExact(
-                CreatedDate,
-                "dd/MM/yyyy",
-                CultureInfo.InvariantCulture
-                );
-            }
-
-            Database.EditClient(SelectedRow.ClientId, ClientType, ClientName, ClientEmail, CompanyName, PhoneNumber, BillingAddress, City, Postcode, Country, createdDate, IsActive);
+            Database.EditClient(SelectedRow.ClientId, ClientType, ClientName, ClientEmail, CompanyName, PhoneNumber, BillingAddress, City, Postcode, Country, IsActive);
 
             _events.PublishOnUIThreadAsync(new RefreshDatabase());
         }

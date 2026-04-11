@@ -750,7 +750,7 @@ namespace Traker.Database
             return Task.CompletedTask;
         }
 
-        public static Task EditClient(int clientId, string type, string fullName, string email, string companyName, string phoneNumber, string billingAddress, string city, string postcode, string country, DateTime createdDate, bool isActive)
+        public static Task EditClient(int clientId, string type, string fullName, string email, string companyName, string phoneNumber, string billingAddress, string city, string postcode, string country, bool isActive)
         {
             // in the future replace the long ass arguments with a variable list :)
 
@@ -772,7 +772,6 @@ namespace Traker.Database
                         City = @city,
                         Postcode = @postcode,
                         Country = @country,
-                        CreatedDate = @createdDate,
                         IsActive = @isActive
                     WHERE ClientId = @clientId;
                 ";
@@ -787,7 +786,6 @@ namespace Traker.Database
                 cmd.Parameters.AddWithValue("@city", city);
                 cmd.Parameters.AddWithValue("@postcode", postcode);
                 cmd.Parameters.AddWithValue("@country", country);
-                cmd.Parameters.AddWithValue("@createdDate", createdDate);
                 cmd.Parameters.AddWithValue("@isActive", isActive);
 
                 cmd.ExecuteNonQuery();
