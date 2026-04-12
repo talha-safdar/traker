@@ -21,6 +21,7 @@ namespace Traker.Models
         #region Private View Variables
         // editable and shown on the data grid
         private string _clientName = string.Empty;
+        private string _jobTitle = string.Empty;
         private string _jobDescription = string.Empty;
         private string _price = string.Empty;
         private string _jobStatus = string.Empty;
@@ -60,6 +61,17 @@ namespace Traker.Models
                 _clientName = value;
                 // update database here
                 NotifyOfPropertyChange(() => ClientName);
+            }
+        }
+
+        public string JobTitle
+        {
+            get { return _jobTitle; }
+            set
+            {
+                _jobTitle = value;
+                // update database here
+                NotifyOfPropertyChange(() => JobTitle);
             }
         }
 

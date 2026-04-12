@@ -138,6 +138,15 @@ namespace Traker.ViewModels
         #endregion
 
         #region Public View Functions
+        public void SelectJob(DashboardModel selectedJob)
+        {
+            if (selectedJob == null)
+            {
+                // error display
+                return;
+            }
+        }
+
         public async Task OpenJobDetails(DashboardModel selectedJob)
         {
             // if add menu open do nothing
@@ -278,6 +287,7 @@ namespace Traker.ViewModels
                     IsActive = client.IsActive,
 
                     JobId = job.JobId,
+                    JobTitle = job.Title,
                     JobDescription = job.Description,
                     Price = job.FinalPrice.ToString("C"),
                     JobStatus = job.Status.ToString(),

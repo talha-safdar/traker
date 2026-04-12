@@ -17,6 +17,7 @@ namespace Traker.ViewModels
 
         #region Private View Variables
         private string _clientName;
+        private string _jobTitle;
         private string _jobDescription;
         private string _price;
         private string _dueDate;
@@ -31,6 +32,7 @@ namespace Traker.ViewModels
             _events = events;
 
             _clientName = String.Empty;
+            _jobTitle = String.Empty;
             _jobDescription = String.Empty;
             _price = String.Empty;
             _dueDate = String.Empty;
@@ -94,7 +96,7 @@ namespace Traker.ViewModels
                 );
             }
 
-            Database.AddRow(ClientName, JobDescription, amount, dueDate);
+            Database.AddRow(ClientName, JobTitle, JobDescription, amount, dueDate);
 
             _events.PublishOnUIThreadAsync(new RefreshDatabase());
 
@@ -110,6 +112,16 @@ namespace Traker.ViewModels
             {
                 _clientName = value;
                 NotifyOfPropertyChange(() => ClientName);
+            }
+        }
+
+        public string JobTitle
+        {
+            get { return _jobTitle; }
+            set
+            {
+                _jobTitle = value;
+                NotifyOfPropertyChange(() => JobTitle);
             }
         }
 

@@ -75,7 +75,7 @@
 
                         <!-- add client -->
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,20,0">
-                            <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditClient()]" Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="50" Width="50">
+                            <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="50" Width="50">
                                 <svg:SvgViewbox                         
                                     RenderOptions.BitmapScalingMode="HighQuality"
                                     SnapsToDevicePixels="True"
@@ -85,7 +85,7 @@
 
                         <!-- add job -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0">
-                            <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditClient()]" Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="50" Width="50">
+                            <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddJob()]" Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="50" Width="50">
                                 <svg:SvgViewbox                         
                                     RenderOptions.BitmapScalingMode="HighQuality"
                                     SnapsToDevicePixels="True"
@@ -212,25 +212,107 @@
         
         <!-- main panel -->
         <Grid Grid.Column="1" Margin="10,20,20,20">
-            <!--<Border Background="{StaticResource SidePanelBackgroundBrush}" CornerRadius="20">
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="5,20,5,10">
-                    <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditClient()]" Background="Transparent"  HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="40" Width="40">
-                        <svg:SvgViewbox                         
-                        RenderOptions.BitmapScalingMode="HighQuality"
-                        SnapsToDevicePixels="True"
-                        Source="/Resources/Media/Images/Icons/Lucide/user-pen.svg" Width="35" Height="35"/>
-                    </Border>
-                </StackPanel>
-            </Border>-->
+            <Border Background="#121212" CornerRadius="20">
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="20">
+                    <ItemsControl ItemsSource="{Binding DashboardData}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="#242424" 
+                                        BorderThickness="1"
+                                        BorderBrush="#333333"
+                                        Height="100"
+                                    CornerRadius="10" 
+                                    Margin="0,0,0,10" 
+                                    Padding="10"
+                                    cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SelectJob($dataContext)]"
+                                    Cursor="Hand">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="0.3*" /> <!-- type -->
+                                            <ColumnDefinition Width="*" /> <!-- full name / job title -->
+                                            <ColumnDefinition Width="0.2*" /> <!-- spacer -->
+                                            <ColumnDefinition Width="*" /> <!-- job status / due date -->
+                                            <ColumnDefinition Width="0.2*" /> <!-- spacer -->
+                                            <ColumnDefinition Width="*" /> <!-- job price -->
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- type -->
+                                        <Grid Grid.Column="0" Background="Green">
+                                            
+                                        </Grid>
+                                        
+                                        <!-- full name / job title -->
+                                        <Grid Grid.Column="1">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*" /> <!-- full name -->
+                                                <RowDefinition Height="0.5*" /> <!-- spacer -->
+                                                <RowDefinition Height="*" /> <!-- job title -->
+                                            </Grid.RowDefinitions>
+                                            
+                                            <!-- full name -->
+                                            <Grid Grid.Row="0">
+                                                <TextBlock Margin="5,0,0,0" Text="{Binding ClientName}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Black" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32" />
+                                            </Grid>
+                                            
+                                            <!-- job title -->
+                                            <Grid Grid.Row="2">
+                                                <TextBlock Margin="5,0,0,0" Text="{Binding JobTitle}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />
+                                            </Grid>
+                                        </Grid>
+                                        
+                                        <!-- spacer-->
+                                        <Grid Grid.Column="2">
+                                            <Border Background="#555555" Width="2" Margin="0,10" />
+                                        </Grid>
+
+                                        <!-- job status / due date -->
+                                        <Grid Grid.Column="3" HorizontalAlignment="Center">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*" /> <!-- job status -->
+                                                <RowDefinition Height="0.5*" /> <!-- spacer -->
+                                                <RowDefinition Height="*" /> <!-- due date -->
+                                            </Grid.RowDefinitions>
+
+                                            <!-- job status -->
+                                            <Grid Grid.Row="0">
+                                                <TextBlock Margin="5,0,0,0" Text="{Binding JobStatus}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Black" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32" />
+                                            </Grid>
+
+                                            <!-- due date -->
+                                            <Grid Grid.Row="2">
+                                                <TextBlock Margin="5,0,0,0" Text="{Binding DueDate}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />
+                                            </Grid>
+                                        </Grid>
+
+                                        <!-- spacer -->
+                                        <Grid Grid.Column="4">
+                                            <Border Background="#555555" Width="2" Margin="0,10" />
+                                        </Grid>
+
+                                        <!-- job price -->
+                                        <Grid Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Margin="0,0,0,0" Text="{Binding Price}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Black" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32" />
+                                        </Grid>
+
+                                        <!--<StackPanel Grid.Column="0">
+                                            <TextBlock Text="{Binding JobTitle}" FontWeight="Bold" Foreground="White"/>
+                                            <TextBlock Text="{Binding DueDate}" FontSize="10" Foreground="Gray"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                            <Button Content="📁" cal:Message.Attach="OpenFolder($dataContext)" />
+                                            <Button Content="Edit" cal:Message.Attach="EditJob($dataContext)" />
+                                        </StackPanel>-->
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
 
 
-
-            
-
-
-
-            <Border Background="{StaticResource TableHeaderBackgroundBrush}" CornerRadius="20">
-                <!--SelectionMode= extended // multi row select-->
+                <!--SelectionMode= extended // multi row select--><!--
                 <DataGrid 
          x:Name="MainGrid"
                 Margin="10"
@@ -288,7 +370,7 @@
                                 </Style>
                             </DataGridTextColumn.EditingElementStyle>
                         </DataGridTextColumn>
-                        <!--<DataGridTextColumn Header="Price" Binding="{Binding Price, StringFormat=£{0:N2}}" Width="0.5*" />-->
+                        --><!--<DataGridTextColumn Header="Price" Binding="{Binding Price, StringFormat=£{0:N2}}" Width="0.5*" />--><!--
                         <DataGridTextColumn Header="Price" Binding="{Binding Price}" Width="300" />
                         <DataGridTextColumn Header="Due Date" Binding="{Binding DueDate, StringFormat={}{0:dd/MM/yyyy}}" Width="200">
                             <DataGridTextColumn.ElementStyle>
@@ -300,9 +382,9 @@
                         </DataGridTextColumn>
 
 
-                        <!-- job status -->
+                        --><!-- job status --><!--
                         <DataGridComboBoxColumn Header="Job Status" SelectedItemBinding="{Binding JobStatus, Mode=TwoWay}" Width="200">
-                            <!-- Display mode -->
+                            --><!-- Display mode --><!--
                             <DataGridComboBoxColumn.ElementStyle>
                                 <Style TargetType="ComboBox">
                                     <Setter Property="ItemsSource" Value="{Binding DataContext.JobStatusEdit, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
@@ -311,7 +393,7 @@
                                 </Style>
                             </DataGridComboBoxColumn.ElementStyle>
 
-                            <!-- Edit mode -->
+                            --><!-- Edit mode --><!--
                             <DataGridComboBoxColumn.EditingElementStyle>
                                 <Style TargetType="ComboBox">
                                     <Setter Property="ItemsSource" Value="{Binding DataContext.JobStatusEdit, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
@@ -321,14 +403,14 @@
 
 
                         <DataGridTemplateColumn  Header="Invoice Status" Width="200">
-                            <!-- Display mode -->
+                            --><!-- Display mode --><!--
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding InvoiceStatus}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
 
-                            <!-- Edit mode -->
+                            --><!-- Edit mode --><!--
                             <DataGridTemplateColumn.CellEditingTemplate>
                                 <DataTemplate>
                                     <ComboBox ItemsSource="{Binding DataContext.InvoiceStatusEdit,
@@ -339,7 +421,7 @@
                             </DataGridTemplateColumn.CellEditingTemplate>
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
-                </DataGrid>
+                </DataGrid>-->
             </Border>
 
 

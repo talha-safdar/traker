@@ -356,7 +356,7 @@ namespace Traker.Database
         /// <summary>
         /// Add a new row to the Clients and Jobs tables in the database. This is done by opening a connection to the database, starting a transaction, and then executing two SQL commands: one to insert a new row into the Clients table and another to insert a new row into the Jobs table with a foreign key reference to the newly inserted client. If any errors occur during this process, an error message is displayed to the user and the transaction is rolled back. If the rows are added successfully, a log entry is made indicating that the operation was successful along with the new client and job IDs.
         /// </summary>
-        public static Task AddRow(string clientName, string jobDescription, decimal finalPrice, DateTime dueDate)
+        public static Task AddRow(string clientName, string jobTitle, string jobDescription, decimal finalPrice, DateTime dueDate)
         {
             try
             {
@@ -407,14 +407,15 @@ namespace Traker.Database
                     jobsCmd.CommandText = @"
 
                     INSERT INTO Jobs
-                    (ClientId, Description, Status, FinalPrice, CreatedDate, DueDate)
+                    (ClientId, Title, Description, Status, FinalPrice, CreatedDate, DueDate)
 
                     VALUES
-                    (@clientId, @description, @status, @finalPrice, @createdDate, @dueDate);
+                    (@clientId, @title, @description, @status, @finalPrice, @createdDate, @dueDate);
 
                     ";
 
                     jobsCmd.Parameters.AddWithValue("@clientId", clientId);
+                    jobsCmd.Parameters.AddWithValue("@title", jobTitle);
                     jobsCmd.Parameters.AddWithValue("@description", jobDescription);
                     jobsCmd.Parameters.AddWithValue("@status", "New");
                     jobsCmd.Parameters.AddWithValue("@finalPrice", finalPrice);
