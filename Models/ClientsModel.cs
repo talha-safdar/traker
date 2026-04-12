@@ -18,7 +18,7 @@
         public string City { get; set; } = string.Empty;
         public string Postcode { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;
-        public DateTime CreatedDate { get; set; } = new DateTime();
+        public DateOnly CreatedDate { get; set; } = new DateOnly();
         public bool IsActive { get; set; } = false;
     }
 }

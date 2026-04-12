@@ -24,7 +24,7 @@ namespace Traker.Models
         private string _jobDescription = string.Empty;
         private string _price = string.Empty;
         private string _jobStatus = string.Empty;
-        private DateTime _dueDate = new DateTime();
+        private DateOnly _dueDate = new DateOnly();
         private string _invoiceStatus = string.Empty;
 
         /*
@@ -44,7 +44,7 @@ namespace Traker.Models
         public string City { get; set; } = string.Empty;
         public string Postcode { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;
-        public DateTime CreatedDate { get; set; } = new DateTime();
+        public DateOnly CreatedDate { get; set; } = new DateOnly();
         public bool IsActive { get; set; } = true;
         public int JobId { get; set; } = 0;
         public List<JobsModel> Jobs { get; set; } = new List<JobsModel>(); // list of jobs of the client
@@ -96,7 +96,7 @@ namespace Traker.Models
             }
         }
 
-        public DateTime DueDate
+        public DateOnly DueDate
         {
             get { return _dueDate; }
             set

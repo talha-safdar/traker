@@ -312,7 +312,7 @@ namespace Traker.ViewModels
                     .Where(c => c.ClientId == _dashboardData[i].ClientId)
                     .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
                     .Join(_invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.Status, inv.IssueDate, inv.DueDate })
-                    .Where(x => x.Status == "Sent" && x.IssueDate < DateTime.Now.Date && x.DueDate > DateTime.Now.Date)
+                    .Where(x => x.Status == "Sent" && x.IssueDate < DateOnly.FromDateTime(DateTime.Now) && x.DueDate > DateOnly.FromDateTime(DateTime.Now))
                     .Select(x => x.FinalPrice)
                     .ToList());
             }
@@ -326,7 +326,7 @@ namespace Traker.ViewModels
                     .Where(client => client.ClientId == _dashboardData[i].ClientId)
                     .Join(_jobs, client => client.ClientId, job => job.ClientId, (client, job) => job)
                     .Join(_invoices, job => job.JobId, invoice => invoice.JobId, (job, invoice) => new { job.FinalPrice, invoice.Status, invoice.DueDate })
-                    .Where(x => x.Status == "Overdue" && x.DueDate > DateTime.Now.Date)
+                    .Where(x => x.Status == "Overdue" && x.DueDate < DateOnly.FromDateTime(DateTime.Now))
                     .Select(x => x.FinalPrice)
                     .ToList());
             }

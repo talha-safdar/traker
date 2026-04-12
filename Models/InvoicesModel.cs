@@ -20,8 +20,8 @@ namespace Traker.Models
         public decimal Subtotal { get; set; } = 0.0m;
         public decimal TaxAmount { get; set; } = 0.0m;
         public decimal TotalAmount { get; set; } = 0.0m;
-        public DateTime IssueDate { get; set; } = new DateTime();
-        public DateTime DueDate { get; set; } = new DateTime();
+        public DateOnly IssueDate { get; set; } = new DateOnly();
+        public DateOnly DueDate { get; set; } = new DateOnly();
         public string BillingName { get; set; } = String.Empty;
         public string BillingAddress { get; set; } = String.Empty;
         public string BillingCity { get; set; } = String.Empty;
@@ -29,7 +29,7 @@ namespace Traker.Models
         public string BillingCountry { get; set; } = String.Empty;
         public string Status { get; set; } = String.Empty;
         public bool IsDeleted { get; set; } = false;
-        public DateTime PaidDate { get; set; } = new DateTime();
+        public DateOnly PaidDate { get; set; } = new DateOnly();
         public string PaymentMethod { get; set; } = String.Empty;
         public string Notes { get; set; } = String.Empty;
     }

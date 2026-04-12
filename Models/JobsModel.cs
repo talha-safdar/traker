@@ -22,10 +22,10 @@ namespace Traker.Models
         public string Status { get; set; } = string.Empty;
         public decimal EstimatedPrice { get; set; } = 0.0m;
         public decimal FinalPrice { get; set; } = 0.0m;
-        public DateTime CreatedDate { get; set; } = new DateTime();
-        public DateTime StartDate { get; set; } = new DateTime();
-        public DateTime CompletedDate { get; set; } = new DateTime();
-        public DateTime DueDate { get; set; } = new DateTime();
+        public DateOnly CreatedDate { get; set; } = new DateOnly();
+        public DateOnly StartDate { get; set; } = new DateOnly();
+        public DateOnly CompletedDate { get; set; } = new DateOnly();
+        public DateOnly DueDate { get; set; } = new DateOnly();
         public string FolderPath { get; set; } = string.Empty;
         public string Notes { get; set; } = string.Empty;
         public bool IsArchived { get; set; } = false;

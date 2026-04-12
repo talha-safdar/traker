@@ -39,16 +39,5 @@ namespace Traker.Views
                 }
             }
         }
-
-        //private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        //{
-        //    if (sender is DataGrid grid && grid.SelectedItem != null)
-        //    {
-        //        var item = grid.SelectedItem;
-
-        //        // call your function
-        //        //OpenClient(item);
-        //    }
-        //}
     }
 }

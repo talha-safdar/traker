@@ -136,7 +136,7 @@ namespace Traker.Database
                                         City = City.ToString()!,
                                         Postcode = Postcode.ToString()!,
                                         Country = Country.ToString()!,
-                                        CreatedDate = Convert.ToDateTime(CreatedDate)!,
+                                        CreatedDate = DateOnly.FromDateTime(Convert.ToDateTime(CreatedDate))!,
                                         IsActive = Convert.ToBoolean(IsActive)
                                     });
                                 }
@@ -221,10 +221,10 @@ namespace Traker.Database
                                         Status = Status.ToString()!,
                                         EstimatedPrice = Convert.ToDecimal(EstimatedPrice),
                                         FinalPrice = Convert.ToDecimal(FinalPrice),
-                                        CreatedDate = Convert.ToDateTime(CreatedDate),
-                                        StartDate = Convert.ToDateTime(StartDate),
-                                        CompletedDate = Convert.ToDateTime(CompletedDate),
-                                        DueDate = Convert.ToDateTime(DueDate),
+                                        CreatedDate = DateOnly.FromDateTime(Convert.ToDateTime(CreatedDate)),
+                                        StartDate = DateOnly.FromDateTime(Convert.ToDateTime(StartDate)),
+                                        CompletedDate = DateOnly.FromDateTime(Convert.ToDateTime(CompletedDate)),
+                                        DueDate = DateOnly.FromDateTime(Convert.ToDateTime(DueDate)),
                                         FolderPath = FolderPath.ToString()!,
                                         Notes = Notes.ToString()!,
                                         IsArchived = Convert.ToBoolean(IsArchived),
@@ -318,8 +318,8 @@ namespace Traker.Database
                                         Subtotal = Convert.ToDecimal(Subtotal),
                                         TaxAmount = Convert.ToDecimal(TaxAmount),
                                         TotalAmount = Convert.ToDecimal(TotalAmount),
-                                        IssueDate = Convert.ToDateTime(IssueDate),
-                                        DueDate = Convert.ToDateTime(DueDate),
+                                        IssueDate = DateOnly.FromDateTime(Convert.ToDateTime(IssueDate)),
+                                        DueDate = DateOnly.FromDateTime(Convert.ToDateTime(DueDate)),
                                         Status = Status.ToString()!,
                                         BillingName = BillingName.ToString()!,
                                         BillingAddress = BillingAddress.ToString()!,
@@ -327,7 +327,7 @@ namespace Traker.Database
                                         BillingPostcode = BillingPostcode.ToString()!,
                                         BillingCountry = BillingCountry.ToString()!,
                                         IsDeleted = Convert.ToBoolean(IsDeleted),
-                                        PaidDate = Convert.ToDateTime(PaidDate),
+                                        PaidDate = DateOnly.FromDateTime(Convert.ToDateTime(PaidDate)),
                                         PaymentMethod = PaymentMethod.ToString()!,
                                         Notes = Notes.ToString()!,
                                     });
@@ -389,7 +389,7 @@ namespace Traker.Database
 
                     ";
                     clienstCmd.Parameters.AddWithValue("@clientName", clientName);
-                    clienstCmd.Parameters.AddWithValue("@createdDate", DateTime.Now.Date);
+                    clienstCmd.Parameters.AddWithValue("@createdDate", DateOnly.FromDateTime(DateTime.Now));
                     clienstCmd.ExecuteNonQuery();
                 }
 
