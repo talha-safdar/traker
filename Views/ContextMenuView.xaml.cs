@@ -18,9 +18,9 @@ namespace Traker.Views
     /// <summary>
     /// Interaction logic for JobDetailsView.xaml
     /// </summary>
-    public partial class RowContextMenuView : UserControl
+    public partial class ContextMenuView : UserControl
     {
-        public RowContextMenuView()
+        public ContextMenuView()
         {
             InitializeComponent();
         }

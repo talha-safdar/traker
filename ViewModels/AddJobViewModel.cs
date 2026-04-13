@@ -39,6 +39,7 @@ namespace Traker.ViewModels
         // dont need private as it only displays names with IDs
         private AddJobModel _selectedClient;
         private string _jobDescription;
+        private string _jobTitle;
         private string _price;
         private string _dueDate;
         #endregion
@@ -107,7 +108,7 @@ namespace Traker.ViewModels
                 );
             }
 
-            Database.AddNewJobToClient(SelectedClient.ClientId, JobDescription, amount, dueDate);
+            Database.AddNewJobToClient(SelectedClient.ClientId, JobTitle, JobDescription, amount, dueDate);
 
             _events.PublishOnUIThreadAsync(new RefreshDatabase());
 
@@ -141,6 +142,15 @@ namespace Traker.ViewModels
             }
         }
 
+        public String JobTitle
+        {
+            get { return _jobTitle; }
+            set
+            {
+                _jobTitle = value;
+                NotifyOfPropertyChange(() => JobTitle);
+            }
+        }
         public String JobDescription
         {
             get { return _jobDescription; }

@@ -23,6 +23,7 @@
     <None Remove="Resources\Fonts\RobotoMono.ttf" />
     <None Remove="Resources\Media\Images\Icons\close-button.png" />
     <None Remove="Resources\Media\Images\Icons\Lucide\briefcase-business.svg" />
+    <None Remove="Resources\Media\Images\Icons\Lucide\building.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\pen.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\plus.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\user-pen.svg" />
@@ -62,6 +63,7 @@
     <Resource Include="Resources\Fonts\RobotoMono.ttf" />
     <Resource Include="Resources\Media\Images\Icons\close-button.png" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\briefcase-business.svg" />
+    <Resource Include="Resources\Media\Images\Icons\Lucide\building.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\pen.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\plus.svg">
       <CopyToOutputDirectory></CopyToOutputDirectory>

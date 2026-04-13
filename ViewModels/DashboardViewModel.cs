@@ -12,7 +12,7 @@ namespace Traker.ViewModels
     using Traker.Models;
     using Traker.States;
 
-    public class DashboardViewModel : Screen, IHandle<RefreshDatabase>
+    public class DashboardViewModel : Screen, IHandle<RefreshDatabase>, IHandle<CallFromDashboard>
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
@@ -38,7 +38,7 @@ namespace Traker.ViewModels
         private string _completedJobsCount;
         private string _invoicedJobsCount;
         private ObservableCollection<DashboardModel> _dashboardData; // listo of data shown on the data grid
-        public DashboardModel _selectedDataRow; // selected data row automatically filled on click
+        public DashboardModel _selectedJob; // selected data row automatically filled on click
         #endregion
 
         #region Data Variables
@@ -56,7 +56,7 @@ namespace Traker.ViewModels
         private List<int> _inProgressJobs; // in progress jobs
         private List<int> _completedJobs; // completed jobs
         private List<int> _invoicedJobs; // completed jobs
-        private RowContextMenuViewModel _jobDetailsViewModel;
+        private ContextMenuViewModel _jobDetailsViewModel;
         private AddClientViewModel _addClientViewModel;
         private AddJobViewModel _addJobViewModel;
         private EditClientViewModel _EditClientViewModel;
@@ -91,10 +91,10 @@ namespace Traker.ViewModels
             _jobs = new List<JobsModel>();
             _invoices = new List<InvoicesModel>();
             _dashboardData = new ObservableCollection<DashboardModel>();
-            _selectedDataRow = new DashboardModel();
+            _selectedJob = new DashboardModel();
 
 
-            _jobDetailsViewModel = new RowContextMenuViewModel(_events, _windowManager);
+            _jobDetailsViewModel = new ContextMenuViewModel(_events, _windowManager);
             _addClientViewModel = new AddClientViewModel(_events, State);
             _addJobViewModel = new AddJobViewModel(_events, State);
             _EditClientViewModel = new EditClientViewModel(_events);
@@ -145,9 +145,11 @@ namespace Traker.ViewModels
                 // error display
                 return;
             }
+
+            SelectedJob = selectedJob;
         }
 
-        public async Task OpenJobDetails(DashboardModel selectedJob)
+        public async Task OpenContextMenu(DashboardModel selectedJob)
         {
             // if add menu open do nothing
             if (State.IsWindowOpen == true)
@@ -171,21 +173,21 @@ namespace Traker.ViewModels
              * and the latter must become required hence Id seems perfect.
              * In fact we just swapped to clientId :)
              */
-            if (SelectedDataRow.ClientId == selectedJob.ClientId)
+            if (SelectedJob.ClientId == selectedJob.ClientId)
             {
-                _jobDetailsViewModel = new RowContextMenuViewModel(_events, _windowManager);
+                _jobDetailsViewModel = new ContextMenuViewModel(_events, _windowManager);
                 _jobDetailsViewModel.SelectedRow = selectedJob; // pass row selected
                 _jobDetailsViewModel.Clients = _clients;
                 _jobDetailsViewModel.Jobs = _jobs;
                 _jobDetailsViewModel.Invoices = _invoices;
-                await _windowManager.ShowPopupAsync(_jobDetailsViewModel, null, CustomWindow.SettingsForDialog(200, 200)); // vertical, horizontal
+                await _windowManager.ShowPopupAsync(_jobDetailsViewModel, null, CustomWindow.SettingsForDialog(310, 335)); // vertical, horizontal
             }
         }
 
         public async Task EditClient()
         {
             _EditClientViewModel = new EditClientViewModel(_events);
-            _EditClientViewModel.SelectedRow = SelectedDataRow; // pass selected row to EditClientViewModel
+            _EditClientViewModel.SelectedRow = SelectedJob; // pass selected row to EditClientViewModel
             await _windowManager.ShowWindowAsync(_EditClientViewModel, null, CustomWindow.SettingsForDialog(800, 1000));
         }
 
@@ -275,6 +277,7 @@ namespace Traker.ViewModels
                 {
                     ClientId = client.ClientId,
                     ClientType = client.Type,
+                    TypeIcon = (client.Type == "Individual") ? "/Resources/Media/Images/Icons/Lucide/user-round.svg" : "/Resources/Media/Images/Icons/Lucide/building.svg",
                     ClientName = client.FullName,
                     ClientEmail = client.Email,
                     ClientPhone = client.PhoneNumber,
@@ -410,6 +413,18 @@ namespace Traker.ViewModels
         #endregion
 
         #region Event Handlers
+        public async Task HandleAsync(CallFromDashboard message, CancellationToken cancellationToken)
+        {
+            if (message != null)
+            {
+                if (message.FunctionName == "EditClient")
+                {
+                    await EditClient();
+                }
+            }
+        }
+
+
         public Task HandleAsync(RefreshDatabase message, CancellationToken cancellationToken)
         {
             _clients.Clear();
@@ -432,8 +447,6 @@ namespace Traker.ViewModels
             // update DB here
             return Task.CompletedTask;
         }
-
-
 
         #region Public View Variables     
         public String MoneyReceived
@@ -526,13 +539,13 @@ namespace Traker.ViewModels
             }
         }
 
-        public DashboardModel SelectedDataRow
+        public DashboardModel SelectedJob
         {
-            get { return _selectedDataRow; }
+            get { return _selectedJob; }
             set
             {
-                _selectedDataRow = value;
-                NotifyOfPropertyChange(() => SelectedDataRow);
+                _selectedJob = value;
+                NotifyOfPropertyChange(() => SelectedJob);
             }
         }
         #endregion

@@ -38,6 +38,7 @@ namespace Traker.Models
         // useful for data searching and storing extra data about the client
         public int ClientId { get; set; } = 0;
         public string ClientType { get; set; } = string.Empty;
+        public string TypeIcon { get; set; } = string.Empty;
         public string CompanyName { get; set; } = string.Empty;
         public string ClientEmail { get; set; } = string.Empty;
         public string ClientPhone { get; set; } = string.Empty;

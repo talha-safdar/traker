@@ -16,6 +16,7 @@ namespace Traker.ViewModels
         #endregion
 
         #region Private View Variables
+        private string _clientType;
         private string _clientName;
         private string _jobTitle;
         private string _jobDescription;
@@ -31,6 +32,7 @@ namespace Traker.ViewModels
         {
             _events = events;
 
+            _clientType = String.Empty;
             _clientName = String.Empty;
             _jobTitle = String.Empty;
             _jobDescription = String.Empty;
@@ -79,6 +81,7 @@ namespace Traker.ViewModels
             var dueDate = DateTime.MinValue;
             decimal amount = 0;
 
+            // due date conversion
             if (DueDate != String.Empty)
             {
                 dueDate = DateTime.ParseExact(
@@ -88,6 +91,7 @@ namespace Traker.ViewModels
                 );
             }
 
+            // money conversion
             if (Price != String.Empty)
             {
                 amount = decimal.Parse(
@@ -96,7 +100,7 @@ namespace Traker.ViewModels
                 );
             }
 
-            Database.AddRow(ClientName, JobTitle, JobDescription, amount, dueDate);
+            Database.AddRow(ClientName, ClientType, JobTitle, JobDescription, amount, dueDate);
 
             _events.PublishOnUIThreadAsync(new RefreshDatabase());
 
@@ -105,6 +109,16 @@ namespace Traker.ViewModels
         #endregion
 
         #region Public View Variables
+        public string ClientType
+        {
+            get { return _clientType; }
+            set
+            {
+                _clientType = value;
+                NotifyOfPropertyChange(() => ClientType);
+            }
+        }
+
         public string ClientName
         {
             get { return _clientName; }

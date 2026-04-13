@@ -14,7 +14,7 @@ namespace Traker.ViewModels
     using Traker.Events;
     using Traker.Helper;
 
-    public class RowContextMenuViewModel : Screen
+    public class ContextMenuViewModel : Screen
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
@@ -29,7 +29,7 @@ namespace Traker.ViewModels
         #region Private Field Vairables
         private CreateInvoiceViewModel _createInvoice;
         #endregion
-        public RowContextMenuViewModel(IEventAggregator events, IWindowManager windowManager)
+        public ContextMenuViewModel(IEventAggregator events, IWindowManager windowManager)
         {
             _events = events;
             _windowManager = windowManager;
@@ -37,16 +37,10 @@ namespace Traker.ViewModels
             _createInvoice = new CreateInvoiceViewModel(_events);
         }
 
-        public Task CreateInvoice()
+        public async Task SetStatus(string status)
         {
-            _createInvoice = new CreateInvoiceViewModel(_events);
-            _createInvoice.SelectedRow = SelectedRow;
-            _createInvoice.Clients = Clients;
-            _createInvoice.Jobs = Jobs;
-            _createInvoice.Invoices = Invoices;
-            _windowManager.ShowWindowAsync(_createInvoice, null, CustomWindow.SettingsForDialog(800, 500));
-
-            return Task.CompletedTask;
+            await Database.SetStatus(status, SelectedRow.ClientId, SelectedRow.JobId);
+            await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
         }
 
         public Task OpenFolder()
@@ -62,10 +56,21 @@ namespace Traker.ViewModels
             return Task.CompletedTask;
         }
 
-        public async Task SetStatus(string status)
+        public Task CreateInvoice()
         {
-            await Database.SetStatus(status, SelectedRow.ClientId, SelectedRow.JobId);
-            await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
+            _createInvoice = new CreateInvoiceViewModel(_events);
+            _createInvoice.SelectedRow = SelectedRow;
+            _createInvoice.Clients = Clients;
+            _createInvoice.Jobs = Jobs;
+            _createInvoice.Invoices = Invoices;
+            _windowManager.ShowWindowAsync(_createInvoice, null, CustomWindow.SettingsForDialog(800, 500));
+
+            return Task.CompletedTask;
+        }
+
+        public async Task EditClient()
+        {
+            await _events.PublishOnUIThreadAsync(new CallFromDashboard() { FunctionName = "EditClient" });
         }
 
         public async Task DeleteRow()

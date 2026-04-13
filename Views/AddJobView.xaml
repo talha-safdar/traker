@@ -17,6 +17,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" /> <!-- top bar -->
                 <RowDefinition Height="1.1*" /> <!-- client selection -->
+                <RowDefinition Height="*" /> <!-- job title -->
                 <RowDefinition Height="*" /> <!-- job description -->
                 <RowDefinition Height="*" /> <!-- price -->
                 <RowDefinition Height="*" /> <!-- due date -->
@@ -70,8 +71,16 @@
                 </StackPanel>
             </Grid>
             
-            <!-- job description -->
+            <!-- job title -->
             <Grid Grid.Row="2">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Margin="5,0,0,0" Text="Job Title" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                    <TextBox Text="{Binding JobTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                </StackPanel>
+            </Grid>
+            
+            <!-- job description -->
+            <Grid Grid.Row="3">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="5,0,0,0" Text="Job Description" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
                     <TextBox Text="{Binding JobDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
@@ -79,7 +88,7 @@
             </Grid>
             
             <!-- price -->
-            <Grid Grid.Row="3">
+            <Grid Grid.Row="4">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="5,0,0,0" Text="Price" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
                     <TextBox Text="{Binding Price, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
@@ -87,7 +96,7 @@
             </Grid>
             
             <!-- due date -->
-            <Grid Grid.Row="4">
+            <Grid Grid.Row="5">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="5,0,0,0" Text="Due Date (dd/mm/yyyy)" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
                     <TextBox Text="{Binding DueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
@@ -95,7 +104,7 @@
             </Grid>
 
             <!-- butons -->
-            <Grid Grid.Row="5">
+            <Grid Grid.Row="6">
                 <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddJobToClient()]" Background="{StaticResource ButtonBackgroundBrush}" CornerRadius="25" Height="45" Margin="80,0,80,0" BorderThickness="2" BorderBrush="{StaticResource ButtonDefaultBorderBrush}">
                     <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Add" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="14" />
                 </Border>
