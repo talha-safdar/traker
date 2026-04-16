@@ -24,7 +24,9 @@ namespace Traker.Models
         private string _jobTitle = string.Empty;
         private string _jobDescription = string.Empty;
         private string _price = string.Empty;
+        private string _amountReceived = string.Empty;
         private string _jobStatus = string.Empty;
+        private DateOnly _startDate = new DateOnly();
         private DateOnly _dueDate = new DateOnly();
         private string _invoiceStatus = string.Empty;
 
@@ -98,6 +100,17 @@ namespace Traker.Models
             }
         }
 
+        public string AmountReceived
+        {
+            get { return _amountReceived; }
+            set
+            {
+                _amountReceived = value;
+                // update database here
+                NotifyOfPropertyChange(() => AmountReceived);
+            }
+        }
+
         public string JobStatus
         {
             get { return _jobStatus; }
@@ -109,6 +122,16 @@ namespace Traker.Models
             }
         }
 
+        public DateOnly StartDate
+        {
+            get { return _startDate; }
+            set
+            {
+                _startDate = value;
+                // update database here
+                NotifyOfPropertyChange(() => StartDate);
+            }
+        }
         public DateOnly DueDate
         {
             get { return _dueDate; }

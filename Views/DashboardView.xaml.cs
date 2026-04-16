@@ -34,11 +34,11 @@ namespace Traker.Views
         /// </summary>
         private void EditJob(object sender, MouseButtonEventArgs e)
         {
-            if (e.ClickCount == 2 && sender is FrameworkElement fe && fe.DataContext is DashboardModel job)
+            if (e.ClickCount == 2 && sender is FrameworkElement fe && fe.DataContext is DashboardModel jobSelected)
             {
                 if (DataContext is DashboardViewModel vm)
                 {
-                    using var _ = vm.EditJob();
+                    using var _ = vm.EditJob(jobSelected);
                 }
             }
         }

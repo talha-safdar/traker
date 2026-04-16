@@ -88,12 +88,12 @@ namespace Traker.ViewModels
 
         public Task AddJobToClient()
         {
-            var dueDate = DateTime.MinValue;
+            var dueDate = DateOnly.MinValue;
             decimal amount = 0;
 
             if (DueDate != String.Empty)
             {
-                dueDate = DateTime.ParseExact(
+                dueDate = DateOnly.ParseExact(
                 DueDate,
                 "dd/MM/yyyy",
                 CultureInfo.InvariantCulture

@@ -78,13 +78,13 @@ namespace Traker.ViewModels
             // money format use commas and dots
             // empty boxes on press add
 
-            var dueDate = DateTime.MinValue;
+            var dueDate = DateOnly.MinValue;
             decimal amount = 0;
 
             // due date conversion
             if (DueDate != String.Empty)
             {
-                dueDate = DateTime.ParseExact(
+                dueDate = DateOnly.ParseExact(
                 DueDate,
                 "dd/MM/yyyy",
                 CultureInfo.InvariantCulture

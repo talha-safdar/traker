@@ -1,4 +1,6 @@
-﻿Fonts: {
+﻿C:\Users\Safda\AppData\Local\Traker
+
+Fonts: {
 	Headers/Titles:		Montserrat	700 (Bold)
 	Table Content:		Inter	400 (Regular)
 	Prices/IDs:			Roboto Mono	500 (Medium)

@@ -22,6 +22,7 @@ namespace Traker.Models
         public string Status { get; set; } = string.Empty;
         public decimal EstimatedPrice { get; set; } = 0.0m;
         public decimal FinalPrice { get; set; } = 0.0m;
+        public decimal AmountReceived { get; set; } = 0.0m;
         public DateOnly CreatedDate { get; set; } = new DateOnly();
         public DateOnly StartDate { get; set; } = new DateOnly();
         public DateOnly CompletedDate { get; set; } = new DateOnly();

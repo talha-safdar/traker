@@ -186,10 +186,10 @@ namespace Traker.ViewModels
             }
         }
 
-        public async Task EditJob()
+        public async Task EditJob(DashboardModel jobSelected)
         {
             _editJobViewModel = new EditJobViewModel(_events);
-            _editJobViewModel.SelectedRow = SelectedJob; // pass selected row to EditJobViewModel
+            _editJobViewModel.SelectedJob = jobSelected; // pass selected row to EditJobViewModel
             await _windowManager.ShowWindowAsync(_editJobViewModel, null, CustomWindow.SettingsForDialog(800, 1000));
         }
 
@@ -303,7 +303,9 @@ namespace Traker.ViewModels
                     JobTitle = job.Title,
                     JobDescription = job.Description,
                     Price = job.FinalPrice.ToString("C"),
+                    AmountReceived = job.AmountReceived.ToString("C"),
                     JobStatus = job.Status.ToString(),
+                    StartDate = job.StartDate,
                     DueDate = job.DueDate,
 
                     HasInvoice = _invoices.Any(i => i.JobId == job.JobId && i.IsDeleted == false),

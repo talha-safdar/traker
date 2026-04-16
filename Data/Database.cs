@@ -189,6 +189,7 @@ namespace Traker.Database
                                 var Status = reader["Status"] == DBNull.Value ? String.Empty : reader["Status"];
                                 var EstimatedPrice = reader["EstimatedPrice"] == DBNull.Value ? "0" : reader["EstimatedPrice"];
                                 var FinalPrice = reader["FinalPrice"] == DBNull.Value ? "0" : reader["FinalPrice"];
+                                var AmountReceived = reader["AmountReceived"] == DBNull.Value ? "0" : reader["AmountReceived"];
                                 var CreatedDate = reader["CreatedDate"] == DBNull.Value ? DateTime.MinValue : reader["CreatedDate"];
                                 var StartDate = reader["StartDate"] == DBNull.Value ? DateTime.MinValue : reader["StartDate"];
                                 var CompletedDate = reader["CompletedDate"] == DBNull.Value ? DateTime.MinValue : reader["CompletedDate"];
@@ -204,6 +205,7 @@ namespace Traker.Database
                                     string.IsNullOrEmpty(Status.ToString()) == false ||
                                     string.IsNullOrEmpty(EstimatedPrice.ToString()) == false ||
                                     string.IsNullOrEmpty(FinalPrice.ToString()) == false ||
+                                    string.IsNullOrEmpty(AmountReceived.ToString()) == false ||
                                     string.IsNullOrEmpty(CreatedDate.ToString()) == false ||
                                     string.IsNullOrEmpty(StartDate.ToString()) == false ||
                                     string.IsNullOrEmpty(CompletedDate.ToString()) == false ||
@@ -221,6 +223,7 @@ namespace Traker.Database
                                         Status = Status.ToString()!,
                                         EstimatedPrice = Convert.ToDecimal(EstimatedPrice),
                                         FinalPrice = Convert.ToDecimal(FinalPrice),
+                                        AmountReceived = Convert.ToDecimal(AmountReceived),
                                         CreatedDate = DateOnly.FromDateTime(Convert.ToDateTime(CreatedDate)),
                                         StartDate = DateOnly.FromDateTime(Convert.ToDateTime(StartDate)),
                                         CompletedDate = DateOnly.FromDateTime(Convert.ToDateTime(CompletedDate)),
@@ -356,7 +359,7 @@ namespace Traker.Database
         /// <summary>
         /// Add a new row to the Clients and Jobs tables in the database. This is done by opening a connection to the database, starting a transaction, and then executing two SQL commands: one to insert a new row into the Clients table and another to insert a new row into the Jobs table with a foreign key reference to the newly inserted client. If any errors occur during this process, an error message is displayed to the user and the transaction is rolled back. If the rows are added successfully, a log entry is made indicating that the operation was successful along with the new client and job IDs.
         /// </summary>
-        public static Task AddRow(string clientName, string clientType, string jobTitle, string jobDescription, decimal finalPrice, DateTime dueDate)
+        public static Task AddRow(string clientName, string clientType, string jobTitle, string jobDescription, decimal finalPrice, DateOnly dueDate)
         {
             try
             {
@@ -605,7 +608,7 @@ namespace Traker.Database
         /// <summary>
         /// Add a new row to the Jobs table for an existing client. This is done by opening a connection to the database, executing a SQL command to insert a new row into the Jobs table with a foreign key reference to the specified client, and then closing the connection. The function takes four parameters: the client ID, job description, final price, and due date. If any errors occur during this process, an error message is displayed to the user. If the row is added successfully, a log entry is made indicating that the operation was successful along with the client ID and job ID.
         /// </summary>
-        public static Task AddNewJobToClient(int clientId, string JobTitle, string jobDescription, decimal finalPrice, DateTime dueDate)
+        public static Task AddNewJobToClient(int clientId, string JobTitle, string jobDescription, decimal finalPrice, DateOnly dueDate)
         {
             try
             {
@@ -662,7 +665,7 @@ namespace Traker.Database
         /// <summary>
         /// Create a new invoice for a job by adding a new row to the Invoices table. This is done by opening a connection to the database, starting a transaction, and then executing a SQL command to insert a new row into the Invoices table with the specified details. The function takes several parameters including the job ID, subtotal, tax amount, total amount, due date, billing name, billing address, billing city, billing postcode, and billing country. If any errors occur during this process, an error message is displayed to the user and the transaction is rolled back. If the invoice is created successfully, a log entry is made indicating that the operation was successful along with the job ID.
         /// </summary>
-        public static Task CreateInvoice(int jobId, decimal subtotal, int taxAmount, decimal totalAmount, DateTime dueDate, string billingName, string billingAddress, string billingCity, string billingPostcode, string billingCountry)
+        public static Task CreateInvoice(int jobId, decimal subtotal, int taxAmount, decimal totalAmount, DateOnly dueDate, string billingName, string billingAddress, string billingCity, string billingPostcode, string billingCountry)
         {
             try
             {
@@ -803,6 +806,53 @@ namespace Traker.Database
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 Logger.LogActivity(Logger.ERROR, $"Database: EditClient() FAIL - ClientId: {clientId}");
+            }
+            return Task.CompletedTask;
+        }
+        public static Task EditJob(int jobId, string jobTitle, string jobDescription, string status, string price, string amountReceived, DateOnly startDate, DateOnly dueDate)
+        {
+            // in the future replace the long ass arguments with a variable list :)
+
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+
+                using var cmd = conn.CreateCommand();
+
+                cmd.CommandText = @"
+                    UPDATE Jobs
+                    SET Title = @title,
+                        Description = @description,
+                        Status = @status,
+                        FinalPrice = @finalPrice,
+                        AmountReceived = @amountReceived,
+                        StartDate = @startDate,
+                        DueDate = @dueDate
+                    WHERE JobId = @jobId;
+                ";
+
+                cmd.Parameters.AddWithValue("@jobId", jobId);
+                cmd.Parameters.AddWithValue("@title", jobTitle);
+                cmd.Parameters.AddWithValue("@description", jobDescription);
+                cmd.Parameters.AddWithValue("@status", status);
+                cmd.Parameters.AddWithValue("@finalPrice", price);
+                cmd.Parameters.AddWithValue("@amountReceived", amountReceived);
+                cmd.Parameters.AddWithValue("@startDate", startDate);
+                cmd.Parameters.AddWithValue("@dueDate", dueDate);
+
+                cmd.ExecuteNonQuery();
+
+                Logger.LogActivity(Logger.INFO, $"Database: () OK - : {jobId}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while editing the job. Please try again.\n\n{ex.Message}",
+                    "Edit Job",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: EditJob() FAIL - JobId: {jobId}");
             }
             return Task.CompletedTask;
         }

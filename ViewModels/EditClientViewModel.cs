@@ -53,12 +53,18 @@ namespace Traker.ViewModels
             PhoneNumber = SelectedRow.ClientPhone;
             BillingAddress = SelectedRow.BillingAddress;
             City = SelectedRow.City;
-            Postcode = SelectedRow.City;
+            Postcode = SelectedRow.Postcode;
             Country = SelectedRow.Country;
             CreatedDate = SelectedRow.CreatedDate.ToString();
             IsActive = SelectedRow.IsActive;
 
             return base.OnInitializedAsync(cancellationToken);
+        }
+
+        protected override Task OnDeactivateAsync(bool close, CancellationToken cancellationToken)
+        {
+            _events.Unsubscribe(this);
+            return base.OnDeactivateAsync(close, cancellationToken);
         }
 
         #region Public View Functions

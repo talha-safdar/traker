@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS Jobs (
     Status VARCHAR(20),
     EstimatedPrice TEXT,
     FinalPrice TEXT,
+    AmountReceived TEXT,
     CreatedDate DATETIME,
     StartDate DATETIME,
     CompletedDate DATETIME,
