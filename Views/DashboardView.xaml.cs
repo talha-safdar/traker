@@ -27,15 +27,18 @@ namespace Traker.Views
             InitializeComponent();
         }
 
-        // it does not allow the user to change invoice status if invoice not created
-        private void DataGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
+        /// <summary>
+        /// On double click trigger EditJob() function.
+        /// 
+        /// Caliburn doesn't work...
+        /// </summary>
+        private void EditJob(object sender, MouseButtonEventArgs e)
         {
-            if (e.Row.Item is DashboardModel row)
+            if (e.ClickCount == 2 && sender is FrameworkElement fe && fe.DataContext is DashboardModel job)
             {
-                if (!row.HasInvoice &&
-                    e.Column.Header?.ToString() == "Invoice Status")
+                if (DataContext is DashboardViewModel vm)
                 {
-                    e.Cancel = true;
+                    using var _ = vm.EditJob();
                 }
             }
         }

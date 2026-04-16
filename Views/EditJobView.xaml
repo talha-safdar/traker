@@ -3,10 +3,174 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Traker.Views"
+             xmlns:cal="http://caliburnmicro.com"
+             xmlns:local="clr-namespace:Traker.Views" xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+    <Border Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
+        <Grid Margin="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.1*" /> <!-- top bar -->
+                <RowDefinition Height="*" /> <!-- body -->
+                <RowDefinition Height="0.125*" /> <!-- footer -->
+            </Grid.RowDefinitions>          
             
-    </Grid>
+            <!-- top bar -->
+            <Grid Grid.Row="0" Margin="0,20,30,0">
+                <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action Exit()]" Background="Transparent"  HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="20" Width="20">
+                    <svg:SvgViewbox                         
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        SnapsToDevicePixels="True"
+                        Source="/Resources/Media/Images/Icons/Lucide/x.svg" Width="15" Height="15"/>
+                </Border>
+            </Grid>
+            
+            <!-- body -->
+            <Grid Grid.Row="1" VerticalAlignment="Stretch" Margin="30,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.25*" />                    <!-- client name / created date -->
+                    <RowDefinition Height="0.01*" />                    <!-- spacer -->
+                    <RowDefinition Height="0.2*" />                    <!-- title / status -->
+                    <RowDefinition Height="*" />                    <!-- descrpition / prices/dates -->
+                </Grid.RowDefinitions>
+
+                <!-- client name / created date -->
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />                        <!-- client name -->
+                        <RowDefinition Height="*" />                        <!-- created date -->
+                    </Grid.RowDefinitions>
+
+                    <!-- client name -->
+                    <Grid Grid.Row="0">
+                        <TextBlock Margin="5,0,0,0" Text="Luca Terrore" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="52" />
+                        <!--<TextBlock Margin="5,0,0,0" Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34" />-->
+                    </Grid>
+
+                    <!-- created date -->
+                    <Grid Grid.Row="1">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Margin="5,0,0,0" Text="Created Date - " FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" Opacity="0.8" />
+                            <TextBlock Margin="5,0,0,0" Text="00/00/0000" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" Opacity="0.8" />
+                            <!--<TextBlock Margin="0,0,0,0" Text="{Binding CreatedDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" Opacity="0.8" />-->
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+
+                <!-- spacer -->
+                <Grid Grid.Row="1">
+                    
+                </Grid>
+                
+                <!-- title / status -->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />                        <!-- title -->
+                        <ColumnDefinition Width="0.5*" />                        <!-- status -->
+                    </Grid.ColumnDefinitions>
+
+                    <!-- title -->
+                    <Grid Grid.Column="0">
+                        <StackPanel Orientation="Vertical" Margin="10">
+                            <TextBlock Margin="5,0,0,0" Text="Title" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                            <TextBox Text="{Binding CompanyName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- status -->
+                    <Grid Grid.Column="1">
+                        <StackPanel Orientation="Vertical" Margin="0" VerticalAlignment="Center">
+                            <TextBlock VerticalAlignment="Center" Text="Status" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                            <ComboBox Height="50" BorderBrush="#3A3F4B" BorderThickness="3"  SelectedValue="{Binding ClientType, Mode=TwoWay}" SelectedValuePath="Content" FontSize="22" Background="Black">
+                                <ComboBoxItem Content="- Active" Width="250" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                <ComboBoxItem Content="- Done" Width="250" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+
+                <!-- descrpition / prices/dates -->
+                <Grid Grid.Row="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" /> <!-- description -->
+                        <ColumnDefinition Width="*" /> <!-- price / date -->
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- description -->
+                    <Grid Grid.Column="0">
+                        <StackPanel Orientation="Vertical" Margin="10" >
+                            <TextBlock Margin="5,0,0,0" Text="Description" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                            <TextBox HorizontalAlignment="Left" Text="{Binding CompanyName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Padding="10" MaxLength="1000" Height="400" Width="440" AcceptsReturn="False" FontSize="22"  FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                        </StackPanel>
+                    </Grid>
+                    
+                    <!-- price / date -->
+                    <Grid Grid.Column="1" Margin="0,35,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" /> <!-- price -->
+                            <RowDefinition Height="0.6*" /> <!-- date -->
+                        </Grid.RowDefinitions>
+                        
+                        <!-- price -->
+                        <Grid Grid.Row="0">
+                            <Border Background="Black" CornerRadius="20">
+                                <Grid Margin="10">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" /> <!-- price -->
+                                        <RowDefinition Height="*" /> <!-- received -->
+                                        <RowDefinition Height="*" /> <!-- remaning -->
+                                    </Grid.RowDefinitions>
+                                    
+                                    <!-- price -->
+                                    <Grid Grid.Row="0">
+                                        <StackPanel Orientation="Vertical" Margin="10">
+                                            <TextBlock Margin="5,0,0,0" Text="Title" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                                            <TextBox Text="{Binding CompanyName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                        </StackPanel>
+                                    </Grid>
+                                    
+                                    <!-- received -->
+                                    <Grid Grid.Row="1">
+                                        <StackPanel Orientation="Vertical" Margin="10">
+                                            <TextBlock Margin="5,0,0,0" Text="Title" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                                            <TextBox Text="{Binding CompanyName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                        </StackPanel>
+                                    </Grid>
+                                    
+                                    <!-- remeaning -->
+                                    <Grid Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" /> <!-- text -->
+                                            <ColumnDefinition Width="*" /> <!-- money -->
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <!-- text -->
+                                        <Grid Grid.Column="0" Margin="0,0,30,0">
+                                            <TextBlock Margin="5,0,0,0" Text="Reameaning" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />                                            
+                                        </Grid>
+                                        
+                                        <!-- money -->
+                                        <Grid Grid.Column="1">
+                                            <TextBlock Margin="5,0,0,0" Text="£123432432342" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />                                            
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                        
+                        <!-- date -->
+                        <Grid Grid.Row="1" Margin="0,10,0,0">
+                            <Border Background="Black" CornerRadius="20">
+                                
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+            <!-- footer -->
+            <Grid Grid.Row="2">
+                
+            </Grid>
+        </Grid>
+    </Border>
 </UserControl>

@@ -7,6 +7,7 @@ namespace Traker.ViewModels
     using System.Diagnostics;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Input;
     using Traker.Events;
     using Traker.Helper;
     using Traker.Models;
@@ -59,7 +60,8 @@ namespace Traker.ViewModels
         private ContextMenuViewModel _jobDetailsViewModel;
         private AddClientViewModel _addClientViewModel;
         private AddJobViewModel _addJobViewModel;
-        private EditClientViewModel _EditClientViewModel;
+        private EditClientViewModel _editClientViewModel;
+        private EditJobViewModel _editJobViewModel;
         #endregion
 
         public DashboardViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState)
@@ -97,7 +99,7 @@ namespace Traker.ViewModels
             _jobDetailsViewModel = new ContextMenuViewModel(_events, _windowManager);
             _addClientViewModel = new AddClientViewModel(_events, State);
             _addJobViewModel = new AddJobViewModel(_events, State);
-            _EditClientViewModel = new EditClientViewModel(_events);
+            _editClientViewModel = new EditClientViewModel(_events);
 
             _events.SubscribeOnPublishedThread(this);
         }
@@ -184,12 +186,20 @@ namespace Traker.ViewModels
             }
         }
 
+        public async Task EditJob()
+        {
+            _editJobViewModel = new EditJobViewModel(_events);
+            _editJobViewModel.SelectedRow = SelectedJob; // pass selected row to EditJobViewModel
+            await _windowManager.ShowWindowAsync(_editJobViewModel, null, CustomWindow.SettingsForDialog(800, 1000));
+        }
+
         public async Task EditClient()
         {
-            _EditClientViewModel = new EditClientViewModel(_events);
-            _EditClientViewModel.SelectedRow = SelectedJob; // pass selected row to EditClientViewModel
-            await _windowManager.ShowWindowAsync(_EditClientViewModel, null, CustomWindow.SettingsForDialog(800, 1000));
+            _editClientViewModel = new EditClientViewModel(_events);
+            _editClientViewModel.SelectedRow = SelectedJob; // pass selected row to EditClientViewModel
+            await _windowManager.ShowWindowAsync(_editClientViewModel, null, CustomWindow.SettingsForDialog(800, 1000));
         }
+
 
         public async Task AddClient()
         {
@@ -423,7 +433,6 @@ namespace Traker.ViewModels
                 }
             }
         }
-
 
         public Task HandleAsync(RefreshDatabase message, CancellationToken cancellationToken)
         {
