@@ -82,13 +82,21 @@ namespace Traker.ViewModels
             _events.PublishOnUIThreadAsync(new RefreshDatabase());
         }
 
-        public void CancelJobChanges()
+        public Task CancelJobChanges()
         {
             // for type 
 
             // Database.EditClient(SelectedRow.ClientId, ClientType, ClientName, ClientEmail, CompanyName, PhoneNumber, BillingAddress, City, Postcode, Country, IsActive);
 
             _events.PublishOnUIThreadAsync(new RefreshDatabase());
+
+            return Task.CompletedTask;
+        }
+
+        public async Task DeleteJob()
+        {
+            await Database.DeleteJob(SelectedJob.JobId);
+            await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
         }
 
         public async Task Exit()

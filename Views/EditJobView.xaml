@@ -204,7 +204,7 @@
                         
                         <!-- delete -->
                         <Grid Grid.Column="0">
-                            <Border HorizontalAlignment="Left" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action CancelEditClient()]" Background="Transparent" CornerRadius="25" Height="45" Width="200" Margin="0,0,30,0">
+                            <Border HorizontalAlignment="Left" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteJob()]" Background="Transparent" CornerRadius="25" Height="45" Width="200" Margin="0,0,30,0">
                                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Delete Job" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Regular" Foreground="Red" FontSize="16" />
                             </Border>
                         </Grid>

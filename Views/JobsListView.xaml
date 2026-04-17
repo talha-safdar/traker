@@ -13,7 +13,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.1*" />                <!-- top bar -->
                 <RowDefinition Height="*" />                <!-- body -->
-                <RowDefinition Height="0.01*" />                <!-- spacer -->
+                <RowDefinition Height="0.05*" />                <!-- spacer -->
                 <RowDefinition Height="0.125*" />                <!-- footer -->
             </Grid.RowDefinitions>
 
@@ -29,8 +29,24 @@
 
             <!-- body -->
             <Grid Grid.Row="1" VerticalAlignment="Stretch" Margin="30,0">
-                <Border Background="#121212" CornerRadius="20">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10" Padding="0,0,10,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.015*" />                    <!-- client name -->
+                    <RowDefinition Height="0.01*" />                    <!-- spacer -->
+                    <RowDefinition Height="0.2*" />                    <!-- jobs list -->
+                </Grid.RowDefinitions>
+
+                <!-- client name -->
+                <Grid Grid.Row="0">
+                    <TextBlock Margin="5,0,0,0" Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="52" />
+                </Grid>
+
+                <!-- spacer -->
+                <Grid Grid.Row="1">
+
+                </Grid>
+
+                <Border Grid.Row="2" Background="#121212" CornerRadius="20">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10" Padding="0,0,10,0" Height="500">
                         <ItemsControl ItemsSource="{Binding JobsList}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>

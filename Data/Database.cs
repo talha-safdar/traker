@@ -605,6 +605,48 @@ namespace Traker.Database
             return Task.CompletedTask;
         }
 
+        public static Task DeleteJob(int jobId)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+
+                using (var pragma = conn.CreateCommand())
+                {
+                    pragma.CommandText = "PRAGMA foreign_keys = ON;";
+                    pragma.ExecuteNonQuery();
+                }
+
+                using var tx = conn.BeginTransaction();
+
+                using (var deleteRowCmd = conn.CreateCommand())
+                {
+                    deleteRowCmd.CommandText = @"
+    
+                        DELETE FROM Jobs
+                        WHERE JobId = @jobId;
+                        ";
+
+                    deleteRowCmd.Parameters.AddWithValue("@jobId", jobId);
+                    deleteRowCmd.ExecuteNonQuery();
+                }
+
+                tx.Commit();
+                Logger.LogActivity(Logger.INFO, $"Database: DeleteJob() OK - JobId: {jobId}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while deleting the job. Please try again.\n\t{ex.Message}",
+                    "Delete Job",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: DeleteJob() FAIL - JobId: {jobId}");
+            }
+            return Task.CompletedTask;
+        }
+
         /// <summary>
         /// Add a new row to the Jobs table for an existing client. This is done by opening a connection to the database, executing a SQL command to insert a new row into the Jobs table with a foreign key reference to the specified client, and then closing the connection. The function takes four parameters: the client ID, job description, final price, and due date. If any errors occur during this process, an error message is displayed to the user. If the row is added successfully, a log entry is made indicating that the operation was successful along with the client ID and job ID.
         /// </summary>

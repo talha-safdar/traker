@@ -21,6 +21,7 @@ namespace Traker.ViewModels
 
         #region Private View Variables
         private ObservableCollection<DashboardModel> _jobsList;
+        private string _clientName;
         #endregion
 
         #region Public State Variable
@@ -44,6 +45,7 @@ namespace Traker.ViewModels
         protected override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
             var jobsForClient = Data.Jobs.Where(j => j.ClientId == SelectedJob.ClientId).ToList();
+            _clientName = SelectedJob.ClientName;
 
             foreach (var job in jobsForClient)
             {
@@ -98,6 +100,11 @@ namespace Traker.ViewModels
 
             SelectedJob = selectedJob;
         }
+
+        public async Task Exit()
+        {
+            await TryCloseAsync();
+        }
         #endregion
 
         #region Public View Variables 
@@ -108,6 +115,16 @@ namespace Traker.ViewModels
             {
                 _jobsList = value;
                 NotifyOfPropertyChange(() => JobsList);
+            }
+        }
+
+        public string ClientName
+        {
+            get { return _clientName; }
+            set
+            {
+                _clientName = value;
+                NotifyOfPropertyChange(() => ClientName);
             }
         }
         #endregion

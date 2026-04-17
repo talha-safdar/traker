@@ -286,7 +286,7 @@ namespace Traker.ViewModels
                         mainContainer.Item().AlignLeft().PaddingBottom(60).Column(section4 =>
                         {
                             section4.Item().Text("NOTES").Bold();
-                            section4.Item().Text("Daddy chill");
+                            section4.Item().Text("I need curry!");
                         });
 
                         //mainContainer.Item().Height(60);

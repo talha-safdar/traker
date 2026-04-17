@@ -43,6 +43,14 @@ namespace Traker.Services
                 Invoices.Clear();
             });
         }
+
+        //public async Task DeleteJob(int clientId)
+        //{
+        //    await Task.Run(async() =>
+        //    {
+        //        await Database.DeleteRow(clientId);
+        //    });
+        //}
         #endregion
 
         #region Public Data Variables
