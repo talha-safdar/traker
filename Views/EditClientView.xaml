@@ -30,7 +30,10 @@
 
             <!-- client name -->
             <Grid Grid.Row="1" Margin="30,0,0,0">
-                <TextBlock Margin="5,0,0,0" Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Margin="5,0,0,0" Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34" />
+                    <Border Background="Red" Height="20" Width="20" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenJobsList()]" />
+                </StackPanel>
             </Grid>
             
             <!-- created date -->

@@ -11,6 +11,7 @@ namespace Traker.ViewModels
     using Traker.Events;
     using Traker.Helper;
     using Traker.Models;
+    using Traker.Services;
     using Traker.States;
 
     public class DashboardViewModel : Screen, IHandle<RefreshDatabase>, IHandle<CallFromDashboard>
@@ -22,6 +23,7 @@ namespace Traker.ViewModels
 
         #region Public State Variable
         public AppState State { get; } // state binding variable accessible from other viewmodels
+        public DataService Data { get; } // data from the database
         #endregion
 
         #region Public View Variables
@@ -43,9 +45,9 @@ namespace Traker.ViewModels
         #endregion
 
         #region Data Variables
-        List<ClientsModel> _clients;
-        List<JobsModel> _jobs;
-        List<InvoicesModel> _invoices;
+        //List<ClientsModel> _clients;
+        //List<JobsModel> _jobs;
+        //List<InvoicesModel> _invoices;
         #endregion
 
         #region Private Field Variables
@@ -64,12 +66,13 @@ namespace Traker.ViewModels
         private EditJobViewModel _editJobViewModel;
         #endregion
 
-        public DashboardViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState)
+        public DashboardViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState, DataService dataService)
         {
             _events = events;
             _windowManager = windowManager;
 
             State = appState;
+            Data = dataService;
 
             _moneyReceived = "0";
             _moneyToRecieve = "0";
@@ -89,9 +92,9 @@ namespace Traker.ViewModels
             _completedJobs = new List<int>();
             _invoicedJobs = new List<int>();
 
-            _clients = new List<ClientsModel>();
-            _jobs = new List<JobsModel>();
-            _invoices = new List<InvoicesModel>();
+            //_clients = new List<ClientsModel>();
+            //_jobs = new List<JobsModel>();
+            //_invoices = new List<InvoicesModel>();
             _dashboardData = new ObservableCollection<DashboardModel>();
             _selectedJob = new DashboardModel();
 
@@ -99,7 +102,7 @@ namespace Traker.ViewModels
             _jobDetailsViewModel = new ContextMenuViewModel(_events, _windowManager);
             _addClientViewModel = new AddClientViewModel(_events, State);
             _addJobViewModel = new AddJobViewModel(_events, State);
-            _editClientViewModel = new EditClientViewModel(_events);
+            _editClientViewModel = new EditClientViewModel(_events, _windowManager, Data);
 
             _events.SubscribeOnPublishedThread(this);
         }
@@ -110,11 +113,7 @@ namespace Traker.ViewModels
             try
             {
                 await Database.SetUpDatabase();
-
-                _clients = Database.FetchClientsTable(); // clients
-                _jobs = Database.FetchJobsTable(); // jobs
-                _invoices = Database.FetchInvoiceTable(); // invoices
-
+                await Data.FetchDatabase();
                 await SetupDashboardData();
 
                 //return base.OnInitializedAsync(cancellationToken);
@@ -179,9 +178,9 @@ namespace Traker.ViewModels
             {
                 _jobDetailsViewModel = new ContextMenuViewModel(_events, _windowManager);
                 _jobDetailsViewModel.SelectedRow = selectedJob; // pass row selected
-                _jobDetailsViewModel.Clients = _clients;
-                _jobDetailsViewModel.Jobs = _jobs;
-                _jobDetailsViewModel.Invoices = _invoices;
+                _jobDetailsViewModel.Clients = Data.Clients;
+                _jobDetailsViewModel.Jobs = Data.Jobs;
+                _jobDetailsViewModel.Invoices = Data.Invoices;
                 await _windowManager.ShowPopupAsync(_jobDetailsViewModel, null, CustomWindow.SettingsForDialog(310, 335)); // vertical, horizontal
             }
         }
@@ -195,11 +194,10 @@ namespace Traker.ViewModels
 
         public async Task EditClient()
         {
-            _editClientViewModel = new EditClientViewModel(_events);
+            _editClientViewModel = new EditClientViewModel(_events, _windowManager, Data);
             _editClientViewModel.SelectedRow = SelectedJob; // pass selected row to EditClientViewModel
             await _windowManager.ShowWindowAsync(_editClientViewModel, null, CustomWindow.SettingsForDialog(800, 1000));
         }
-
 
         public async Task AddClient()
         {
@@ -279,9 +277,9 @@ namespace Traker.ViewModels
             // row data
             _dashboardData.Clear();
             int index = 0;
-            foreach (var job in _jobs)
+            foreach (var job in Data.Jobs)
             {
-                var client = _clients.First(c => c.ClientId == job.ClientId);
+                var client = Data.Clients.First(c => c.ClientId == job.ClientId);
 
                 DashboardModel dashboardEntry = new DashboardModel
                 {
@@ -308,8 +306,8 @@ namespace Traker.ViewModels
                     StartDate = job.StartDate,
                     DueDate = job.DueDate,
 
-                    HasInvoice = _invoices.Any(i => i.JobId == job.JobId && i.IsDeleted == false),
-                    InvoiceStatus = _invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? "Not invoiced"
+                    HasInvoice = Data.Invoices.Any(i => i.JobId == job.JobId && i.IsDeleted == false),
+                    InvoiceStatus = Data.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? "Not invoiced"
                 };
                 _dashboardData.Add(dashboardEntry);
                 index++;
@@ -319,10 +317,10 @@ namespace Traker.ViewModels
             _receviedMoney.Clear();
             for (int i = 0; i < _dashboardData.Count; i++)
             {
-                _receviedMoney.AddRange(_clients
+                _receviedMoney.AddRange(Data.Clients
                     .Where(c => c.ClientId == _dashboardData[i].ClientId)
-                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-                    .Join(_invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.Status })
+                    .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
+                    .Join(Data.Invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.Status })
                     .Where(x => x.Status == "Paid")
                     .Select(x => x.FinalPrice)
                     .ToList());
@@ -333,10 +331,10 @@ namespace Traker.ViewModels
             _outstandingdMoney.Clear();
             for (int i = 0; i < _dashboardData.Count; i++)
             {
-                _outstandingdMoney.AddRange(_clients
+                _outstandingdMoney.AddRange(Data.Clients
                     .Where(c => c.ClientId == _dashboardData[i].ClientId)
-                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-                    .Join(_invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.Status, inv.IssueDate, inv.DueDate })
+                    .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
+                    .Join(Data.Invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.Status, inv.IssueDate, inv.DueDate })
                     .Where(x => x.Status == "Sent" && x.IssueDate < DateOnly.FromDateTime(DateTime.Now) && x.DueDate > DateOnly.FromDateTime(DateTime.Now))
                     .Select(x => x.FinalPrice)
                     .ToList());
@@ -347,10 +345,10 @@ namespace Traker.ViewModels
             _overdueMoney.Clear();
             for (int i = 0; i < _dashboardData.Count; i++)
             {
-                _overdueMoney.AddRange(_clients
+                _overdueMoney.AddRange(Data.Clients
                     .Where(client => client.ClientId == _dashboardData[i].ClientId)
-                    .Join(_jobs, client => client.ClientId, job => job.ClientId, (client, job) => job)
-                    .Join(_invoices, job => job.JobId, invoice => invoice.JobId, (job, invoice) => new { job.FinalPrice, invoice.Status, invoice.DueDate })
+                    .Join(Data.Jobs, client => client.ClientId, job => job.ClientId, (client, job) => job)
+                    .Join(Data.Invoices, job => job.JobId, invoice => invoice.JobId, (job, invoice) => new { job.FinalPrice, invoice.Status, invoice.DueDate })
                     .Where(x => x.Status == "Overdue" && x.DueDate < DateOnly.FromDateTime(DateTime.Now))
                     .Select(x => x.FinalPrice)
                     .ToList());
@@ -361,7 +359,7 @@ namespace Traker.ViewModels
             _priceMoney.Clear();
             for (int i = 0; i < _dashboardData.Count; i++)
             {
-                _priceMoney.AddRange(_jobs
+                _priceMoney.AddRange(Data.Jobs
                     .Where(j => j.ClientId == _dashboardData[i].ClientId)
                     .Select(x => x.FinalPrice)
                     .ToList());
@@ -372,9 +370,9 @@ namespace Traker.ViewModels
             _newJobs.Clear();
             for (int i = 0; i < _dashboardData.Count; i++)
             {
-                _newJobs.AddRange(_clients
+                _newJobs.AddRange(Data.Clients
                     .Where(c => c.ClientId == _dashboardData[i].ClientId)
-                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
+                    .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
                     .Where(j => j.Status == "New")
                     .Select(j => j.ClientId)
                     .ToList());
@@ -385,9 +383,9 @@ namespace Traker.ViewModels
             _inProgressJobs.Clear();
             for (int i = 0; i < _dashboardData.Count; i++)
             {
-                _inProgressJobs.AddRange(_clients
+                _inProgressJobs.AddRange(Data.Clients
                     .Where(c => c.ClientId == _dashboardData[i].ClientId)
-                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
+                    .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
                     .Where(j => j.Status == "InProgress")
                     .Select(j => j.ClientId)
                     .ToList());
@@ -398,9 +396,9 @@ namespace Traker.ViewModels
             _completedJobs.Clear();
             for (int i = 0; i < _dashboardData.Count; i++)
             {
-                _completedJobs.AddRange(_clients
+                _completedJobs.AddRange(Data.Clients
                     .Where(c => c.ClientId == _dashboardData[i].ClientId)
-                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
+                    .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
                     .Where(j => j.Status == "Completed")
                     .Select(j => j.ClientId)
                     .ToList());
@@ -411,9 +409,9 @@ namespace Traker.ViewModels
             _invoicedJobs.Clear();
             for (int i = 0; i < _dashboardData.Count; i++)
             {
-                _invoicedJobs.AddRange(_clients
+                _invoicedJobs.AddRange(Data.Clients
                     .Where(c => c.ClientId == _dashboardData[i].ClientId)
-                    .Join(_jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
+                    .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
                     .Where(j => j.Status == "Invoiced")
                     .Select(j => j.ClientId)
                     .ToList());
@@ -436,19 +434,11 @@ namespace Traker.ViewModels
             }
         }
 
-        public Task HandleAsync(RefreshDatabase message, CancellationToken cancellationToken)
+        public async Task HandleAsync(RefreshDatabase message, CancellationToken cancellationToken)
         {
-            _clients.Clear();
-            _jobs.Clear();
-            _invoices.Clear();
-
-            _clients = Database.FetchClientsTable(); // clients
-            _jobs = Database.FetchJobsTable(); // jobs
-            _invoices = Database.FetchInvoiceTable(); // invoices
-
-            SetupDashboardData();
-
-            return Task.CompletedTask;
+            await Data.ClearDataVariables();
+            await Data.FetchDatabase();
+            await SetupDashboardData();
         }
         #endregion
 

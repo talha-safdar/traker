@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Linq;
+using Traker.Services;
 using Traker.States;
 using Traker.ViewModels;
 
@@ -35,6 +36,7 @@ namespace Traker
             _container.Singleton<IEventAggregator, EventAggregator>();
             _container.Singleton<ShellViewModel>();
             _container.Singleton<AppState>();
+            _container.Singleton<DataService>();
 
             _container.PerRequest<DashboardViewModel>();
             _container.PerRequest<AddClientViewModel>();

@@ -304,16 +304,6 @@
                                         <Grid Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Margin="0" Text="{Binding Price}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Black" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32" />
                                         </Grid>
-
-                                        <!--<StackPanel Grid.Column="0">
-                                            <TextBlock Text="{Binding JobTitle}" FontWeight="Bold" Foreground="White"/>
-                                            <TextBlock Text="{Binding DueDate}" FontSize="10" Foreground="Gray"/>
-                                        </StackPanel>
-
-                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                            <Button Content="📁" cal:Message.Attach="OpenFolder($dataContext)" />
-                                            <Button Content="Edit" cal:Message.Attach="EditJob($dataContext)" />
-                                        </StackPanel>-->
                                     </Grid>
                                 </Border>
                             </DataTemplate>

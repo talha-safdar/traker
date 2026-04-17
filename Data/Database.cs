@@ -660,8 +660,6 @@ namespace Traker.Database
             return Task.CompletedTask;
         }
 
-        //public static Task UpdateRow(int clientId, )
-
         /// <summary>
         /// Create a new invoice for a job by adding a new row to the Invoices table. This is done by opening a connection to the database, starting a transaction, and then executing a SQL command to insert a new row into the Invoices table with the specified details. The function takes several parameters including the job ID, subtotal, tax amount, total amount, due date, billing name, billing address, billing city, billing postcode, and billing country. If any errors occur during this process, an error message is displayed to the user and the transaction is rolled back. If the invoice is created successfully, a log entry is made indicating that the operation was successful along with the job ID.
         /// </summary>
@@ -809,6 +807,7 @@ namespace Traker.Database
             }
             return Task.CompletedTask;
         }
+        
         public static Task EditJob(int jobId, string jobTitle, string jobDescription, string status, string price, string amountReceived, DateOnly startDate, DateOnly dueDate)
         {
             // in the future replace the long ass arguments with a variable list :)

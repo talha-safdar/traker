@@ -14,11 +14,15 @@ using Traker.Models;
 namespace Traker.ViewModels
 {
     using Database;
+    using Traker.Helper;
+    using Traker.Services;
+    using Traker.States;
 
     class EditClientViewModel : Screen
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
+        private readonly IWindowManager _windowManager;
         #endregion
 
         #region Private View Variables
@@ -35,11 +39,22 @@ namespace Traker.ViewModels
         private bool _isActive;
         #endregion
 
+        #region Private Class Field Variables
+        private JobsListViewModel _jobsListViewModel;
+        #endregion
+
+        #region Public State Variable
+        public DataService Data { get; } // data from the database
+        #endregion
+
         public DashboardModel SelectedRow; // data passed by DashboardVM
 
-        public EditClientViewModel(IEventAggregator events)
+        public EditClientViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService)
         {
             _events = events;
+            _windowManager = windowManager;
+            Data = dataService;
+            _jobsListViewModel = new JobsListViewModel(_events, _windowManager, Data);
             SelectedRow = new DashboardModel();
         }
 
@@ -70,16 +85,19 @@ namespace Traker.ViewModels
         #region Public View Functions
         public void ConfirmEditClient()
         {
-            // for type 
-
             Database.EditClient(SelectedRow.ClientId, ClientType, ClientName, ClientEmail, CompanyName, PhoneNumber, BillingAddress, City, Postcode, Country, IsActive);
-
             _events.PublishOnUIThreadAsync(new RefreshDatabase());
         }
 
         public async Task Exit()
         {
             await TryCloseAsync();
+        }
+
+        public async Task OpenJobsList()
+        {
+            _jobsListViewModel.SelectedJob = SelectedRow;
+            await _windowManager.ShowDialogAsync(_jobsListViewModel, null, CustomWindow.SettingsForDialog(800, 1000));
         }
         #endregion
 

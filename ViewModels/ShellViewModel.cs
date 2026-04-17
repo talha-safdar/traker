@@ -10,12 +10,14 @@ namespace Traker.ViewModels
     using Database;
     using System.Net.NetworkInformation;
     using System.Windows.Controls;
+    using Traker.Services;
     using Traker.States;
 
     public class ShellViewModel : Conductor<IScreen>.Collection.OneActive
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
+        private readonly DataService _dataService;
         private readonly IWindowManager _windowManager;
         #endregion
 
@@ -23,16 +25,17 @@ namespace Traker.ViewModels
         public AppState State { get; } // state binding variable accessible from other viewmodels
         #endregion
 
-        public ShellViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState)
+        public ShellViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState, DataService dataService)
         {
             _events = events;
             _windowManager = windowManager;
             State = appState;
+            _dataService = dataService;
         }
 
         protected override async Task OnInitializedAsync(CancellationToken cancellationToken)
         {
-            DashboardViewModel dashboardViewModel = new DashboardViewModel(_events, _windowManager, State);
+            DashboardViewModel dashboardViewModel = new DashboardViewModel(_events, _windowManager, State, _dataService);
             await ActivateItemAsync(dashboardViewModel, cancellationToken);
         }
 
