@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using Dapper;
+using Microsoft.Data.Sqlite;
 using Microsoft.VisualBasic;
 using System.IO;
 using System.Reflection;
@@ -563,7 +564,7 @@ namespace Traker.Database
         /// <summary>
         /// Delete a row from the Clients table and all related rows from the Jobs table. This is done by opening a connection to the database, starting a transaction, and then executing a SQL command to delete the specified client from the Clients table. The command is set up to also delete any related rows from the Jobs table using a foreign key constraint with ON DELETE CASCADE. If any errors occur during this process, an error message is displayed to the user and the transaction is rolled back. If the row is deleted successfully, a log entry is made indicating that the operation was successful along with the client ID.
         /// </summary>
-        public static Task DeleteRow(int clientId)
+        public static Task DeleteClient(int clientId)
         {
             try
             {
@@ -897,6 +898,29 @@ namespace Traker.Database
             }
             return Task.CompletedTask;
         }
+        
+        //public static async Task<int> FetchTotalNewJobs()
+        //{
+        //    try
+        //    {
+        //        using (var conn = new SqliteConnection(_connectionString))
+        //        {
+        //            return await conn.ExecuteScalarAsync<int>(
+        //                "SELECT COUNT(*) FROM Jobs WHERE Status = 'New';"
+        //                );
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show(
+        //            $"An error occurred while fetching the total number of new jobs. Please try again.\n\n{ex.Message}",
+        //            "Fetch Total New Jobs",
+        //            MessageBoxButton.OK,
+        //            MessageBoxImage.Error);
+        //        Logger.LogActivity(Logger.ERROR, $"Database: GetTotalNewJobs() FAIL");
+        //        return 0;
+        //    }
+        //}
         #endregion
     }
 }

@@ -138,7 +138,7 @@
                             <Grid Grid.Column="1" Grid.Row="0">
                                 <StackPanel Orientation="Vertical" Margin="10">
                                     <TextBlock Margin="5,0,0,0" Text="Active" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
-                                    <TextBox IsReadOnly="True" Text="{Binding InProgressJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="24" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderBrush="#3D3D3D" BorderThickness="2" />
+                                    <TextBox IsReadOnly="True" Text="{Binding ActiveJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="24" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderBrush="#3D3D3D" BorderThickness="2" />
                                 </StackPanel>
                             </Grid>
 
@@ -146,7 +146,7 @@
                             <Grid Grid.Column="0" Grid.Row="1">
                                 <StackPanel Orientation="Vertical" Margin="10">
                                     <TextBlock Margin="5,0,0,0" Text="Done" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
-                                    <TextBox IsReadOnly="True" Text="{Binding CompletedJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="24" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderBrush="#3D3D3D" BorderThickness="2" />
+                                    <TextBox IsReadOnly="True" Text="{Binding DoneJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="24" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderBrush="#3D3D3D" BorderThickness="2" />
                                 </StackPanel>
                             </Grid>                            
 

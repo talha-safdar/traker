@@ -75,7 +75,7 @@ namespace Traker.ViewModels
 
         public async Task DeleteRow()
         {
-            await Database.DeleteRow(SelectedRow.ClientId);
+            await Database.DeleteJob(SelectedRow.JobId);
             await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
         }
     }

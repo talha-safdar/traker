@@ -37,8 +37,8 @@ namespace Traker.ViewModels
         private string _moneyOverdue; // money overdue value shown total
         private string _moneyPrice; // money price = the final amount for a job (not invoiced)
         private string _newJobsCount;
-        private string _inProgressJobsCount;
-        private string _completedJobsCount;
+        private string _activeJobsCount;
+        private string _doneJobsCount;
         private string _invoicedJobsCount;
         private ObservableCollection<DashboardModel> _dashboardData; // listo of data shown on the data grid
         public DashboardModel _selectedJob; // selected data row automatically filled on click
@@ -79,8 +79,8 @@ namespace Traker.ViewModels
             _moneyOverdue = "0";
             _moneyPrice = "0";
             _newJobsCount = "0";
-            _inProgressJobsCount = "0";
-            _completedJobsCount = "0";
+            _activeJobsCount = "0";
+            _doneJobsCount = "0";
             _invoicedJobsCount = "0";
 
             _receviedMoney = new List<decimal>();
@@ -368,42 +368,45 @@ namespace Traker.ViewModels
 
             // new jobs
             _newJobs.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                _newJobs.AddRange(Data.Clients
-                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
-                    .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-                    .Where(j => j.Status == "New")
-                    .Select(j => j.ClientId)
-                    .ToList());
-            }
-            NewJobsCount = _newJobs.Count().ToString(); // new jobs count
+            //for (int i = 0; i < _dashboardData.Count; i++)
+            //{
+            //    _newJobs.AddRange(Data.Clients
+            //        .Where(c => c.ClientId == _dashboardData[i].ClientId)
+            //        .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
+            //        .Where(j => j.Status == "New")
+            //        .Select(j => j.ClientId)
+            //        .ToList());
+            //}
+            //NewJobsCount = _newJobs.Count().ToString(); // new jobs count
+            NewJobsCount = Data.Jobs.Where(j => j.Status == "New").Count().ToString(); // new jobs count
 
             // in progress jobs
-            _inProgressJobs.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                _inProgressJobs.AddRange(Data.Clients
-                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
-                    .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-                    .Where(j => j.Status == "InProgress")
-                    .Select(j => j.ClientId)
-                    .ToList());
-            }
-            InProgressJobsCount = _inProgressJobs.Count().ToString(); // in progress jobs count
+            //_inProgressJobs.Clear();
+            //for (int i = 0; i < _dashboardData.Count; i++)
+            //{
+            //    _inProgressJobs.AddRange(Data.Clients
+            //        .Where(c => c.ClientId == _dashboardData[i].ClientId)
+            //        .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
+            //        .Where(j => j.Status == "InProgress")
+            //        .Select(j => j.ClientId)
+            //        .ToList());
+            //}
+            //InProgressJobsCount = _inProgressJobs.Count().ToString(); // in progress jobs count
+            ActiveJobsCount = Data.Jobs.Where(j => j.Status == "Active").Count().ToString();
 
             // completed jobs
-            _completedJobs.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                _completedJobs.AddRange(Data.Clients
-                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
-                    .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-                    .Where(j => j.Status == "Completed")
-                    .Select(j => j.ClientId)
-                    .ToList());
-            }
-            CompletedJobsCount = _completedJobs.Count().ToString(); // completed jobs count
+            //_completedJobs.Clear();
+            //for (int i = 0; i < _dashboardData.Count; i++)
+            //{
+            //    _completedJobs.AddRange(Data.Clients
+            //        .Where(c => c.ClientId == _dashboardData[i].ClientId)
+            //        .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
+            //        .Where(j => j.Status == "Completed")
+            //        .Select(j => j.ClientId)
+            //        .ToList());
+            //}
+            // CompletedJobsCount = _completedJobs.Count().ToString(); // completed jobs count
+            DoneJobsCount = Data.Jobs.Where(j => j.Status == "Done").Count().ToString();
 
             // invoiced jobs
             _invoicedJobs.Clear();
@@ -500,23 +503,23 @@ namespace Traker.ViewModels
             }
         }
 
-        public String InProgressJobsCount
+        public String ActiveJobsCount
         {
-            get { return _inProgressJobsCount; }
+            get { return _activeJobsCount; }
             set
             {
-                _inProgressJobsCount = value;
-                NotifyOfPropertyChange(() => InProgressJobsCount);
+                _activeJobsCount = value;
+                NotifyOfPropertyChange(() => ActiveJobsCount);
             }
         }
 
-        public String CompletedJobsCount
+        public String DoneJobsCount
         {
-            get { return _completedJobsCount; }
+            get { return _doneJobsCount; }
             set
             {
-                _completedJobsCount = value;
-                NotifyOfPropertyChange(() => CompletedJobsCount);
+                _doneJobsCount = value;
+                NotifyOfPropertyChange(() => DoneJobsCount);
             }
         }
 
