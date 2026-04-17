@@ -35,7 +35,7 @@ namespace Traker.ViewModels
         private string _moneyReceived; // money received value shown total
         private string _moneyToRecieve; // money outstanding value shown total
         private string _moneyOverdue; // money overdue value shown total
-        private string _moneyPrice; // money price = the final amount for a job (not invoiced)
+        private string _grossAmount; // money price = the final amount for a job (not invoiced)
         private string _newJobsCount;
         private string _activeJobsCount;
         private string _doneJobsCount;
@@ -54,10 +54,10 @@ namespace Traker.ViewModels
         private List<decimal> _receviedMoney; // money received
         private List<decimal> _outstandingdMoney; // mnoney to receive yet
         private List<decimal> _overdueMoney; // mnoney overdue (not paid + past due date)
-        private List<decimal> _priceMoney; // mnoney overdue (not paid + past due date)
-        private List<int> _newJobs; // new jobs
-        private List<int> _inProgressJobs; // in progress jobs
-        private List<int> _completedJobs; // completed jobs
+        //private List<decimal> _priceMoney; // mnoney overdue (not paid + past due date)
+        //private List<int> _newJobs; // new jobs
+        //private List<int> _inProgressJobs; // in progress jobs
+        //private List<int> _completedJobs; // completed jobs
         private List<int> _invoicedJobs; // completed jobs
         private ContextMenuViewModel _jobDetailsViewModel;
         private AddClientViewModel _addClientViewModel;
@@ -77,7 +77,7 @@ namespace Traker.ViewModels
             _moneyReceived = "0";
             _moneyToRecieve = "0";
             _moneyOverdue = "0";
-            _moneyPrice = "0";
+            _grossAmount = "0";
             _newJobsCount = "0";
             _activeJobsCount = "0";
             _doneJobsCount = "0";
@@ -86,10 +86,10 @@ namespace Traker.ViewModels
             _receviedMoney = new List<decimal>();
             _outstandingdMoney = new List<decimal>();
             _overdueMoney = new List<decimal>();
-            _priceMoney = new List<decimal>();
-            _newJobs = new List<int>();
-            _inProgressJobs = new List<int>();
-            _completedJobs = new List<int>();
+            //_priceMoney = new List<decimal>();
+            //_newJobs = new List<int>();
+            //_inProgressJobs = new List<int>();
+            //_completedJobs = new List<int>();
             _invoicedJobs = new List<int>();
 
             //_clients = new List<ClientsModel>();
@@ -342,71 +342,25 @@ namespace Traker.ViewModels
             MoneyToReceive = _outstandingdMoney.Sum().ToString("C"); // outstanding
 
             // overdue money
-            _overdueMoney.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                _overdueMoney.AddRange(Data.Clients
-                    .Where(client => client.ClientId == _dashboardData[i].ClientId)
-                    .Join(Data.Jobs, client => client.ClientId, job => job.ClientId, (client, job) => job)
-                    .Join(Data.Invoices, job => job.JobId, invoice => invoice.JobId, (job, invoice) => new { job.FinalPrice, invoice.Status, invoice.DueDate })
-                    .Where(x => x.Status == "Overdue" && x.DueDate < DateOnly.FromDateTime(DateTime.Now))
-                    .Select(x => x.FinalPrice)
-                    .ToList());
-            }
-            MoneyOverdue = _overdueMoney.Sum().ToString("C"); // overdue
-
-            // price money
-            _priceMoney.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                _priceMoney.AddRange(Data.Jobs
-                    .Where(j => j.ClientId == _dashboardData[i].ClientId)
-                    .Select(x => x.FinalPrice)
-                    .ToList());
-            }
-            MoneyPrice = _priceMoney.Sum().ToString("C"); // gross
-
-            // new jobs
-            _newJobs.Clear();
+            //_overdueMoney.Clear();
             //for (int i = 0; i < _dashboardData.Count; i++)
             //{
-            //    _newJobs.AddRange(Data.Clients
-            //        .Where(c => c.ClientId == _dashboardData[i].ClientId)
-            //        .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-            //        .Where(j => j.Status == "New")
-            //        .Select(j => j.ClientId)
+            //    _overdueMoney.AddRange(Data.Clients
+            //        .Where(client => client.ClientId == _dashboardData[i].ClientId)
+            //        .Join(Data.Jobs, client => client.ClientId, job => job.ClientId, (client, job) => job)
+            //        .Join(Data.Invoices, job => job.JobId, invoice => invoice.JobId, (job, invoice) => new { job.FinalPrice, invoice.Status, invoice.DueDate })
+            //        .Where(x => x.Status == "Overdue" && x.DueDate < DateOnly.FromDateTime(DateTime.Now))
+            //        .Select(x => x.FinalPrice)
             //        .ToList());
             //}
-            //NewJobsCount = _newJobs.Count().ToString(); // new jobs count
+            //MoneyOverdue = _overdueMoney.Sum().ToString("C"); // overdue
+            MoneyOverdue = Data.Jobs.Where(j => j.DueDate > DateOnly.FromDateTime(Convert.ToDateTime(DateTime.Now)) && j.Status == "Invoiced")
+                                      .Sum(j => j.FinalPrice).ToString("C");  // overdue
+
+            GrossAmount = Data.Jobs.Sum(gross => gross.FinalPrice).ToString("C"); // gross amount
             NewJobsCount = Data.Jobs.Where(j => j.Status == "New").Count().ToString(); // new jobs count
-
-            // in progress jobs
-            //_inProgressJobs.Clear();
-            //for (int i = 0; i < _dashboardData.Count; i++)
-            //{
-            //    _inProgressJobs.AddRange(Data.Clients
-            //        .Where(c => c.ClientId == _dashboardData[i].ClientId)
-            //        .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-            //        .Where(j => j.Status == "InProgress")
-            //        .Select(j => j.ClientId)
-            //        .ToList());
-            //}
-            //InProgressJobsCount = _inProgressJobs.Count().ToString(); // in progress jobs count
-            ActiveJobsCount = Data.Jobs.Where(j => j.Status == "Active").Count().ToString();
-
-            // completed jobs
-            //_completedJobs.Clear();
-            //for (int i = 0; i < _dashboardData.Count; i++)
-            //{
-            //    _completedJobs.AddRange(Data.Clients
-            //        .Where(c => c.ClientId == _dashboardData[i].ClientId)
-            //        .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-            //        .Where(j => j.Status == "Completed")
-            //        .Select(j => j.ClientId)
-            //        .ToList());
-            //}
-            // CompletedJobsCount = _completedJobs.Count().ToString(); // completed jobs count
-            DoneJobsCount = Data.Jobs.Where(j => j.Status == "Done").Count().ToString();
+            ActiveJobsCount = Data.Jobs.Where(j => j.Status == "Active").Count().ToString(); // active jobs count
+            DoneJobsCount = Data.Jobs.Where(j => j.Status == "Done").Count().ToString(); // done jobs count
 
             // invoiced jobs
             _invoicedJobs.Clear();
@@ -483,13 +437,13 @@ namespace Traker.ViewModels
             }
         }
 
-        public String MoneyPrice
+        public String GrossAmount
         {
-            get { return _moneyPrice; }
+            get { return _grossAmount; }
             set
             {
-                _moneyPrice = value;
-                NotifyOfPropertyChange(() => MoneyPrice);
+                _grossAmount = value;
+                NotifyOfPropertyChange(() => GrossAmount);
             }
         }
 
