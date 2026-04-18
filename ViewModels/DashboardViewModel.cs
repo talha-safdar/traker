@@ -32,9 +32,9 @@ namespace Traker.ViewModels
         #endregion
 
         #region Private View Variables
-        private string _moneyReceived; // money received value shown total
-        private string _moneyToRecieve; // money outstanding value shown total
-        private string _moneyOverdue; // money overdue value shown total
+        private string _receivedAmount; // money received value shown total
+        private string _outstandingAmount; // money outstanding value shown total
+        private string _overdueAmount; // money overdue value shown total
         private string _grossAmount; // money price = the final amount for a job (not invoiced)
         private string _newJobsCount;
         private string _activeJobsCount;
@@ -51,15 +51,15 @@ namespace Traker.ViewModels
         #endregion
 
         #region Private Field Variables
-        private List<decimal> _receviedMoney; // money received
-        private List<decimal> _outstandingdMoney; // mnoney to receive yet
-        private List<decimal> _overdueMoney; // mnoney overdue (not paid + past due date)
+        //private List<decimal> _receviedMoney; // money received
+        //private List<decimal> _outstandingdMoney; // mnoney to receive yet
+        //private List<decimal> _overdueMoney; // mnoney overdue (not paid + past due date)
         //private List<decimal> _priceMoney; // mnoney overdue (not paid + past due date)
         //private List<int> _newJobs; // new jobs
         //private List<int> _inProgressJobs; // in progress jobs
         //private List<int> _completedJobs; // completed jobs
         private List<int> _invoicedJobs; // completed jobs
-        private ContextMenuViewModel _jobDetailsViewModel;
+        private ContextMenuViewModel _contextMenuVM;
         private AddClientViewModel _addClientViewModel;
         private AddJobViewModel _addJobViewModel;
         private EditClientViewModel _editClientViewModel;
@@ -74,18 +74,18 @@ namespace Traker.ViewModels
             State = appState;
             Data = dataService;
 
-            _moneyReceived = "0";
-            _moneyToRecieve = "0";
-            _moneyOverdue = "0";
+            _receivedAmount = "0";
+            _outstandingAmount = "0";
+            _overdueAmount = "0";
             _grossAmount = "0";
             _newJobsCount = "0";
             _activeJobsCount = "0";
             _doneJobsCount = "0";
             _invoicedJobsCount = "0";
 
-            _receviedMoney = new List<decimal>();
-            _outstandingdMoney = new List<decimal>();
-            _overdueMoney = new List<decimal>();
+            //_receviedMoney = new List<decimal>();
+            //_outstandingdMoney = new List<decimal>();
+            //_overdueMoney = new List<decimal>();
             //_priceMoney = new List<decimal>();
             //_newJobs = new List<int>();
             //_inProgressJobs = new List<int>();
@@ -99,7 +99,7 @@ namespace Traker.ViewModels
             _selectedJob = new DashboardModel();
 
 
-            _jobDetailsViewModel = new ContextMenuViewModel(_events, _windowManager);
+            _contextMenuVM = new ContextMenuViewModel(_events, _windowManager, Data);
             _addClientViewModel = new AddClientViewModel(_events, State);
             _addJobViewModel = new AddJobViewModel(_events, State);
             _editClientViewModel = new EditClientViewModel(_events, _windowManager, Data);
@@ -158,9 +158,9 @@ namespace Traker.ViewModels
                 return;
             }
 
-            if (_jobDetailsViewModel != null)
+            if (_contextMenuVM != null)
             {
-                await _jobDetailsViewModel.TryCloseAsync(false);
+                await _contextMenuVM.TryCloseAsync(false);
             }
 
             // if using client name then it must be required at all the time
@@ -176,12 +176,9 @@ namespace Traker.ViewModels
              */
             if (SelectedJob.ClientId == selectedJob.ClientId)
             {
-                _jobDetailsViewModel = new ContextMenuViewModel(_events, _windowManager);
-                _jobDetailsViewModel.SelectedRow = selectedJob; // pass row selected
-                _jobDetailsViewModel.Clients = Data.Clients;
-                _jobDetailsViewModel.Jobs = Data.Jobs;
-                _jobDetailsViewModel.Invoices = Data.Invoices;
-                await _windowManager.ShowPopupAsync(_jobDetailsViewModel, null, CustomWindow.SettingsForDialog(310, 335)); // vertical, horizontal
+                _contextMenuVM = new ContextMenuViewModel(_events, _windowManager, Data);
+                _contextMenuVM.SelectedJob = selectedJob; // pass row selected
+                await _windowManager.ShowPopupAsync(_contextMenuVM, null, CustomWindow.SettingsForDialog(310, 335)); // vertical, horizontal
             }
         }
 
@@ -207,10 +204,10 @@ namespace Traker.ViewModels
             {
                 // if is not free then report it with a message box
                 // move this to a private function later
-                if (_jobDetailsViewModel != null)
+                if (_contextMenuVM != null)
                 {
-                    await _jobDetailsViewModel.TryCloseAsync(false);
-                    _jobDetailsViewModel = null;
+                    await _contextMenuVM.TryCloseAsync(false);
+                    _contextMenuVM = null;
                 }
                 if (_addJobViewModel != null)
                 {
@@ -237,10 +234,10 @@ namespace Traker.ViewModels
             if (State.IsWindowOpen == false)
             {
                 // if State.popup is not free then report it with a message box
-                if (_jobDetailsViewModel != null)
+                if (_contextMenuVM != null)
                 {
-                    await _jobDetailsViewModel.TryCloseAsync(false);
-                    _jobDetailsViewModel = null;
+                    await _contextMenuVM.TryCloseAsync(false);
+                    _contextMenuVM = null;
                 }
                 if (_addClientViewModel != null)
                 {
@@ -263,10 +260,10 @@ namespace Traker.ViewModels
 
         public async Task OnMouseDownEvent(Grid gridSource)
         {
-            if (_jobDetailsViewModel != null)
+            if (_contextMenuVM != null)
             {
-                await _jobDetailsViewModel.TryCloseAsync(false);
-                _jobDetailsViewModel = null;
+                await _contextMenuVM.TryCloseAsync(false);
+                _contextMenuVM = null;
             }
         }
         #endregion
@@ -300,8 +297,8 @@ namespace Traker.ViewModels
                     JobId = job.JobId,
                     JobTitle = job.Title,
                     JobDescription = job.Description,
-                    Price = job.FinalPrice.ToString("C"),
-                    AmountReceived = job.AmountReceived.ToString("C"),
+                    Price = job.FinalPrice.ToString(), // use toString("C") only for ui side
+                    AmountReceived = job.AmountReceived.ToString(),
                     JobStatus = job.Status.ToString(),
                     StartDate = job.StartDate,
                     DueDate = job.DueDate,
@@ -314,32 +311,34 @@ namespace Traker.ViewModels
             }
 
             // received money
-            _receviedMoney.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                _receviedMoney.AddRange(Data.Clients
-                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
-                    .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-                    .Join(Data.Invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.Status })
-                    .Where(x => x.Status == "Paid")
-                    .Select(x => x.FinalPrice)
-                    .ToList());
-            }
-            MoneyReceived = _receviedMoney.Sum().ToString("C"); // received
+            //_receviedMoney.Clear();
+            //for (int i = 0; i < _dashboardData.Count; i++)
+            //{
+            //    _receviedMoney.AddRange(Data.Clients
+            //        .Where(c => c.ClientId == _dashboardData[i].ClientId)
+            //        .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
+            //        .Join(Data.Invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.Status })
+            //        .Where(x => x.Status == "Paid")
+            //        .Select(x => x.FinalPrice)
+            //        .ToList());
+            //}
+            //MoneyReceived = _receviedMoney.Sum().ToString("C"); // received
+            ReceivedAmount = Data.Jobs.Where(j => j.Status == Names.Paid).Sum(j => j.FinalPrice).ToString("C");
 
             // outstanding money
-            _outstandingdMoney.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                _outstandingdMoney.AddRange(Data.Clients
-                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
-                    .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-                    .Join(Data.Invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.Status, inv.IssueDate, inv.DueDate })
-                    .Where(x => x.Status == "Sent" && x.IssueDate < DateOnly.FromDateTime(DateTime.Now) && x.DueDate > DateOnly.FromDateTime(DateTime.Now))
-                    .Select(x => x.FinalPrice)
-                    .ToList());
-            }
-            MoneyToReceive = _outstandingdMoney.Sum().ToString("C"); // outstanding
+            //_outstandingdMoney.Clear();
+            //for (int i = 0; i < _dashboardData.Count; i++)
+            //{
+            //    _outstandingdMoney.AddRange(Data.Clients
+            //        .Where(c => c.ClientId == _dashboardData[i].ClientId)
+            //        .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
+            //        .Join(Data.Invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.Status, inv.IssueDate, inv.DueDate })
+            //        .Where(x => x.Status == "Sent" && x.IssueDate < DateOnly.FromDateTime(DateTime.Now) && x.DueDate > DateOnly.FromDateTime(DateTime.Now))
+            //        .Select(x => x.FinalPrice)
+            //        .ToList());
+            //}
+            //MoneyToReceive = _outstandingdMoney.Sum().ToString("C"); // outstanding
+            OutstandingAmount = Data.Jobs.Where(j => j.Status == "Done").Sum(j => j.FinalPrice).ToString("C");
 
             // overdue money
             //_overdueMoney.Clear();
@@ -354,7 +353,7 @@ namespace Traker.ViewModels
             //        .ToList());
             //}
             //MoneyOverdue = _overdueMoney.Sum().ToString("C"); // overdue
-            MoneyOverdue = Data.Jobs.Where(j => j.DueDate > DateOnly.FromDateTime(Convert.ToDateTime(DateTime.Now)) && j.Status == "Invoiced")
+            OverdueAmount = Data.Jobs.Where(j => j.DueDate > DateOnly.FromDateTime(Convert.ToDateTime(DateTime.Now)) && j.Status == "Invoiced")
                                       .Sum(j => j.FinalPrice).ToString("C");  // overdue
 
             GrossAmount = Data.Jobs.Sum(gross => gross.FinalPrice).ToString("C"); // gross amount
@@ -407,33 +406,33 @@ namespace Traker.ViewModels
         }
 
         #region Public View Variables     
-        public String MoneyReceived
+        public String ReceivedAmount
         {
-            get { return _moneyReceived; }
+            get { return _receivedAmount; }
             set
             {
-                _moneyReceived = value;
-                NotifyOfPropertyChange(() => MoneyReceived);
+                _receivedAmount = value;
+                NotifyOfPropertyChange(() => ReceivedAmount);
             }
         }
 
-        public String MoneyToReceive
+        public String OutstandingAmount
         {
-            get { return _moneyToRecieve; }
+            get { return _outstandingAmount; }
             set
             {
-                _moneyToRecieve = value;
-                NotifyOfPropertyChange(() => MoneyToReceive);
+                _outstandingAmount = value;
+                NotifyOfPropertyChange(() => OutstandingAmount);
             }
         }
 
-        public String MoneyOverdue
+        public String OverdueAmount
         {
-            get { return _moneyOverdue; }
+            get { return _overdueAmount; }
             set
             {
-                _moneyOverdue = value;
-                NotifyOfPropertyChange(() => MoneyOverdue);
+                _overdueAmount = value;
+                NotifyOfPropertyChange(() => OverdueAmount);
             }
         }
 

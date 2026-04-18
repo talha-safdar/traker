@@ -17,6 +17,7 @@ namespace Traker.ViewModels
     using System.Globalization;
     using System.IO;
     using Traker.Events;
+    using Traker.Services;
 
     public class CreateInvoiceViewModel : Screen
     {
@@ -43,17 +44,16 @@ namespace Traker.ViewModels
          * create a new model containing all the important information to pre-fill
          * the invoice form could be using DashboardModel since it's under row selection
          */
-        public DashboardModel SelectedRow; // data passed by DashboardVM
-        public List<ClientsModel> Clients;
-        public List<JobsModel> Jobs;
-        public List<InvoicesModel> Invoices;
+        public DashboardModel SelectedJob; // data passed by DashboardVM
+        public DataService Data { get; } // data from the database
         #endregion
 
-        public CreateInvoiceViewModel(IEventAggregator events)
+        public CreateInvoiceViewModel(IEventAggregator events, DataService data)
         {
             _events = events;
+            Data = data;
 
-            SelectedRow = new DashboardModel(); // to be improved to add useful properties
+            SelectedJob = new DashboardModel(); // to be improved to add useful properties
 
             _billingName = string.Empty;
             _billingAddress = string.Empty;
@@ -69,7 +69,13 @@ namespace Traker.ViewModels
 
         protected override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
-            BillingName = SelectedRow.ClientName;
+            BillingName = SelectedJob.ClientName;
+            BillingAddress = SelectedJob.BillingAddress;
+            BillingCity = SelectedJob.City;
+            BillingPostcode = SelectedJob.Postcode;
+            BillingCountry = SelectedJob.Country;
+            DueDate = SelectedJob.DueDate.ToString();
+            Subtotal = Convert.ToDecimal(SelectedJob.Price);
 
             return base.OnInitializedAsync(cancellationToken);
         }
@@ -87,15 +93,15 @@ namespace Traker.ViewModels
 
         public Task CreateInvoice()
         {
-            BillingName = "Obama";
-            BillingAddress = "32 Downing Street";
-            BillingCity = "London";
-            BillingPostcode = "SW1A 2AA";
-            BillingCountry = "United Kingdom";
-            DueDate = "23/10/2026";
-            Subtotal = 1000.00m;
-            VatValue = "20%";
-            TotalAmount = 1200.00m;
+            //BillingName = "Obama";
+            //BillingAddress = "32 Downing Street";
+            //BillingCity = "London";
+            //BillingPostcode = "SW1A 2AA";
+            //BillingCountry = "United Kingdom";
+            //DueDate = "23/10/2026";
+            //Subtotal = 1000.00m;
+            //VatValue = "20%";
+            //TotalAmount = 1200.00m;
 
 
             /*
@@ -151,7 +157,7 @@ namespace Traker.ViewModels
                     page.Header().PaddingBottom(60).Row(row =>
                     {
                         // cell 1
-                        row.RelativeItem().Text("TRAKER").ExtraBold().FontSize(36).FontColor(Colors.Blue.Medium);
+                        row.RelativeItem().Text(SelectedJob.CompanyName).ExtraBold().FontSize(36).FontColor(Colors.Blue.Medium);
 
                         // cell 2
                         row.RelativeItem().AlignRight().Text("Invoice").SemiBold().FontSize(36).FontColor(Colors.Black);
@@ -189,16 +195,16 @@ namespace Traker.ViewModels
                             section1.RelativeItem().AlignLeft().Column(billingInfo =>
                             {
                                 billingInfo.Item().Text("BILLED TO:").FontSize(14).Bold();
-                                billingInfo.Item().Text("Client Name").FontSize(14);
+                                billingInfo.Item().Text(BillingName).FontSize(14);
                                 billingInfo.Item().Text("Client phone number").FontSize(14);
-                                billingInfo.Item().Text("Client address").FontSize(14);
+                                billingInfo.Item().Text(BillingAddress).FontSize(14);
                             });
 
                             // invoice info
                             section1.RelativeItem().AlignRight().Column(invoiceInfo =>
                             {
                                 invoiceInfo.Item().Text("Invoice No. 12345").FontSize(14);
-                                invoiceInfo.Item().Text("00/00/0000").FontSize(14);
+                                invoiceInfo.Item().Text(DateOnly.FromDateTime(Convert.ToDateTime(DateTime.Now)).ToString()).FontSize(14);
                             });
                             //section1.RelativeItem().AlignLeft().Text("Ullah\nUllah\nUllah\nUllah");
                             //section1.RelativeItem().AlignRight().Text("Ullah\nUllah");
@@ -237,10 +243,10 @@ namespace Traker.ViewModels
                                 columns.RelativeColumn(1); // total
                             });
 
-                            section2.Cell().PaddingLeft(10).AlignLeft().Text("bomb fewfwe fewf wfew").FontSize(14);
-                            section2.Cell().AlignCenter().Text("2").FontSize(14);
-                            section2.Cell().AlignCenter().Text("20").FontSize(14);
-                            section2.Cell().AlignCenter().Text("40").FontSize(14);
+                            section2.Cell().PaddingLeft(10).AlignLeft().Text(SelectedJob.JobTitle).FontSize(14);
+                            section2.Cell().AlignCenter().Text("1").FontSize(14);
+                            section2.Cell().AlignCenter().Text(SelectedJob.Price).FontSize(14);
+                            section2.Cell().AlignCenter().Text(SelectedJob.Price).FontSize(14);
                         });
                         mainContainer.Item().PaddingVertical(5).LineHorizontal(1);
 
@@ -255,17 +261,17 @@ namespace Traker.ViewModels
                                 Subtotal.RelativeItem().Text("subtotal").ExtraBold().FontSize(14);
 
                                 // cell 2
-                                Subtotal.RelativeItem().Text("1000").FontSize(14);
+                                Subtotal.RelativeItem().Text((Convert.ToDecimal(SelectedJob.Price).ToString("C"))).FontSize(14);
                             });
 
                             // tax
                             section3.Item().PaddingBottom(10).Row(Subtotal =>
                             {
                                 // cell 1
-                                Subtotal.RelativeItem().Text("Tax (0%)").ExtraBold().FontSize(14);
+                                Subtotal.RelativeItem().Text($"Tax (%)").ExtraBold().FontSize(14);
 
                                 // cell 2
-                                Subtotal.RelativeItem().Text("10").FontSize(14);
+                                Subtotal.RelativeItem().Text(VatValue).FontSize(14);
                             });
 
                             // line break
@@ -278,7 +284,7 @@ namespace Traker.ViewModels
                                 Subtotal.RelativeItem().Text("Total").ExtraBold().FontSize(14);
 
                                 // cell 2
-                                Subtotal.RelativeItem().Text("405").FontSize(14);
+                                Subtotal.RelativeItem().Text(TotalAmount.ToString("C")).FontSize(14);
                             });
                         });
 
@@ -294,17 +300,6 @@ namespace Traker.ViewModels
                         // section 5 (payment info, company info)
                         mainContainer.Item().PaddingBottom(60).Row(section5 =>
                         {
-                            //mainContainer.Item().PaddingBottom(60).Row(section1 =>
-                            //{
-                            //    // billing info
-                            //    section1.RelativeItem().AlignLeft().Column(billingInfo =>
-                            //    {
-                            //        billingInfo.Item().Text("BILLED TO:").FontSize(14).Bold();
-                            //        billingInfo.Item().Text("Client Name").FontSize(14);
-                            //        billingInfo.Item().Text("Client phone number").FontSize(14);
-                            //        billingInfo.Item().Text("Client address").FontSize(14);
-                            //    });
-
                             // payment info
                             section5.RelativeItem().AlignLeft().Column(paymentInfo =>
                             {
