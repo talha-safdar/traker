@@ -113,12 +113,17 @@ namespace Traker.ViewModels
             //public static Task CreateInvoice(int jobId, decimal subtotal, decimal taxAmount, decimal totalAmount, DateTime dueDate, string billingName, string billingAddress, string billingCity, string billingPostcode, string billingCountry)
 
 
-            var dueDate = DateTime.MinValue;
+            var dueDate = DateOnly.MinValue;
             //decimal amount = 0;
+
+            //if (DueDate != String.Empty)
+            //{
+            //    dueDate = DateOnly.ParseExact(DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+            //}
 
             if (DueDate != String.Empty)
             {
-                dueDate = DateTime.ParseExact(DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                dueDate = DateOnly.ParseExact(DueDate,"dd/MM/yyyy", CultureInfo.InvariantCulture);
             }
 
             //if (VatValue != String.Empty)
@@ -129,7 +134,9 @@ namespace Traker.ViewModels
 
             int result = int.Parse(VatValue.TrimEnd('%'));
 
-            //Database.CreateInvoice(SelectedRow.JobId, Subtotal, result, TotalAmount, dueDate, BillingName, BillingAddress, BillingCity, BillingPostcode, BillingCountry);
+            Database.CreateInvoice(SelectedJob.ClientId, SelectedJob.JobId, Subtotal, result, TotalAmount, dueDate, BillingName, BillingAddress, BillingCity, BillingPostcode, BillingCountry);
+
+
 
             GenerateInvoice();
 
@@ -307,7 +314,7 @@ namespace Traker.ViewModels
                                 paymentInfo.Item().Text("Bank Name").FontSize(14);
                                 paymentInfo.Item().Text("Client billing name").FontSize(14);
                                 paymentInfo.Item().Text("Account number").FontSize(14);
-                                paymentInfo.Item().Text("deadline pay date").FontSize(14);
+                                paymentInfo.Item().Text(DueDate).FontSize(14);
                             });
 
                             section5.RelativeItem().AlignRight().Column(companyInfo =>

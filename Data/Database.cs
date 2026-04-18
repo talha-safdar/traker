@@ -4,6 +4,7 @@ using Microsoft.VisualBasic;
 using System.IO;
 using System.Reflection;
 using System.Windows;
+using Traker.Helper;
 using Traker.Models;
 using Traker.Services;
 
@@ -470,23 +471,21 @@ namespace Traker.Database
                 using var conn = new SqliteConnection(_connectionString);
                 conn.Open();
 
-                if (status == "New")
+                using (var pragma = conn.CreateCommand())
                 {
-                    using (var pragma = conn.CreateCommand())
-                    {
-                        pragma.CommandText = "PRAGMA foreign_keys = ON;";
-                        pragma.ExecuteNonQuery();
+                    pragma.CommandText = "PRAGMA foreign_keys = ON;";
+                    pragma.ExecuteNonQuery();
 
-                        using (var jobStatusCmd = conn.CreateCommand())
+                    using (var jobStatusCmd = conn.CreateCommand())
+                    {
+                        if (status == Names.New)
                         {
-                            jobStatusCmd.CommandText = @"
-    
+                            jobStatusCmd.CommandText = @"    
                             UPDATE Jobs
                             SET Status = @status,
                                 StartDate = @startDate,
                                 CompletedDate = @completedDate
-                            WHERE JobId = @jobId;
-                        
+                            WHERE JobId = @jobId;                        
                             ";
 
                             jobStatusCmd.Parameters.AddWithValue("@status", status);
@@ -495,53 +494,43 @@ namespace Traker.Database
                             jobStatusCmd.Parameters.AddWithValue("@jobId", jobId);
                             jobStatusCmd.ExecuteNonQuery();
                         }
-                    }
-                }
-                else if (status == "Active")
-                {
-                    using (var pragma = conn.CreateCommand())
-                    {
-                        pragma.CommandText = "PRAGMA foreign_keys = ON;";
-                        pragma.ExecuteNonQuery();
-
-                        using (var jobStatusCmd = conn.CreateCommand())
+                        else if (status == Names.Active)
                         {
-                            jobStatusCmd.CommandText = @"
-    
+                            jobStatusCmd.CommandText = @"    
                             UPDATE Jobs
                             SET Status = @status,
                                 StartDate = @startDate
-                            WHERE JobId = @jobId;
-                        
+                            WHERE JobId = @jobId;                        
                             ";
 
                             jobStatusCmd.Parameters.AddWithValue("@status", status);
-                            jobStatusCmd.Parameters.AddWithValue("@startDate", DateTime.Now.Date);
+                            jobStatusCmd.Parameters.AddWithValue("@startDate", DateOnly.FromDateTime(Convert.ToDateTime(DateTime.Now)));
                             jobStatusCmd.Parameters.AddWithValue("@jobId", jobId);
                             jobStatusCmd.ExecuteNonQuery();
                         }
-                    }
-                }
-                else if (status == "Done")
-                {
-                    using (var pragma = conn.CreateCommand())
-                    {
-                        pragma.CommandText = "PRAGMA foreign_keys = ON;";
-                        pragma.ExecuteNonQuery();
-
-                        using (var jobStatusCmd = conn.CreateCommand())
+                        else if (status == Names.Done)
                         {
-                            jobStatusCmd.CommandText = @"
-    
+                            jobStatusCmd.CommandText = @"    
                             UPDATE Jobs
                             SET Status = @status,
                                 CompletedDate = @completedDate
-                            WHERE JobId = @jobId;
-                        
+                            WHERE JobId = @jobId;                        
                             ";
 
                             jobStatusCmd.Parameters.AddWithValue("@status", status);
-                            jobStatusCmd.Parameters.AddWithValue("@completedDate", DateTime.Now.Date);
+                            jobStatusCmd.Parameters.AddWithValue("@completedDate", DateOnly.FromDateTime(Convert.ToDateTime(DateTime.Now)));
+                            jobStatusCmd.Parameters.AddWithValue("@jobId", jobId);
+                            jobStatusCmd.ExecuteNonQuery();
+                        }
+                        else if (status == Names.Invoiced)
+                        {
+                            jobStatusCmd.CommandText = @"    
+                            UPDATE Jobs
+                            SET Status = @status
+                            WHERE JobId = @jobId;                        
+                            ";
+
+                            jobStatusCmd.Parameters.AddWithValue("@status", status);
                             jobStatusCmd.Parameters.AddWithValue("@jobId", jobId);
                             jobStatusCmd.ExecuteNonQuery();
                         }
@@ -706,7 +695,7 @@ namespace Traker.Database
         /// <summary>
         /// Create a new invoice for a job by adding a new row to the Invoices table. This is done by opening a connection to the database, starting a transaction, and then executing a SQL command to insert a new row into the Invoices table with the specified details. The function takes several parameters including the job ID, subtotal, tax amount, total amount, due date, billing name, billing address, billing city, billing postcode, and billing country. If any errors occur during this process, an error message is displayed to the user and the transaction is rolled back. If the invoice is created successfully, a log entry is made indicating that the operation was successful along with the job ID.
         /// </summary>
-        public static Task CreateInvoice(int jobId, decimal subtotal, int taxAmount, decimal totalAmount, DateOnly dueDate, string billingName, string billingAddress, string billingCity, string billingPostcode, string billingCountry)
+        public static Task CreateInvoice(int clientId, int jobId, decimal subtotal, int taxAmount, decimal totalAmount, DateOnly dueDate, string billingName, string billingAddress, string billingCity, string billingPostcode, string billingCountry)
         {
             try
             {
@@ -723,6 +712,7 @@ namespace Traker.Database
 
                 long nextNumber;
 
+                // find the highest invoice number and add +1 for current entry
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.Transaction = transaction;
@@ -730,7 +720,7 @@ namespace Traker.Database
                     nextNumber = (long)cmd.ExecuteScalar()! + 1;
                 }
 
-                // insert into Clients table
+                // insert into Invoices table
                 using (var invoicesCmd = conn.CreateCommand())
                 {
                     invoicesCmd.CommandText = @"
@@ -771,7 +761,7 @@ namespace Traker.Database
                     invoicesCmd.Parameters.AddWithValue("@subtotal", subtotal);
                     invoicesCmd.Parameters.AddWithValue("@taxAmount", taxAmount);
                     invoicesCmd.Parameters.AddWithValue("@totalAmount", totalAmount);
-                    invoicesCmd.Parameters.AddWithValue("@issueDate", DateTime.Now.Date);
+                    invoicesCmd.Parameters.AddWithValue("@issueDate", DateOnly.FromDateTime(Convert.ToDateTime(DateTime.Now)));
                     invoicesCmd.Parameters.AddWithValue("@dueDate", dueDate.ToString("yyyy-MM-dd"));
                     invoicesCmd.Parameters.AddWithValue("@billingName", billingName);
                     invoicesCmd.Parameters.AddWithValue("@billingAddress", billingAddress);
@@ -782,7 +772,12 @@ namespace Traker.Database
 
                     invoicesCmd.ExecuteNonQuery();
                 }
+
                 transaction.Commit();
+
+                // also update the status in Jobs table to "Invoiced"
+                SetStatus(Names.Invoiced, clientId, jobId);
+
                 Logger.LogActivity(Logger.INFO, $"Database: CreateInvoice() OK - JobId: {jobId}");
             }
             catch (Exception ex)

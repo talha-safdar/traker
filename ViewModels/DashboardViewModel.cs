@@ -310,70 +310,20 @@ namespace Traker.ViewModels
                 index++;
             }
 
-            // received money
-            //_receviedMoney.Clear();
-            //for (int i = 0; i < _dashboardData.Count; i++)
-            //{
-            //    _receviedMoney.AddRange(Data.Clients
-            //        .Where(c => c.ClientId == _dashboardData[i].ClientId)
-            //        .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-            //        .Join(Data.Invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.Status })
-            //        .Where(x => x.Status == "Paid")
-            //        .Select(x => x.FinalPrice)
-            //        .ToList());
-            //}
-            //MoneyReceived = _receviedMoney.Sum().ToString("C"); // received
-            ReceivedAmount = Data.Jobs.Where(j => j.Status == Names.Paid).Sum(j => j.FinalPrice).ToString("C");
-
-            // outstanding money
-            //_outstandingdMoney.Clear();
-            //for (int i = 0; i < _dashboardData.Count; i++)
-            //{
-            //    _outstandingdMoney.AddRange(Data.Clients
-            //        .Where(c => c.ClientId == _dashboardData[i].ClientId)
-            //        .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-            //        .Join(Data.Invoices, j => j.JobId, inv => inv.JobId, (j, inv) => new { j.FinalPrice, inv.Status, inv.IssueDate, inv.DueDate })
-            //        .Where(x => x.Status == "Sent" && x.IssueDate < DateOnly.FromDateTime(DateTime.Now) && x.DueDate > DateOnly.FromDateTime(DateTime.Now))
-            //        .Select(x => x.FinalPrice)
-            //        .ToList());
-            //}
-            //MoneyToReceive = _outstandingdMoney.Sum().ToString("C"); // outstanding
-            OutstandingAmount = Data.Jobs.Where(j => j.Status == "Done").Sum(j => j.FinalPrice).ToString("C");
-
-            // overdue money
-            //_overdueMoney.Clear();
-            //for (int i = 0; i < _dashboardData.Count; i++)
-            //{
-            //    _overdueMoney.AddRange(Data.Clients
-            //        .Where(client => client.ClientId == _dashboardData[i].ClientId)
-            //        .Join(Data.Jobs, client => client.ClientId, job => job.ClientId, (client, job) => job)
-            //        .Join(Data.Invoices, job => job.JobId, invoice => invoice.JobId, (job, invoice) => new { job.FinalPrice, invoice.Status, invoice.DueDate })
-            //        .Where(x => x.Status == "Overdue" && x.DueDate < DateOnly.FromDateTime(DateTime.Now))
-            //        .Select(x => x.FinalPrice)
-            //        .ToList());
-            //}
-            //MoneyOverdue = _overdueMoney.Sum().ToString("C"); // overdue
-            OverdueAmount = Data.Jobs.Where(j => j.DueDate > DateOnly.FromDateTime(Convert.ToDateTime(DateTime.Now)) && j.Status == "Invoiced")
-                                      .Sum(j => j.FinalPrice).ToString("C");  // overdue
-
+            NewJobsCount = Data.Jobs.Where(j => j.Status == Names.New).Count().ToString(); // new jobs count
+            DoneJobsCount = Data.Jobs.Where(j => j.Status == Names.Done).Count().ToString(); // done jobs count
+            ActiveJobsCount = Data.Jobs.Where(j => j.Status == Names.Active).Count().ToString(); // active jobs count
+            InvoicedJobsCount = Data.Jobs.Where(j => j.Status == Names.Invoiced).Count().ToString(); // invoiced jobs count
             GrossAmount = Data.Jobs.Sum(gross => gross.FinalPrice).ToString("C"); // gross amount
-            NewJobsCount = Data.Jobs.Where(j => j.Status == "New").Count().ToString(); // new jobs count
-            ActiveJobsCount = Data.Jobs.Where(j => j.Status == "Active").Count().ToString(); // active jobs count
-            DoneJobsCount = Data.Jobs.Where(j => j.Status == "Done").Count().ToString(); // done jobs count
-
-            // invoiced jobs
-            _invoicedJobs.Clear();
-            for (int i = 0; i < _dashboardData.Count; i++)
-            {
-                _invoicedJobs.AddRange(Data.Clients
-                    .Where(c => c.ClientId == _dashboardData[i].ClientId)
-                    .Join(Data.Jobs, c => c.ClientId, j => j.ClientId, (c, j) => j)
-                    .Where(j => j.Status == "Invoiced")
-                    .Select(j => j.ClientId)
-                    .ToList());
-            }
-            InvoicedJobsCount = _invoicedJobs.Count().ToString(); // invoiced jobs count
-
+            ReceivedAmount = Data.Jobs.Where(j => j.Status == Names.Paid).Sum(j => j.FinalPrice).ToString("C");
+            OutstandingAmount = Data.Jobs.Where(j => j.Status == Names.Done).Sum(j => j.FinalPrice).ToString("C");
+            OverdueAmount = Data.Jobs
+                                .Where(j => j.Status == Names.Invoiced)
+                                .Join(Data.Invoices, 
+                                      job => job.JobId, 
+                                      inv => inv.JobId, (job, inv) => new { job.FinalPrice, inv.DueDate })
+                                .Where(x => x.DueDate < DateOnly.FromDateTime(DateTime.Now))
+                                .Sum(x => x.FinalPrice).ToString("C"); // overdue
             return Task.CompletedTask;
         }
         #endregion

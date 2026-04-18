@@ -34,6 +34,8 @@ format and have a button maybe to access deleted clients, jobs, invoices (howeve
 - can create invoice only if job is done
 - set default type to individual
 - might add total number of clients and jobs
+- once status is set to "Invoiced" user cannot change it
+- only create invoice if status done?
 
 
 
