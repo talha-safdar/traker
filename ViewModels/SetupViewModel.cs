@@ -10,6 +10,9 @@ using Traker.States;
 namespace Traker.ViewModels
 {
     using Database;
+    using System.Collections.ObjectModel;
+    using System.Threading;
+    using Traker.Helper;
 
     public class SetupViewModel : Screen
     {
@@ -33,14 +36,53 @@ namespace Traker.ViewModels
         private string _city;
         private string _address;
         private string _postcode;
+        private bool _isIndividual;
+        private double _businessNameOpacity;
+
+        // window management
+        //private bool _userWindow;
+        //private bool _businessWindow;
+        //private bool _bankWindow;
+        private ObservableCollection<bool> _setupWindows;
         #endregion
 
         public SetupViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState, DataService dataService)
         {
+            // caliburn
             _events = events;
             _windowManager = windowManager;
             _appState = appState;
             _dataService = dataService;
+        }
+
+        protected override Task OnInitializedAsync(CancellationToken cancellationToken)
+        {
+            // user info
+            _fullName = string.Empty;
+            _email = string.Empty;
+            _phone = string.Empty;
+            _companyType = string.Empty;
+            // debug
+            _fullName = "Adolf Hitler";
+            _email = "adolf@gmail.com";
+            _phone = "34345435";
+
+            // business info
+            _businessName = string.Empty;
+            _country = string.Empty;
+            _city = string.Empty;
+            _address = string.Empty;
+            _postcode = string.Empty;
+            _isIndividual = true;
+            _businessNameOpacity = 1.0;
+
+            // window management
+            //_userWindow = true;
+            //_businessWindow = false;
+            //_bankWindow = false;
+            SetupWindows = new ObservableCollection<bool>() { true, false, false }; // 0=user, 1=business, 2=bank
+
+            return base.OnInitializedAsync(cancellationToken);
         }
 
         #region Public View Functions
@@ -49,8 +91,32 @@ namespace Traker.ViewModels
             await Database.Createuser(FullName, Email, Phone);
 
             // refresh database
+            await _dataService.RefreshDatabase();
 
             // check if company or not then deal with busienss name
+            // if user table is not empty
+            // only exepcted one row
+            if (_dataService.User?.Any() == true)
+            {
+                // individual
+                if (CompanyType == Names.Individual)
+                {
+                    BusinessName = FullName;
+                    IsIndividual = true; // set businessName to readonly
+                    BusinessNameOpacity = 0.5; // set opacity to half
+                }
+                else if (CompanyType == Names.Company)
+                {
+                    IsIndividual = false;
+                    BusinessNameOpacity = 1.0; // set opacity to full
+                }
+
+                await UIHelper.SwitchBetweenViews(SetupWindows, 1);
+            }
+        }
+
+        public async Task ConfirmBusinessSetup()
+        {
         }
 
         public Task SetBusinessType(string businessType)
@@ -151,6 +217,36 @@ namespace Traker.ViewModels
             {
                 _postcode = value;
                 NotifyOfPropertyChange(() => Postcode);
+            }
+        }
+
+        public bool IsIndividual
+        {
+            get { return _isIndividual; }
+            set
+            {
+                _isIndividual = value;
+                NotifyOfPropertyChange(() => IsIndividual);
+            }
+        }
+
+        public double BusinessNameOpacity
+        {
+            get { return _businessNameOpacity; }
+            set
+            {
+                _businessNameOpacity = value;
+                NotifyOfPropertyChange(() => BusinessNameOpacity);
+            }
+        }
+
+        public ObservableCollection<bool> SetupWindows
+        {
+            get { return _setupWindows; }
+            set
+            {
+                _setupWindows = value;
+                NotifyOfPropertyChange(() => SetupWindows);
             }
         }
         #endregion

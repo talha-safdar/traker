@@ -3,14 +3,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:conv="clr-namespace:UltraAnalysis.Converters"
              xmlns:local="clr-namespace:Traker.Views"
              xmlns:cal="http://caliburnmicro.com"
              mc:Ignorable="d" 
              d:DesignHeight="1000" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <conv:BoolToVisibilityCollapsed x:Key="BoolToVisCollapsed"/>
+    </UserControl.Resources>
+    
     <Grid>
 
         <!--#region user setup-->
-        <Border Visibility="Collapsed" Height="800" Width="1000" Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
+        <Border Visibility="{Binding SetupWindows[0], Converter={StaticResource BoolToVisCollapsed}}" Height="800" Width="1000" Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
             <Grid Margin="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" /> <!-- main content -->
@@ -112,8 +118,7 @@
         <!--#endregion-->
        
         <!--#region business setup -->
-        <!-- individual -->
-        <Border Visibility="Visible" Height="800" Width="1000" Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
+        <Border Visibility="{Binding SetupWindows[1], Converter={StaticResource BoolToVisCollapsed}}" Height="800" Width="1000" Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
             <Grid Margin="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />                    <!-- main content -->
@@ -145,13 +150,13 @@
                         <TextBlock Margin="100,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="Enter Business Information" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34" />
                     </Grid>
 
-                    <!-- user information -->
+                    <!-- business information -->
                     <Grid Grid.Row="3" VerticalAlignment="Center">
                         <Border Background="#494949" CornerRadius="20" Margin="100,0" Padding="30">
                             <StackPanel Orientation="Vertical" Margin="0" VerticalAlignment="Center" >
                                 <StackPanel Orientation="Vertical" Margin="0,0,0,10">
                                     <TextBlock Margin="5,0,0,0" Text="Business Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                                    <TextBox Text="{Binding BusinessName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Opacity="0.5" IsReadOnly="True" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBox Text="{Binding BusinessName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Opacity="{Binding BusinessNameOpacity}" IsReadOnly="{Binding IsIndividual}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                                 </StackPanel>
                                 <StackPanel Orientation="Vertical" Margin="0,0,0,10">
                                     <TextBlock Margin="5,0,0,0" Text="Country" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
@@ -188,15 +193,10 @@
                 </Grid>
             </Grid>
         </Border>
-        
-        <!-- company -->
-        <Border Visibility="Collapsed" Height="800" Width="1000" Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
-
-        </Border>
         <!--#endregion-->
         
         <!--#region bank setup -->
-        <Border Visibility="Collapsed" Height="800" Width="1000" Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
+        <Border Visibility="{Binding SetupWindows[2], Converter={StaticResource BoolToVisCollapsed}}" Height="800" Width="1000" Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
 
         </Border>
         <!--#endregion-->

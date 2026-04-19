@@ -50,6 +50,12 @@ namespace Traker.Services
             });
         }
 
+        public async Task RefreshDatabase()
+        {
+            await ClearDataVariables();
+            await FetchDatabase();
+        }
+
         //public async Task DeleteJob(int clientId)
         //{
         //    await Task.Run(async() =>

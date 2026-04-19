@@ -68,7 +68,7 @@ namespace Traker.ViewModels
             // check if user table is empty
             // if so, it means it's a fresh start
             // else ignore
-            if (_dataService.Jobs?.Any() == false)
+            if (_dataService.User?.Any() == false)
             {
                 // open the setup window
                 await Task.Delay(5000);
