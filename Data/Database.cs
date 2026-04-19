@@ -1,11 +1,13 @@
 ﻿using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.VisualBasic;
+using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;
 using Traker.Helper;
-using Traker.Models;
+using Traker.Models.Database;
 using Traker.Services;
 
 namespace Traker.Database
@@ -58,7 +60,7 @@ namespace Traker.Database
                     else
                     {
                         MessageBox.Show(
-                            $"An error occurred while setting up the database. Please try again.\n\nUnable to locate database schema.",
+                            $"An error occurred while setting up the database. Please try again.\n\tUnable to locate database schema.",
                             "Database Setup",
                             MessageBoxButton.OK,
                             MessageBoxImage.Warning);
@@ -69,7 +71,7 @@ namespace Traker.Database
                 catch (Exception ex)
                 {
                     MessageBox.Show(
-                        $"An error occurred while setting up the database. Please try again.\n\n{ex.Message}",
+                        $"An error occurred while setting up the database. Please try again.\n\t{ex.Message}",
                         "Database Setup",
                         MessageBoxButton.OK,
                         MessageBoxImage.Error);
@@ -152,7 +154,7 @@ namespace Traker.Database
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"An error occurred while fetching 'Client' table. Please try again.\n\n{ex.Message}",
+                    $"An error occurred while fetching 'Client' table. Please try again.\n\t{ex.Message}",
                     "Fetch Client Tables",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
@@ -245,7 +247,7 @@ namespace Traker.Database
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"An error occurred while fetching 'Job' table. Please try again.\n\n{ex.Message}",
+                    $"An error occurred while fetching 'Job' table. Please try again.\n\t{ex.Message}",
                     "Fetch Job Tables",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
@@ -347,12 +349,222 @@ namespace Traker.Database
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"An error occurred while fetching 'Invoice' table. Please try again.\n\n{ex.Message}",
+                    $"An error occurred while fetching 'Invoice' table. Please try again.\n\t{ex.Message}",
                     "Fetch Invoice Tables",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
 
                 Logger.LogActivity(Logger.ERROR, $"Database: FetchInvoiceTable() FAIL");
+                Environment.Exit(1); // kill process
+                throw; // necessary otherwsie cries about no return value
+            }
+        }
+
+        /// <summary>
+        /// Fetch User information
+        /// </summary>
+        public static List<UserModel> FetchUserTable()
+        {
+            List<UserModel> userList = new List<UserModel>();
+
+            try
+            {
+                using (var conn = new SqliteConnection(_connectionString))
+                {
+                    conn.Open();
+
+                    using (var cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = "SELECT * FROM User";
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var UserId = reader["UserId"];
+                                var FullName = reader["FullName"] == DBNull.Value ? string.Empty : reader["FullName"];
+                                var Email = reader["Email"] == DBNull.Value ? string.Empty : reader["Email"];
+                                var Phone = reader["Phone"] == DBNull.Value ? string.Empty : reader["Phone"];
+                                
+
+                                if (string.IsNullOrEmpty(UserId.ToString()) == false ||
+                                    string.IsNullOrEmpty(FullName.ToString()) == false ||
+                                    string.IsNullOrEmpty(Email.ToString()) == false ||
+                                    string.IsNullOrEmpty(Phone.ToString()) == false)
+                                {
+                                    userList.Add(new UserModel
+                                    {
+                                        UserId = Convert.ToInt32(UserId),
+                                        FullName = FullName.ToString()!,
+                                        Email = Email.ToString()!,
+                                        Phone = Phone.ToString()!,
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+                Logger.LogActivity(Logger.INFO, "Database: FetchUserTable() OK");
+                return userList;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while fetching 'User' table. Please try again.\n\t{ex.Message}",
+                    "Fetch User Table",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchUserTable() FAIL");
+                Environment.Exit(1); // kill process
+                throw; // necessary otherwsie cries about no return value
+            }
+        }
+
+        /// <summary>
+        /// Fetch Business information
+        /// </summary>
+        public static List<BusinessModel> FetchBusinessTable()
+        {
+            List<BusinessModel> businessList = new List<BusinessModel>();
+
+            try
+            {
+                using (var conn = new SqliteConnection(_connectionString))
+                {
+                    conn.Open();
+
+                    using (var cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = "SELECT * FROM Business";
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var BusinessId = reader["BusinessId"];
+                                var UserId = reader["UserId"];
+                                var Name = reader["Name"] == DBNull.Value ? string.Empty : reader["Name"];
+                                var BusinessType = reader["BusinessType"] == DBNull.Value ? string.Empty : reader["BusinessType"];
+                                var Address = reader["Address"] == DBNull.Value ? string.Empty : reader["Address"];
+                                var City = reader["City"] == DBNull.Value ? string.Empty : reader["City"];
+                                var Postcode = reader["Postcode"] == DBNull.Value ? string.Empty : reader["Postcode"];
+                                var Country = reader["Country"] == DBNull.Value ? string.Empty : reader["Country"];
+                                var VatNumber = reader["VatNumber"] == DBNull.Value ? string.Empty : reader["VatNumber"];
+                                var RegistrationNumber = reader["RegistrationNumber"] == DBNull.Value ? string.Empty : reader["RegistrationNumber"];
+
+
+                                if (string.IsNullOrEmpty(BusinessId.ToString()) == false ||
+                                    string.IsNullOrEmpty(UserId.ToString()) == false ||
+                                    string.IsNullOrEmpty(Name.ToString()) == false ||
+                                    string.IsNullOrEmpty(BusinessType.ToString()) == false ||
+                                    string.IsNullOrEmpty(Address.ToString()) == false ||
+                                    string.IsNullOrEmpty(City.ToString()) == false ||
+                                    string.IsNullOrEmpty(Postcode.ToString()) == false ||
+                                    string.IsNullOrEmpty(Country.ToString()) == false ||
+                                    string.IsNullOrEmpty(VatNumber.ToString()) == false ||
+                                    string.IsNullOrEmpty(RegistrationNumber.ToString()) == false)
+                                {
+                                    businessList.Add(new BusinessModel
+                                    {
+                                        BusinessId = Convert.ToInt32(BusinessId),
+                                        UserId = Convert.ToInt32(UserId),
+                                        Name = Name.ToString()!,
+                                        BusinessType = BusinessType.ToString()!,
+                                        Address = Address.ToString()!,
+                                        City = City.ToString()!,
+                                        Postcode = Postcode.ToString()!,
+                                        Country = Country.ToString()!,
+                                        VatNumber = VatNumber.ToString()!,
+                                        RegistrationNumber = RegistrationNumber.ToString()!,
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+                Logger.LogActivity(Logger.INFO, "Database: FetchBusinessTable() OK");
+                return businessList;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while fetching 'Business' table. Please try again.\n\t{ex.Message}",
+                    "Fetch Business Table",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchBusinessTable() FAIL");
+                Environment.Exit(1); // kill process
+                throw; // necessary otherwsie cries about no return value
+            }
+        }
+
+        /// <summary>
+        /// Fetch Bank information
+        /// </summary>
+        /// <returns></returns>
+        public static List<BankModel> FetchBankTable()
+        {
+            List<BankModel> bankList = new List<BankModel>();
+
+            try
+            {
+                using (var conn = new SqliteConnection(_connectionString))
+                {
+                    conn.Open();
+
+                    using (var cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = "SELECT * FROM Bank";
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var BankId = reader["BankId"];
+                                var UserId = reader["UserId"];
+                                var AccountName = reader["AccountName"] == DBNull.Value ? string.Empty : reader["AccountName"];
+                                var AccountNumber = reader["AccountNumber"] == DBNull.Value ? string.Empty : reader["AccountNumber"];
+                                var SortCode = reader["SortCode"] == DBNull.Value ? string.Empty : reader["SortCode"];
+                                var IBAN = reader["IBAN"] == DBNull.Value ? string.Empty : reader["IBAN"];
+                                var BIC = reader["BIC"] == DBNull.Value ? string.Empty : reader["BIC"];
+
+                                if (string.IsNullOrEmpty(BankId.ToString()) == false ||
+                                    string.IsNullOrEmpty(UserId.ToString()) == false ||
+                                    string.IsNullOrEmpty(AccountName.ToString()) == false ||
+                                    string.IsNullOrEmpty(AccountNumber.ToString()) == false ||
+                                    string.IsNullOrEmpty(SortCode.ToString()) == false ||
+                                    string.IsNullOrEmpty(IBAN.ToString()) == false ||
+                                    string.IsNullOrEmpty(BIC.ToString()) == false)
+                                {
+                                    bankList.Add(new BankModel
+                                    {
+                                        BankId = Convert.ToInt32(BankId),
+                                        UserId = Convert.ToInt32(UserId),
+                                        AccountName = AccountName.ToString()!,
+                                        AccountNumber = AccountNumber.ToString()!,
+                                        SortCode = SortCode.ToString()!,
+                                        IBAN = IBAN.ToString()!,
+                                        BIC = BIC.ToString()!,
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+                Logger.LogActivity(Logger.INFO, "Database: FetchBankTable() OK");
+                return bankList;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while fetching 'Bank' table. Please try again.\n\t{ex.Message}",
+                    "Fetch Bank Table",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchBankTable() FAIL");
                 Environment.Exit(1); // kill process
                 throw; // necessary otherwsie cries about no return value
             }
@@ -452,7 +664,7 @@ namespace Traker.Database
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"An error occurred while adding a new client and job. Please try again.\n\n{ex.Message}",
+                    $"An error occurred while adding a new client and job. Please try again.\n\t{ex.Message}",
                     "Add Client and Job",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
@@ -541,7 +753,7 @@ namespace Traker.Database
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"An error occurred while updating job status. Please try again.\n\n{ex.Message}",
+                    $"An error occurred while updating job status. Please try again.\n\t{ex.Message}",
                     "Update Job Status",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
@@ -586,7 +798,7 @@ namespace Traker.Database
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"An error occurred while deleting the client and related jobs. Please try again.\n\n{ex.Message}",
+                    $"An error occurred while deleting the client and related jobs. Please try again.\n\t{ex.Message}",
                     "Delete Client and Jobs",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
@@ -595,6 +807,9 @@ namespace Traker.Database
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Delete a job
+        /// </summary>
         public static Task DeleteJob(int jobId)
         {
             try
@@ -683,7 +898,7 @@ namespace Traker.Database
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"An error occurred while adding a new job to the client. Please try again.\n\n{ex.Message}",
+                    $"An error occurred while adding a new job to the client. Please try again.\n\t{ex.Message}",
                     "Add Job to Client",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
@@ -783,7 +998,7 @@ namespace Traker.Database
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"An error occurred while creating the invoice. Please try again.\n\n{ex.Message}",
+                    $"An error occurred while creating the invoice. Please try again.\n\t{ex.Message}",
                     "Create Invoice",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
@@ -837,7 +1052,7 @@ namespace Traker.Database
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"An error occurred while editing the client. Please try again.\n\n{ex.Message}",
+                    $"An error occurred while editing the client. Please try again.\n\t{ex.Message}",
                     "Edit Client",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
@@ -880,12 +1095,12 @@ namespace Traker.Database
 
                 cmd.ExecuteNonQuery();
 
-                Logger.LogActivity(Logger.INFO, $"Database: () OK - : {jobId}");
+                Logger.LogActivity(Logger.INFO, $"Database: EditJob() OK - : {jobId}");
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"An error occurred while editing the job. Please try again.\n\n{ex.Message}",
+                    $"An error occurred while editing the job. Please try again.\n\t{ex.Message}",
                     "Edit Job",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
@@ -894,6 +1109,40 @@ namespace Traker.Database
             return Task.CompletedTask;
         }
         
+        public static Task Createuser(string fullName, string email, string phone)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+
+                using var cmd = conn.CreateCommand();
+
+                cmd.CommandText = @"
+                    INSERT INTO User
+                    (FullName, Email, Phone)
+                    VALUES (@fullName, @email, @phone)
+                ";
+
+                cmd.Parameters.AddWithValue("@fullName", fullName);
+                cmd.Parameters.AddWithValue("@email", email);
+                cmd.Parameters.AddWithValue("@phone", phone);
+
+                cmd.ExecuteNonQuery();
+
+                Logger.LogActivity(Logger.INFO, $"Database: Createuser() OK");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while creating user. Please try again.\n\t{ex.Message}",
+                    "Create User",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: Createuser() FAIL");
+            }
+            return Task.CompletedTask;
+        }
         //public static async Task<int> FetchTotalNewJobs()
         //{
         //    try
@@ -908,7 +1157,7 @@ namespace Traker.Database
         //    catch (Exception ex)
         //    {
         //        MessageBox.Show(
-        //            $"An error occurred while fetching the total number of new jobs. Please try again.\n\n{ex.Message}",
+        //            $"An error occurred while fetching the total number of new jobs. Please try again.\n\t{ex.Message}",
         //            "Fetch Total New Jobs",
         //            MessageBoxButton.OK,
         //            MessageBoxImage.Error);

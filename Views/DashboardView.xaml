@@ -108,15 +108,17 @@
             <Grid Grid.Row="1" Margin="0,10,0,0">
                 <!-- panel container -->
                 <Border CornerRadius="15" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="2">
-                    <Grid>
+                    <Grid Margin="20">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="0.5*" /> <!-- jobs information -->
-                            <RowDefinition Height="0.2*" /> <!-- spacer -->
-                            <RowDefinition Height="*" /> <!-- money information -->
+                            <RowDefinition Height="auto" /> <!-- jobs information -->
+                            <RowDefinition Height="0.15*" /> <!-- spacer -->
+                            <RowDefinition Height="auto" /> <!-- money information -->
+                            <RowDefinition Height="0.15*" /> <!-- spacer -->
+                            <RowDefinition Height="auto" /> <!-- profile / account -->
                         </Grid.RowDefinitions>
 
                         <!-- jobs information -->
-                        <Grid Grid.Row="0" Margin="20,20,20,0">
+                        <Grid Grid.Row="0" Margin="0,20,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
@@ -127,7 +129,7 @@
                             </Grid.RowDefinitions>
 
                             <!-- new -->
-                            <Grid Grid.Column="0" Grid.Row="0">
+                            <Grid Grid.Column="0" Grid.Row="0" Margin="0,0,0,20">
                                 <StackPanel Orientation="Vertical" Margin="10">
                                     <TextBlock Margin="5,0,0,0" Text="New" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
                                     <TextBox IsReadOnly="True" Text="{Binding NewJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="24" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderBrush="#3D3D3D" BorderThickness="2" />
@@ -135,7 +137,7 @@
                             </Grid>
                             
                             <!-- active (in progress) -->
-                            <Grid Grid.Column="1" Grid.Row="0">
+                            <Grid Grid.Column="1" Grid.Row="0" Margin="0,0,0,20">
                                 <StackPanel Orientation="Vertical" Margin="10">
                                     <TextBlock Margin="5,0,0,0" Text="Active" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
                                     <TextBox IsReadOnly="True" Text="{Binding ActiveJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="24" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderBrush="#3D3D3D" BorderThickness="2" />
@@ -161,11 +163,11 @@
                         
                         <!-- spacer -->
                         <Grid Grid.Row="1">
-                            <Border Background="#555555" Height="2" Margin="20,0" />
+                            <Border Margin="30,0" Background="#555555" Height="2" />
                         </Grid>
                         
                         <!-- money information -->
-                        <Grid Grid.Row="2" Margin="20,0,20,0">
+                        <Grid Grid.Row="2">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*" /> <!-- gross -->
                                 <RowDefinition Height="*" /> <!-- received -->
@@ -175,7 +177,7 @@
                             
                             <!-- gross payment -->
                             <Grid Grid.Row="0">
-                                <StackPanel Orientation="Vertical" Margin="10">
+                                <StackPanel Orientation="Vertical" Margin="10,10,10,30">
                                     <TextBlock Margin="5,0,0,0" Text="Gross" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
                                     <TextBox IsReadOnly="True" Text="{Binding GrossAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderBrush="#3D3D3D" BorderThickness="2" />
                                 </StackPanel>
@@ -183,7 +185,7 @@
                             
                             <!-- received payment -->
                             <Grid Grid.Row="1">
-                                <StackPanel Orientation="Vertical" Margin="10">
+                                <StackPanel Orientation="Vertical" Margin="10,10,10,30">
                                     <TextBlock Margin="5,0,0,0" Text="Received" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
                                     <TextBox IsReadOnly="True" Text="{Binding ReceivedAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderBrush="#3D3D3D" BorderThickness="2" />
                                 </StackPanel>
@@ -198,12 +200,32 @@
                             </Grid>   
                             
                             <!-- overdue payment -->
-                            <Grid Grid.Row="3">
+                            <Grid Visibility="Collapsed" Grid.Row="3">
                                 <StackPanel Orientation="Vertical" Margin="10">
                                     <TextBlock Margin="5,0,0,0" Text="Overdue" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
                                     <TextBox IsReadOnly="True" Text="{Binding OverdueAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderBrush="#3D3D3D" BorderThickness="2" />
                                 </StackPanel>
                             </Grid>     
+                        </Grid>
+
+                        <!-- spacer -->
+                        <Grid Grid.Row="3">
+                            <Border Margin="30,0" Background="#555555" Height="2" />
+                        </Grid>
+
+                        <!-- profile / account -->
+                        <Grid Grid.Row="4">
+                            <Border Background="Black" CornerRadius="15" Height="65" Padding="5,0">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0">
+                                    <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="50" Width="50">
+                                        <svg:SvgViewbox                         
+                                        RenderOptions.BitmapScalingMode="HighQuality"
+                                        SnapsToDevicePixels="True"
+                                        Source="/Resources/Media/Images/Icons/Lucide/user-round-cog.svg" Width="25" Height="25"/>
+                                    </Border>
+                                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Adolf Hitler" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
+                                </StackPanel>                                
+                            </Border>
                         </Grid>
                     </Grid>
                 </Border>

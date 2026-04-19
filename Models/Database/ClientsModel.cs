@@ -1,4 +1,4 @@
-﻿namespace Traker.Models
+﻿namespace Traker.Models.Database
 {
     /// <summary>
     /// Represents a client, including personal or company details, contact information, and account status.

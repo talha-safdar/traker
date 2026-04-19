@@ -8,6 +8,7 @@
         xmlns:cal="http://caliburnmicro.com"
         mc:Ignorable="d"
         Title="Traker" MinHeight="900" MinWidth="1400"
+
         WindowStyle="None"
         ResizeMode="CanResize"
         AllowsTransparency="False"

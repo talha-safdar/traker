@@ -27,6 +27,7 @@
     <None Remove="Resources\Media\Images\Icons\Lucide\pen.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\plus.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\user-pen.svg" />
+    <None Remove="Resources\Media\Images\Icons\Lucide\user-round-cog.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\user-round-plus.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\user-round.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\x.svg" />
@@ -73,6 +74,7 @@
       <CopyToOutputDirectory></CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Media\Images\Icons\Lucide\user-pen.svg" />
+    <Resource Include="Resources\Media\Images\Icons\Lucide\user-round-cog.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\user-round-plus.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\user-round.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\x.svg" />

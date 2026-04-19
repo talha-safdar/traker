@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Windows;
-using Traker.Models;
+using Traker.Models.Database;
 using Traker.Services;
 
 namespace Traker.Data

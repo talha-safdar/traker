@@ -36,9 +36,15 @@ format and have a button maybe to access deleted clients, jobs, invoices (howeve
 - might add total number of clients and jobs
 - once status is set to "Invoiced" user cannot change it
 - only create invoice if status done?
+- for currency use public string FormattedPrice => Price.ToString("C", new CultureInfo("en-GB")); dynamic change
+- top right add icon for user's settings: company profile, invoice template, accoutn settings
+    🏢 Company Profile: This is the Input Form. The user types their Company Name, Address, VAT number, and Bank Details. This is "static" data.
 
+    📄 Invoice Templates: This is the Customizer. The user chooses if they want their invoice to say "Due in 14 days" or "Due in 30 days," and what their logo looks like.
 
-
+    👤 Account Settings: This is just for Security. Change password, change login email, or manage their subscription to your app.
+- on new launch ask user to set up profile to save time
+- add duotone effect to cards and rest
 
 
 NOTES:

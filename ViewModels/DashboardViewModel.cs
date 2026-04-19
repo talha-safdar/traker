@@ -44,21 +44,7 @@ namespace Traker.ViewModels
         public DashboardModel _selectedJob; // selected data row automatically filled on click
         #endregion
 
-        #region Data Variables
-        //List<ClientsModel> _clients;
-        //List<JobsModel> _jobs;
-        //List<InvoicesModel> _invoices;
-        #endregion
-
         #region Private Field Variables
-        //private List<decimal> _receviedMoney; // money received
-        //private List<decimal> _outstandingdMoney; // mnoney to receive yet
-        //private List<decimal> _overdueMoney; // mnoney overdue (not paid + past due date)
-        //private List<decimal> _priceMoney; // mnoney overdue (not paid + past due date)
-        //private List<int> _newJobs; // new jobs
-        //private List<int> _inProgressJobs; // in progress jobs
-        //private List<int> _completedJobs; // completed jobs
-        private List<int> _invoicedJobs; // completed jobs
         private ContextMenuViewModel _contextMenuVM;
         private AddClientViewModel _addClientViewModel;
         private AddJobViewModel _addJobViewModel;
@@ -83,21 +69,8 @@ namespace Traker.ViewModels
             _doneJobsCount = "0";
             _invoicedJobsCount = "0";
 
-            //_receviedMoney = new List<decimal>();
-            //_outstandingdMoney = new List<decimal>();
-            //_overdueMoney = new List<decimal>();
-            //_priceMoney = new List<decimal>();
-            //_newJobs = new List<int>();
-            //_inProgressJobs = new List<int>();
-            //_completedJobs = new List<int>();
-            _invoicedJobs = new List<int>();
-
-            //_clients = new List<ClientsModel>();
-            //_jobs = new List<JobsModel>();
-            //_invoices = new List<InvoicesModel>();
             _dashboardData = new ObservableCollection<DashboardModel>();
             _selectedJob = new DashboardModel();
-
 
             _contextMenuVM = new ContextMenuViewModel(_events, _windowManager, Data);
             _addClientViewModel = new AddClientViewModel(_events, State);
@@ -112,8 +85,8 @@ namespace Traker.ViewModels
         {
             try
             {
-                await Database.SetUpDatabase();
-                await Data.FetchDatabase();
+                //await Database.SetUpDatabase();
+                //await Data.FetchDatabase();
                 await SetupDashboardData();
 
                 //return base.OnInitializedAsync(cancellationToken);
@@ -297,8 +270,8 @@ namespace Traker.ViewModels
                     JobId = job.JobId,
                     JobTitle = job.Title,
                     JobDescription = job.Description,
-                    Price = job.FinalPrice.ToString(), // use toString("C") only for ui side
-                    AmountReceived = job.AmountReceived.ToString(),
+                    Price = job.FinalPrice.ToString("C"), // use toString("C") only for ui side
+                    AmountReceived = job.AmountReceived.ToString("C"),
                     JobStatus = job.Status.ToString(),
                     StartDate = job.StartDate,
                     DueDate = job.DueDate,

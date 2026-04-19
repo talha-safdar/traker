@@ -21,6 +21,7 @@ namespace Traker.States
         private bool _isWindowOpen = false;
         #endregion
 
+
         #region Public View State Variables
         public bool IsWindowOpen
         {

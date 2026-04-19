@@ -93,20 +93,27 @@
             <Grid Grid.Row="7">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="5,10,0,0" Text="Subtotal" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox Text="{Binding Subtotal, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="12" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                    <TextBox Text="{Binding Subtotal, Mode=TwoWay, StringFormat=\{0:C\}, ConverterCulture='en-GB', UpdateSourceTrigger=PropertyChanged}" MaxLength="12" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                 </StackPanel>
             </Grid>
 
             <!-- VAT selection -->
             <Grid Grid.Row="8">
-                <ComboBox SelectedIndex="0" ItemsSource="{Binding InvoiceStatusEdit}" SelectedItem="{Binding VatValue, Mode=TwoWay}" />
+                <ComboBox FontSize="22" SelectedIndex="0" ItemsSource="{Binding InvoiceStatusEdit}" SelectedItem="{Binding VatValue, Mode=TwoWay}">
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="Width" Value="430" />
+                            <Setter Property="Height" Value="40" />
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                </ComboBox>
             </Grid>
 
             <!-- Total textblock -->
             <Grid Grid.Row="9">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Margin="5,10,0,0" Text="Total" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                    <TextBox IsReadOnly="True" Text="{Binding TotalAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="12" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                    <TextBox IsReadOnly="True" Text="{Binding TotalAmount, Mode=TwoWay, StringFormat=\{0:C\}, ConverterCulture='en-GB', UpdateSourceTrigger=PropertyChanged}" MaxLength="12" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                 </StackPanel>
             </Grid>
 

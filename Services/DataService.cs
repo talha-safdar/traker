@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Traker.Models;
 
 namespace Traker.Services
 {
     using Database;
+    using Traker.Models.Database;
 
     public class DataService : PropertyChangedBase
     {
@@ -20,6 +20,9 @@ namespace Traker.Services
         private List<ClientsModel> _clients = new List<ClientsModel>();
         private List<JobsModel> _jobs = new List<JobsModel>();
         private List<InvoicesModel> _invoices = new List<InvoicesModel>();
+        private List<UserModel> _user = new List<UserModel>();
+        private List<BusinessModel> _business = new List<BusinessModel>();
+        private List<BankModel> _bank = new List<BankModel>();
         #endregion
 
         #region Public Data Functions
@@ -31,6 +34,9 @@ namespace Traker.Services
                     Clients = Database.FetchClientsTable(); // clients
                     Jobs = Database.FetchJobsTable(); // jobs
                     Invoices = Database.FetchInvoiceTable(); // invoices
+                    User = Database.FetchUserTable(); // user
+                    Business = Database.FetchBusinessTable(); // business
+                    Bank = Database.FetchBankTable(); // bank
                 });
         }
 
@@ -81,6 +87,36 @@ namespace Traker.Services
             {
                 _invoices = value;
                 NotifyOfPropertyChange(() => Invoices);
+            }
+        }
+
+        public List<UserModel> User
+        {
+            get { return _user; }
+            set
+            {
+                _user = value;
+                NotifyOfPropertyChange(() => User);
+            }
+        }
+
+        public List<BusinessModel> Business
+        {
+            get { return _business; }
+            set
+            {
+                _business = value;
+                NotifyOfPropertyChange(() => Business);
+            }
+        }
+
+        public List<BankModel> Bank
+        {
+            get { return _bank; }
+            set
+            {
+                _bank = value;
+                NotifyOfPropertyChange(() => Bank);
             }
         }
         #endregion

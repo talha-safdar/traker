@@ -57,4 +57,39 @@ CREATE TABLE IF NOT EXISTS Invoices (
     FOREIGN KEY (JobId) REFERENCES Jobs(JobId) ON DELETE CASCADE
 );
 
+-- user info
+CREATE TABLE IF NOT EXISTS User (
+    UserId INTEGER PRIMARY KEY AUTOINCREMENT,
+    FullName TEXT,
+    Email TEXT,
+    Phone TEXT
+);
+
+-- company information
+CREATE TABLE IF NOT EXISTS Business (
+    BusinessId INTEGER PRIMARY KEY AUTOINCREMENT,
+    UserId INTEGER NOT NULL,
+    Name TEXT,
+    BusinessType VARCHAR(20) CHECK (BusinessType IN ('Company', 'Individual')),
+    Address TEXT,
+    City TEXT,
+    Postcode TEXT,
+    Country TEXT,
+    VatNumber TEXT, -- for company
+    RegistrationNumber TEXT, -- for company
+    FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE
+);
+
+-- bank information
+CREATE TABLE IF NOT EXISTS Bank (
+    BankId INTEGER PRIMARY KEY AUTOINCREMENT,
+    UserId INTEGER NOT NULL,
+    AccountName TEXT,
+    AccountNumber TEXT,
+    SortCode TEXT,
+    IBAN TEXT,
+    BIC TEXT,
+    FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE
+);
+
 PRAGMA foreign_keys = ON;

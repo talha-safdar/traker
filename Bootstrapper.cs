@@ -35,6 +35,7 @@ namespace Traker
             _container.Singleton<IWindowManager, WindowManager>();
             _container.Singleton<IEventAggregator, EventAggregator>();
             _container.Singleton<ShellViewModel>();
+            _container.Singleton<SetupViewModel>();
             _container.Singleton<AppState>();
             _container.Singleton<DataService>();
 

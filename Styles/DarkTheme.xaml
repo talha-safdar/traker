@@ -248,7 +248,7 @@ Since you have a specific grid and those spacer columns, you don't want your but
                         Background="#141414"
                         BorderBrush="{StaticResource LightBorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="8">
+                        CornerRadius="15">
                         <ScrollViewer x:Name="PART_ContentHost"/>
                     </Border>
                     <ControlTemplate.Triggers>

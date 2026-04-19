@@ -13,6 +13,7 @@ namespace Traker.ViewModels
     using Traker.Data;
     using Traker.Events;
     using Traker.Helper;
+    using Traker.Models.Database;
     using Traker.Services;
 
     public class ContextMenuViewModel : Screen

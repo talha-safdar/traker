@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Traker.Models
+namespace Traker.Models.Database
 {
     /// <summary>
     /// Represents a job record, including details such as client association, status, pricing, scheduling, and archival
