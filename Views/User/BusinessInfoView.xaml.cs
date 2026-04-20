@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Traker.Views
+namespace Traker.Views.User
 {
     /// <summary>
-    /// Interaction logic for BankInfoView.xaml
+    /// Interaction logic for BusinessInfoView.xaml
     /// </summary>
-    public partial class BankInfoView : UserControl
+    public partial class BusinessInfoView : UserControl
     {
-        public BankInfoView()
+        public BusinessInfoView()
         {
             InitializeComponent();
         }

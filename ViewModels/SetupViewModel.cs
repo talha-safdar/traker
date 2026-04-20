@@ -157,7 +157,8 @@ namespace Traker.ViewModels
         public async Task ConfirmBankSetup()
         {
             await Database.CreateBank(_dataService.User[0].UserId, AccountName, AccountNumber, Sortcode, IBAN, BIC);
-            await TryCloseAsync();
+            await TryCloseAsync();            
+            await _dataService.RefreshDatabase(); // refresh the data service
             await _events.PublishOnUIThreadAsync(new ShellVM { Command = Names.SetupCompleted });
         }
 

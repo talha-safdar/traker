@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Traker.Views.UserInfoView"
+﻿<UserControl x:Class="Traker.Views.User.UserInfoView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -16,24 +16,17 @@
     <Border Visibility="{Binding SetupWindows[0], Converter={StaticResource BoolToVisCollapsed}}" Height="800" Width="1000" Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
         <Grid Margin="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <!-- main content -->
-                <RowDefinition Height="0.125*" />
-                <!-- footer -->
+                <RowDefinition Height="*" />                <!-- main content -->
+                <RowDefinition Height="0.125*" />                <!-- footer -->
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0" Margin="20">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="0.35*" />
-                    <!-- welcome message -->
-                    <RowDefinition Height="0.11*" />
-                    <!-- spacer -->
-                    <RowDefinition Height="0.11*" />
-                    <!-- instruction -->
-                    <RowDefinition Height="auto" />
-                    <!-- user information -->
-                    <RowDefinition Height="0.7*" />
-                    <!-- business type -->
+                    <RowDefinition Height="0.35*" />                    <!-- welcome message -->
+                    <RowDefinition Height="0.11*" />                    <!-- spacer -->
+                    <RowDefinition Height="0.11*" />                    <!-- instruction -->
+                    <RowDefinition Height="auto" />                    <!-- user information -->
+                    <RowDefinition Height="0.7*" />                    <!-- business type -->
                 </Grid.RowDefinitions>
 
                 <!-- welcome message -->
@@ -111,8 +104,8 @@
 
                     <!-- buttons -->
                     <Grid Grid.Column="1">
-                        <Border HorizontalAlignment="Right" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmUserSetup()]" Background="Black" CornerRadius="25" Height="45" Width="200" Margin="0,0,0,0" BorderThickness="2" BorderBrush="{StaticResource FontPrimaryBrush}">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Next" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="16" />
+                        <Border HorizontalAlignment="Right" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmUserInfoChanges()]" Background="Black" CornerRadius="25" Height="45" Width="200" Margin="0,0,0,0" BorderThickness="2" BorderBrush="{StaticResource FontPrimaryBrush}">
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Confirm" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="16" />
                         </Border>
                     </Grid>
                 </Border>

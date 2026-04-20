@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Traker.Views.BankInfoView"
+﻿<UserControl x:Class="Traker.Views.User.BankInfoView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -24,14 +24,10 @@
 
             <Grid Grid.Row="0" Margin="20">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
-                    <!-- welcome message -->
-                    <RowDefinition Height="0.05*" />
-                    <!-- spacer -->
-                    <RowDefinition Height="auto" />
-                    <!-- instruction -->
-                    <RowDefinition Height="*" />
-                    <!-- user information -->
+                    <RowDefinition Height="auto" />                    <!-- welcome message -->
+                    <RowDefinition Height="0.05*" />                    <!-- spacer -->
+                    <RowDefinition Height="auto" />                    <!-- instruction -->
+                    <RowDefinition Height="*" />                    <!-- user information -->
                 </Grid.RowDefinitions>
 
                 <!-- welcome message -->
@@ -86,7 +82,7 @@
 
                     <!-- buttons -->
                     <Grid Grid.Column="1">
-                        <Border HorizontalAlignment="Right" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBankSetup()]" Background="Black" CornerRadius="25" Height="45" Width="200" Margin="0,0,0,0" BorderThickness="2" BorderBrush="{StaticResource FontPrimaryBrush}">
+                        <Border HorizontalAlignment="Right" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBankInfoChanges()]" Background="Black" CornerRadius="25" Height="45" Width="200" Margin="0,0,0,0" BorderThickness="2" BorderBrush="{StaticResource FontPrimaryBrush}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Next" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="16" />
                         </Border>
                     </Grid>

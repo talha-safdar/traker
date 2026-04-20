@@ -78,7 +78,7 @@ namespace Traker.ViewModels
             if (_dataService.User?.Any() == false)
             {
                 // open the setup window
-                await Task.Delay(5000);
+                await Task.Delay(2000);
                 SetupViewModel setupViewModel = new SetupViewModel(_events, _windowManager, State, _dataService);
                 await _windowManager.ShowWindowAsync(setupViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
             }

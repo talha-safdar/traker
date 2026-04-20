@@ -1223,6 +1223,157 @@ namespace Traker.Database
             return Task.CompletedTask;
         }
 
+        public static Task EditUser(int userId, string fullName, string email, string phone, string businessType)
+        {
+            // in the future replace the long ass arguments with a variable list :)
+
+            try
+            {
+                using (var conn = new SqliteConnection(_connectionString))
+                {
+                    conn.Open();
+                    using var cmd = conn.CreateCommand();
+
+                    cmd.CommandText = @"
+                    UPDATE User
+                    SET FullName = @fullname,
+                        Email = @email,
+                        Phone = @phone
+                    WHERE UserId = @userId;
+                    ";
+
+                    cmd.Parameters.AddWithValue("@userId", userId);
+                    cmd.Parameters.AddWithValue("@fullname", fullName);
+                    cmd.Parameters.AddWithValue("@email", email);
+                    cmd.Parameters.AddWithValue("@phone", phone);
+
+                    cmd.ExecuteNonQuery();
+                }
+
+                using (var conn = new SqliteConnection(_connectionString))
+                {
+                    conn.Open();
+                    using var cmd = conn.CreateCommand();
+
+                    cmd.CommandText = @"
+                    UPDATE Business
+                    SET BusinessType = @businessType
+                    WHERE UserId = @userId;
+                    ";
+
+                    cmd.Parameters.AddWithValue("@businessType", businessType);
+                    cmd.Parameters.AddWithValue("@userId", userId);
+
+                    cmd.ExecuteNonQuery();
+                }
+
+
+                Logger.LogActivity(Logger.INFO, $"Database: EditUser() OK - UserId: {userId}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while editing the user. Please try again.\n\t{ex.Message}",
+                    "Edit User",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: EditUser() FAIL - UserId: {userId}");
+            }
+            return Task.CompletedTask;
+        }
+
+        public static Task EditBusiness(int userId, string businessName, string country, string city, string address, string postcode, string vatNumber, string registrationNumber)
+        {
+            // in the future replace the long ass arguments with a variable list :)
+
+            try
+            {
+                using (var conn = new SqliteConnection(_connectionString))
+                {
+                    conn.Open();
+                    using var cmd = conn.CreateCommand();
+
+                    cmd.CommandText = @"
+                    UPDATE Business
+                    SET BusinessName = @businessName,
+                        Country = @country,
+                        City = @city,
+                        Address = @address,
+                        Postcode = @postcode,
+                        VatNumber = @vatNumber,
+                        RegistrationNumber = @registrationNumber
+                    WHERE UserId = @userId;
+                    ";
+
+                    cmd.Parameters.AddWithValue("@userId", userId);
+                    cmd.Parameters.AddWithValue("@businessName", businessName);
+                    cmd.Parameters.AddWithValue("@country", country);
+                    cmd.Parameters.AddWithValue("@city", city);
+                    cmd.Parameters.AddWithValue("@address", address);
+                    cmd.Parameters.AddWithValue("@postcode", postcode);
+                    cmd.Parameters.AddWithValue("@vatNumber", vatNumber);
+                    cmd.Parameters.AddWithValue("@registrationNumber", registrationNumber);
+
+                    cmd.ExecuteNonQuery();
+                }
+
+                Logger.LogActivity(Logger.INFO, $"Database: EditBusiness() OK - UserId: {userId}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while editing the Business. Please try again.\n\t{ex.Message}",
+                    "Edit Business",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: EditBusiness() FAIL - UserId: {userId}");
+            }
+            return Task.CompletedTask;
+        }
+        
+        public static Task EditBank(int userId, string accountName, string accountNumber, string sortcode, string IBAN, string BIC)
+        {
+            // in the future replace the long ass arguments with a variable list :)
+
+            try
+            {
+                using (var conn = new SqliteConnection(_connectionString))
+                {
+                    conn.Open();
+                    using var cmd = conn.CreateCommand();
+
+                    cmd.CommandText = @"
+                    UPDATE Bank
+                    SET AccountName = @accountName,
+                        AccountNumber = @accountNumber,
+                        SortCode = @sortcode,
+                        IBAN = @IBAN,
+                        BIC = @BIC
+                    WHERE UserId = @userId;
+                    ";
+                    cmd.Parameters.AddWithValue("@userId", userId);
+                    cmd.Parameters.AddWithValue("@accountName", accountName);
+                    cmd.Parameters.AddWithValue("@accountNumber", accountNumber);
+                    cmd.Parameters.AddWithValue("@sortcode", sortcode);
+                    cmd.Parameters.AddWithValue("@IBAN", IBAN);
+                    cmd.Parameters.AddWithValue("@BIC", BIC);
+
+                    cmd.ExecuteNonQuery();
+                }
+
+                Logger.LogActivity(Logger.INFO, $"Database: EditBank() OK - UserId: {userId}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while editing the Bank. Please try again.\n\t{ex.Message}",
+                    "Edit Bank",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: EditBank() FAIL - UserId: {userId}");
+            }
+            return Task.CompletedTask;
+        }
         #endregion
     }
 }

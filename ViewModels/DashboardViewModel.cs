@@ -78,7 +78,7 @@ namespace Traker.ViewModels
             _addClientViewModel = new AddClientViewModel(_events, State);
             _addJobViewModel = new AddJobViewModel(_events, State);
             _editClientViewModel = new EditClientViewModel(_events, _windowManager, Data);
-            _userContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager);
+            _userContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager, Data);
 
             _events.SubscribeOnPublishedThread(this);
         }
@@ -88,8 +88,6 @@ namespace Traker.ViewModels
         {
             try
             {
-                //await Database.SetUpDatabase();
-                //await Data.FetchDatabase();
                 await SetupDashboardData();
 
                 //return base.OnInitializedAsync(cancellationToken);
@@ -144,7 +142,7 @@ namespace Traker.ViewModels
                 double popupTop = (locationFromScreen.Y / dpiY) - 260;
                 double popupLeft = (locationFromScreen.X / dpiX) - 20;
 
-                _userContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager);
+                _userContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager, Data);
                 await _windowManager.ShowPopupAsync(_userContextMenuViewModel, null, CustomWindow.SettingsForDialog(310, 335, true, popupTop, popupLeft)); // vertical, horizontal
             }
 
@@ -361,8 +359,7 @@ namespace Traker.ViewModels
 
         public async Task HandleAsync(RefreshDatabase message, CancellationToken cancellationToken)
         {
-            await Data.ClearDataVariables();
-            await Data.FetchDatabase();
+            await Data.RefreshDatabase();
             await SetupDashboardData();
         }
         #endregion
