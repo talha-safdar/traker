@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Traker.Views"
              xmlns:cal="http://caliburnmicro.com"
+             xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
              xmlns:conv="clr-namespace:UltraAnalysis.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -13,23 +14,148 @@
         <conv:BoolToVisibilityCollapsed x:Key="BoolToVisCollapsed"/>
     </UserControl.Resources>
 
-    <Border Visibility="{Binding SetupWindows[0], Converter={StaticResource BoolToVisCollapsed}}" Height="800" Width="1000" Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
+    <Border Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
         <Grid Margin="0">
             <Grid.RowDefinitions>
+                <RowDefinition Height="0.12*" />                <!-- top bar -->
+                <RowDefinition Height="0.12*" />                <!-- spacer -->
                 <RowDefinition Height="*" />                <!-- main content -->
-                <RowDefinition Height="0.125*" />                <!-- footer -->
+                <RowDefinition Height="0.5*" />                <!-- buttons -->
+            </Grid.RowDefinitions>
+
+            <!-- top bar -->
+            <Grid Grid.Row="0" Margin="30,20,30,0" Height="50">
+                <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="| User Information" Opacity="0.7" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="58" />
+                <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action Exit()]" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="20" Width="20">
+                    <svg:SvgViewbox                         
+                    RenderOptions.BitmapScalingMode="HighQuality"
+                    SnapsToDevicePixels="True"
+                    Source="/Resources/Media/Images/Icons/Lucide/x.svg" Width="15" Height="15"/>
+                </Border>
+            </Grid>
+            
+            <!-- spacer -->
+            <Grid Grid.Row="1">
+                
+            </Grid>
+
+            <!-- main content -->
+            <Grid Grid.Row="2" Margin="0" Height="620" Width="1000">
+                <!-- contents go here -->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.1*" /> <!-- title -->
+                    <RowDefinition Height="auto" /> <!-- user info -->
+                    <RowDefinition Height="0.4*" /> <!-- company type -->
+                </Grid.RowDefinitions>
+
+                <!-- title -->
+                <Grid Grid.Row="0">
+                    <TextBlock Margin="100,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="Enter Personal Information" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34" />
+
+                </Grid>
+
+                <!-- user info -->
+                <Grid Grid.Row="1">
+                    <Border Background="#494949" CornerRadius="20" Margin="100,0">
+                        <StackPanel Orientation="Vertical" Margin="50,40,50,50" VerticalAlignment="Center">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Margin="5,0,0,0" Text="Full Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                                <TextBox Text="{Binding FullName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Margin="5,0,0,0" Text="Email" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                                <TextBox Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Margin="5,0,0,0" Text="Phone" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                                <TextBox Text="{Binding Phone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+                
+                <!--company type -->
+                <Grid Grid.Row="2">
+                    <Border Background="#494949" CornerRadius="20" Margin="100,30">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0">
+                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="Please choose yout type of business" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34" />
+                            </Grid>
+
+                            <Grid Grid.Row="1">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetBusinessType('Individual')]" Background="Black" CornerRadius="25" Height="45" Width="200" Margin="0,0,100,0" BorderThickness="2" BorderBrush="DimGray">
+                                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Individual" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="16" />
+                                    </Border>
+                                    <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetBusinessType('Company')]" Background="Black" CornerRadius="25" Height="45" Width="200" Margin="0,0,0,0" BorderThickness="2" BorderBrush="DimGray">
+                                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Company" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="16" />
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+
+            <!-- buttons -->
+            <Grid Grid.Row="4">
+                <Border Background="#181818" CornerRadius="0,0,20,20">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action CancelEditClient()]" Background="Transparent" CornerRadius="25" Height="40" Width="150" Margin="0,0,30,0" BorderThickness="2" BorderBrush="Red">
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Cancel" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="Red" FontSize="16" />
+                        </Border>
+                        <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmEditClient()]" Background="Green" CornerRadius="25" Height="40" Width="150" Margin="0,0,0,0" BorderThickness="2" BorderBrush="Green">
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Confirm" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="16" />
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </Border>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!--<Border Visibility="{Binding SetupWindows[0], Converter={StaticResource BoolToVisCollapsed}}" Height="800" Width="1000" Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
+        <Grid Margin="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />            
+                <RowDefinition Height="0.125*" />           
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0" Margin="20">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="0.35*" />                    <!-- welcome message -->
-                    <RowDefinition Height="0.11*" />                    <!-- spacer -->
-                    <RowDefinition Height="0.11*" />                    <!-- instruction -->
-                    <RowDefinition Height="auto" />                    <!-- user information -->
-                    <RowDefinition Height="0.7*" />                    <!-- business type -->
+                    <RowDefinition Height="0.35*" />              
+                    <RowDefinition Height="0.11*" />             
+                    <RowDefinition Height="0.11*" />              
+                    <RowDefinition Height="auto" />                   
+                    <RowDefinition Height="0.7*" />                    
                 </Grid.RowDefinitions>
 
-                <!-- welcome message -->
                 <Grid Grid.Row="0">
                     <StackPanel Orientation="Vertical">
                         <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="| User" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="58" />
@@ -37,16 +163,13 @@
                     </StackPanel>
                 </Grid>
 
-                <!-- spacer -->
                 <Grid Grid.Row="1">
                 </Grid>
 
-                <!-- instruction -->
                 <Grid Grid.Row="2">
                     <TextBlock Margin="100,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="Enter Personal Information" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34" />
                 </Grid>
 
-                <!-- user information -->
                 <Grid Grid.Row="3">
                     <Border Background="#494949" CornerRadius="20" Margin="100,10">
                         <StackPanel Orientation="Vertical" Margin="50,40,50,50" VerticalAlignment="Center">
@@ -65,24 +188,20 @@
                         </StackPanel>
                     </Border>
                 </Grid>
-
-                <!-- business type -->
                 <Grid Grid.Row="4">
                     <Border Background="#494949" CornerRadius="20" Margin="100,10">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*" />
-                                <!-- title -->
+
                                 <RowDefinition Height="*" />
-                                <!-- options -->
+ 
                             </Grid.RowDefinitions>
 
-                            <!-- title -->
                             <Grid Grid.Row="0">
                                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="Please choose yout type of business" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34" />
                             </Grid>
 
-                            <!-- options -->
                             <Grid Grid.Row="1">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetBusinessType('Individual')]" Background="Black" CornerRadius="25" Height="45" Width="200" Margin="0,0,100,0" BorderThickness="2" BorderBrush="DimGray">
@@ -98,11 +217,10 @@
                 </Grid>
             </Grid>
 
-            <!-- buttons -->
             <Grid Grid.Row="1">
                 <Border Background="#181818" CornerRadius="0,0,20,20" Padding="30, 0">
 
-                    <!-- buttons -->
+
                     <Grid Grid.Column="1">
                         <Border HorizontalAlignment="Right" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmUserInfoChanges()]" Background="Black" CornerRadius="25" Height="45" Width="200" Margin="0,0,0,0" BorderThickness="2" BorderBrush="{StaticResource FontPrimaryBrush}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Confirm" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="16" />
@@ -111,5 +229,5 @@
                 </Border>
             </Grid>
         </Grid>
-    </Border>
+    </Border>-->
 </UserControl>
