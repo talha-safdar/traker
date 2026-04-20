@@ -45,7 +45,16 @@ format and have a button maybe to access deleted clients, jobs, invoices (howeve
     👤 Account Settings: This is just for Security. Change password, change login email, or manage their subscription to your app.
 - on new launch ask user to set up profile to save time
 - add duotone effect to cards and rest
-
+- add 3 dots for set up phase to track progress
+- use viewbox for zoom in/out
+- maybe remove textboxes for job statues? (new, active, done, invoiced) since is read only
+- when deleting a job also delete its folders and all files
+- ask for confirmation for deletion
+- if need to re-create the user empty tables first for user bank and company then add new
+- use background and UI threads
+- use try-catch
+- allow adding custom image if company
+- add skip button for some parts in the setup and ask later if missing when creating invoice
 
 NOTES:
 Job status:
@@ -68,7 +77,13 @@ overdue: money not received before due date (not paid + missed deadline)
 
 
 
-
+CALIBURN:
+1   OnInitializeAsync   First time setup (only runs once).
+2   OnActivateAsync     Runs every time the view becomes active.
+3   OnViewAttached      The View and ViewModel are paired.
+4   OnViewLoaded        The XAML is loaded into memory.
+5   OnViewReady         The View is fully visible to the user.
+6   OnDeactivateAsync   Runs when the view is hidden or closed.
 
 
 

@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace Traker.Views
 {
     /// <summary>
-    /// Interaction logic for JobDetailsView.xaml
+    /// Interaction logic for UserInfoView.xaml
     /// </summary>
-    public partial class ContextMenuView : UserControl
+    public partial class UserInfoView : UserControl
     {
-        public ContextMenuView()
+        public UserInfoView()
         {
             InitializeComponent();
         }

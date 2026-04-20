@@ -4,6 +4,7 @@ using Microsoft.VisualBasic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Windows;
 using Traker.Helper;
@@ -444,7 +445,7 @@ namespace Traker.Database
                             {
                                 var BusinessId = reader["BusinessId"];
                                 var UserId = reader["UserId"];
-                                var Name = reader["Name"] == DBNull.Value ? string.Empty : reader["Name"];
+                                var BusinessName = reader["BusinessName"] == DBNull.Value ? string.Empty : reader["BusinessName"];
                                 var BusinessType = reader["BusinessType"] == DBNull.Value ? string.Empty : reader["BusinessType"];
                                 var Address = reader["Address"] == DBNull.Value ? string.Empty : reader["Address"];
                                 var City = reader["City"] == DBNull.Value ? string.Empty : reader["City"];
@@ -456,7 +457,7 @@ namespace Traker.Database
 
                                 if (string.IsNullOrEmpty(BusinessId.ToString()) == false ||
                                     string.IsNullOrEmpty(UserId.ToString()) == false ||
-                                    string.IsNullOrEmpty(Name.ToString()) == false ||
+                                    string.IsNullOrEmpty(BusinessName.ToString()) == false ||
                                     string.IsNullOrEmpty(BusinessType.ToString()) == false ||
                                     string.IsNullOrEmpty(Address.ToString()) == false ||
                                     string.IsNullOrEmpty(City.ToString()) == false ||
@@ -469,7 +470,7 @@ namespace Traker.Database
                                     {
                                         BusinessId = Convert.ToInt32(BusinessId),
                                         UserId = Convert.ToInt32(UserId),
-                                        Name = Name.ToString()!,
+                                        BusinessName = BusinessName.ToString()!,
                                         BusinessType = BusinessType.ToString()!,
                                         Address = Address.ToString()!,
                                         City = City.ToString()!,
@@ -1109,7 +1110,7 @@ namespace Traker.Database
             return Task.CompletedTask;
         }
         
-        public static Task Createuser(string fullName, string email, string phone)
+        public static Task CreateUser(string fullName, string email, string phone)
         {
             try
             {
@@ -1143,28 +1144,85 @@ namespace Traker.Database
             }
             return Task.CompletedTask;
         }
-        //public static async Task<int> FetchTotalNewJobs()
-        //{
-        //    try
-        //    {
-        //        using (var conn = new SqliteConnection(_connectionString))
-        //        {
-        //            return await conn.ExecuteScalarAsync<int>(
-        //                "SELECT COUNT(*) FROM Jobs WHERE Status = 'New';"
-        //                );
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(
-        //            $"An error occurred while fetching the total number of new jobs. Please try again.\n\t{ex.Message}",
-        //            "Fetch Total New Jobs",
-        //            MessageBoxButton.OK,
-        //            MessageBoxImage.Error);
-        //        Logger.LogActivity(Logger.ERROR, $"Database: GetTotalNewJobs() FAIL");
-        //        return 0;
-        //    }
-        //}
+
+        public static Task CreateBusiness(int userId, string businessName, string businessType, string country, string city, string address, string postcode, string vatNumber, string registrationNumber)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+
+                using var cmd = conn.CreateCommand();
+
+                cmd.CommandText = @"
+                    INSERT INTO Business
+                    (UserId, BusinessName, BusinessType, Country, City, Address, Postcode, VatNumber, RegistrationNumber)
+                    VALUES (@userId, @businessName, @businessType, @country, @city, @address, @postcode, @vatNumber, @registrationNumber)
+                ";
+
+                cmd.Parameters.AddWithValue("@userId", userId);
+                cmd.Parameters.AddWithValue("@businessName", businessName);
+                cmd.Parameters.AddWithValue("@businessType", businessType);
+                cmd.Parameters.AddWithValue("@country", country);
+                cmd.Parameters.AddWithValue("@city", city);
+                cmd.Parameters.AddWithValue("@address", address);
+                cmd.Parameters.AddWithValue("@postcode", postcode);
+                cmd.Parameters.AddWithValue("@vatNumber", vatNumber);
+                cmd.Parameters.AddWithValue("@registrationNumber", registrationNumber);
+
+                cmd.ExecuteNonQuery();
+
+                Logger.LogActivity(Logger.INFO, $"Database: CreateBusiness() OK");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while creating business. Please try again.\n\t{ex.Message}",
+                    "Create Business",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: CreateBusiness() FAIL");
+            }
+            return Task.CompletedTask;
+        }
+
+        public static Task CreateBank(int userId, string accountName, string accountNumber, string sortcode, string IBAN, string BIC)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+
+                using var cmd = conn.CreateCommand();
+
+                cmd.CommandText = @"
+                    INSERT INTO Bank
+                    (UserId, AccountName, AccountNumber, SortCode, IBAN, BIC)
+                    VALUES (@userId, @accountName, @accountNumber, @sortcode, @IBAN, @BIC)
+                ";
+
+                cmd.Parameters.AddWithValue("@userId", userId);
+                cmd.Parameters.AddWithValue("@accountName", accountName);
+                cmd.Parameters.AddWithValue("@accountNumber", accountNumber);
+                cmd.Parameters.AddWithValue("@sortcode", sortcode);
+                cmd.Parameters.AddWithValue("@IBAN", IBAN);
+                cmd.Parameters.AddWithValue("@BIC", BIC);
+                cmd.ExecuteNonQuery();
+
+                Logger.LogActivity(Logger.INFO, $"Database: CreateBank() OK");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while creating bank. Please try again.\n\t{ex.Message}",
+                    "Create Bank",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: CreateBank() FAIL");
+            }
+            return Task.CompletedTask;
+        }
+
         #endregion
     }
 }

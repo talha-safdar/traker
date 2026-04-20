@@ -16,7 +16,7 @@ namespace Traker.ViewModels
     using Traker.Models.Database;
     using Traker.Services;
 
-    public class ContextMenuViewModel : Screen
+    public class JobContextMenuViewModel : Screen
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
@@ -30,7 +30,7 @@ namespace Traker.ViewModels
         private CreateInvoiceViewModel _createInvoice;
         #endregion
 
-        public ContextMenuViewModel(IEventAggregator events, IWindowManager windowManager, DataService data)
+        public JobContextMenuViewModel(IEventAggregator events, IWindowManager windowManager, DataService data)
         {
             _events = events;
             _windowManager = windowManager;
@@ -62,7 +62,7 @@ namespace Traker.ViewModels
         {
             _createInvoice = new CreateInvoiceViewModel(_events, Data);
             _createInvoice.SelectedJob = SelectedJob;
-            _windowManager.ShowWindowAsync(_createInvoice, null, CustomWindow.SettingsForDialog(800, 500));
+            _windowManager.ShowWindowAsync(_createInvoice, null, CustomWindow.SettingsForDialog(800, 500, false));
             return Task.CompletedTask;
         }
 

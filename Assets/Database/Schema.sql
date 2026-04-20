@@ -69,12 +69,12 @@ CREATE TABLE IF NOT EXISTS User (
 CREATE TABLE IF NOT EXISTS Business (
     BusinessId INTEGER PRIMARY KEY AUTOINCREMENT,
     UserId INTEGER NOT NULL,
-    Name TEXT,
+    BusinessName TEXT,
     BusinessType VARCHAR(20) CHECK (BusinessType IN ('Company', 'Individual')),
-    Address TEXT,
-    City TEXT,
-    Postcode TEXT,
     Country TEXT,
+    City TEXT,
+    Address TEXT,
+    Postcode TEXT,
     VatNumber TEXT, -- for company
     RegistrationNumber TEXT, -- for company
     FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE

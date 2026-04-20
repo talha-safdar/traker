@@ -10,12 +10,17 @@ namespace Traker.ViewModels
     using Database;
     using System.Diagnostics;
     using System.Net.NetworkInformation;
+    using System.Threading;
     using System.Windows.Controls;
+    using Traker.Events;
     using Traker.Helper;
     using Traker.Services;
     using Traker.States;
 
-    public class ShellViewModel : Conductor<IScreen>.Collection.OneActive
+    public class ShellViewModel : Conductor<IScreen>.Collection.OneActive,
+    #region Interfaces
+        IHandle<ShellVM>
+    #endregion
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
@@ -33,6 +38,8 @@ namespace Traker.ViewModels
             _windowManager = windowManager;
             State = appState;
             _dataService = dataService;
+
+            _events.SubscribeOnPublishedThread(this);
         }
 
         //protected override async Task OnInitializedAsync(CancellationToken cancellationToken)
@@ -73,7 +80,7 @@ namespace Traker.ViewModels
                 // open the setup window
                 await Task.Delay(5000);
                 SetupViewModel setupViewModel = new SetupViewModel(_events, _windowManager, State, _dataService);
-                await _windowManager.ShowWindowAsync(setupViewModel, null, CustomWindow.SettingsForDialog(800, 1000));
+                await _windowManager.ShowWindowAsync(setupViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
             }
             else
             {
@@ -86,5 +93,20 @@ namespace Traker.ViewModels
         {
             
         }
+
+        #region Event Handlers
+        public Task HandleAsync(ShellVM message, CancellationToken cancellationToken)
+        {
+            if (message != null)
+            {
+                if (message.Command == Names.SetupCompleted)
+                {
+                    DashboardViewModel dashboardViewModel = new DashboardViewModel(_events, _windowManager, State, _dataService);
+                    ActivateItemAsync(dashboardViewModel, cancellationToken);
+                }
+            }
+            return Task.CompletedTask;
+        }
+        #endregion
     }
 }

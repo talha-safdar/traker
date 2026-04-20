@@ -18,5 +18,9 @@ namespace Traker.Helper
         // business type
         public static string Individual { get; } = "Individual";
         public static string Company { get; } = "Company";
+
+        // events
+        public static string SetupCompleted { get; } = "SetupCompleted";
+
     }
 }

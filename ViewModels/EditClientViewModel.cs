@@ -97,7 +97,7 @@ namespace Traker.ViewModels
         public async Task OpenJobsList()
         {
             _jobsListViewModel.SelectedJob = SelectedRow;
-            await _windowManager.ShowDialogAsync(_jobsListViewModel, null, CustomWindow.SettingsForDialog(800, 1000));
+            await _windowManager.ShowDialogAsync(_jobsListViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
         }
         #endregion
 

@@ -13,6 +13,7 @@ namespace Traker.ViewModels
     using Traker.Models;
     using Traker.Services;
     using Traker.States;
+    using Traker.ViewModels.User;
 
     public class DashboardViewModel : Screen, IHandle<RefreshDatabase>, IHandle<CallFromDashboard>
     {
@@ -45,11 +46,12 @@ namespace Traker.ViewModels
         #endregion
 
         #region Private Field Variables
-        private ContextMenuViewModel _contextMenuVM;
+        private JobContextMenuViewModel? _contextMenuVM;
         private AddClientViewModel _addClientViewModel;
         private AddJobViewModel _addJobViewModel;
         private EditClientViewModel _editClientViewModel;
         private EditJobViewModel _editJobViewModel;
+        private UserContextMenuViewModel _userContextMenuViewModel;
         #endregion
 
         public DashboardViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState, DataService dataService)
@@ -72,10 +74,11 @@ namespace Traker.ViewModels
             _dashboardData = new ObservableCollection<DashboardModel>();
             _selectedJob = new DashboardModel();
 
-            _contextMenuVM = new ContextMenuViewModel(_events, _windowManager, Data);
+            _contextMenuVM = new JobContextMenuViewModel(_events, _windowManager, Data);
             _addClientViewModel = new AddClientViewModel(_events, State);
             _addJobViewModel = new AddJobViewModel(_events, State);
             _editClientViewModel = new EditClientViewModel(_events, _windowManager, Data);
+            _userContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager);
 
             _events.SubscribeOnPublishedThread(this);
         }
@@ -112,15 +115,53 @@ namespace Traker.ViewModels
         #endregion
 
         #region Public View Functions
-        public void SelectJob(DashboardModel selectedJob)
+        public async Task OpenUserContenxtMenu(FrameworkElement anchorElement)
         {
-            if (selectedJob == null)
+            // if add menu open do nothing
+            if (State.IsWindowOpen == true)
             {
-                // error display
                 return;
             }
 
-            SelectedJob = selectedJob;
+            if (_userContextMenuViewModel != null)
+            {
+                await _userContextMenuViewModel.TryCloseAsync(false);
+            }
+
+            if (anchorElement != null)
+            {
+                // 1. Get the absolute position of the button on the screen
+                Point locationFromScreen = anchorElement.PointToScreen(new Point(0, 0));
+
+                // 2. Adjust for DPI (High-res screens) - Very important for proper alignment
+                var source = PresentationSource.FromVisual(anchorElement);
+                double dpiY = source.CompositionTarget.TransformToDevice.M22;
+                double dpiX = source.CompositionTarget.TransformToDevice.M11;
+
+                // 3. Calculate "Above": 
+                // Top = ButtonTop - PopupHeight
+                // Left = ButtonLeft (aligned to the left of the button)
+                double popupTop = (locationFromScreen.Y / dpiY) - 260;
+                double popupLeft = (locationFromScreen.X / dpiX) - 20;
+
+                _userContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager);
+                await _windowManager.ShowPopupAsync(_userContextMenuViewModel, null, CustomWindow.SettingsForDialog(310, 335, true, popupTop, popupLeft)); // vertical, horizontal
+            }
+
+
+        }
+
+        public Task SelectJob(DashboardModel selectedJob)
+        {
+            if (selectedJob != null)
+            {
+                SelectedJob = selectedJob;
+            }
+            else
+            {
+                // do something and show error message
+            }
+            return Task.CompletedTask;
         }
 
         public async Task OpenContextMenu(DashboardModel selectedJob)
@@ -149,9 +190,9 @@ namespace Traker.ViewModels
              */
             if (SelectedJob.ClientId == selectedJob.ClientId)
             {
-                _contextMenuVM = new ContextMenuViewModel(_events, _windowManager, Data);
+                _contextMenuVM = new JobContextMenuViewModel(_events, _windowManager, Data);
                 _contextMenuVM.SelectedJob = selectedJob; // pass row selected
-                await _windowManager.ShowPopupAsync(_contextMenuVM, null, CustomWindow.SettingsForDialog(310, 335)); // vertical, horizontal
+                await _windowManager.ShowPopupAsync(_contextMenuVM, null, CustomWindow.SettingsForDialog(310, 335, false)); // vertical, horizontal
             }
         }
 
@@ -159,14 +200,14 @@ namespace Traker.ViewModels
         {
             _editJobViewModel = new EditJobViewModel(_events);
             _editJobViewModel.SelectedJob = jobSelected; // pass selected row to EditJobViewModel
-            await _windowManager.ShowWindowAsync(_editJobViewModel, null, CustomWindow.SettingsForDialog(800, 1000));
+            await _windowManager.ShowWindowAsync(_editJobViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
         }
 
         public async Task EditClient()
         {
             _editClientViewModel = new EditClientViewModel(_events, _windowManager, Data);
             _editClientViewModel.SelectedRow = SelectedJob; // pass selected row to EditClientViewModel
-            await _windowManager.ShowWindowAsync(_editClientViewModel, null, CustomWindow.SettingsForDialog(800, 1000));
+            await _windowManager.ShowWindowAsync(_editClientViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
         }
 
         public async Task AddClient()
@@ -189,7 +230,7 @@ namespace Traker.ViewModels
                 }
 
                 _addClientViewModel = new AddClientViewModel(_events, State);
-                await _windowManager.ShowWindowAsync(_addClientViewModel, null, CustomWindow.SettingsForDialog(600, 500));
+                await _windowManager.ShowWindowAsync(_addClientViewModel, null, CustomWindow.SettingsForDialog(600, 500, false));
                 State.IsWindowOpen = true; // flag as open accross the project
             }
 
@@ -220,7 +261,7 @@ namespace Traker.ViewModels
 
                 _addJobViewModel = new AddJobViewModel(_events, State);
                 _addJobViewModel.dashboardData = _dashboardData; // pass dashboard data to AddJob
-                await _windowManager.ShowWindowAsync(_addJobViewModel, null, CustomWindow.SettingsForDialog(600, 500));
+                await _windowManager.ShowWindowAsync(_addJobViewModel, null, CustomWindow.SettingsForDialog(600, 500, false));
                 State.IsWindowOpen = true; // flag as open accross the project
             }
 
@@ -238,6 +279,11 @@ namespace Traker.ViewModels
                 await _contextMenuVM.TryCloseAsync(false);
                 _contextMenuVM = null;
             }
+            if (_userContextMenuViewModel != null)
+            {
+                await _userContextMenuViewModel.TryCloseAsync(false);
+                _userContextMenuViewModel = null;
+            }            
         }
         #endregion
 

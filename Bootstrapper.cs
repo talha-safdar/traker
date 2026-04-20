@@ -11,6 +11,7 @@ using System.Xml.Linq;
 using Traker.Services;
 using Traker.States;
 using Traker.ViewModels;
+using Traker.ViewModels.User;
 
 namespace Traker
 {
@@ -41,11 +42,15 @@ namespace Traker
 
             _container.PerRequest<DashboardViewModel>();
             _container.PerRequest<AddClientViewModel>();
-            _container.PerRequest<ContextMenuViewModel>();
+            _container.PerRequest<JobContextMenuViewModel>();
             _container.PerRequest<CreateInvoiceViewModel>();
             _container.PerRequest<EditClientViewModel>();
             _container.PerRequest<EditJobViewModel>();
-
+            _container.PerRequest<UserContextMenuViewModel>();
+            _container.PerRequest<UserInfoViewModel>();
+            _container.PerRequest<BusinessInfoViewModel>();
+            _container.PerRequest<BankInfoViewModel>();
+            ViewLocator.AddNamespaceMapping("Traker.ViewModels.*", "Traker.Views.*");
             // LogManager.GetLog = type => new DebugLog(type); // uncomment this line for Caliburn debug messages
         }
 

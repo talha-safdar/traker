@@ -215,15 +215,15 @@
 
                         <!-- profile / account -->
                         <Grid Grid.Row="4">
-                            <Border Background="Black" CornerRadius="15" Height="65" Padding="5,0">
+                            <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenUserContenxtMenu($source)]" Background="Black" CornerRadius="15" Height="65" Padding="5,0">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0">
-                                    <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="50" Width="50">
+                                    <Border Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="50" Width="50">
                                         <svg:SvgViewbox                         
                                         RenderOptions.BitmapScalingMode="HighQuality"
                                         SnapsToDevicePixels="True"
                                         Source="/Resources/Media/Images/Icons/Lucide/user-round-cog.svg" Width="25" Height="25"/>
                                     </Border>
-                                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Adolf Hitler" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
+                                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="{Binding Data.User[0].FullName}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
                                 </StackPanel>                                
                             </Border>
                         </Grid>
