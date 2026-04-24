@@ -53,6 +53,11 @@ namespace Traker.ViewModels.User
             BusinessType = businessType;
             return Task.CompletedTask;
         }
+
+        public async Task Exit()
+        {
+            await TryCloseAsync();
+        }
         #endregion
 
         #region Public View Variables

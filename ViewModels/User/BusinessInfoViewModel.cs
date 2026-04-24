@@ -74,6 +74,11 @@ namespace Traker.ViewModels.User
             await Database.EditBusiness(_dataService.User[0].UserId, BusinessName, Country, City, Address, Postcode, VatNumber, RegistrationNumber);
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
         }
+
+        public async Task Exit()
+        {
+            await TryCloseAsync();
+        }
         #endregion
 
         #region Public View Variables

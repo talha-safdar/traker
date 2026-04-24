@@ -49,6 +49,11 @@ namespace Traker.ViewModels.User
             await Database.EditBank(_dataService.User[0].UserId, AccountName, AccountNumber, Sortcode, IBAN, BIC);
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
         }
+
+        public async Task Exit()
+        {
+            await TryCloseAsync();
+        }
         #endregion
 
         #region Public View Variables
