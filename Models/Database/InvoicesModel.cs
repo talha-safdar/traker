@@ -16,7 +16,7 @@ namespace Traker.Models.Database
     {
         public int InvoiceId { get; set; } = 0;
         public int JobId { get; set; } = 0;
-        public string InvoiceNumber { get; set; } = string.Empty;
+        public int InvoiceNumber { get; set; } = 0;
         public decimal Subtotal { get; set; } = 0.0m;
         public decimal TaxAmount { get; set; } = 0.0m;
         public decimal TotalAmount { get; set; } = 0.0m;

@@ -10,6 +10,7 @@ namespace Traker.Models.Database
     {
         public int BankId { get; set; } = 0;
         public int UserId { get; set; } = 0;
+        public string BankName { get; set; } = string.Empty;
         public string AccountName { get; set; } = string.Empty;
         public string AccountNumber { get; set; } = string.Empty;
         public string SortCode { get; set; } = string.Empty;

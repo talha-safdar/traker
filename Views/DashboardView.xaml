@@ -54,7 +54,7 @@
 
                         <!-- edit jobs -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0">
-                            <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditClient()]" Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="50" Width="50">
+                            <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditJob('$source')]" Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="50" Width="50">
                                 <svg:SvgViewbox                         
                                     RenderOptions.BitmapScalingMode="HighQuality"
                                     SnapsToDevicePixels="True"

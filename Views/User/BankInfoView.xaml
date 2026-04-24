@@ -61,6 +61,10 @@
                         <Border Background="#494949" CornerRadius="20" Margin="0,0" Padding="30">
                             <StackPanel Orientation="Vertical" Margin="0" VerticalAlignment="Center" >
                                 <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                                    <TextBlock Margin="5,0,0,0" Text="Bank Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                                    <TextBox Text="{Binding BankName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                </StackPanel>
+                                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
                                     <TextBlock Margin="5,0,0,0" Text="Account Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
                                     <TextBox Text="{Binding AccountName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                                 </StackPanel>

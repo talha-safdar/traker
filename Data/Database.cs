@@ -282,7 +282,7 @@ namespace Traker.Database
                             {
                                 var InvoiceId = reader["InvoiceId"];
                                 var JobId = reader["JobId"];
-                                var InvoiceNumber = reader["InvoiceNumber"] == DBNull.Value ? String.Empty : reader["InvoiceNumber"];
+                                var InvoiceNumber = reader["InvoiceNumber"];
                                 var Subtotal = reader["Subtotal"] == DBNull.Value ? "0" : reader["Subtotal"];
                                 var TaxAmount = reader["TaxAmount"] == DBNull.Value ? "0" : reader["TaxAmount"];
                                 var TotalAmount = reader["TotalAmount"] == DBNull.Value ? "0" : reader["TotalAmount"];
@@ -322,7 +322,7 @@ namespace Traker.Database
                                     {
                                         InvoiceId = Convert.ToInt32(InvoiceId),
                                         JobId = Convert.ToInt32(JobId),
-                                        InvoiceNumber = InvoiceNumber.ToString()!,
+                                        InvoiceNumber = Convert.ToInt32(InvoiceNumber),
                                         Subtotal = Convert.ToDecimal(Subtotal),
                                         TaxAmount = Convert.ToDecimal(TaxAmount),
                                         TotalAmount = Convert.ToDecimal(TotalAmount),
@@ -525,6 +525,7 @@ namespace Traker.Database
                             {
                                 var BankId = reader["BankId"];
                                 var UserId = reader["UserId"];
+                                var BankName = reader["BankName"] == DBNull.Value ? string.Empty : reader["BankName"];
                                 var AccountName = reader["AccountName"] == DBNull.Value ? string.Empty : reader["AccountName"];
                                 var AccountNumber = reader["AccountNumber"] == DBNull.Value ? string.Empty : reader["AccountNumber"];
                                 var SortCode = reader["SortCode"] == DBNull.Value ? string.Empty : reader["SortCode"];
@@ -533,6 +534,7 @@ namespace Traker.Database
 
                                 if (string.IsNullOrEmpty(BankId.ToString()) == false ||
                                     string.IsNullOrEmpty(UserId.ToString()) == false ||
+                                    string.IsNullOrEmpty(BankName.ToString()) == false ||
                                     string.IsNullOrEmpty(AccountName.ToString()) == false ||
                                     string.IsNullOrEmpty(AccountNumber.ToString()) == false ||
                                     string.IsNullOrEmpty(SortCode.ToString()) == false ||
@@ -543,6 +545,7 @@ namespace Traker.Database
                                     {
                                         BankId = Convert.ToInt32(BankId),
                                         UserId = Convert.ToInt32(UserId),
+                                        BankName = BankName.ToString()!,
                                         AccountName = AccountName.ToString()!,
                                         AccountNumber = AccountNumber.ToString()!,
                                         SortCode = SortCode.ToString()!,
@@ -1186,7 +1189,7 @@ namespace Traker.Database
             return Task.CompletedTask;
         }
 
-        public static Task CreateBank(int userId, string accountName, string accountNumber, string sortcode, string IBAN, string BIC)
+        public static Task CreateBank(int userId, string bankName, string accountName, string accountNumber, string sortcode, string IBAN, string BIC)
         {
             try
             {
@@ -1197,11 +1200,12 @@ namespace Traker.Database
 
                 cmd.CommandText = @"
                     INSERT INTO Bank
-                    (UserId, AccountName, AccountNumber, SortCode, IBAN, BIC)
-                    VALUES (@userId, @accountName, @accountNumber, @sortcode, @IBAN, @BIC)
+                    (UserId, BankName, AccountName, AccountNumber, SortCode, IBAN, BIC)
+                    VALUES (@userId, @bankName, @accountName, @accountNumber, @sortcode, @IBAN, @BIC)
                 ";
 
                 cmd.Parameters.AddWithValue("@userId", userId);
+                cmd.Parameters.AddWithValue("@bankName", bankName);
                 cmd.Parameters.AddWithValue("@accountName", accountName);
                 cmd.Parameters.AddWithValue("@accountNumber", accountNumber);
                 cmd.Parameters.AddWithValue("@sortcode", sortcode);
@@ -1331,7 +1335,7 @@ namespace Traker.Database
             return Task.CompletedTask;
         }
         
-        public static Task EditBank(int userId, string accountName, string accountNumber, string sortcode, string IBAN, string BIC)
+        public static Task EditBank(int userId, string bankName, string accountName, string accountNumber, string sortcode, string IBAN, string BIC)
         {
             // in the future replace the long ass arguments with a variable list :)
 
@@ -1344,7 +1348,8 @@ namespace Traker.Database
 
                     cmd.CommandText = @"
                     UPDATE Bank
-                    SET AccountName = @accountName,
+                    SET BankName = @bankName,
+                        AccountName = @accountName,
                         AccountNumber = @accountNumber,
                         SortCode = @sortcode,
                         IBAN = @IBAN,
@@ -1352,6 +1357,7 @@ namespace Traker.Database
                     WHERE UserId = @userId;
                     ";
                     cmd.Parameters.AddWithValue("@userId", userId);
+                    cmd.Parameters.AddWithValue("@bankName", bankName);
                     cmd.Parameters.AddWithValue("@accountName", accountName);
                     cmd.Parameters.AddWithValue("@accountNumber", accountNumber);
                     cmd.Parameters.AddWithValue("@sortcode", sortcode);

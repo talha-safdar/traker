@@ -197,7 +197,16 @@ namespace Traker.ViewModels
         public async Task EditJob(DashboardModel jobSelected)
         {
             _editJobViewModel = new EditJobViewModel(_events);
-            _editJobViewModel.SelectedJob = jobSelected; // pass selected row to EditJobViewModel
+
+            if (jobSelected != null)
+            {
+                _editJobViewModel.SelectedJob = jobSelected; // pass selected   row to EditJobViewModel
+            }
+            else
+            {
+                _editJobViewModel.SelectedJob = SelectedJob;
+
+            }
             await _windowManager.ShowWindowAsync(_editJobViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
         }
 

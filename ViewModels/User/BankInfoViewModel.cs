@@ -20,6 +20,7 @@ namespace Traker.ViewModels.User
         #endregion
 
         #region Private View Variables
+        private string _bankName;
         private string _accountName;
         private string _accountNumber;
         private string _sortcode;
@@ -35,6 +36,7 @@ namespace Traker.ViewModels.User
 
         protected override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
+            BankName = _dataService.Bank.First(b => b.UserId == _dataService.User[0].UserId).BankName;
             AccountName = _dataService.Bank.First(b => b.UserId == _dataService.User[0].UserId).AccountName;
             AccountNumber = _dataService.Bank.First(b => b.UserId == _dataService.User[0].UserId).AccountNumber;
             Sortcode = _dataService.Bank.First(b => b.UserId == _dataService.User[0].UserId).SortCode;
@@ -46,7 +48,7 @@ namespace Traker.ViewModels.User
         #region Public View Functions
         public async Task ConfirmBankInfoChanges()
         {
-            await Database.EditBank(_dataService.User[0].UserId, AccountName, AccountNumber, Sortcode, IBAN, BIC);
+            await Database.EditBank(_dataService.User[0].UserId, BankName, AccountName, AccountNumber, Sortcode, IBAN, BIC);
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
         }
 
@@ -57,6 +59,16 @@ namespace Traker.ViewModels.User
         #endregion
 
         #region Public View Variables
+        public string BankName
+        {
+            get { return _bankName; }
+            set
+            {
+                _bankName = value;
+                NotifyOfPropertyChange(() => BankName);
+            }
+        }
+
         public string AccountName
         {
             get { return _accountName; }

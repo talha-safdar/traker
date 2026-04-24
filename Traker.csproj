@@ -11,6 +11,7 @@
   <ItemGroup>
     <None Remove="Assets\Database\Schema.sql" />
     <None Remove="Licenses\THIRD_PARTY_NOTICES.txt" />
+    <None Remove="New Text Document.txt" />
     <None Remove="Resources\Fonts\Inter-Italic.ttf" />
     <None Remove="Resources\Fonts\Inter.ttf" />
     <None Remove="Resources\Fonts\Montserrat-Italic.ttf" />

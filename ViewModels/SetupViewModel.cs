@@ -44,6 +44,7 @@ namespace Traker.ViewModels
         private double _businessNameOpacity; // for UI
 
         // bank info
+        private string _bankName;
         private string _accountName;
         private string _accountNumber;
         private string _sortcode;
@@ -77,11 +78,12 @@ namespace Traker.ViewModels
 
             // business info
             _businessName = string.Empty;
-            _address = string.Empty;
-            _city = string.Empty;
-            _postcode = string.Empty;
-            _country = string.Empty;
+            //_address = string.Empty;
+            //_city = string.Empty;
+            //_postcode = string.Empty;
+            //_country = string.Empty;
             //debug
+            _businessName = "Nigga Destroyer Ltd";
             _address = "32 Woodlands Street";
             _city = "Berlin";
             _postcode = "M4kr00t";
@@ -93,6 +95,7 @@ namespace Traker.ViewModels
             _businessNameOpacity = 1.0;
 
             // bank
+            _bankName = "Nazi Bank Ltd";
             _accountName = "Adolf Muhammad Hitler";
             _accountNumber = "1232434";
             _sortcode = "12-12-12";
@@ -156,7 +159,7 @@ namespace Traker.ViewModels
         /// </summary>
         public async Task ConfirmBankSetup()
         {
-            await Database.CreateBank(_dataService.User[0].UserId, AccountName, AccountNumber, Sortcode, IBAN, BIC);
+            await Database.CreateBank(_dataService.User[0].UserId, BankName, AccountName, AccountNumber, Sortcode, IBAN, BIC);
             await TryCloseAsync();            
             await _dataService.RefreshDatabase(); // refresh the data service
             await _events.PublishOnUIThreadAsync(new ShellVM { Command = Names.SetupCompleted });
@@ -316,6 +319,16 @@ namespace Traker.ViewModels
         #endregion
 
         #region bank info
+        public string BankName
+        {
+            get { return _bankName; }
+            set
+            {
+                _bankName = value;
+                NotifyOfPropertyChange(() => BankName);
+            }
+        }
+
         public string AccountName
         {
             get { return _accountName; }

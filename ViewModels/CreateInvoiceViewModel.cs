@@ -23,6 +23,7 @@ namespace Traker.ViewModels
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
+        private readonly DataService _dataService;
         #endregion
 
         #region Private View Variables
@@ -45,13 +46,12 @@ namespace Traker.ViewModels
          * the invoice form could be using DashboardModel since it's under row selection
          */
         public DashboardModel SelectedJob; // data passed by DashboardVM
-        public DataService Data { get; } // data from the database
         #endregion
 
-        public CreateInvoiceViewModel(IEventAggregator events, DataService data)
+        public CreateInvoiceViewModel(IEventAggregator events, DataService dataService)
         {
             _events = events;
-            Data = data;
+            _dataService = dataService;
 
             SelectedJob = new DashboardModel(); // to be improved to add useful properties
 
@@ -74,8 +74,8 @@ namespace Traker.ViewModels
             BillingCity = SelectedJob.City;
             BillingPostcode = SelectedJob.Postcode;
             BillingCountry = SelectedJob.Country;
-            DueDate = SelectedJob.DueDate.ToString();
-            Subtotal = Convert.ToDecimal(SelectedJob.Price);
+            DueDate = DateOnly.FromDateTime(DateTime.Now.Date.Add(TimeSpan.FromDays(7))).ToString();
+            Subtotal = decimal.Parse(SelectedJob.Price, NumberStyles.Currency, CultureInfo.CurrentCulture);
 
             return base.OnInitializedAsync(cancellationToken);
         }
@@ -202,16 +202,41 @@ namespace Traker.ViewModels
                             section1.RelativeItem().AlignLeft().Column(billingInfo =>
                             {
                                 billingInfo.Item().Text("BILLED TO:").FontSize(14).Bold();
-                                billingInfo.Item().Text(BillingName).FontSize(14);
-                                billingInfo.Item().Text("Client phone number").FontSize(14);
-                                billingInfo.Item().Text(BillingAddress).FontSize(14);
+                                billingInfo.Item().Text(text =>
+                                {
+                                    text.Span("Full Name: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                    text.Span(BillingName).FontSize(14);
+                                });
+                                billingInfo.Item().Text(text =>
+                                {
+                                    text.Span("Phone Number: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                    text.Span(_dataService.Clients.FirstOrDefault(c => c.ClientId == SelectedJob.ClientId)?.PhoneNumber).FontSize(14);
+                                });
+                                billingInfo.Item().Text(text =>
+                                {
+                                    text.Span("Email Address: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                    text.Span(_dataService.Clients.FirstOrDefault(c => c.ClientId == SelectedJob.ClientId)?.Email).FontSize(14);
+                                });
+                                billingInfo.Item().Text(text =>
+                                {
+                                    text.Span("Home Address: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                    text.Span(_dataService.Clients.FirstOrDefault(c => c.ClientId == SelectedJob.ClientId)?.BillingAddress).FontSize(14);
+                                });
                             });
 
                             // invoice info
                             section1.RelativeItem().AlignRight().Column(invoiceInfo =>
                             {
-                                invoiceInfo.Item().Text("Invoice No. 12345").FontSize(14);
-                                invoiceInfo.Item().Text(DateOnly.FromDateTime(Convert.ToDateTime(DateTime.Now)).ToString()).FontSize(14);
+                                invoiceInfo.Item().Text(text =>
+                                {
+                                    text.Span("Invoice No. ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                    text.Span(_dataService.Invoices.Max(c => c.InvoiceNumber + 1).ToString()).FontSize(14);
+                                });
+                                invoiceInfo.Item().Text(text =>
+                                {
+                                    text.Span("Created Date").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                    text.Span(DateOnly.FromDateTime(Convert.ToDateTime(DateTime.Now)).ToString()).FontSize(14);
+                                });
                             });
                             //section1.RelativeItem().AlignLeft().Text("Ullah\nUllah\nUllah\nUllah");
                             //section1.RelativeItem().AlignRight().Text("Ullah\nUllah");
@@ -268,7 +293,7 @@ namespace Traker.ViewModels
                                 Subtotal.RelativeItem().Text("subtotal").ExtraBold().FontSize(14);
 
                                 // cell 2
-                                Subtotal.RelativeItem().Text((Convert.ToDecimal(SelectedJob.Price).ToString("C"))).FontSize(14);
+                                Subtotal.RelativeItem().Text(SelectedJob.Price).FontSize(14);
                             });
 
                             // tax
@@ -296,7 +321,7 @@ namespace Traker.ViewModels
                         });
 
                         // section 4 (notes)
-                        mainContainer.Item().AlignLeft().PaddingBottom(60).Column(section4 =>
+                        mainContainer.Item().AlignLeft().PaddingBottom(40).Column(section4 =>
                         {
                             section4.Item().Text("NOTES").Bold();
                             section4.Item().Text("I need curry!");
@@ -305,22 +330,59 @@ namespace Traker.ViewModels
                         //mainContainer.Item().Height(60);
 
                         // section 5 (payment info, company info)
-                        mainContainer.Item().PaddingBottom(60).Row(section5 =>
+                        mainContainer.Item().PaddingBottom(0).Row(section5 =>
                         {
                             // payment info
                             section5.RelativeItem().AlignLeft().Column(paymentInfo =>
                             {
                                 paymentInfo.Item().Text("PAYMENT INFORMATION").FontSize(14).Bold();
-                                paymentInfo.Item().Text("Bank Name").FontSize(14);
-                                paymentInfo.Item().Text("Client billing name").FontSize(14);
-                                paymentInfo.Item().Text("Account number").FontSize(14);
-                                paymentInfo.Item().Text(DueDate).FontSize(14);
+                                paymentInfo.Item().Text(text =>
+                                {
+                                    text.Span("Name: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                    text.Span(_dataService.Bank[0]?.BankName).FontSize(14);
+                                });
+                                paymentInfo.Item().Text(text =>
+                                {
+                                    text.Span("Account Name: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                    text.Span(_dataService.Bank[0]?.AccountName).FontSize(14);
+                                });
+                                paymentInfo.Item().Text(text =>
+                                {
+                                    text.Span("Account Number: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                    text.Span(_dataService.Bank[0]?.AccountNumber).FontSize(14);
+                                });
+                                paymentInfo.Item().Text(text =>
+                                {
+                                    text.Span("Sort Code: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                    text.Span(_dataService.Bank[0]?.SortCode).FontSize(14);
+                                });
+                                if (string.IsNullOrEmpty(_dataService.Bank[0]?.IBAN) == false)
+                                {
+                                    paymentInfo.Item().Text(text =>
+                                    {
+                                        text.Span("IBAN: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                        text.Span(_dataService.Bank[0]?.IBAN).FontSize(14);
+                                    });
+                                }
+                                if (string.IsNullOrEmpty(_dataService.Bank[0]?.BIC) == false)
+                                {
+                                    paymentInfo.Item().Text(text =>
+                                    {
+                                        text.Span("BIC: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                        text.Span(_dataService.Bank[0]?.BIC).FontSize(14);
+                                    });
+                                }
+                                paymentInfo.Item().Text(text =>
+                                {
+                                    text.Span("Due Date: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                    text.Span(DueDate).FontSize(14);
+                                });
                             });
 
                             section5.RelativeItem().AlignRight().Column(companyInfo =>
                             {
-                                companyInfo.Item().Text("Traker Ltd").FontSize(14);
-                                companyInfo.Item().Text("Company address").FontSize(14);
+                                companyInfo.Item().Text(_dataService.Business[0]?.BusinessName).FontSize(14);
+                                companyInfo.Item().Text(_dataService.Business[0]?.Address).FontSize(14);
                             });
                         });
 

@@ -84,6 +84,7 @@ CREATE TABLE IF NOT EXISTS Business (
 CREATE TABLE IF NOT EXISTS Bank (
     BankId INTEGER PRIMARY KEY AUTOINCREMENT,
     UserId INTEGER NOT NULL,
+    BankName TEXT,
     AccountName TEXT,
     AccountNumber TEXT,
     SortCode TEXT,

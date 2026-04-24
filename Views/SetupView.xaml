@@ -342,7 +342,7 @@
                         <RowDefinition Height="auto" />                        <!-- welcome message -->
                         <RowDefinition Height="0.05*" />                        <!-- spacer -->
                         <RowDefinition Height="auto" />                        <!-- instruction -->
-                        <RowDefinition Height="*" />                        <!-- user information -->
+                        <RowDefinition Height="auto" />                        <!-- bank information -->
                     </Grid.RowDefinitions>
 
                     <!-- welcome message -->
@@ -362,31 +362,66 @@
                         <TextBlock Margin="100,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="Enter Business Information" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34" />
                     </Grid>
 
-                    <!-- business information -->
+                    <!-- bank information -->
                     <Grid Grid.Row="3" VerticalAlignment="Center">
                         <Border Background="#494949" CornerRadius="20" Margin="100,0" Padding="30">
-                            <StackPanel Orientation="Vertical" Margin="0" VerticalAlignment="Center" >
-                                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
-                                    <TextBlock Margin="5,0,0,0" Text="Account Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                                    <TextBox Text="{Binding AccountName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
-                                </StackPanel>
-                                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
-                                    <TextBlock Margin="5,0,0,0" Text="Account Number" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                                    <TextBox Text="{Binding AccountNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
-                                </StackPanel>
-                                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
-                                    <TextBlock Margin="5,0,0,0" Text="Sort Code" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                                    <TextBox Text="{Binding Sortcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
-                                </StackPanel>
-                                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
-                                    <TextBlock Margin="5,0,0,0" Text="IBAN" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                                    <TextBox Text="{Binding IBAN, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
-                                </StackPanel>
-                                <StackPanel Orientation="Vertical">
-                                    <TextBlock Margin="5,0,0,0" Text="BIC" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                                    <TextBox Text="{Binding BIC, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
-                                </StackPanel>
-                            </StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.ColumnSpan="2" Grid.Row="0">
+                                    <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                                        <TextBlock Margin="5,0,0,0" Text="Account Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                                        <TextBox Text="{Binding BankName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    </StackPanel>
+                                </Grid>
+                                
+                                <Grid Grid.ColumnSpan="2" Grid.Row="1">
+                                    <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                                        <TextBlock Margin="5,0,0,0" Text="Account Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                                        <TextBox Text="{Binding AccountName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    </StackPanel>
+                                </Grid>
+                                
+                                <Grid Grid.Column="0" Grid.Row="2">
+                                    <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                                        <TextBlock Margin="5,0,0,0" Text="Account Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                                        <TextBox Text="{Binding Sortcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    </StackPanel>
+                                </Grid>
+                                
+                                <Grid Grid.Column="1" Grid.Row="2">
+                                    <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                                        <TextBlock Margin="5,0,0,0" Text="Account Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                                        <TextBox Text="{Binding AccountNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    </StackPanel>
+                                </Grid>
+                                
+                                <Grid Grid.ColumnSpan="2" Grid.Row="3">
+                                    <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                                        <TextBlock Margin="5,0,0,0" Text="Account Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                                        <TextBox Text="{Binding IBAN, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    </StackPanel>
+                                </Grid>
+                                                                
+                                <Grid Grid.ColumnSpan="2" Grid.Row="4">
+                                    <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                                        <TextBlock Margin="5,0,0,0" Text="Account Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
+                                        <TextBox Text="{Binding BIC, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>                            
                         </Border>
                     </Grid>
                 </Grid>
