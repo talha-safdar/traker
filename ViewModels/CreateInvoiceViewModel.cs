@@ -229,17 +229,15 @@ namespace Traker.ViewModels
                             {
                                 invoiceInfo.Item().Text(text =>
                                 {
-                                    text.Span("Invoice No. ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                    text.Span("Invoice No: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
                                     text.Span(_dataService.Invoices.Max(c => c.InvoiceNumber + 1).ToString()).FontSize(14);
                                 });
                                 invoiceInfo.Item().Text(text =>
                                 {
-                                    text.Span("Created Date").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                    text.Span("Created Date: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
                                     text.Span(DateOnly.FromDateTime(Convert.ToDateTime(DateTime.Now)).ToString()).FontSize(14);
                                 });
                             });
-                            //section1.RelativeItem().AlignLeft().Text("Ullah\nUllah\nUllah\nUllah");
-                            //section1.RelativeItem().AlignRight().Text("Ullah\nUllah");
                         });
 
                         // section 2 (table jobs)

@@ -5,6 +5,7 @@ namespace Traker.ViewModels
 {
     using Database;
     using System.Diagnostics;
+    using System.Globalization;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
@@ -342,7 +343,31 @@ namespace Traker.ViewModels
             InvoicedJobsCount = Data.Jobs.Where(j => j.Status == Names.Invoiced).Count().ToString(); // invoiced jobs count
             GrossAmount = Data.Jobs.Sum(gross => gross.FinalPrice).ToString("C"); // gross amount
             ReceivedAmount = Data.Jobs.Where(j => j.Status == Names.Paid).Sum(j => j.FinalPrice).ToString("C");
-            OutstandingAmount = Data.Jobs.Where(j => j.Status == Names.Done).Sum(j => j.FinalPrice).ToString("C");
+            //OutstandingAmount = Data.Jobs.Where(j => j.Status == Names.Done).Sum(j => j.FinalPrice).ToString("C");
+            //Debug.WriteLine(DateOnly.FromDateTime(DateTime.Now));
+            //Debug.WriteLine(Data.Invoices.Where(i => i.JobId == 1).Select(i => i.DueDate).FirstOrDefault().ToString());
+            //Debug.WriteLine(Data.Invoices.Where(i => i.InvoiceNumber == 1).Select(i => i.DueDate).FirstOrDefault());
+            //if (Data.Invoices.Where(i => i.JobId == 1).Select(i => i.DueDate).FirstOrDefault() > DateOnly.FromDateTime(DateTime.Now))
+            //{
+            //    Debug.WriteLine("KAWABONGA");
+            //    Debug.WriteLine("Invoice due date: " + Data.Invoices.Where(i => i.JobId == 1).Select(i => i.DueDate).FirstOrDefault() + ", today: " + DateOnly.FromDateTime(DateTime.Now));
+            //}
+            //Debug.WriteLine(Data.Invoices.First().DueDate.GetType());
+
+            //foreach (var i in Data.Invoices)
+            //{
+            //    Debug.WriteLine($"{i.DueDate} > {DateOnly.FromDateTime(DateTime.Today)} = {i.DueDate > DateOnly.FromDateTime(DateTime.Today)}");
+            //}
+
+            var invoicedJobsDuePayment = Data.Invoices.Where(i => i.DueDate > DateOnly.FromDateTime(DateTime.Today)).Select(i => i.JobId).ToHashSet();
+
+            OutstandingAmount = Data.Jobs
+                .Where(j => j.Status == Names.Done || (j.Status == Names.Invoiced && Data.Invoices.Any(i => i.JobId == j.JobId && i.DueDate > DateOnly.FromDateTime(DateTime.Now))))
+                .Sum(j => j.FinalPrice).ToString("C");
+
+            //OutstandingAmount = Data.Jobs.Where(j => j.Status == Names.Done ||
+            //                                         (j.Status == Names.Invoiced &&
+            //                                         Data.Invoices.Any(i => i.DueDate < DateOnly.FromDateTime(DateTime.Now)))).Sum(j => j.FinalPrice).ToString("C");
             OverdueAmount = Data.Jobs
                                 .Where(j => j.Status == Names.Invoiced)
                                 .Join(Data.Invoices, 

@@ -132,15 +132,15 @@
                             <Grid Grid.Column="0" Grid.Row="0" Margin="0,0,0,20">
                                 <StackPanel Orientation="Vertical" Margin="10">
                                     <TextBlock Margin="5,0,0,0" Text="New" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
-                                    <TextBox IsReadOnly="True" Text="{Binding NewJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="24" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderBrush="#3D3D3D" BorderThickness="2" />
-                                </StackPanel>                                
+                                    <TextBlock Margin="5,0,0,0" Text="{Binding NewJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
+                                </StackPanel>                                       
                             </Grid>
                             
                             <!-- active (in progress) -->
                             <Grid Grid.Column="1" Grid.Row="0" Margin="0,0,0,20">
                                 <StackPanel Orientation="Vertical" Margin="10">
                                     <TextBlock Margin="5,0,0,0" Text="Active" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
-                                    <TextBox IsReadOnly="True" Text="{Binding ActiveJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="24" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderBrush="#3D3D3D" BorderThickness="2" />
+                                    <TextBlock Margin="5,0,0,0" Text="{Binding ActiveJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
                                 </StackPanel>
                             </Grid>
 
@@ -148,7 +148,7 @@
                             <Grid Grid.Column="0" Grid.Row="1">
                                 <StackPanel Orientation="Vertical" Margin="10">
                                     <TextBlock Margin="5,0,0,0" Text="Done" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
-                                    <TextBox IsReadOnly="True" Text="{Binding DoneJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="24" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderBrush="#3D3D3D" BorderThickness="2" />
+                                    <TextBlock Margin="5,0,0,0" Text="{Binding DoneJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
                                 </StackPanel>
                             </Grid>                            
 
@@ -156,14 +156,14 @@
                             <Grid Grid.Column="1" Grid.Row="1">
                                 <StackPanel Orientation="Vertical" Margin="10">
                                     <TextBlock Margin="5,0,0,0" Text="Invoiced" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
-                                    <TextBox IsReadOnly="True" Text="{Binding InvoicedJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="24" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderBrush="#3D3D3D" BorderThickness="2" />
+                                    <TextBlock Margin="5,0,0,0" Text="{Binding InvoicedJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
                                 </StackPanel>
                             </Grid>
                         </Grid>
                         
                         <!-- spacer -->
                         <Grid Grid.Row="1">
-                            <Border Margin="30,0" Background="#555555" Height="2" />
+                            <Border Margin="30,0" Opacity="0.3" Background="#555555" Height="2" />
                         </Grid>
                         
                         <!-- money information -->
@@ -179,7 +179,7 @@
                             <Grid Grid.Row="0">
                                 <StackPanel Orientation="Vertical" Margin="10,10,10,30">
                                     <TextBlock Margin="5,0,0,0" Text="Gross" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
-                                    <TextBox IsReadOnly="True" Text="{Binding GrossAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderBrush="#3D3D3D" BorderThickness="2" />
+                                    <TextBox IsReadOnly="True" Text="{Binding GrossAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderThickness="0" />
                                 </StackPanel>
                             </Grid>
                             
@@ -187,7 +187,7 @@
                             <Grid Grid.Row="1">
                                 <StackPanel Orientation="Vertical" Margin="10,10,10,30">
                                     <TextBlock Margin="5,0,0,0" Text="Received" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
-                                    <TextBox IsReadOnly="True" Text="{Binding ReceivedAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderBrush="#3D3D3D" BorderThickness="2" />
+                                    <TextBox IsReadOnly="True" Text="{Binding ReceivedAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderThickness="0" />
                                 </StackPanel>
                             </Grid>              
                             
@@ -195,7 +195,7 @@
                             <Grid Grid.Row="2">
                                 <StackPanel Orientation="Vertical" Margin="10">
                                     <TextBlock Margin="5,0,0,0" Text="Outstanding" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
-                                    <TextBox IsReadOnly="True" Text="{Binding OutstandingAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderBrush="#3D3D3D" BorderThickness="2" />
+                                    <TextBox IsReadOnly="True" Text="{Binding OutstandingAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderThickness="0" />
                                 </StackPanel>
                             </Grid>   
                             
@@ -210,7 +210,7 @@
 
                         <!-- spacer -->
                         <Grid Grid.Row="3">
-                            <Border Margin="30,0" Background="#555555" Height="2" />
+                            <Border Margin="30,0" Opacity="0.3"  Background="#555555" Height="2" />
                         </Grid>
 
                         <!-- profile / account -->
