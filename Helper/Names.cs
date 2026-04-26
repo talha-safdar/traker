@@ -20,7 +20,22 @@ namespace Traker.Helper
         public static string Company { get; } = "Company";
 
         // events
-        public static string SetupCompleted { get; } = "SetupCompleted";
+        public static string SetupCompleted { get; } = "SetupCompleted"; // for the user setup completion
 
+        // sort/filter
+        public static string ClientNameAsc { get; } = "ClientNameAsc";
+        public static string ClientNameDesc { get; } = "ClientNameDesc";
+        public static string JobTitleAsc { get; } = "JobTitleAsc";
+        public static string JobTitleDesc { get; } = "JobTitleDesc";
+        public static string JobStatusAsc { get; } = "JobStatusAsc";
+        public static string JobStatusDesc { get; } = "JobStatusDesc";
+        public static string JobPriceAsc { get; } = "JobPriceAsc";
+        public static string JobPriceDesc { get; } = "JobPriceDesc";
+        public static string DueDateAsc { get; } = "DueDateAsc";
+        public static string DueDateDesc { get; } = "DueDateDesc";
+        public static string CreatedDateAsc { get; } = "CreatedDateAsc";
+        public static string CreatedDateDesc { get; } = "CreatedDateDesc";
+        public static string ClientTypeAsc { get; } = "ClientTypeAsc";
+        public static string ClientTypeDesc { get; } = "ClientTypeDesc";
     }
 }

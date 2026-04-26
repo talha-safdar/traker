@@ -19,8 +19,8 @@
 
     <WindowChrome.WindowChrome>
         <shell:WindowChrome 
-            CaptionHeight="35" 
-            ResizeBorderThickness="15" 
+            CaptionHeight="0" 
+            ResizeBorderThickness="0" 
             GlassFrameThickness="0" 
             CornerRadius="20" />
     </WindowChrome.WindowChrome>
@@ -33,7 +33,7 @@
             </Grid.RowDefinitions>
 
             <!-- top bar -->
-            <Grid Grid.Row="0" Background="{StaticResource TopBarBackgroundBrush}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid Grid.Row="0" Background="Black" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MouseLeftButtonDown="DragWindow">
                 <Grid Margin="20,0,20,0">
                     <TextBlock Text="TRAKER" FontWeight="ExtraBlack" Foreground="{StaticResource FontPrimaryBrush}" FontSize="25" VerticalAlignment="Center" HorizontalAlignment="Left" />
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

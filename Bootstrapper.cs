@@ -39,6 +39,8 @@ namespace Traker
             _container.Singleton<SetupViewModel>();
             _container.Singleton<AppState>();
             _container.Singleton<DataService>();
+            _container.Singleton<SortJobsViewModel>();
+            _container.Singleton<FilterJobsViewModel>();
 
             _container.PerRequest<DashboardViewModel>();
             _container.PerRequest<AddClientViewModel>();

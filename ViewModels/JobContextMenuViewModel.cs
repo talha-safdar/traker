@@ -12,6 +12,7 @@ namespace Traker.ViewModels
     using Database;
     using Traker.Data;
     using Traker.Events;
+    using Traker.Events.DashboardVM;
     using Traker.Helper;
     using Traker.Models.Database;
     using Traker.Services;
@@ -68,7 +69,7 @@ namespace Traker.ViewModels
 
         public async Task EditClient()
         {
-            await _events.PublishOnUIThreadAsync(new CallFromDashboard() { FunctionName = "EditClient" });
+            await _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = "EditClient" });
         }
 
         public async Task DeleteRow()

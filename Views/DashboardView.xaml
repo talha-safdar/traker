@@ -234,7 +234,180 @@
         
         <!-- main panel -->
         <Grid Grid.Column="1" Margin="10,20,20,20">
-            <Border Background="#121212" CornerRadius="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.04*" /> <!-- search / filter / sort -->
+                <RowDefinition Height="*" /> <!-- job cards -->
+            </Grid.RowDefinitions>
+
+            <!-- search / filter / sort -->
+            <Grid Grid.Row="0" Margin="0,0,0,0">
+                <Border CornerRadius="15" Background="Transparent" BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="0" >
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,0">
+                        <Border Margin="0,0,10,0" Opacity="0.8" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFilterContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                            <svg:SvgViewbox                         
+                                        RenderOptions.BitmapScalingMode="HighQuality"
+                                        SnapsToDevicePixels="True"
+                                        Source="/Resources/Media/Images/Icons/Lucide/list-filter.svg" Width="15" Height="15"/>
+                        </Border>
+                        <Border Opacity="0.8" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenSortContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                            <svg:SvgViewbox                         
+                                        RenderOptions.BitmapScalingMode="HighQuality"
+                                        SnapsToDevicePixels="True"
+                                        Source="/Resources/Media/Images/Icons/Lucide/arrow-up-down.svg" Width="15" Height="15"/>
+                        </Border>                        
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- job cards -->
+            <Grid Grid.Row="1" Margin="0,10,0,0">
+                <Border Background="#121212" CornerRadius="20">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10" Padding="0,0,10,0">
+                        <ItemsControl ItemsSource="{Binding DashboardData}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#242424" 
+                            BorderThickness="1"
+                            BorderBrush="#333333"
+                            Height="135"
+                        CornerRadius="10" 
+                        Margin="0,0,0,10" 
+                        Padding="10"
+                        cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SelectJob($dataContext)];
+                                            [Event MouseRightButtonUp] = [Action OpenContextMenu($dataContext)];"
+                            Cursor="Hand"
+                        MouseLeftButtonDown="EditJob">
+
+                                        <Grid IsHitTestVisible="False">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="0.3*" />
+                                                <!-- type -->
+                                                <ColumnDefinition Width="*" />
+                                                <!-- full name / job title -->
+                                                <ColumnDefinition Width="0.2*" />
+                                                <!-- spacer -->
+                                                <ColumnDefinition Width="*" />
+                                                <!-- job status / due date -->
+                                                <ColumnDefinition Width="0.2*" />
+                                                <!-- spacer -->
+                                                <ColumnDefinition Width="*" />
+                                                <!-- job price -->
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- type -->
+                                            <Grid Grid.Column="0">
+                                                <Border Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="80" Width="80">
+                                                    <svg:SvgViewbox                         
+                                    RenderOptions.BitmapScalingMode="HighQuality"
+                                    SnapsToDevicePixels="True"
+                                    Source="{Binding TypeIcon}" Width="40" Height="40"/>
+                                                </Border>
+                                            </Grid>
+
+                                            <!-- full name / job title -->
+                                            <Grid Grid.Column="1" VerticalAlignment="Center">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="*" />
+                                                    <!-- full name -->
+                                                    <RowDefinition Height="*" />
+                                                    <!-- spacer -->
+                                                    <RowDefinition Height="*" />
+                                                    <!-- job title -->
+                                                </Grid.RowDefinitions>
+
+                                                <!-- full name -->
+                                                <Grid Grid.Row="0">
+                                                    <TextBlock Margin="5,0,0,0" Text="{Binding ClientName}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Black" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32" />
+                                                </Grid>
+
+                                                <!-- spacer -->
+                                                <Grid Grid.Row="1" Margin="0,10" />
+
+                                                <!-- job title -->
+                                                <Grid Grid.Row="2">
+                                                    <TextBlock Margin="5,0,0,0" Opacity="0.8" Text="{Binding JobTitle}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />
+                                                </Grid>
+                                            </Grid>
+
+                                            <!-- spacer-->
+                                            <Grid Grid.Column="2">
+                                                <Border Background="#555555" Width="2" Margin="0,10" />
+                                            </Grid>
+
+                                            <!-- job status / due date -->
+                                            <Grid Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="*" />
+                                                    <!-- job status -->
+                                                    <RowDefinition Height="0.5*" />
+                                                    <!-- spacer -->
+                                                    <RowDefinition Height="*" />
+                                                    <!-- due date -->
+                                                </Grid.RowDefinitions>
+
+                                                <!-- job status -->
+                                                <Grid Grid.Row="0">
+                                                    <TextBlock Margin="0" Text="{Binding JobStatus}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Black" FontSize="32">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Foreground" Value="{StaticResource FontPrimaryBrush}" />
+
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding JobStatus}" Value="Invoiced">
+                                                                        <Setter Property="Foreground" Value="LightBlue" />
+                                                                        <Setter Property="FontWeight" Value="Bold" />
+                                                                    </DataTrigger>
+
+                                                                    <DataTrigger Binding="{Binding JobStatus}" Value="Done">
+                                                                        <Setter Property="Foreground" Value="LightGreen" />
+                                                                    </DataTrigger>
+
+                                                                    <DataTrigger Binding="{Binding JobStatus}" Value="New">
+                                                                        <Setter Property="Foreground" Value="LightCoral" />
+                                                                    </DataTrigger>
+
+                                                                    <DataTrigger Binding="{Binding JobStatus}" Value="Active">
+                                                                        <Setter Property="Foreground" Value="DarkOrange" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </Grid>
+
+                                                <!-- spacer -->
+                                                <Grid Grid.Row="1" Margin="0,10" />
+
+                                                <!-- due date -->
+                                                <Grid Grid.Row="2">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock HorizontalAlignment="Left" Margin="0" Text="Due" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="24" />
+                                                        <TextBlock Margin="10,0,0,0" Text="{Binding DueDate}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Grid>
+
+                                            <!-- spacer -->
+                                            <Grid Grid.Column="4">
+                                                <Border Background="#555555" Width="2" Margin="0,10" />
+                                            </Grid>
+
+                                            <!-- job price -->
+                                            <Grid Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                <TextBlock Margin="0" Text="{Binding Price}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Black" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32" />
+                                            </Grid>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+        </Grid>
+        
+        <Grid Grid.Column="1" Margin="10,20,20,20">
+            <!--<Border Background="#121212" CornerRadius="20">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10" Padding="0,0,10,0">
                     <ItemsControl ItemsSource="{Binding DashboardData}">
                         <ItemsControl.ItemTemplate>
@@ -253,15 +426,15 @@
 
                                     <Grid IsHitTestVisible="False">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="0.3*" />                                            <!-- type -->
-                                            <ColumnDefinition Width="*" />                                            <!-- full name / job title -->
-                                            <ColumnDefinition Width="0.2*" />                                            <!-- spacer -->
-                                            <ColumnDefinition Width="*" />                                            <!-- job status / due date -->
-                                            <ColumnDefinition Width="0.2*" />                                            <!-- spacer -->
-                                            <ColumnDefinition Width="*" />                                            <!-- job price -->
+                                            <ColumnDefinition Width="0.3*" />                                            --><!-- type --><!--
+                                            <ColumnDefinition Width="*" />                                            --><!-- full name / job title --><!--
+                                            <ColumnDefinition Width="0.2*" />                                            --><!-- spacer --><!--
+                                            <ColumnDefinition Width="*" />                                            --><!-- job status / due date --><!--
+                                            <ColumnDefinition Width="0.2*" />                                            --><!-- spacer --><!--
+                                            <ColumnDefinition Width="*" />                                            --><!-- job price --><!--
                                         </Grid.ColumnDefinitions>
 
-                                        <!-- type -->
+                                        --><!-- type --><!--
                                         <Grid Grid.Column="0">
                                             <Border Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="80" Width="80">
                                                 <svg:SvgViewbox                         
@@ -271,44 +444,75 @@
                                             </Border>
                                         </Grid>
 
-                                        <!-- full name / job title -->
-                                        <Grid Grid.Column="1">
+                                        --><!-- full name / job title --><!--
+                                        <Grid Grid.Column="1" VerticalAlignment="Center">
                                             <Grid.RowDefinitions>
-                                                <RowDefinition Height="*" />                                                <!-- full name -->
-                                                <RowDefinition Height="0.5*" />                                                <!-- spacer -->
-                                                <RowDefinition Height="*" />                                                <!-- job title -->
+                                                <RowDefinition Height="*" />                                                --><!-- full name --><!--
+                                                <RowDefinition Height="*" />                                                --><!-- spacer --><!--
+                                                <RowDefinition Height="*" />                                                --><!-- job title --><!--
                                             </Grid.RowDefinitions>
 
-                                            <!-- full name -->
+                                            --><!-- full name --><!--
                                             <Grid Grid.Row="0">
                                                 <TextBlock Margin="5,0,0,0" Text="{Binding ClientName}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Black" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32" />
                                             </Grid>
+                                            
+                                            --><!-- spacer --><!--
+                                            <Grid Grid.Row="1" Margin="0,10" />
 
-                                            <!-- job title -->
+                                            --><!-- job title --><!--
                                             <Grid Grid.Row="2">
-                                                <TextBlock Margin="5,0,0,0" Text="{Binding JobTitle}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />
+                                                <TextBlock Margin="5,0,0,0" Opacity="0.8" Text="{Binding JobTitle}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />
                                             </Grid>
                                         </Grid>
 
-                                        <!-- spacer-->
+                                        --><!-- spacer--><!--
                                         <Grid Grid.Column="2">
                                             <Border Background="#555555" Width="2" Margin="0,10" />
                                         </Grid>
 
-                                        <!-- job status / due date -->
-                                        <Grid Grid.Column="3" HorizontalAlignment="Center">
+                                        --><!-- job status / due date --><!--
+                                        <Grid Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center">
                                             <Grid.RowDefinitions>
-                                                <RowDefinition Height="*" />                                                <!-- job status -->
-                                                <RowDefinition Height="0.5*" />                                                <!-- spacer -->
-                                                <RowDefinition Height="*" />                                                <!-- due date -->
+                                                <RowDefinition Height="*" />                                                --><!-- job status --><!--
+                                                <RowDefinition Height="0.5*" />                                                --><!-- spacer --><!--
+                                                <RowDefinition Height="*" />                                                --><!-- due date --><!--
                                             </Grid.RowDefinitions>
 
-                                            <!-- job status -->
+                                            --><!-- job status --><!--
                                             <Grid Grid.Row="0">
-                                                <TextBlock Margin="0" Text="{Binding JobStatus}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Black" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32" />
+                                                <TextBlock Margin="0" Text="{Binding JobStatus}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Black" FontSize="32">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="{StaticResource FontPrimaryBrush}" />
+
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding JobStatus}" Value="Invoiced">
+                                                                    <Setter Property="Foreground" Value="LightBlue" />
+                                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                                </DataTrigger>
+
+                                                                <DataTrigger Binding="{Binding JobStatus}" Value="Done">
+                                                                    <Setter Property="Foreground" Value="LightGreen" />
+                                                                </DataTrigger>
+                                                                
+                                                                <DataTrigger Binding="{Binding JobStatus}" Value="New">
+                                                                    <Setter Property="Foreground" Value="LightCoral" />
+                                                                </DataTrigger>
+                                                                
+                                                                <DataTrigger Binding="{Binding JobStatus}" Value="Active">
+                                                                    <Setter Property="Foreground" Value="DarkOrange" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
                                             </Grid>
 
-                                            <!-- due date -->
+                                            --><!-- spacer --><!--
+                                            <Grid Grid.Row="1" Margin="0,10" />
+
+                                            --><!-- due date --><!--
                                             <Grid Grid.Row="2">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock HorizontalAlignment="Left" Margin="0" Text="Due" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="24" />
@@ -317,12 +521,12 @@
                                             </Grid>
                                         </Grid>
 
-                                        <!-- spacer -->
+                                        --><!-- spacer --><!--
                                         <Grid Grid.Column="4">
                                             <Border Background="#555555" Width="2" Margin="0,10" />
                                         </Grid>
 
-                                        <!-- job price -->
+                                        --><!-- job price --><!--
                                         <Grid Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Margin="0" Text="{Binding Price}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Black" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32" />
                                         </Grid>
@@ -332,7 +536,7 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </ScrollViewer>
-            </Border>
+            </Border>-->
         </Grid>
     </Grid>
 </UserControl>

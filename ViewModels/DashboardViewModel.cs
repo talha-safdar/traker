@@ -5,18 +5,22 @@ namespace Traker.ViewModels
 {
     using Database;
     using System.Diagnostics;
+    using System.Dynamic;
     using System.Globalization;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Controls.Primitives;
     using System.Windows.Input;
+    using System.Windows.Media;
     using Traker.Events;
+    using Traker.Events.DashboardVM;
     using Traker.Helper;
     using Traker.Models;
     using Traker.Services;
     using Traker.States;
     using Traker.ViewModels.User;
 
-    public class DashboardViewModel : Screen, IHandle<RefreshDatabase>, IHandle<CallFromDashboard>
+    public class DashboardViewModel : Screen, IHandle<RefreshDatabase>, IHandle<DashboardVMEvents>
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
@@ -53,6 +57,8 @@ namespace Traker.ViewModels
         private EditClientViewModel _editClientViewModel;
         private EditJobViewModel _editJobViewModel;
         private UserContextMenuViewModel _userContextMenuViewModel;
+        private SortJobsViewModel _sortJobsViewModel;
+        private FilterJobsViewModel _filterJobsViewModel;
         #endregion
 
         public DashboardViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState, DataService dataService)
@@ -80,6 +86,8 @@ namespace Traker.ViewModels
             _addJobViewModel = new AddJobViewModel(_events, State);
             _editClientViewModel = new EditClientViewModel(_events, _windowManager, Data);
             _userContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager, Data);
+            _sortJobsViewModel = new SortJobsViewModel(_events);
+            _filterJobsViewModel = new FilterJobsViewModel();
 
             _events.SubscribeOnPublishedThread(this);
         }
@@ -114,6 +122,87 @@ namespace Traker.ViewModels
         #endregion
 
         #region Public View Functions
+        public async Task OpenFilterContextMenu(FrameworkElement anchorElement)
+        {
+            // if add menu open do nothing
+            if (State.IsWindowOpen == true)
+            {
+                return;
+            }
+
+            if (_filterJobsViewModel != null)
+            {
+                await _filterJobsViewModel.TryCloseAsync(false);
+            }
+
+            if (anchorElement != null)
+            {
+                var window = Window.GetWindow(anchorElement);
+
+                // 1. Get the absolute position of the button on the screen
+                Point locationFromScreen = anchorElement.PointToScreen(new Point(anchorElement.ActualWidth, 0));
+                Point windowScreenPos = window.PointToScreen(new Point(0, 0));
+
+                // 2. Adjust for DPI (High-res screens) - Very important for proper alignment
+                var source = PresentationSource.FromVisual(anchorElement);
+                if (source == null)
+                {
+                    return; // Element isn't rendered yet, math will be 0,0
+                }
+
+                double dpiY = source.CompositionTarget.TransformToDevice.M22;
+                double dpiX = source.CompositionTarget.TransformToDevice.M11;
+
+                // 3. Calculate "Above": 
+                double popupTop = (locationFromScreen.Y / dpiY) - 20; // positive=down, negative=up
+                double popupLeft = (locationFromScreen.X / dpiX) - 315; // psotiive=right, negative=left
+
+                _filterJobsViewModel = new FilterJobsViewModel();
+                await _windowManager.ShowPopupAsync(_filterJobsViewModel, null, CustomWindow.SettingsForDialog(310, 335, true, popupTop, popupLeft)); // vertical, horizontal
+            }
+        }
+
+        public async Task OpenSortContextMenu(FrameworkElement anchorElement)
+        {
+            // if add menu open do nothing
+            if (State.IsWindowOpen == true)
+            {
+                return;
+            }
+
+            if (_sortJobsViewModel != null)
+            {
+                await _sortJobsViewModel.TryCloseAsync(false);
+            }
+
+            if (anchorElement != null)
+            {
+                var window = Window.GetWindow(anchorElement);
+
+                // 1. Get the absolute position of the button on the screen
+                Point locationFromScreen = anchorElement.PointToScreen(new Point(anchorElement.ActualWidth, 0));
+                Point windowScreenPos = window.PointToScreen(new Point(0, 0));
+
+                // 2. Adjust for DPI (High-res screens) - Very important for proper alignment
+                var source = PresentationSource.FromVisual(anchorElement);
+                if (source == null)
+                {
+                    return; // Element isn't rendered yet, math will be 0,0
+                }
+
+                double dpiY = source.CompositionTarget.TransformToDevice.M22;
+                double dpiX = source.CompositionTarget.TransformToDevice.M11;
+
+                // 3. Calculate "Above": 
+                double popupTop = (locationFromScreen.Y / dpiY) - 5; // positive=down, negative=up
+                double popupLeft = (locationFromScreen.X / dpiX) - 315; // psotiive=right, negative=left
+
+                //_sortJobsViewModel = new SortJobsViewModel();
+                // for singleton use use IoC
+                await _windowManager.ShowPopupAsync(IoC.Get<SortJobsViewModel>(), null, CustomWindow.SettingsForDialog(310, 335, true, popupTop, popupLeft)); // vertical, horizontal
+            }
+        }
+
         public async Task OpenUserContenxtMenu(FrameworkElement anchorElement)
         {
             // if add menu open do nothing
@@ -146,8 +235,6 @@ namespace Traker.ViewModels
                 _userContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager, Data);
                 await _windowManager.ShowPopupAsync(_userContextMenuViewModel, null, CustomWindow.SettingsForDialog(310, 335, true, popupTop, popupLeft)); // vertical, horizontal
             }
-
-
         }
 
         public Task SelectJob(DashboardModel selectedJob)
@@ -291,11 +378,106 @@ namespace Traker.ViewModels
             {
                 await _userContextMenuViewModel.TryCloseAsync(false);
                 _userContextMenuViewModel = null;
-            }            
+            }
+            if (IoC.Get<FilterJobsViewModel>().IsActive == true)
+            {
+                await IoC.Get<FilterJobsViewModel>().TryCloseAsync(false);
+            }
+            if (IoC.Get<SortJobsViewModel>().IsActive == true)
+            {
+                await IoC.Get<SortJobsViewModel>().TryCloseAsync(false);
+            }
         }
         #endregion
 
         #region Private Functions
+        private Task SortJobs(string command)
+        {
+            if (command == Names.ClientNameAsc)
+            {
+                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.ClientName));
+            }
+            else if (command == Names.ClientNameDesc)
+            {
+                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.ClientName));
+            }
+
+            else if (command == Names.JobTitleAsc)
+            {
+                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.JobTitle));
+            }
+            else if (command == Names.JobTitleDesc)
+            {
+                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.JobTitle));
+            }
+
+            else if (command == Names.JobStatusAsc)
+            {
+                DashboardData = new ObservableCollection<DashboardModel>(_dashboardData.OrderBy(j =>
+                {
+                    switch (j.JobStatus.ToLower())
+                    {
+                        case "new": return 1;
+                        case "active": return 2;
+                        case "done": return 3;
+                        case "invoiced": return 4;
+                        default: return 5; // Anything else goes to the bottom
+                    }
+                }));
+            }
+            else if (command == Names.JobStatusDesc)
+            {
+                DashboardData = new ObservableCollection<DashboardModel>(_dashboardData.OrderByDescending(j =>
+                {
+                    switch (j.JobStatus.ToLower())
+                    {
+                        case "new": return 1;
+                        case "active": return 2;
+                        case "done": return 3;
+                        case "invoiced": return 4;
+                        default: return 5; // Anything else goes to the bottom
+                    }
+                }));
+            }
+
+            else if (command == Names.JobPriceAsc)
+            {
+                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => Decimal.Parse(j.Price, NumberStyles.Currency)));
+            }
+            else if (command == Names.JobPriceDesc)
+            {
+                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => Decimal.Parse(j.Price, NumberStyles.Currency)));
+            }
+
+            else if (command == Names.DueDateAsc)
+            {
+                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.DueDate));
+            }
+            else if (command == Names.DueDateDesc)
+            {
+                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.DueDate));
+            }
+
+            else if (command == Names.CreatedDateAsc)
+            {
+                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.CreatedDate));
+            }
+            else if (command == Names.CreatedDateDesc)
+            {
+                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.CreatedDate));
+            }
+
+            else if (command == Names.ClientTypeAsc)
+            {
+                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.ClientType));
+            }
+            else if (command == Names.ClientTypeDesc)
+            {
+                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.ClientType));
+            }
+            return Task.CompletedTask;
+        }
+
         private Task SetupDashboardData()
         {
             // row data
@@ -337,37 +519,48 @@ namespace Traker.ViewModels
                 index++;
             }
 
+            // ascending order job title
+            //_dashboardData = new ObservableCollection<DashboardModel>(_dashboardData.OrderBy(j => j.JobTitle));
+
+            // job status order
+            _dashboardData = new ObservableCollection<DashboardModel>(_dashboardData.OrderBy(
+                j =>
+                {
+                    switch (j.JobStatus.ToLower())
+                    {
+                        case "new": return 1;
+                        case "active": return 2;
+                        case "done": return 3;
+                        case "invoiced": return 4;
+                        default: return 5; // Anything else goes to the bottom
+                    }
+                }));
+
+            /*
+             * sortb by:
+             * - client name (up/down)
+             * - job name (up/down)
+             * - job status (up/down)
+             * - job price (up/down)
+             * - due date
+             * - created date?
+             * - company type
+             * 
+             * filter by:
+             * - job status (e.g. only Active)
+             * - company type
+             */
+
             NewJobsCount = Data.Jobs.Where(j => j.Status == Names.New).Count().ToString(); // new jobs count
             DoneJobsCount = Data.Jobs.Where(j => j.Status == Names.Done).Count().ToString(); // done jobs count
             ActiveJobsCount = Data.Jobs.Where(j => j.Status == Names.Active).Count().ToString(); // active jobs count
             InvoicedJobsCount = Data.Jobs.Where(j => j.Status == Names.Invoiced).Count().ToString(); // invoiced jobs count
             GrossAmount = Data.Jobs.Sum(gross => gross.FinalPrice).ToString("C"); // gross amount
             ReceivedAmount = Data.Jobs.Where(j => j.Status == Names.Paid).Sum(j => j.FinalPrice).ToString("C");
-            //OutstandingAmount = Data.Jobs.Where(j => j.Status == Names.Done).Sum(j => j.FinalPrice).ToString("C");
-            //Debug.WriteLine(DateOnly.FromDateTime(DateTime.Now));
-            //Debug.WriteLine(Data.Invoices.Where(i => i.JobId == 1).Select(i => i.DueDate).FirstOrDefault().ToString());
-            //Debug.WriteLine(Data.Invoices.Where(i => i.InvoiceNumber == 1).Select(i => i.DueDate).FirstOrDefault());
-            //if (Data.Invoices.Where(i => i.JobId == 1).Select(i => i.DueDate).FirstOrDefault() > DateOnly.FromDateTime(DateTime.Now))
-            //{
-            //    Debug.WriteLine("KAWABONGA");
-            //    Debug.WriteLine("Invoice due date: " + Data.Invoices.Where(i => i.JobId == 1).Select(i => i.DueDate).FirstOrDefault() + ", today: " + DateOnly.FromDateTime(DateTime.Now));
-            //}
-            //Debug.WriteLine(Data.Invoices.First().DueDate.GetType());
-
-            //foreach (var i in Data.Invoices)
-            //{
-            //    Debug.WriteLine($"{i.DueDate} > {DateOnly.FromDateTime(DateTime.Today)} = {i.DueDate > DateOnly.FromDateTime(DateTime.Today)}");
-            //}
-
-            var invoicedJobsDuePayment = Data.Invoices.Where(i => i.DueDate > DateOnly.FromDateTime(DateTime.Today)).Select(i => i.JobId).ToHashSet();
-
             OutstandingAmount = Data.Jobs
                 .Where(j => j.Status == Names.Done || (j.Status == Names.Invoiced && Data.Invoices.Any(i => i.JobId == j.JobId && i.DueDate > DateOnly.FromDateTime(DateTime.Now))))
                 .Sum(j => j.FinalPrice).ToString("C");
 
-            //OutstandingAmount = Data.Jobs.Where(j => j.Status == Names.Done ||
-            //                                         (j.Status == Names.Invoiced &&
-            //                                         Data.Invoices.Any(i => i.DueDate < DateOnly.FromDateTime(DateTime.Now)))).Sum(j => j.FinalPrice).ToString("C");
             OverdueAmount = Data.Jobs
                                 .Where(j => j.Status == Names.Invoiced)
                                 .Join(Data.Invoices, 
@@ -380,13 +573,69 @@ namespace Traker.ViewModels
         #endregion
 
         #region Event Handlers
-        public async Task HandleAsync(CallFromDashboard message, CancellationToken cancellationToken)
+        public async Task HandleAsync(DashboardVMEvents message, CancellationToken cancellationToken)
         {
             if (message != null)
             {
-                if (message.FunctionName == "EditClient")
+                if (message.Command == "EditClient")
                 {
                     await EditClient();
+                }
+                else if (message.Command == Names.ClientNameAsc)
+                {
+                    await SortJobs(Names.ClientNameAsc);
+                }
+                else if (message.Command == Names.ClientNameDesc)
+                {
+                    await SortJobs(Names.ClientNameDesc);
+                }
+                else if (message.Command == Names.JobTitleAsc)
+                {
+                    await SortJobs(Names.JobTitleAsc);
+                }
+                else if (message.Command == Names.JobTitleDesc)
+                {
+                    await SortJobs(Names.JobTitleDesc);
+                }
+                else if (message.Command == Names.JobStatusAsc)
+                {
+                    await SortJobs(Names.JobStatusAsc);
+                }
+                else if (message.Command == Names.JobStatusDesc)
+                {
+                    await SortJobs(Names.JobStatusDesc);
+                }
+                else if (message.Command == Names.JobPriceAsc)
+                {
+                    await SortJobs(Names.JobPriceAsc);
+                }
+                else if (message.Command == Names.JobPriceDesc)
+                {
+                    await SortJobs(Names.JobPriceDesc);
+                }
+                else if (message.Command == Names.DueDateAsc)
+                {
+                    await SortJobs(Names.DueDateAsc);
+                }
+                else if (message.Command == Names.DueDateDesc)
+                {
+                    await SortJobs(Names.DueDateDesc);
+                }
+                else if (message.Command == Names.CreatedDateAsc)
+                {
+                    await SortJobs(Names.CreatedDateAsc);
+                }
+                else if (message.Command == Names.CreatedDateDesc)
+                {
+                    await SortJobs(Names.CreatedDateDesc);
+                }
+                else if (message.Command == Names.ClientTypeAsc)
+                {
+                    await SortJobs(Names.ClientTypeAsc);
+                }
+                else if (message.Command == Names.ClientTypeDesc)
+                {
+                    await SortJobs(Names.ClientTypeDesc);
                 }
             }
         }

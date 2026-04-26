@@ -40,5 +40,83 @@ namespace Traker.Helper
 
             return Task.CompletedTask;
         }
+
+        /// <summary>
+        /// Inverse Radio Style:
+        /// Full opacity: in use
+        /// Half opacity: not in use
+        /// </summary>
+        public static void InverseRadioOptionChanged(int option, ObservableCollection<bool> optionsIsEnabled, ObservableCollection<double> optionsOpacity)
+        {
+            double fullOpacity = 1.0;
+            double halfOpacity = 0.5;
+
+            for (int i = 0; i < optionsIsEnabled.Count; i++)
+            {
+                if (i == option) // if clicked option set it to half opacity
+                {
+                    optionsOpacity[i] = fullOpacity;
+                    optionsIsEnabled[i] = false;
+                }
+                else // if not clicked option set it to full opacity
+                {
+                    optionsOpacity[i] = halfOpacity;
+                    optionsIsEnabled[i] = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Inverse Radio Style:
+        /// Full opacity: in use
+        /// Half opacity: not in use
+        /// </summary>
+        public static void InverseRadioOptionChangedOpacity(int option, ObservableCollection<double> optionsOpacity)
+        {
+            double fullOpacity = 1.0;
+            double halfOpacity = 0.5;
+
+            for (int i = 0; i < optionsOpacity.Count; i++)
+            {
+                if (i == option) // if clicked option set it to half opacity
+                {
+                    optionsOpacity[i] = fullOpacity;
+                }
+                else // if not clicked option set it to full opacity
+                {
+                    optionsOpacity[i] = halfOpacity;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reset the opacity to 1.0
+        /// in a list
+        /// </summary>
+        public static void SetOpacityFull(ObservableCollection<double> optionsOpacity)
+        {
+            for (int i = 0; i < optionsOpacity.Count; i++)
+            {
+                if (optionsOpacity[i] != 1.0)
+                {
+                    optionsOpacity[i] = 1.0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Set the opacity to 0.5
+        /// in a list
+        /// </summary>
+        public static void SetOpacityHalf(ObservableCollection<double> optionsOpacity)
+        {
+            for (int i = 0; i < optionsOpacity.Count; i++)
+            {
+                if (optionsOpacity[i] != 0.5)
+                {
+                    optionsOpacity[i] = 0.5;
+                }
+            }
+        }
     }
 }
