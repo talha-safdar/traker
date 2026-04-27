@@ -3,10 +3,130 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
+             xmlns:cal="http://caliburnmicro.com"
              xmlns:local="clr-namespace:Traker.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Border Background="#1E1E1E" CornerRadius="15" BorderBrush="#3F3F46" BorderThickness="1" Width="295" Height="190" VerticalAlignment="Center">
+    <Border>
+        <Grid Width="295" Height="160">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />                <!-- stauts -->
+                <RowDefinition Height="0.5*" />                <!-- client type -->
+            </Grid.RowDefinitions>
 
+            <!-- status -->
+            <Grid Grid.Row="0">
+                <Border Background="#1E1E1E" CornerRadius="15" BorderBrush="#3F3F46" BorderThickness="1" Margin="0,0,0,5">
+                    <Grid Margin="15,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="0.1*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="0.1*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        
+                        <!-- new -->
+                        <Grid Grid.Column="0" Grid.Row="0">
+                            <Border Opacity="{Binding OpacityStatus[0]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(0)]" Background="#2D2D30" CornerRadius="17" Height="35" BorderThickness="2" BorderBrush="#333333">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
+                                    <Border Background="LightCoral" Height="10" Width="10" CornerRadius="20" />
+                                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="New" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                        
+                        <!-- spacer -->
+                        <Grid Grid.Column="1" Grid.Row="0" />
+
+                        <!-- active -->
+                        <Grid Grid.Column="2" Grid.Row="0">
+                            <Border Opacity="{Binding OpacityStatus[1]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(1)]" Background="#2D2D30" CornerRadius="17" Height="35" BorderThickness="2" BorderBrush="#333333">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
+                                    <Border Background="DarkOrange" Height="10" Width="10" CornerRadius="20" />
+                                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Active" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- spacer -->
+                        <Grid Grid.ColumnSpan="3" Grid.Row="1" />
+
+                        <!-- done -->
+                        <Grid Grid.Column="0" Grid.Row="2">
+                            <Border Opacity="{Binding OpacityStatus[2]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(2)]" Background="#2D2D30" CornerRadius="17" Height="35" BorderThickness="2" BorderBrush="#333333">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
+                                    <Border Background="LightGreen" Height="10" Width="10" CornerRadius="20" />
+                                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Done" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- spacer -->
+                        <Grid Grid.Column="1" Grid.Row="2" />
+
+                        <!-- invoiced -->
+                        <Grid Grid.Column="2" Grid.Row="2">
+                            <Border Opacity="{Binding OpacityStatus[3]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(3)]" Background="#2D2D30" CornerRadius="17" Height="35" BorderThickness="2" BorderBrush="#333333">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
+                                    <Border Background="LightBlue" Height="10" Width="10" CornerRadius="20" />
+                                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Invoiced" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- client type -->
+            <Grid Grid.Row="1">
+                <Border Background="#1E1E1E" CornerRadius="15" BorderBrush="#3F3F46" BorderThickness="1" Width="295" VerticalAlignment="Center">
+                    <Grid Margin="10,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" /> <!-- individual -->
+                            <ColumnDefinition Width="0.1*" /> <!-- spacer -->
+                            <ColumnDefinition Width="*" /> <!-- company-->
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- client name -->
+                        <Grid Grid.Column="0" Height="50">
+                            <Border Opacity="{Binding OpacityClientType[0]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterClientType(0)]" Background="#2D2D30" CornerRadius="17" Height="35" BorderThickness="2" BorderBrush="#333333">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
+                                    <svg:SvgViewbox                         
+                                    RenderOptions.BitmapScalingMode="HighQuality"
+                                    SnapsToDevicePixels="True"
+                                    Source="/Resources/Media/Images/Icons/Lucide/user-round.svg" Width="20" Height="20"/>
+                                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Individual" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                                </StackPanel>                            
+                            </Border>
+                        </Grid>
+
+                        <!-- spacer -->
+                        <Grid Grid.Column="1" />
+
+                        <!-- job name -->
+                        <Grid Grid.Column="2" Height="50">
+                            <Border Opacity="{Binding OpacityClientType[1]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterClientType(1)]" Background="#2D2D30" CornerRadius="17" Height="35" BorderThickness="2" BorderBrush="#333333">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
+                                    <svg:SvgViewbox                         
+                                    RenderOptions.BitmapScalingMode="HighQuality"
+                                    SnapsToDevicePixels="True"
+                                    Source="/Resources/Media/Images/Icons/Lucide/building.svg" Width="20" Height="20"/>
+                                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Comapny" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="15" Opacity="0.3" ShadowDepth="2"/>
+        </Border.Effect>
     </Border>
 </UserControl>

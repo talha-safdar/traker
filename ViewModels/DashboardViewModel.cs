@@ -59,6 +59,10 @@ namespace Traker.ViewModels
         private UserContextMenuViewModel _userContextMenuViewModel;
         private SortJobsViewModel _sortJobsViewModel;
         private FilterJobsViewModel _filterJobsViewModel;
+        private ObservableCollection<DashboardModel> _dashboardDataBackup; // backup when using filter mode
+        private ObservableCollection<DashboardModel> _dashboardDataFiltered; // current filtered list status
+        private bool _isFilterJobStatusOn = false; // to flag wether the job status filter is on
+        private bool _isFilterClientTypeOn = false; // to flag wether the client type filter is on
         #endregion
 
         public DashboardViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState, DataService dataService)
@@ -79,6 +83,7 @@ namespace Traker.ViewModels
             _invoicedJobsCount = "0";
 
             _dashboardData = new ObservableCollection<DashboardModel>();
+            _dashboardDataBackup = new ObservableCollection<DashboardModel>();
             _selectedJob = new DashboardModel();
 
             _contextMenuVM = new JobContextMenuViewModel(_events, _windowManager, Data);
@@ -87,7 +92,7 @@ namespace Traker.ViewModels
             _editClientViewModel = new EditClientViewModel(_events, _windowManager, Data);
             _userContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager, Data);
             _sortJobsViewModel = new SortJobsViewModel(_events);
-            _filterJobsViewModel = new FilterJobsViewModel();
+            _filterJobsViewModel = new FilterJobsViewModel(_events);
 
             _events.SubscribeOnPublishedThread(this);
         }
@@ -154,11 +159,10 @@ namespace Traker.ViewModels
                 double dpiX = source.CompositionTarget.TransformToDevice.M11;
 
                 // 3. Calculate "Above": 
-                double popupTop = (locationFromScreen.Y / dpiY) - 20; // positive=down, negative=up
+                double popupTop = (locationFromScreen.Y / dpiY) - 35; // positive=down, negative=up
                 double popupLeft = (locationFromScreen.X / dpiX) - 315; // psotiive=right, negative=left
 
-                _filterJobsViewModel = new FilterJobsViewModel();
-                await _windowManager.ShowPopupAsync(_filterJobsViewModel, null, CustomWindow.SettingsForDialog(310, 335, true, popupTop, popupLeft)); // vertical, horizontal
+                await _windowManager.ShowPopupAsync(IoC.Get<FilterJobsViewModel>(), null, CustomWindow.SettingsForDialog(310, 335, true, popupTop, popupLeft)); // vertical, horizontal
             }
         }
 
@@ -478,6 +482,82 @@ namespace Traker.ViewModels
             return Task.CompletedTask;
         }
 
+        private Task FilterJobs(string command)
+        {
+            /*
+             * DashboardBackUp = supreme backup
+             * DashboardFiltered = backup of current filter
+             * Dashboard = Normal UI list
+             */
+
+            if (command != Names.FilterIndividual && command != Names.FilterComapny && command != Names.AllJobStatus && command != Names.UnfilterClientType) // status
+            {
+                if (command == Names.JobStatusNew)
+                {
+                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "New").ToList());
+                    _dashboardDataFiltered = DashboardData; // backup to filtered list
+                }
+                else if (command == Names.JobStatusActive)
+                {
+                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Active").ToList());
+                    _dashboardDataFiltered = DashboardData; // backup to filtered list
+                }
+                else if (command == Names.JobStatusDone)
+                {
+                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Done").ToList());
+                    _dashboardDataFiltered = DashboardData; // backup to filtered list
+                }
+                else if (command == Names.JobStatusInvoiced)
+                {
+                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Invoiced").ToList());
+                    _dashboardDataFiltered = DashboardData; // backup to filtered list
+                }
+                _isFilterJobStatusOn = true;
+            }
+            else if (command == Names.FilterIndividual || command == Names.FilterComapny) // cllient type
+            {
+                if (command == Names.FilterIndividual)
+                {
+                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.ClientType == "Individual").ToList());
+                    //_dashboardDataFiltered = DashboardData;
+                }
+                else if (command == Names.FilterComapny)
+                {
+                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.ClientType == "Company").ToList());
+                    //_dashboardDataFiltered = DashboardData;
+                }
+                _isFilterClientTypeOn = true;
+            }
+            else if (command == Names.AllJobStatus)
+            {
+                if (_isFilterClientTypeOn == false)
+                {
+                    DashboardData = _dashboardDataBackup; // reset list
+                    _dashboardDataFiltered = DashboardData;
+                }
+                else if (_isFilterClientTypeOn == true)
+                {
+                    DashboardData = _dashboardDataFiltered;
+                    _isFilterClientTypeOn = false;
+                }
+            }
+            else if (command == Names.UnfilterClientType)
+            {
+                if (_isFilterJobStatusOn == false)
+                {
+                    DashboardData = _dashboardDataBackup; // reset list
+                    _dashboardDataFiltered = DashboardData;
+                }
+                else if (_isFilterJobStatusOn == true)
+                {
+                    DashboardData = _dashboardDataFiltered;
+                    _isFilterJobStatusOn = false;
+                }
+            }
+
+            return Task.CompletedTask;
+        }
+
         private Task SetupDashboardData()
         {
             // row data
@@ -535,21 +615,8 @@ namespace Traker.ViewModels
                         default: return 5; // Anything else goes to the bottom
                     }
                 }));
-
-            /*
-             * sortb by:
-             * - client name (up/down)
-             * - job name (up/down)
-             * - job status (up/down)
-             * - job price (up/down)
-             * - due date
-             * - created date?
-             * - company type
-             * 
-             * filter by:
-             * - job status (e.g. only Active)
-             * - company type
-             */
+            _dashboardDataBackup = _dashboardData; // backup for filtering
+            _dashboardDataFiltered = _dashboardData;
 
             NewJobsCount = Data.Jobs.Where(j => j.Status == Names.New).Count().ToString(); // new jobs count
             DoneJobsCount = Data.Jobs.Where(j => j.Status == Names.Done).Count().ToString(); // done jobs count
@@ -575,6 +642,8 @@ namespace Traker.ViewModels
         #region Event Handlers
         public async Task HandleAsync(DashboardVMEvents message, CancellationToken cancellationToken)
         {
+            // to be simplified
+
             if (message != null)
             {
                 if (message.Command == "EditClient")
@@ -636,6 +705,38 @@ namespace Traker.ViewModels
                 else if (message.Command == Names.ClientTypeDesc)
                 {
                     await SortJobs(Names.ClientTypeDesc);
+                }
+                else if (message.Command == Names.JobStatusNew)
+                {
+                    await FilterJobs(Names.JobStatusNew);
+                }
+                else if (message.Command == Names.JobStatusActive)
+                {
+                    await FilterJobs(Names.JobStatusActive);
+                }
+                else if (message.Command == Names.JobStatusDone)
+                {
+                    await FilterJobs(Names.JobStatusDone);
+                }
+                else if (message.Command == Names.JobStatusInvoiced)
+                {
+                    await FilterJobs(Names.JobStatusInvoiced);
+                }
+                else if (message.Command == Names.FilterIndividual)
+                {
+                    await FilterJobs(Names.FilterIndividual);
+                }
+                else if (message.Command == Names.FilterComapny)
+                {
+                    await FilterJobs(Names.FilterComapny);
+                }
+                else if (message.Command == Names.AllJobStatus)
+                {
+                    await FilterJobs(Names.AllJobStatus);
+                }
+                else if (message.Command == Names.UnfilterClientType)
+                {
+                    await FilterJobs(Names.UnfilterClientType);
                 }
             }
         }

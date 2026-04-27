@@ -28,14 +28,6 @@ namespace Traker.ViewModels
         #endregion
 
         #region Private Field Variables
-        //private bool _clientName = false;
-        //private bool _jobName = false;
-        //private bool _jobStatus = false;
-        //private bool _jobPrice = false;
-        //private bool _dueDate = false;
-        //private bool _createdDate = false;
-        //private bool _businessType = false;
-
         private List<bool> _sortOptions;
         private int _selectedOption = -1;
         private double _fullOpacity = 1.0;

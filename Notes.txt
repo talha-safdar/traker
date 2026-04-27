@@ -55,6 +55,26 @@ format and have a button maybe to access deleted clients, jobs, invoices (howeve
 - use try-catch
 - allow adding custom image if company
 - add skip button for some parts in the setup and ask later if missing when creating invoice
+- if sort disabled resotre the original primary key based order
+
+
+
+* sortb by:
+* - client name (up/down)
+* - job name (up/down)
+* - job status (up/down)
+* - job price (up/down)
+* - due date
+* - created date?
+* - company type
+* 
+* filter by:
+* - job status (e.g. only Active)
+* - company type
+
+
+
+
 
 NOTES:
 Job status:

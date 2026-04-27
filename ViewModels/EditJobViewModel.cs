@@ -164,7 +164,7 @@ namespace Traker.ViewModels
                 _price = value;
                 if (AmountReceived != null)
                 {
-                    ReaminingAmount = (decimal.Parse(Price, NumberStyles.Currency, CultureInfo.CurrentCulture) - decimal.Parse(AmountReceived, NumberStyles.Currency, CultureInfo.CurrentCulture)).ToString("c");
+                   ReaminingAmount = (decimal.Parse(Price, NumberStyles.Currency, CultureInfo.CurrentCulture) - decimal.Parse(AmountReceived, NumberStyles.Currency, CultureInfo.CurrentCulture)).ToString("c");
                 }
                 NotifyOfPropertyChange(() => Price);
             }

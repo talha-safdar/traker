@@ -131,7 +131,7 @@
                             <!-- new -->
                             <Grid Grid.Column="0" Grid.Row="0" Margin="0,0,0,20">
                                 <StackPanel Orientation="Vertical" Margin="10">
-                                    <TextBlock Margin="5,0,0,0" Text="New" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
+                                    <TextBlock Foreground="LightCoral" Margin="5,0,0,0" Text="New" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
                                     <TextBlock Margin="5,0,0,0" Text="{Binding NewJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
                                 </StackPanel>                                       
                             </Grid>
@@ -139,7 +139,7 @@
                             <!-- active (in progress) -->
                             <Grid Grid.Column="1" Grid.Row="0" Margin="0,0,0,20">
                                 <StackPanel Orientation="Vertical" Margin="10">
-                                    <TextBlock Margin="5,0,0,0" Text="Active" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
+                                    <TextBlock Foreground="DarkOrange" Margin="5,0,0,0" Text="Active" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
                                     <TextBlock Margin="5,0,0,0" Text="{Binding ActiveJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
                                 </StackPanel>
                             </Grid>
@@ -147,7 +147,7 @@
                             <!-- Done (completed) -->
                             <Grid Grid.Column="0" Grid.Row="1">
                                 <StackPanel Orientation="Vertical" Margin="10">
-                                    <TextBlock Margin="5,0,0,0" Text="Done" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
+                                    <TextBlock Foreground="LightGreen" Margin="5,0,0,0" Text="Done" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
                                     <TextBlock Margin="5,0,0,0" Text="{Binding DoneJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
                                 </StackPanel>
                             </Grid>                            
@@ -155,7 +155,7 @@
                             <!-- invoiced -->
                             <Grid Grid.Column="1" Grid.Row="1">
                                 <StackPanel Orientation="Vertical" Margin="10">
-                                    <TextBlock Margin="5,0,0,0" Text="Invoiced" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
+                                    <TextBlock Foreground="LightBlue" Margin="5,0,0,0" Text="Invoiced" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
                                     <TextBlock Margin="5,0,0,0" Text="{Binding InvoicedJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
                                 </StackPanel>
                             </Grid>
@@ -353,21 +353,18 @@
                                                                 <Setter Property="Foreground" Value="{StaticResource FontPrimaryBrush}" />
 
                                                                 <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding JobStatus}" Value="Invoiced">
-                                                                        <Setter Property="Foreground" Value="LightBlue" />
-                                                                        <Setter Property="FontWeight" Value="Bold" />
-                                                                    </DataTrigger>
-
-                                                                    <DataTrigger Binding="{Binding JobStatus}" Value="Done">
-                                                                        <Setter Property="Foreground" Value="LightGreen" />
-                                                                    </DataTrigger>
-
                                                                     <DataTrigger Binding="{Binding JobStatus}" Value="New">
                                                                         <Setter Property="Foreground" Value="LightCoral" />
                                                                     </DataTrigger>
-
                                                                     <DataTrigger Binding="{Binding JobStatus}" Value="Active">
                                                                         <Setter Property="Foreground" Value="DarkOrange" />
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding JobStatus}" Value="Done">
+                                                                        <Setter Property="Foreground" Value="LightGreen" />
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding JobStatus}" Value="Invoiced">
+                                                                        <Setter Property="Foreground" Value="LightBlue" />
+                                                                        <Setter Property="FontWeight" Value="Bold" />
                                                                     </DataTrigger>
                                                                 </Style.Triggers>
                                                             </Style>

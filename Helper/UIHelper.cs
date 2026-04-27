@@ -118,5 +118,25 @@ namespace Traker.Helper
                 }
             }
         }
+
+        /// <summary>
+        /// Pass a selected item in a list
+        /// to set to true.
+        /// The rest of the items will be set to false
+        /// </summary>
+        public static void SetOptionTrue(int option, ObservableCollection<bool> optionsList)
+        {
+            for (int i = 0; i < optionsList.Count(); i++)
+            {
+                if (i == option)
+                {
+                    optionsList[option] = true;
+                }
+                else
+                {
+                    optionsList[i] = false;
+                }
+            }
+        }
     }
 }

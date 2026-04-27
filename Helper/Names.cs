@@ -37,5 +37,13 @@ namespace Traker.Helper
         public static string CreatedDateDesc { get; } = "CreatedDateDesc";
         public static string ClientTypeAsc { get; } = "ClientTypeAsc";
         public static string ClientTypeDesc { get; } = "ClientTypeDesc";
+        public static string JobStatusNew { get; } = "JobStatusNew";
+        public static string JobStatusActive { get; } = "JobStatusActive";
+        public static string JobStatusDone { get; } = "JobStatusDone";
+        public static string JobStatusInvoiced { get; } = "JobStatusInvoiced";
+        public static string FilterIndividual { get; } = "FilterIndividual";
+        public static string FilterComapny { get; } = "FilterComapny";
+        public static string AllJobStatus { get; } = "AllJobStatus";
+        public static string UnfilterClientType { get; } = "UnfilterClientType";
     }
 }
