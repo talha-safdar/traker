@@ -59,10 +59,15 @@ namespace Traker.ViewModels
         private UserContextMenuViewModel _userContextMenuViewModel;
         private SortJobsViewModel _sortJobsViewModel;
         private FilterJobsViewModel _filterJobsViewModel;
+
+        // for filter purpose
         private ObservableCollection<DashboardModel> _dashboardDataBackup; // backup when using filter mode
-        private ObservableCollection<DashboardModel> _dashboardDataFiltered; // current filtered list status
+        private ObservableCollection<DashboardModel> _dashboardDataStatusFiltered; // current status filtered list status
+        private ObservableCollection<DashboardModel> _dashboardDataTypeFiltered; // current type filtered list status
         private bool _isFilterJobStatusOn = false; // to flag wether the job status filter is on
         private bool _isFilterClientTypeOn = false; // to flag wether the client type filter is on
+        private bool _isFilterClientTypeIndividual = false;
+        private bool _isFilterClientTypeCompany = false;
         #endregion
 
         public DashboardViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState, DataService dataService)
@@ -492,66 +497,128 @@ namespace Traker.ViewModels
 
             if (command != Names.FilterIndividual && command != Names.FilterComapny && command != Names.AllJobStatus && command != Names.UnfilterClientType) // status
             {
+                if (_isFilterClientTypeOn == true)
+                {
+                    if (_isFilterClientTypeIndividual == true)
+                    {
+                        _dashboardDataTypeFiltered = new ObservableCollection<DashboardModel>(_dashboardDataBackup.Where(j => j.ClientType == "Individual").ToList());
+                    }
+                    else if (_isFilterClientTypeCompany == true)
+                    {
+                        _dashboardDataTypeFiltered = new ObservableCollection<DashboardModel>(_dashboardDataBackup.Where(j => j.ClientType == "Company").ToList());
+                    }
+                    DashboardData = _dashboardDataTypeFiltered;
+                }
+                else
+                {
+                    DashboardData = _dashboardDataBackup;
+                }
+
                 if (command == Names.JobStatusNew)
                 {
                     DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "New").ToList());
-                    _dashboardDataFiltered = DashboardData; // backup to filtered list
+                    
+                    if (DashboardData.Count > 0)
+                    {
+                        _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
+                    }
                 }
                 else if (command == Names.JobStatusActive)
                 {
                     DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Active").ToList());
-                    _dashboardDataFiltered = DashboardData; // backup to filtered list
+
+                    if (DashboardData.Count > 0)
+                    {
+                        _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
+                    }
                 }
                 else if (command == Names.JobStatusDone)
                 {
                     DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Done").ToList());
-                    _dashboardDataFiltered = DashboardData; // backup to filtered list
+
+                    if (DashboardData.Count > 0)
+                    {
+                        _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
+                    }
                 }
                 else if (command == Names.JobStatusInvoiced)
                 {
                     DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Invoiced").ToList());
-                    _dashboardDataFiltered = DashboardData; // backup to filtered list
+
+                    if (DashboardData.Count > 0)
+                    {
+                        _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
+                    }
                 }
                 _isFilterJobStatusOn = true;
             }
             else if (command == Names.FilterIndividual || command == Names.FilterComapny) // cllient type
             {
+                if (_isFilterJobStatusOn == true)
+                {
+                    DashboardData = _dashboardDataStatusFiltered;
+                }
+                else
+                {
+                    DashboardData = _dashboardDataBackup;
+                }
+
                 if (command == Names.FilterIndividual)
                 {
                     DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.ClientType == "Individual").ToList());
-                    //_dashboardDataFiltered = DashboardData;
+
+                    if (DashboardData.Count > 0)
+                    {
+                        _dashboardDataTypeFiltered = DashboardData;
+                    }
+                    _isFilterClientTypeCompany = false;
+                    _isFilterClientTypeIndividual = true;
                 }
                 else if (command == Names.FilterComapny)
                 {
                     DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.ClientType == "Company").ToList());
-                    //_dashboardDataFiltered = DashboardData;
+
+                    if (DashboardData.Count > 0)
+                    {
+                        _dashboardDataTypeFiltered = DashboardData;
+                    }
+                    _isFilterClientTypeIndividual = false;
+                    _isFilterClientTypeCompany = true;
                 }
                 _isFilterClientTypeOn = true;
             }
             else if (command == Names.AllJobStatus)
             {
-                if (_isFilterClientTypeOn == false)
+                if (_isFilterJobStatusOn == false)
                 {
                     DashboardData = _dashboardDataBackup; // reset list
-                    _dashboardDataFiltered = DashboardData;
+                    _dashboardDataStatusFiltered = DashboardData;
                 }
-                else if (_isFilterClientTypeOn == true)
+                else if (_isFilterJobStatusOn == true)
                 {
-                    DashboardData = _dashboardDataFiltered;
-                    _isFilterClientTypeOn = false;
+                    DashboardData = _dashboardDataBackup;
+                    if (_isFilterClientTypeOn == true)
+                    {
+                        DashboardData = _dashboardDataTypeFiltered;
+                    }
+                    _isFilterJobStatusOn = false;
                 }
             }
             else if (command == Names.UnfilterClientType)
             {
-                if (_isFilterJobStatusOn == false)
+                if (_isFilterClientTypeOn == false)
                 {
                     DashboardData = _dashboardDataBackup; // reset list
-                    _dashboardDataFiltered = DashboardData;
+                    _dashboardDataTypeFiltered = DashboardData;
                 }
-                else if (_isFilterJobStatusOn == true)
+                else if (_isFilterClientTypeOn == true)
                 {
-                    DashboardData = _dashboardDataFiltered;
-                    _isFilterJobStatusOn = false;
+                    DashboardData = _dashboardDataBackup;
+                    if (_isFilterJobStatusOn == true)
+                    {
+                        DashboardData = _dashboardDataStatusFiltered;
+                    }
+                    _isFilterClientTypeOn = false;
                 }
             }
 
@@ -616,7 +683,8 @@ namespace Traker.ViewModels
                     }
                 }));
             _dashboardDataBackup = _dashboardData; // backup for filtering
-            _dashboardDataFiltered = _dashboardData;
+            _dashboardDataStatusFiltered = _dashboardData;
+            _dashboardDataTypeFiltered = _dashboardData;
 
             NewJobsCount = Data.Jobs.Where(j => j.Status == Names.New).Count().ToString(); // new jobs count
             DoneJobsCount = Data.Jobs.Where(j => j.Status == Names.Done).Count().ToString(); // done jobs count

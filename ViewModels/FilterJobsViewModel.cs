@@ -76,7 +76,8 @@ namespace Traker.ViewModels
             }
             else // select
             {
-                _optionsStatus[option] = true;
+                UIHelper.SetOptionTrue(option, _optionsStatus);
+                //_optionsStatus[option] = true;
                 UIHelper.InverseRadioOptionChangedOpacity(option, _opacityStatus);
                 await SelectedOption(option);
             }
