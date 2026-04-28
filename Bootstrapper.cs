@@ -12,6 +12,7 @@ using Traker.Services;
 using Traker.States;
 using Traker.ViewModels;
 using Traker.ViewModels.User;
+using Traker.ViewModels.Edit;
 
 namespace Traker
 {
@@ -52,6 +53,7 @@ namespace Traker
             _container.PerRequest<UserInfoViewModel>();
             _container.PerRequest<BusinessInfoViewModel>();
             _container.PerRequest<BankInfoViewModel>();
+            _container.PerRequest<EditInvoiceViewModel>();
             ViewLocator.AddNamespaceMapping("Traker.ViewModels.*", "Traker.Views.*");
             // LogManager.GetLog = type => new DebugLog(type); // uncomment this line for Caliburn debug messages
         }

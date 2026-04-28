@@ -28,6 +28,7 @@ namespace Traker.Models.Database
         public string BillingPostcode { get; set; } = string.Empty;
         public string BillingCountry { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
+        public string InvoiceName { get; set; } = string.Empty;
         public bool IsDeleted { get; set; } = false;
         public DateOnly PaidDate { get; set; } = new DateOnly();
         public string PaymentMethod { get; set; } = string.Empty;

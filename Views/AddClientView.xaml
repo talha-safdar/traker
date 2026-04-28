@@ -13,7 +13,7 @@
              MaxHeight="600"
              MaxWidth="500"
              >
-    <Border  Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
+    <Border Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
         <Grid Margin="30,20,30,20">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" /> <!-- labels-->
@@ -97,7 +97,7 @@
             
             <!-- butons -->
             <Grid Grid.Row="7">
-                <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddRow()]" Background="{StaticResource ButtonBackgroundBrush}" CornerRadius="25" Height="45" Margin="80,0,80,0" BorderThickness="2" BorderBrush="{StaticResource ButtonDefaultBorderBrush}">
+                <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" Background="{StaticResource ButtonBackgroundBrush}" CornerRadius="25" Height="45" Margin="80,0,80,0" BorderThickness="2" BorderBrush="{StaticResource ButtonDefaultBorderBrush}">
                     <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Add" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="14" />
                 </Border>
             </Grid>

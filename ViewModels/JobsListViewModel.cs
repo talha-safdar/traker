@@ -9,6 +9,7 @@ using Traker.Helper;
 using Traker.Models;
 using Traker.Services;
 using Traker.States;
+using Traker.ViewModels.Edit;
 
 namespace Traker.ViewModels
 {

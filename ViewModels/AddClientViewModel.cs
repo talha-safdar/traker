@@ -6,6 +6,7 @@ namespace Traker.ViewModels
     using Database;
     using System.Globalization;
     using System.Windows;
+    using Traker.Data;
     using Traker.Events;
     using Traker.Services;
 
@@ -13,6 +14,7 @@ namespace Traker.ViewModels
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
+        private readonly DataService _dataService;
         #endregion
 
         #region Private View Variables
@@ -28,9 +30,10 @@ namespace Traker.ViewModels
         public AppState State { get; } // state binding variable accessible from other viewmodels
         #endregion
 
-        public AddClientViewModel(IEventAggregator events, AppState appState)
+        public AddClientViewModel(IEventAggregator events, AppState appState, DataService dataService)
         {
             _events = events;
+            _dataService = dataService;
 
             _clientType = String.Empty;
             _clientName = String.Empty;
@@ -70,7 +73,7 @@ namespace Traker.ViewModels
             }
         }
 
-        public Task AddRow()
+        public async Task AddClient()
         {
             // add checks
             // remove white spaces 
@@ -100,11 +103,16 @@ namespace Traker.ViewModels
                 );
             }
 
-            Database.AddRow(ClientName, ClientType, JobTitle, JobDescription, amount, dueDate);
+            await Database.AddRow(ClientName, ClientType, JobTitle, JobDescription, amount, dueDate);
 
-            _events.PublishOnUIThreadAsync(new RefreshDatabase());
+            // refresh database
+            await _dataService.RefreshDatabase();
 
-            return Task.CompletedTask;
+            // create folders
+            await FileStore.CreateFolder(_dataService.Clients.OrderByDescending(c => c.ClientId).First().ClientId, ClientName);
+
+            // refresh database
+            await _events.PublishOnUIThreadAsync(new RefreshDatabase());
         }
         #endregion
 

@@ -28,7 +28,7 @@ namespace Traker.Data
 
                 // Documents/Traker/Clients/ID_clientName
                 string safeName = MakeSafeFolderName(fullname);
-                string clientFolderName = $"{clientId:D4}_{safeName}";
+                string clientFolderName = $"{clientId}_{safeName}";
                 string clientFolder = Path.Combine(clientsFolder, clientFolderName);
                 Directory.CreateDirectory(clientFolder);
 
@@ -39,8 +39,8 @@ namespace Traker.Data
                 // Documents/Traker/Clients/ID_clientName/Jobs/ID_jobTitle
                 foreach (var job in jobs)
                 {
-                    string safeJobTitle = MakeSafeFolderName(job.Description); // use Title in the future
-                    string jobFolderName = $"{job.JobId:D4}_{safeJobTitle}";
+                    string safeJobTitle = MakeSafeFolderName(job.Title);
+                    string jobFolderName = $"{job.JobId}_{safeJobTitle}";
                     string jobFolder = Path.Combine(jobsFolder, jobFolderName);
 
                     Directory.CreateDirectory(jobFolder);
@@ -74,27 +74,169 @@ namespace Traker.Data
             return Task.CompletedTask;
         }
 
-        //public string CreateJobFolder(string clientFolderPath, int jobId, string jobTitle)
-        //{
-        //    string safeTitle = MakeSafeFolderName(jobTitle);
-        //    string jobFolderName = $"{jobId:D4}_{safeTitle}";
-        //    string jobFolder = Path.Combine(clientFolderPath, "Jobs", jobFolderName);
+        public static Task CreateFolder(int clientId, string fullname)
+        {
+            try
+            {
+                // Documents/
+                string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-        //    Directory.CreateDirectory(jobFolder);
+                // Documents/Traker
+                string appRoot = Path.Combine(documents, "Traker");
+                Directory.CreateDirectory(appRoot);
 
-        //    return jobFolder;
-        //}
+                // Documents/Traker/Clients
+                string clientsFolder = Path.Combine(appRoot, "Clients");
+                Directory.CreateDirectory(clientsFolder);
+
+                // Documents/Traker/Clients/ID_clientName
+                string safeName = MakeSafeFolderName(fullname);
+                string clientFolderName = $"{clientId}_{safeName}";
+                string clientFolder = Path.Combine(clientsFolder, clientFolderName);
+                Directory.CreateDirectory(clientFolder);
+
+                // Documents/Traker/Clients/ID_clientName/Jobs
+                string jobsFolder = Path.Combine(clientFolder, "Jobs");
+                Directory.CreateDirectory(jobsFolder);
+
+                // Documents/Traker/Clients/ID_clientName/Invoices
+                string invoicesFolder = Path.Combine(clientFolder, "Invoices");
+                Directory.CreateDirectory(invoicesFolder);
+
+                // Documents/Traker/Clients/ID_clientName/Notes
+                string notesFolder = Path.Combine(clientFolder, "Notes");
+                Directory.CreateDirectory(notesFolder);
+
+                Logger.LogActivity(Logger.INFO, $"FileStore: CreateJobFolder() OK");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while creating the folder. Please try again.\n\n{ex.Message}",
+                    "Create Folder",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"FileStore: CreateJobFolder() FAIL");
+            }
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Makes a string safe for use as a folder name by replacing invalid characters with underscores and trimming whitespace.
         /// </summary>
-        private static string MakeSafeFolderName(string name)
+        public static string MakeSafeFolderName(string name)
         {
             foreach (var c in Path.GetInvalidFileNameChars())
             {
                 name = name.Replace(c, '_');
             }
             return name.Trim();
+        }
+
+        public static Task<string> SaveInvoicePdf(int clientId, string clientName, string invoiceName)
+        {
+            // Documents/
+            string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            // Documents/Traker
+            string appRoot = Path.Combine(documents, "Traker");
+            Directory.CreateDirectory(appRoot);
+
+            // Documents/Traker/Clients
+            string clientsFolder = Path.Combine(appRoot, "Clients");
+            Directory.CreateDirectory(clientsFolder);
+
+            // 1️⃣ Find existing client folder (by ID)
+            var clientFolder = Directory.GetDirectories(clientsFolder)
+                .FirstOrDefault(d =>
+                {
+                    var name = Path.GetFileName(d);
+                    return name != null &&
+                           name.StartsWith($"{clientId}_", StringComparison.OrdinalIgnoreCase);
+                });
+
+            // 2️⃣ If not found → create it
+            if (clientFolder == null)
+            {
+                string safeClientName = MakeSafeFolderName(clientName);
+                clientFolder = Path.Combine(clientsFolder, $"{clientId}_{safeClientName}");
+                Directory.CreateDirectory(clientFolder);
+            }
+
+            // 3️⃣ Ensure Invoices folder exists
+            string invoicesFolder = Path.Combine(clientFolder, "Invoices");
+            Directory.CreateDirectory(invoicesFolder);
+
+            // 4️⃣ Clean client name for file
+            string safeName = MakeSafeFolderName(clientName);
+
+            // 5️⃣ Build file name
+            string fullPath = Path.Combine(invoicesFolder, invoiceName);
+
+            Debug.WriteLine("Full name:" + invoiceName);
+            Debug.WriteLine("Full path:" + fullPath);
+            Debug.WriteLine("invoice path:" + invoicesFolder);
+            return Task.FromResult(fullPath);
+            //// 6️⃣ Save PDF
+            //File.WriteAllBytes(fullPath, pdfBytes);
+
+            //// 7️⃣ Optional: open file
+            //Process.Start(new ProcessStartInfo
+            //{
+            //    FileName = fullPath,
+            //    UseShellExecute = true
+            //});
+        }
+
+        public static Task GetInvoicePdfPath(int jobId, string jobTitle, int clientId, string clientName, DateOnly date)
+        {
+            // 1️⃣ Base path
+            string basePath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                "Traker",
+                "Clients");
+
+            // 2️⃣ Find job folder: [jobId]_[safeJobTitle]
+            var jobFolder = Directory.GetDirectories(basePath)
+                .FirstOrDefault(d =>
+                {
+                    var name = Path.GetFileName(d);
+                    return name != null &&
+                           name.StartsWith($"{jobId}_{MakeSafeFolderName(jobTitle)}", StringComparison.OrdinalIgnoreCase);
+                });
+
+            if (jobFolder == null)
+                throw new Exception("Job folder not found");
+
+            // 3️⃣ Go into Invoices folder
+            string invoicesFolder = Path.Combine(jobFolder, "Invoices");
+
+            if (!Directory.Exists(invoicesFolder))
+                throw new Exception("Invoices folder not found");
+
+            // 4️⃣ Format date → 00-00-0000
+            string formattedDate = date.ToString("dd-MM-yyyy");
+
+            // 5️⃣ Build expected filename prefix
+            string expectedPrefix = $"INV-{invoiceId}_{jobId}_{clientId}_{safeClientName}_{formattedDate}";
+
+            // 6️⃣ Find matching file
+            var file = Directory.GetFiles(invoicesFolder, "*.pdf")
+                .FirstOrDefault(f =>
+                    Path.GetFileName(f)
+                        .StartsWith(expectedPrefix, StringComparison.OrdinalIgnoreCase));
+
+            if (file == null)
+                throw new Exception("Invoice file not found");
+
+            // 7️⃣ Open it
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = file,
+                UseShellExecute = true
+            });
+
+            return Task.CompletedTask;
         }
     }
 }

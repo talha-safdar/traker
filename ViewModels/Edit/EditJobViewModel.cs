@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Traker.Events;
 using Traker.Models;
 
-namespace Traker.ViewModels
+namespace Traker.ViewModels.Edit
 {
     using Database;
     using System.Globalization;

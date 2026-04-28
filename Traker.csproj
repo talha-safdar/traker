@@ -29,9 +29,11 @@
     <None Remove="Resources\Media\Images\Icons\Lucide\arrow-up-down.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\briefcase-business.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\building.svg" />
+    <None Remove="Resources\Media\Images\Icons\Lucide\download.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\list-filter.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\pen.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\plus.svg" />
+    <None Remove="Resources\Media\Images\Icons\Lucide\trash-2.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\user-pen.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\user-round-cog.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\user-round-plus.svg" />
@@ -71,6 +73,7 @@
     <PackageReference Include="Dapper" Version="2.1.72" />
     <PackageReference Include="Dapper.SqlBuilder" Version="2.1.66" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3912.50" />
     <PackageReference Include="QuestPDF" Version="2026.2.3" />
     <PackageReference Include="SharpVectors.Wpf" Version="1.8.5" />
     <PackageReference Include="Verify.CommunityToolkit.Mvvm" Version="1.1.0" />
@@ -93,11 +96,13 @@
     <Resource Include="Resources\Media\Images\Icons\Lucide\arrow-up-down.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\briefcase-business.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\building.svg" />
+    <Resource Include="Resources\Media\Images\Icons\Lucide\download.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\list-filter.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\pen.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\plus.svg">
       <CopyToOutputDirectory></CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\Media\Images\Icons\Lucide\trash-2.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\user-pen.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\user-round-cog.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\user-round-plus.svg" />

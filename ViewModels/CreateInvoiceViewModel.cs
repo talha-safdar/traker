@@ -16,6 +16,7 @@ namespace Traker.ViewModels
     using System.Diagnostics;
     using System.Globalization;
     using System.IO;
+    using Traker.Data;
     using Traker.Events;
     using Traker.Services;
 
@@ -91,7 +92,7 @@ namespace Traker.ViewModels
             await TryCloseAsync();
         }
 
-        public Task CreateInvoice()
+        public async Task CreateInvoice()
         {
             //BillingName = "Obama";
             //BillingAddress = "32 Downing Street";
@@ -134,23 +135,27 @@ namespace Traker.ViewModels
 
             int result = int.Parse(VatValue.TrimEnd('%'));
 
-            Database.CreateInvoice(SelectedJob.ClientId, SelectedJob.JobId, Subtotal, result, TotalAmount, dueDate, BillingName, BillingAddress, BillingCity, BillingPostcode, BillingCountry);
+            //string dateIssued = DateOnly.FromDateTime(DateTime.Today).ToString("dd-MM-yyyy");
+            DateTime dateIssued = DateTime.Today;
+            string dateOnlyIssued = DateOnly.FromDateTime(dateIssued).ToString("dd-MM-yyyy");
 
+            await Database.CreateInvoice(SelectedJob.ClientId, SelectedJob.JobId, Subtotal, result, TotalAmount, dueDate, BillingName, BillingAddress, BillingCity, BillingPostcode, BillingCountry, dateIssued);
+            await _dataService.RefreshDatabase();
 
+            var invoiceId = Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId);
+            var invoiceName = $"INV-{invoiceId}_{SelectedJob.JobId}_{SelectedJob.ClientId}_{FileStore.MakeSafeFolderName(SelectedJob.ClientName)}_{dateOnlyIssued}.pdf";
+            await Database.SetInvoiceName(invoiceId, invoiceName);
 
-            GenerateInvoice();
+            await GenerateInvoice(invoiceName);
 
-            _events.PublishOnUIThreadAsync(new RefreshDatabase());
-
-
-            return Task.CompletedTask;
+            await _events.PublishOnUIThreadAsync(new RefreshDatabase());
         }
 
-        private void GenerateInvoice()
+        private async Task GenerateInvoice(string invoiceName)
         {
-            string filePath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "invoice_test.pdf");
+            string filePath = await FileStore.SaveInvoicePdf(SelectedJob.ClientId, SelectedJob.ClientName, invoiceName);
+
+            //FileStore.SaveInvoicePdf(SelectedJob.ClientId, SelectedJob.ClientName, Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), SelectedJob.JobId);
 
             Document.Create(container =>
             {

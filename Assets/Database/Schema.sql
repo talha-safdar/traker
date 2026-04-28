@@ -49,7 +49,8 @@ CREATE TABLE IF NOT EXISTS Invoices (
     BillingCity, TEXT,
     BillingPostcode TEXT,
     BillingCountry TEXT,
-    Status VARCHAR(20),
+    Status VARCHAR(20), -- Overdue, Paid, Unpaid
+    InvoiceName TEXT,
     IsDeleted BIT DEFAULT 0,
     PaidDate DATETIME,
     PaymentMethod TEXT,

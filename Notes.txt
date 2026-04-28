@@ -56,6 +56,15 @@ format and have a button maybe to access deleted clients, jobs, invoices (howeve
 - allow adding custom image if company
 - add skip button for some parts in the setup and ask later if missing when creating invoice
 - if sort disabled resotre the original primary key based order
+- blur money if user wants to hide
+- rename folders if user name renamed
+- fix date format to dd/mm/yyyy
+
+
+
+
+
+
 
 
 

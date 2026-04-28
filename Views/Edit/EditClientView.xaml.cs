@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Traker.Views
+namespace Traker.Views.Edit
 {
     /// <summary>
     /// Interaction logic for EditClientView.xaml

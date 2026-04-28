@@ -18,6 +18,7 @@ namespace Traker.ViewModels
     using Traker.Models;
     using Traker.Services;
     using Traker.States;
+    using Traker.ViewModels.Edit;
     using Traker.ViewModels.User;
 
     public class DashboardViewModel : Screen, IHandle<RefreshDatabase>, IHandle<DashboardVMEvents>
@@ -59,6 +60,7 @@ namespace Traker.ViewModels
         private UserContextMenuViewModel _userContextMenuViewModel;
         private SortJobsViewModel _sortJobsViewModel;
         private FilterJobsViewModel _filterJobsViewModel;
+        private EditInvoiceViewModel _editInvoiceViewModel;
 
         // for filter purpose
         private ObservableCollection<DashboardModel> _dashboardDataBackup; // backup when using filter mode
@@ -92,7 +94,7 @@ namespace Traker.ViewModels
             _selectedJob = new DashboardModel();
 
             _contextMenuVM = new JobContextMenuViewModel(_events, _windowManager, Data);
-            _addClientViewModel = new AddClientViewModel(_events, State);
+            _addClientViewModel = new AddClientViewModel(_events, State, Data);
             _addJobViewModel = new AddJobViewModel(_events, State);
             _editClientViewModel = new EditClientViewModel(_events, _windowManager, Data);
             _userContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager, Data);
@@ -114,7 +116,7 @@ namespace Traker.ViewModels
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"An error occurred while while loading Dashboard. Please try again.\n\n{ex.Message}",
+                    $"An error occurred while loading Dashboard. Please try again.\n\n{ex.Message}",
                     "Dashboard",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error
@@ -293,18 +295,30 @@ namespace Traker.ViewModels
 
         public async Task EditJob(DashboardModel jobSelected)
         {
-            _editJobViewModel = new EditJobViewModel(_events);
 
-            if (jobSelected != null)
+            if (Data.Invoices.Any(i => i.JobId == jobSelected.JobId && i.IsDeleted == false) == true) // if already invoiced
             {
-                _editJobViewModel.SelectedJob = jobSelected; // pass selected   row to EditJobViewModel
+                _editInvoiceViewModel = new EditInvoiceViewModel(Data);
+                _editInvoiceViewModel.SelectedJob = jobSelected;
+                await _windowManager.ShowWindowAsync(_editInvoiceViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
             }
             else
             {
-                _editJobViewModel.SelectedJob = SelectedJob;
+                _editJobViewModel = new EditJobViewModel(_events);
 
+                if (jobSelected != null)
+                {
+                    _editJobViewModel.SelectedJob = jobSelected; // pass selected   row to EditJobViewModel
+                }
+                else
+                {
+                    _editJobViewModel.SelectedJob = SelectedJob;
+
+                }
+                await _windowManager.ShowWindowAsync(_editJobViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
             }
-            await _windowManager.ShowWindowAsync(_editJobViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
+
+
         }
 
         public async Task EditClient()
@@ -333,7 +347,7 @@ namespace Traker.ViewModels
                     _addJobViewModel = null;
                 }
 
-                _addClientViewModel = new AddClientViewModel(_events, State);
+                _addClientViewModel = new AddClientViewModel(_events, State, Data);
                 await _windowManager.ShowWindowAsync(_addClientViewModel, null, CustomWindow.SettingsForDialog(600, 500, false));
                 State.IsWindowOpen = true; // flag as open accross the project
             }

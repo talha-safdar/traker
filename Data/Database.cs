@@ -294,6 +294,7 @@ namespace Traker.Database
                                 var BillingPostcode = reader["BillingPostcode"] == DBNull.Value ? String.Empty : reader["BillingPostcode"];
                                 var BillingCountry = reader["BillingCountry"] == DBNull.Value ? String.Empty : reader["BillingCountry"];
                                 var Status = reader["Status"] == DBNull.Value ? String.Empty : reader["Status"];
+                                var InvoiceName = reader["InvoiceName"] == DBNull.Value ? String.Empty : reader["InvoiceName"];
                                 var IsDeleted = reader["IsDeleted"] == DBNull.Value ? String.Empty : reader["IsDeleted"];
                                 var PaidDate = reader["PaidDate"] == DBNull.Value ? DateTime.MinValue : reader["PaidDate"];
                                 var PaymentMethod = reader["PaymentMethod"] == DBNull.Value ? String.Empty : reader["PaymentMethod"];
@@ -313,6 +314,7 @@ namespace Traker.Database
                                     string.IsNullOrEmpty(BillingPostcode.ToString()) == false ||
                                     string.IsNullOrEmpty(BillingCountry.ToString()) == false ||
                                     string.IsNullOrEmpty(Status.ToString()) == false ||
+                                    string.IsNullOrEmpty(InvoiceName.ToString()) == false ||
                                     string.IsNullOrEmpty(IsDeleted.ToString()) == false ||
                                     string.IsNullOrEmpty(PaidDate.ToString()) == false ||
                                     string.IsNullOrEmpty(PaymentMethod.ToString()) == false ||
@@ -329,6 +331,7 @@ namespace Traker.Database
                                         IssueDate = DateOnly.FromDateTime(Convert.ToDateTime(IssueDate)),
                                         DueDate = DateOnly.FromDateTime(Convert.ToDateTime(DueDate)),
                                         Status = Status.ToString()!,
+                                        InvoiceName = InvoiceName.ToString()!,
                                         BillingName = BillingName.ToString()!,
                                         BillingAddress = BillingAddress.ToString()!,
                                         BillingCity = BillingCity.ToString()!,
@@ -914,7 +917,7 @@ namespace Traker.Database
         /// <summary>
         /// Create a new invoice for a job by adding a new row to the Invoices table. This is done by opening a connection to the database, starting a transaction, and then executing a SQL command to insert a new row into the Invoices table with the specified details. The function takes several parameters including the job ID, subtotal, tax amount, total amount, due date, billing name, billing address, billing city, billing postcode, and billing country. If any errors occur during this process, an error message is displayed to the user and the transaction is rolled back. If the invoice is created successfully, a log entry is made indicating that the operation was successful along with the job ID.
         /// </summary>
-        public static Task CreateInvoice(int clientId, int jobId, decimal subtotal, int taxAmount, decimal totalAmount, DateOnly dueDate, string billingName, string billingAddress, string billingCity, string billingPostcode, string billingCountry)
+        public static Task CreateInvoice(int clientId, int jobId, decimal subtotal, int taxAmount, decimal totalAmount, DateOnly dueDate, string billingName, string billingAddress, string billingCity, string billingPostcode, string billingCountry, DateTime dateIssued)
         {
             try
             {
@@ -980,8 +983,8 @@ namespace Traker.Database
                     invoicesCmd.Parameters.AddWithValue("@subtotal", subtotal);
                     invoicesCmd.Parameters.AddWithValue("@taxAmount", taxAmount);
                     invoicesCmd.Parameters.AddWithValue("@totalAmount", totalAmount);
-                    invoicesCmd.Parameters.AddWithValue("@issueDate", DateOnly.FromDateTime(Convert.ToDateTime(DateTime.Now)));
-                    invoicesCmd.Parameters.AddWithValue("@dueDate", dueDate.ToString("yyyy-MM-dd"));
+                    invoicesCmd.Parameters.AddWithValue("@issueDate", dateIssued);
+                    invoicesCmd.Parameters.AddWithValue("@dueDate", dueDate.ToString("dd-MM-yyyy"));
                     invoicesCmd.Parameters.AddWithValue("@billingName", billingName);
                     invoicesCmd.Parameters.AddWithValue("@billingAddress", billingAddress);
                     invoicesCmd.Parameters.AddWithValue("@billingCity", billingCity);
@@ -1377,6 +1380,35 @@ namespace Traker.Database
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 Logger.LogActivity(Logger.ERROR, $"Database: EditBank() FAIL - UserId: {userId}");
+            }
+            return Task.CompletedTask;
+        }
+        
+        public static Task SetInvoiceName(int invoiceId, string invoiceName)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = @"
+                    UPDATE Invoices
+                    SET InvoiceName = @invoiceName
+                    WHERE InvoiceId = @invoiceId;
+                ";
+                cmd.Parameters.AddWithValue("@invoiceName", invoiceName);
+                cmd.Parameters.AddWithValue("@invoiceId", invoiceId);
+                cmd.ExecuteNonQuery();
+                Logger.LogActivity(Logger.INFO, $"Database: SetInvoiceName() OK - InvoiceId: {invoiceId}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while setting the invoice name. Please try again.\n\t{ex.Message}",
+                    "Set Invoice Name",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: SetInvoiceName() FAIL - InvoiceId: {invoiceId}");
             }
             return Task.CompletedTask;
         }

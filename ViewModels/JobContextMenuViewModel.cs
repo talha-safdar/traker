@@ -48,8 +48,6 @@ namespace Traker.ViewModels
 
         public Task OpenFolder()
         {
-            Debug.WriteLine("Open folder");
-
             // get list of jobs under the client ID
             List<JobsModel> jobDetails = new List<JobsModel>();
             jobDetails = Data.Jobs.Where(j => j.ClientId == SelectedJob.ClientId).ToList();
