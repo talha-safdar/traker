@@ -676,7 +676,7 @@ namespace Traker.ViewModels
                     HasInvoice = Data.Invoices.Any(i => i.JobId == job.JobId && i.IsDeleted == false),
                     InvoiceStatus = Data.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? "Not invoiced"
                 };
-                _dashboardData.Add(dashboardEntry);
+                DashboardData.Add(dashboardEntry);
                 index++;
             }
 
@@ -684,21 +684,21 @@ namespace Traker.ViewModels
             //_dashboardData = new ObservableCollection<DashboardModel>(_dashboardData.OrderBy(j => j.JobTitle));
 
             // job status order
-            _dashboardData = new ObservableCollection<DashboardModel>(_dashboardData.OrderBy(
-                j =>
-                {
-                    switch (j.JobStatus.ToLower())
-                    {
-                        case "new": return 1;
-                        case "active": return 2;
-                        case "done": return 3;
-                        case "invoiced": return 4;
-                        default: return 5; // Anything else goes to the bottom
-                    }
-                }));
-            _dashboardDataBackup = _dashboardData; // backup for filtering
-            _dashboardDataStatusFiltered = _dashboardData;
-            _dashboardDataTypeFiltered = _dashboardData;
+            //_dashboardData = new ObservableCollection<DashboardModel>(_dashboardData.OrderBy(
+            //    j =>
+            //    {
+            //        switch (j.JobStatus.ToLower())
+            //        {
+            //            case "new": return 1;
+            //            case "active": return 2;
+            //            case "done": return 3;
+            //            case "invoiced": return 4;
+            //            default: return 5; // Anything else goes to the bottom
+            //        }
+            //    }));
+            _dashboardDataBackup = DashboardData; // backup for filtering
+            _dashboardDataStatusFiltered = DashboardData;
+            _dashboardDataTypeFiltered = DashboardData;
 
             NewJobsCount = Data.Jobs.Where(j => j.Status == Names.New).Count().ToString(); // new jobs count
             DoneJobsCount = Data.Jobs.Where(j => j.Status == Names.Done).Count().ToString(); // done jobs count

@@ -136,7 +136,7 @@ namespace Traker.ViewModels.Edit
             SaveFileDialog saveFileDialog = new SaveFileDialog
             {
                 Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",
-                FileName = "Invoice.pdf", // Default name
+                FileName = $"Invoice_{FileStore.MakeSafeFolderName(SelectedJob.ClientName)}_{_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).IssueDate.ToString("dd-MM-yyyy")}_{_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).IssueDate.ToString("HHmmss")}.pdf", // Default name
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
             };
 

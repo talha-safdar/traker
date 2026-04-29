@@ -44,36 +44,39 @@ namespace Traker.ViewModels
         {
             await Database.SetStatus(status, SelectedJob.ClientId, SelectedJob.JobId);
             await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
+            await Data.RefreshDatabase();
+            await TryCloseAsync();
         }
 
-        public Task OpenFolder()
+        public async Task OpenFolder()
         {
             // get list of jobs under the client ID
             List<JobsModel> jobDetails = new List<JobsModel>();
             jobDetails = Data.Jobs.Where(j => j.ClientId == SelectedJob.ClientId).ToList();
 
-            FileStore.LocateFolder(SelectedJob.ClientId, SelectedJob.ClientName, jobDetails);
-
-            return Task.CompletedTask;
+            await FileStore.LocateFolder(SelectedJob.ClientId, SelectedJob.ClientName, jobDetails);
+            await TryCloseAsync();;
         }
 
-        public Task CreateInvoice()
+        public async Task CreateInvoice()
         {
             _createInvoice = new CreateInvoiceViewModel(_events, Data);
             _createInvoice.SelectedJob = SelectedJob;
             _windowManager.ShowWindowAsync(_createInvoice, null, CustomWindow.SettingsForDialog(800, 500, false));
-            return Task.CompletedTask;
+            await TryCloseAsync();
         }
 
         public async Task EditClient()
         {
             await _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = "EditClient" });
+            await TryCloseAsync();
         }
 
         public async Task DeleteRow()
         {
             await Database.DeleteJob(SelectedJob.JobId);
             await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
+            await TryCloseAsync();
         }
     }
 }
