@@ -135,15 +135,13 @@ namespace Traker.ViewModels
 
             int result = int.Parse(VatValue.TrimEnd('%'));
 
-            //string dateIssued = DateOnly.FromDateTime(DateTime.Today).ToString("dd-MM-yyyy");
-            DateTime dateIssued = DateTime.Today;
-            string dateOnlyIssued = DateOnly.FromDateTime(dateIssued).ToString("dd-MM-yyyy");
+            DateTime dateTimeIssued = DateTime.Now;
 
-            await Database.CreateInvoice(SelectedJob.ClientId, SelectedJob.JobId, Subtotal, result, TotalAmount, dueDate, BillingName, BillingAddress, BillingCity, BillingPostcode, BillingCountry, dateIssued);
+            await Database.CreateInvoice(SelectedJob.ClientId, SelectedJob.JobId, Subtotal, result, TotalAmount, dueDate, BillingName, BillingAddress, BillingCity, BillingPostcode, BillingCountry, dateTimeIssued);
             await _dataService.RefreshDatabase();
 
             var invoiceId = Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId);
-            var invoiceName = $"INV-{invoiceId}_{SelectedJob.JobId}_{SelectedJob.ClientId}_{FileStore.MakeSafeFolderName(SelectedJob.ClientName)}_{dateOnlyIssued}.pdf";
+            var invoiceName = $"INV-{invoiceId}_{SelectedJob.JobId}_{SelectedJob.ClientId}_{FileStore.MakeSafeFolderName(SelectedJob.ClientName)}_{dateTimeIssued.ToString("dd-MM-yyyy HHmmss")}_{dateTimeIssued.ToString("HHmmss")}.pdf";
             await Database.SetInvoiceName(invoiceId, invoiceName);
 
             await GenerateInvoice(invoiceName);

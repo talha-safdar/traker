@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS Invoices (
     DueDate DATETIME,
     BillingName TEXT,
     BillingAddress TEXT,
-    BillingCity, TEXT,
+    BillingCity TEXT,
     BillingPostcode TEXT,
     BillingCountry TEXT,
     Status VARCHAR(20), -- Overdue, Paid, Unpaid

@@ -34,7 +34,7 @@ namespace Traker.ViewModels.Edit
             base.OnViewLoaded(view);
 
 
-            FileStore.GetInvoicePdfPath(Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), )
+            //FileStore.GetInvoicePdfPath(Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), )
 
 
             var v = (Traker.Views.Edit.EditInvoiceView)view;

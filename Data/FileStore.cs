@@ -188,55 +188,55 @@ namespace Traker.Data
             //});
         }
 
-        public static Task GetInvoicePdfPath(int jobId, string jobTitle, int clientId, string clientName, DateOnly date)
-        {
-            // 1️⃣ Base path
-            string basePath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "Traker",
-                "Clients");
+        //public static Task GetInvoicePdfPath(int jobId, string jobTitle, int clientId, string clientName, DateOnly date)
+        //{
+        //    // 1️⃣ Base path
+        //    string basePath = Path.Combine(
+        //        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+        //        "Traker",
+        //        "Clients");
 
-            // 2️⃣ Find job folder: [jobId]_[safeJobTitle]
-            var jobFolder = Directory.GetDirectories(basePath)
-                .FirstOrDefault(d =>
-                {
-                    var name = Path.GetFileName(d);
-                    return name != null &&
-                           name.StartsWith($"{jobId}_{MakeSafeFolderName(jobTitle)}", StringComparison.OrdinalIgnoreCase);
-                });
+        //    // 2️⃣ Find job folder: [jobId]_[safeJobTitle]
+        //    var jobFolder = Directory.GetDirectories(basePath)
+        //        .FirstOrDefault(d =>
+        //        {
+        //            var name = Path.GetFileName(d);
+        //            return name != null &&
+        //                   name.StartsWith($"{jobId}_{MakeSafeFolderName(jobTitle)}", StringComparison.OrdinalIgnoreCase);
+        //        });
 
-            if (jobFolder == null)
-                throw new Exception("Job folder not found");
+        //    if (jobFolder == null)
+        //        throw new Exception("Job folder not found");
 
-            // 3️⃣ Go into Invoices folder
-            string invoicesFolder = Path.Combine(jobFolder, "Invoices");
+        //    // 3️⃣ Go into Invoices folder
+        //    string invoicesFolder = Path.Combine(jobFolder, "Invoices");
 
-            if (!Directory.Exists(invoicesFolder))
-                throw new Exception("Invoices folder not found");
+        //    if (!Directory.Exists(invoicesFolder))
+        //        throw new Exception("Invoices folder not found");
 
-            // 4️⃣ Format date → 00-00-0000
-            string formattedDate = date.ToString("dd-MM-yyyy");
+        //    // 4️⃣ Format date → 00-00-0000
+        //    string formattedDate = date.ToString("dd-MM-yyyy");
 
-            // 5️⃣ Build expected filename prefix
-            string expectedPrefix = $"INV-{invoiceId}_{jobId}_{clientId}_{safeClientName}_{formattedDate}";
+        //    // 5️⃣ Build expected filename prefix
+        //    string expectedPrefix = $"INV-{invoiceId}_{jobId}_{clientId}_{safeClientName}_{formattedDate}";
 
-            // 6️⃣ Find matching file
-            var file = Directory.GetFiles(invoicesFolder, "*.pdf")
-                .FirstOrDefault(f =>
-                    Path.GetFileName(f)
-                        .StartsWith(expectedPrefix, StringComparison.OrdinalIgnoreCase));
+        //    // 6️⃣ Find matching file
+        //    var file = Directory.GetFiles(invoicesFolder, "*.pdf")
+        //        .FirstOrDefault(f =>
+        //            Path.GetFileName(f)
+        //                .StartsWith(expectedPrefix, StringComparison.OrdinalIgnoreCase));
 
-            if (file == null)
-                throw new Exception("Invoice file not found");
+        //    if (file == null)
+        //        throw new Exception("Invoice file not found");
 
-            // 7️⃣ Open it
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = file,
-                UseShellExecute = true
-            });
+        //    // 7️⃣ Open it
+        //    Process.Start(new ProcessStartInfo
+        //    {
+        //        FileName = file,
+        //        UseShellExecute = true
+        //    });
 
-            return Task.CompletedTask;
-        }
+        //    return Task.CompletedTask;
+        //}
     }
 }
