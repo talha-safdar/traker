@@ -176,67 +176,61 @@ namespace Traker.Data
             Debug.WriteLine("Full name:" + invoiceName);
             Debug.WriteLine("Full path:" + fullPath);
             Debug.WriteLine("invoice path:" + invoicesFolder);
-            return Task.FromResult(fullPath);
-            //// 6️⃣ Save PDF
-            //File.WriteAllBytes(fullPath, pdfBytes);
 
-            //// 7️⃣ Optional: open file
-            //Process.Start(new ProcessStartInfo
-            //{
-            //    FileName = fullPath,
-            //    UseShellExecute = true
-            //});
+            return Task.FromResult(fullPath);
         }
 
-        //public static Task GetInvoicePdfPath(int jobId, string jobTitle, int clientId, string clientName, DateOnly date)
-        //{
-        //    // 1️⃣ Base path
-        //    string basePath = Path.Combine(
-        //        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-        //        "Traker",
-        //        "Clients");
+        public static Task<string> GetInvoicePdfPath(int jobId, string jobTitle, int invoiceId, int clientId, string clientName, DateTime date)
+        {
+            // 1️⃣ Base path
+            string basePath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                "Traker",
+                "Clients");
 
-        //    // 2️⃣ Find job folder: [jobId]_[safeJobTitle]
-        //    var jobFolder = Directory.GetDirectories(basePath)
-        //        .FirstOrDefault(d =>
-        //        {
-        //            var name = Path.GetFileName(d);
-        //            return name != null &&
-        //                   name.StartsWith($"{jobId}_{MakeSafeFolderName(jobTitle)}", StringComparison.OrdinalIgnoreCase);
-        //        });
+            string clientFolder = Path.Combine(basePath, $"{clientId}_{MakeSafeFolderName(clientName)}");
+            if (!Directory.Exists(clientFolder))
+                return null;
 
-        //    if (jobFolder == null)
-        //        throw new Exception("Job folder not found");
 
-        //    // 3️⃣ Go into Invoices folder
-        //    string invoicesFolder = Path.Combine(jobFolder, "Invoices");
+            string invoicesFolder = Path.Combine(clientFolder, "Invoices");
+            if (!Directory.Exists(invoicesFolder))
+                return null;
 
-        //    if (!Directory.Exists(invoicesFolder))
-        //        throw new Exception("Invoices folder not found");
+            //// 2️⃣ Find job folder: [jobId]_[safeJobTitle]
+            //var jobFolder = Directory.GetDirectories(basePath)
+            //    .FirstOrDefault(d =>
+            //    {
+            //        var name = Path.GetFileName(d);
+            //        return name != null &&
+            //               name.StartsWith($"{jobId}_{MakeSafeFolderName(jobTitle)}", StringComparison.OrdinalIgnoreCase);
+            //    });
 
-        //    // 4️⃣ Format date → 00-00-0000
-        //    string formattedDate = date.ToString("dd-MM-yyyy");
+            //if (jobFolder == null)
+            //    throw new Exception("Job folder not found");
 
-        //    // 5️⃣ Build expected filename prefix
-        //    string expectedPrefix = $"INV-{invoiceId}_{jobId}_{clientId}_{safeClientName}_{formattedDate}";
+            // 3️⃣ Go into Invoices folder
+            //string invoicesFolder = Path.Combine(jobFolder, "Invoices");
+            //if (!Directory.Exists(invoicesFolder))
+            //    return null;
 
-        //    // 6️⃣ Find matching file
-        //    var file = Directory.GetFiles(invoicesFolder, "*.pdf")
-        //        .FirstOrDefault(f =>
-        //            Path.GetFileName(f)
-        //                .StartsWith(expectedPrefix, StringComparison.OrdinalIgnoreCase));
+            //if (!Directory.Exists(invoicesFolder))
+            //    throw new Exception("Invoices folder not found");
 
-        //    if (file == null)
-        //        throw new Exception("Invoice file not found");
+            // 5️⃣ Build expected filename prefix
+            string expectedPrefix = $"INV-{invoiceId}_{jobId}_{clientId}_{MakeSafeFolderName(clientName)}_{date.ToString("dd-MM-yyyy")}_{date.ToString("HHmmss")}";
 
-        //    // 7️⃣ Open it
-        //    Process.Start(new ProcessStartInfo
-        //    {
-        //        FileName = file,
-        //        UseShellExecute = true
-        //    });
+            // 6️⃣ Find matching file
+            string file = Directory.GetFiles(invoicesFolder, "*.pdf")
+                .FirstOrDefault(f =>
+                    Path.GetFileName(f)
+                        .StartsWith(expectedPrefix, StringComparison.OrdinalIgnoreCase))!;
 
-        //    return Task.CompletedTask;
-        //}
+            if (file == null)
+                throw new Exception("Invoice file not found");
+
+
+            return Task.FromResult(file);
+        }
     }
 }

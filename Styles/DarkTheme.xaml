@@ -24,6 +24,11 @@
     <SolidColorBrush x:Key="HighlightBrush" Color="#3D3D3D" />
     <SolidColorBrush x:Key="TableHeader" Color="#1A1A1A" />
 
+    <SolidColorBrush x:Key="Paid" Color="#22C55E" />
+    <SolidColorBrush x:Key="Unpaid" Color="#EF4444" />
+    
+
+
 
     <SolidColorBrush x:Key="TopBarBackgroundBrush" Color="#1a1a1a" />
 

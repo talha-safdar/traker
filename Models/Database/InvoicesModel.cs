@@ -20,7 +20,7 @@ namespace Traker.Models.Database
         public decimal Subtotal { get; set; } = 0.0m;
         public decimal TaxAmount { get; set; } = 0.0m;
         public decimal TotalAmount { get; set; } = 0.0m;
-        public DateOnly IssueDate { get; set; } = new DateOnly();
+        public DateTime IssueDate { get; set; } = new DateTime();
         public DateOnly DueDate { get; set; } = new DateOnly();
         public string BillingName { get; set; } = string.Empty;
         public string BillingAddress { get; set; } = string.Empty;

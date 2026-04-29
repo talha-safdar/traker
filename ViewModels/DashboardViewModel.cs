@@ -298,7 +298,7 @@ namespace Traker.ViewModels
 
             if (Data.Invoices.Any(i => i.JobId == jobSelected.JobId && i.IsDeleted == false) == true) // if already invoiced
             {
-                _editInvoiceViewModel = new EditInvoiceViewModel(Data);
+                _editInvoiceViewModel = new EditInvoiceViewModel(Data, _events);
                 _editInvoiceViewModel.SelectedJob = jobSelected;
                 await _windowManager.ShowWindowAsync(_editInvoiceViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
             }
@@ -705,9 +705,16 @@ namespace Traker.ViewModels
             ActiveJobsCount = Data.Jobs.Where(j => j.Status == Names.Active).Count().ToString(); // active jobs count
             InvoicedJobsCount = Data.Jobs.Where(j => j.Status == Names.Invoiced).Count().ToString(); // invoiced jobs count
             GrossAmount = Data.Jobs.Sum(gross => gross.FinalPrice).ToString("C"); // gross amount
-            ReceivedAmount = Data.Jobs.Where(j => j.Status == Names.Paid).Sum(j => j.FinalPrice).ToString("C");
+            //ReceivedAmount = Data.Jobs.Where(j => j.Status == Names.Paid).Sum(j => j.FinalPrice).ToString("C");
+            ReceivedAmount = Data.Jobs
+                .Join(Data.Invoices,
+                j => j.JobId,
+                i => i.JobId,
+                (j, i) => new { j, i }).Where(combined => combined.i.Status == "Paid")
+                .Sum(combined => combined.j.FinalPrice).ToString("C");
+
             OutstandingAmount = Data.Jobs
-                .Where(j => j.Status == Names.Done || (j.Status == Names.Invoiced && Data.Invoices.Any(i => i.JobId == j.JobId && i.DueDate > DateOnly.FromDateTime(DateTime.Now))))
+                .Where(j => j.Status == Names.Done || (j.Status == Names.Invoiced && Data.Invoices.Any(i => i.JobId == j.JobId && i.DueDate > DateOnly.FromDateTime(DateTime.Now) && i.Status == "Created")))
                 .Sum(j => j.FinalPrice).ToString("C");
 
             OverdueAmount = Data.Jobs

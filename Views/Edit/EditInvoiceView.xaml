@@ -34,7 +34,7 @@
 
             <!-- main content -->
             <Grid Grid.Row="2" Height="620" Width="1000">
-                <Border Background="#494949" CornerRadius="20" Margin="50,50" Padding="30">
+                <Border Background="#494949" CornerRadius="20" Margin="40" Padding="30">
                     <wv2:WebView2 x:Name="PdfViewer"/>
                 </Border>
             </Grid>
@@ -51,7 +51,7 @@
 
                         <!-- delete -->
                         <Grid Grid.Column="0">
-                            <Border CornerRadius="15" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteInvoice()]" CornerRadius="15" HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Setter Property="Background" Value="Transparent"/>
@@ -76,14 +76,24 @@
 
                         <!-- mark as paid -->
                         <Grid Grid.Column="1">
-                            <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmJobChanges()]" Background="Green" CornerRadius="25" Height="45" Width="200" Margin="0,0,0,0" BorderThickness="2" BorderBrush="Green">
-                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="PAID" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="18" />
+                            <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action TogglePaid()]" CornerRadius="25" Height="45" Width="200" Margin="0,0,0,0">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="{Binding ButtonBackground}"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{Binding ButtonHover}"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="{Binding ButtonText}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="#FFFFFF" FontSize="18" />
                             </Border>
                         </Grid>
                         
                         <!-- download -->
                         <Grid Grid.Column="2">
-                            <Border CornerRadius="15" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DownloadInvoice()]" CornerRadius="15" HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Setter Property="Background" Value="Transparent"/>

@@ -328,7 +328,7 @@ namespace Traker.Database
                                         Subtotal = Convert.ToDecimal(Subtotal),
                                         TaxAmount = Convert.ToDecimal(TaxAmount),
                                         TotalAmount = Convert.ToDecimal(TotalAmount),
-                                        IssueDate = DateOnly.FromDateTime(Convert.ToDateTime(IssueDate)),
+                                        IssueDate = Convert.ToDateTime(IssueDate),
                                         DueDate = DateOnly.FromDateTime(Convert.ToDateTime(DueDate)),
                                         Status = Status.ToString()!,
                                         InvoiceName = InvoiceName.ToString()!,
@@ -1409,6 +1409,85 @@ namespace Traker.Database
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 Logger.LogActivity(Logger.ERROR, $"Database: SetInvoiceName() FAIL - InvoiceId: {invoiceId}");
+            }
+            return Task.CompletedTask;
+        }
+        
+        public static Task DeleteInvoice(int invoiceId, int jobId)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+                using (var pragma = conn.CreateCommand())
+                {
+                    pragma.CommandText = "PRAGMA foreign_keys = ON;";
+                    pragma.ExecuteNonQuery();
+                }
+                using var tx = conn.BeginTransaction();
+                using (var deleteInvoiceCmd = conn.CreateCommand())
+                {
+                    deleteInvoiceCmd.CommandText = @"
+    
+                        DELETE FROM Invoices
+                        WHERE InvoiceId = @invoiceId;
+                        ";
+                    deleteInvoiceCmd.Parameters.AddWithValue("@invoiceId", invoiceId);
+                    deleteInvoiceCmd.ExecuteNonQuery();
+                }
+
+                using (var updateJobStatusCmd = conn.CreateCommand())
+                {
+                    updateJobStatusCmd.CommandText = @"
+    
+                        UPDATE Jobs
+                        SET Status = @status
+                        WHERE JobId = @jobId;
+                        ";
+                    updateJobStatusCmd.Parameters.AddWithValue("@status", "Active");
+                    updateJobStatusCmd.Parameters.AddWithValue("@jobId", jobId);
+                    updateJobStatusCmd.ExecuteNonQuery();
+                }
+                tx.Commit();
+                Logger.LogActivity(Logger.INFO, $"Database: DeleteInvoice() OK - InvoiceId: {invoiceId}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while deleting the invoice. Please try again.\n\t{ex.Message}",
+                    "Delete Invoice",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: DeleteInvoice() FAIL - InvoiceId: {invoiceId}");
+            }
+            return Task.CompletedTask;
+        }
+        
+        public static Task SetInvoiceStatus(int invoiceId, string status)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = @"
+                    UPDATE Invoices
+                    SET Status = @invoiceName
+                    WHERE InvoiceId = @invoiceId;
+                ";
+                cmd.Parameters.AddWithValue("@invoiceName", status);
+                cmd.Parameters.AddWithValue("@invoiceId", invoiceId);
+                cmd.ExecuteNonQuery();
+                Logger.LogActivity(Logger.INFO, $"Database: InvoicePaid() OK - InvoiceId: {invoiceId}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while updating the invoice status. Please try again.\n\t{ex.Message}",
+                    "Update Invoice Status",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: InvoicePaid() FAIL - InvoiceId: {invoiceId}");
             }
             return Task.CompletedTask;
         }

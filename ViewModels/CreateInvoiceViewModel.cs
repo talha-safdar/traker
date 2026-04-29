@@ -135,13 +135,16 @@ namespace Traker.ViewModels
 
             int result = int.Parse(VatValue.TrimEnd('%'));
 
-            DateTime dateTimeIssued = DateTime.Now;
+            DateTime now = DateTime.Now;
+            DateTime dateTimeIssued = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second);
+
+
 
             await Database.CreateInvoice(SelectedJob.ClientId, SelectedJob.JobId, Subtotal, result, TotalAmount, dueDate, BillingName, BillingAddress, BillingCity, BillingPostcode, BillingCountry, dateTimeIssued);
             await _dataService.RefreshDatabase();
 
             var invoiceId = Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId);
-            var invoiceName = $"INV-{invoiceId}_{SelectedJob.JobId}_{SelectedJob.ClientId}_{FileStore.MakeSafeFolderName(SelectedJob.ClientName)}_{dateTimeIssued.ToString("dd-MM-yyyy HHmmss")}_{dateTimeIssued.ToString("HHmmss")}.pdf";
+            var invoiceName = $"INV-{invoiceId}_{SelectedJob.JobId}_{SelectedJob.ClientId}_{FileStore.MakeSafeFolderName(SelectedJob.ClientName)}_{dateTimeIssued.ToString("dd-MM-yyyy")}_{dateTimeIssued.ToString("HHmmss")}.pdf";
             await Database.SetInvoiceName(invoiceId, invoiceName);
 
             await GenerateInvoice(invoiceName);
