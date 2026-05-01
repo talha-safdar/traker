@@ -238,8 +238,8 @@ Since you have a specific grid and those spacer columns, you don't want your but
         </Setter>
     </Style>
 
-    <!-- TextBox -->
-    <Style TargetType="TextBox">
+    <!-- TextBox readonly -->
+    <Style TargetType="TextBox" x:Key="TextBoxReadOnly">
         <Setter Property="Foreground" Value="#E6E6E6"/>
         <Setter Property="Background" Value="#2A2A2A"/>
         <Setter Property="BorderBrush" Value="#3A3F4B"/>
@@ -253,7 +253,7 @@ Since you have a specific grid and those spacer columns, you don't want your but
                         Background="#141414"
                         BorderBrush="{StaticResource LightBorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="15">
+                        CornerRadius="10">
                         <ScrollViewer x:Name="PART_ContentHost"/>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -273,6 +273,49 @@ Since you have a specific grid and those spacer columns, you don't want your but
             </Setter.Value>
         </Setter>
     </Style>
+    
+    <!-- TextBox -->
+    <Style TargetType="TextBox" x:Key="TextBoxNormal">
+    <Setter Property="Foreground" Value="#E6E6E6"/>
+    <Setter Property="Background" Value="#2A2A2A"/>
+    <Setter Property="BorderBrush" Value="#333333"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding" Value="8,6"/>
+    <Setter Property="CaretBrush" Value="White"/>
+    <Setter Property="Template">
+        <Setter.Value>
+            <ControlTemplate TargetType="TextBox">
+                <Border x:Name="Border"
+                        Background="#121212"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="7.5"
+                        SnapsToDevicePixels="True">
+                    <Border.BorderBrush>
+                        <!-- Top is darker, Bottom is light grey -->
+                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                            <GradientStop Color="#1A1A1A" Offset="0" />
+                            <GradientStop Color="#3A3F4B" Offset="1" />
+                        </LinearGradientBrush>
+                    </Border.BorderBrush>
+                    
+                    <ScrollViewer x:Name="PART_ContentHost"/>
+                </Border>
+                
+                <ControlTemplate.Triggers>
+                    <!-- focus glow -->
+                    <Trigger Property="IsFocused" Value="True">
+                            <Setter TargetName="Border" Property="BorderBrush" Value="#66D3D3D3"/>
+                    </Trigger>
+
+                    <!-- disabled -->
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Opacity" Value="0.5"/>
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+        </Setter.Value>
+    </Setter>
+</Style>
 
     <!-- DatePickerTextBox -->
     <Style TargetType="DatePickerTextBox">
@@ -294,95 +337,140 @@ Since you have a specific grid and those spacer columns, you don't want your but
     </Style>
 
     <!-- ComboBox -->
-    <Style TargetType="ComboBox">
-        <Setter Property="Foreground" Value="#EAEAEA"/>
-        <Setter Property="Background" Value="#2B2F3A"/>
-        <Setter Property="BorderBrush" Value="#3F4554"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Height" Value="45"/>
-        <Setter Property="Padding" Value="4"/>
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
+    <Style TargetType="ComboBox" x:Key="ComboBoxNormal">
+    <Setter Property="Foreground" Value="#EAEAEA"/>
+    <Setter Property="Background" Value="#2A2A2A"/>
+    <Setter Property="BorderBrush" Value="#3F4554"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Height" Value="45"/>
+    <Setter Property="Padding" Value="4"/>
+    <Setter Property="SnapsToDevicePixels" Value="True"/>
 
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ComboBox">
-                    <Grid>
+    <!-- 🔥 FIX: Remove ugly blue selection -->
+    <Setter Property="ItemContainerStyle">
+        <Setter.Value>
+            <Style TargetType="ComboBoxItem">
+                <Setter Property="Foreground" Value="#EAEAEA"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Padding" Value="10,6"/>
 
-                        <!-- Main border -->
-                        <Border x:Name="Border"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ComboBoxItem">
+                            <Border x:Name="Bd"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="6"
+                                    Padding="12,10"
+                                    Margin="0">
+                                <ContentPresenter
+                                    VerticalAlignment="Center"/>
+                            </Border>
+
+                            <ControlTemplate.Triggers>
+
+                                <!-- Hover -->
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Bd" Property="Background" Value="#3A3F4B"/>
+                                </Trigger>
+
+                                <!-- Selected -->
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="Bd" Property="Background" Value="#2F3542"/>
+                                </Trigger>
+
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Setter.Value>
+    </Setter>
+
+    <!-- Main Template -->
+    <Setter Property="Template">
+        <Setter.Value>
+            <ControlTemplate TargetType="ComboBox">
+                <Grid>
+                    <!-- Main border -->
+                    <Border x:Name="Border"
+                            Background="#141414"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="6"/>
+                            CornerRadius="10">
 
-                        <Grid Margin="8,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="30"/>
-                            </Grid.ColumnDefinitions>
+                        <Border.BorderBrush>
+                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                <GradientStop Color="#1A1A1A" Offset="0"/>
+                                <GradientStop Color="#3A3F4B" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.BorderBrush>
+                    </Border>
 
-                            <!-- Selected content -->
-                            <ContentPresenter
-                            Grid.Column="0"
-                            Margin="0,0,4,0"
-                            VerticalAlignment="Center"
-                            Content="{TemplateBinding SelectionBoxItem}"
-                            ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"/>
+                    <Grid Margin="10,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="30"/>
+                        </Grid.ColumnDefinitions>
 
-                            <!-- Toggle button -->
-                            <ToggleButton Grid.Column="1"
+                        <!-- Selected text -->
+                        <ContentPresenter Grid.Column="0"
+                                          VerticalAlignment="Center"
+                                          Content="{TemplateBinding SelectionBoxItem}"
+                                          ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"/>
+
+                        <!-- Dropdown arrow -->
+                        <ToggleButton Grid.Column="1"
                                       Focusable="False"
                                       Background="Transparent"
                                       BorderThickness="0"
-                                      IsChecked="{Binding IsDropDownOpen,
-                                          Mode=TwoWay,
-                                          RelativeSource={RelativeSource TemplatedParent}}">
-
-                                <Path Fill="#B0B6C3"
-                                  HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"
-                                  Data="M 0 0 L 4 4 L 8 0 Z"/>
+                                      IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                <Path Stroke="#888888"
+                                      StrokeThickness="1.5"
+                                      Width="16"
+                                      Height="16"
+                                      Stretch="Uniform"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      Data="M 0 2 L 7 9 L 14 2"/>
                             </ToggleButton>
-                        </Grid>
+                    </Grid>
 
-                        <!-- Dropdown popup -->
-                        <Popup x:Name="PART_Popup"
+                    <!-- Dropdown -->
+                    <Popup x:Name="PART_Popup"
                            Placement="Bottom"
                            IsOpen="{TemplateBinding IsDropDownOpen}"
                            AllowsTransparency="True"
-                           Focusable="False"
-                           PopupAnimation="Fade">
+                           PopupAnimation="Fade"
+                           Width="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}">
 
-                            <Border Background="#2B2F3A"
+                        <Border Background="#2B2F3A"
                                 BorderBrush="#3F4554"
                                 BorderThickness="1"
-                                CornerRadius="6"
+                                CornerRadius="8"
                                 Margin="0,4,0,0">
 
-                                <ScrollViewer CanContentScroll="True">
-                                    <ItemsPresenter/>
-                                </ScrollViewer>
+                            <ScrollViewer>
+                                <ItemsPresenter/>
+                            </ScrollViewer>
+                        </Border>
+                    </Popup>
 
-                            </Border>
-                        </Popup>
+                </Grid>
 
-                    </Grid>
+                <ControlTemplate.Triggers>
 
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Border"
-                                Property="BorderBrush"
-                                Value="#5A6FFF"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
+                    <!-- Hover border -->
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter TargetName="Border" Property="BorderBrush" Value="#5A6FFF"/>
+                    </Trigger>
 
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+        </Setter.Value>
+    </Setter>
+</Style>
 
     <!-- ComboBoxItem -->
-    <Style TargetType="ComboBoxItem">
+    <!--<Style TargetType="ComboBoxItem">
         <Setter Property="Background" Value="#2B2F3A"/>
         <Setter Property="Foreground" Value="#EAEAEA"/>
         <Setter Property="Padding" Value="8"/>
@@ -398,7 +486,7 @@ Since you have a specific grid and those spacer columns, you don't want your but
                 <Setter Property="Foreground" Value="White"/>
             </Trigger>
         </Style.Triggers>
-    </Style>
+    </Style>-->
 
     <!--<Style TargetType="ComboBox">
         <Setter Property="Foreground" Value="#EAEAEA"/>

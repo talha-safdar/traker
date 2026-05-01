@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Traker.Views
+namespace Traker.Views.Add
 {
     /// <summary>
-    /// Interaction logic for AddRowEntryView.xaml
+    /// Interaction logic for AddJobViewModel.xaml
     /// </summary>
-    public partial class AddClientView : UserControl
+    public partial class AddJobView : UserControl
     {
-        public AddClientView()
+        public AddJobView()
         {
             InitializeComponent();
         }

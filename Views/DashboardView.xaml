@@ -32,11 +32,56 @@
             <!-- buttons -->
             <Grid Grid.Row="0" Margin="0,0,0,10">
                 <!-- panel container -->
-                <Border CornerRadius="15" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="2">
+                <Border SnapsToDevicePixels="True" Background="#242424" CornerRadius="20" BorderThickness="1.5">
+                    <Border.BorderBrush>
+                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                            <!-- This whole gradient is now at 50% of its original opacity -->
+                            <GradientStop Color="LightGray" Offset="0" />
+                            <GradientStop Color="Transparent" Offset="1" />
+                        </LinearGradientBrush>
+                    </Border.BorderBrush>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <!-- edit clients -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,20,0">
-                            <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditClient()]" Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="50" Width="50">
+                            <Border SnapsToDevicePixels="True" BorderThickness="1" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditClient()]" Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="50" Width="50">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <!-- 1. Base Background (rgba 255,255,255, 0.05) -->
+                                        <Setter Property="Background" Value="#0DFFFFFF" />
+
+                                        <!-- 2. The 1px Gradient Border -->
+                                        <Setter Property="BorderThickness" Value="1" />
+                                        <Setter Property="BorderBrush">
+                                            <Setter.Value>
+                                                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                                    <!-- Top Highlight -->
+                                                    <GradientStop Color="#40FFFFFF" Offset="0" />
+                                                    <!-- Bottom Fade -->
+                                                    <GradientStop Color="#05FFFFFF" Offset="1" />
+                                                </LinearGradientBrush>
+                                            </Setter.Value>
+                                        </Setter>
+
+                                        <Style.Triggers>
+                                            <!-- 3. Hover State -->
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <!-- Increase opacity to rgba 255,255,255, 0.1 -->
+                                                <Setter Property="Background" Value="#1AFFFFFF" />
+                                                <Setter Property="Cursor" Value="Hand" />
+
+                                                <!-- 4. Subtle Glow -->
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect BlurRadius="10" 
+                                                          Color="LightGray" 
+                                                          Opacity="0.15" 
+                                                          ShadowDepth="0" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
                                 <svg:SvgViewbox                         
                                     RenderOptions.BitmapScalingMode="HighQuality"
                                     SnapsToDevicePixels="True"
@@ -54,7 +99,45 @@
 
                         <!-- edit jobs -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0">
-                            <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditJob('$source')]" Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="50" Width="50">
+                            <Border SnapsToDevicePixels="True" BorderThickness="1" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditJob('$source')]" Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="50" Width="50">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <!-- 1. Base Background (rgba 255,255,255, 0.05) -->
+                                        <Setter Property="Background" Value="#0DFFFFFF" />
+
+                                        <!-- 2. The 1px Gradient Border -->
+                                        <Setter Property="BorderThickness" Value="1" />
+                                        <Setter Property="BorderBrush">
+                                            <Setter.Value>
+                                                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                                    <!-- Top Highlight -->
+                                                    <GradientStop Color="#40FFFFFF" Offset="0" />
+                                                    <!-- Bottom Fade -->
+                                                    <GradientStop Color="#05FFFFFF" Offset="1" />
+                                                </LinearGradientBrush>
+                                            </Setter.Value>
+                                        </Setter>
+
+                                        <Style.Triggers>
+                                            <!-- 3. Hover State -->
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <!-- Increase opacity to rgba 255,255,255, 0.1 -->
+                                                <Setter Property="Background" Value="#1AFFFFFF" />
+                                                <Setter Property="Cursor" Value="Hand" />
+
+                                                <!-- 4. Subtle Glow -->
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect BlurRadius="10" 
+                                                          Color="LightGray" 
+                                                          Opacity="0.15" 
+                                                          ShadowDepth="0" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
                                 <svg:SvgViewbox                         
                                     RenderOptions.BitmapScalingMode="HighQuality"
                                     SnapsToDevicePixels="True"
@@ -71,11 +154,63 @@
                         </StackPanel>
 
                         <!-- spacer -->
-                        <Border Background="#555555" Width="2" Margin="20,10" />
+                        <!-- Width="1" for a vertical line; set a specific Height or let it Stretch -->
+                        <Border Margin="15,10" Width="1" SnapsToDevicePixels="True">
+                            <Border.Background>
+                                <!-- StartPoint/EndPoint set to Y-axis (0,0 to 0,1) for vertical fade -->
+                                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="1">
+                                    <!-- Top: Transparent -->
+                                    <GradientStop Color="#00555555" Offset="0" />
+                                    <!-- Solid area moved towards middle -->
+                                    <GradientStop Color="#FF555555" Offset="0.3" />
+                                    <GradientStop Color="#FF555555" Offset="0.7" />
+                                    <!-- Bottom: Transparent -->
+                                    <GradientStop Color="#00555555" Offset="1" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
 
                         <!-- add client -->
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,20,0">
-                            <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="50" Width="50">
+                            <Border SnapsToDevicePixels="True" BorderThickness="1" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="50" Width="50">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <!-- 1. Base Background (rgba 255,255,255, 0.05) -->
+                                        <Setter Property="Background" Value="#0DFFFFFF" />
+
+                                        <!-- 2. The 1px Gradient Border -->
+                                        <Setter Property="BorderThickness" Value="1" />
+                                        <Setter Property="BorderBrush">
+                                            <Setter.Value>
+                                                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                                    <!-- Top Highlight -->
+                                                    <GradientStop Color="#40FFFFFF" Offset="0" />
+                                                    <!-- Bottom Fade -->
+                                                    <GradientStop Color="#05FFFFFF" Offset="1" />
+                                                </LinearGradientBrush>
+                                            </Setter.Value>
+                                        </Setter>
+
+                                        <Style.Triggers>
+                                            <!-- 3. Hover State -->
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <!-- Increase opacity to rgba 255,255,255, 0.1 -->
+                                                <Setter Property="Background" Value="#1AFFFFFF" />
+                                                <Setter Property="Cursor" Value="Hand" />
+
+                                                <!-- 4. Subtle Glow -->
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect BlurRadius="10" 
+                                                          Color="LightGray" 
+                                                          Opacity="0.15" 
+                                                          ShadowDepth="0" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
                                 <svg:SvgViewbox                         
                                     RenderOptions.BitmapScalingMode="HighQuality"
                                     SnapsToDevicePixels="True"
@@ -85,14 +220,52 @@
 
                         <!-- add job -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0">
-                            <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddJob()]" Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="50" Width="50">
+                            <Border SnapsToDevicePixels="True" BorderThickness="1" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddJob()]" Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="50" Width="50">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <!-- 1. Base Background (rgba 255,255,255, 0.05) -->
+                                        <Setter Property="Background" Value="#0DFFFFFF" />
+
+                                        <!-- 2. The 1px Gradient Border -->
+                                        <Setter Property="BorderThickness" Value="1" />
+                                        <Setter Property="BorderBrush">
+                                            <Setter.Value>
+                                                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                                    <!-- Top Highlight -->
+                                                    <GradientStop Color="#40FFFFFF" Offset="0" />
+                                                    <!-- Bottom Fade -->
+                                                    <GradientStop Color="#05FFFFFF" Offset="1" />
+                                                </LinearGradientBrush>
+                                            </Setter.Value>
+                                        </Setter>
+
+                                        <Style.Triggers>
+                                            <!-- 3. Hover State -->
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <!-- Increase opacity to rgba 255,255,255, 0.1 -->
+                                                <Setter Property="Background" Value="#1AFFFFFF" />
+                                                <Setter Property="Cursor" Value="Hand" />
+
+                                                <!-- 4. Subtle Glow -->
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect BlurRadius="10" 
+                                                          Color="LightGray" 
+                                                          Opacity="0.15" 
+                                                          ShadowDepth="0" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
                                 <svg:SvgViewbox                         
                                     RenderOptions.BitmapScalingMode="HighQuality"
                                     SnapsToDevicePixels="True"
                                     Source="/Resources/Media/Images/Icons/Lucide/briefcase-business.svg" Width="25" Height="25"/>
                             </Border>
-                            <Border  Margin="-30,15,0,0">
-                                <Border Background="#1E1E1E" CornerRadius="25" Margin="10">
+                            <Border SnapsToDevicePixels="True" Margin="-30,15,0,0">
+                                <Border SnapsToDevicePixels="True" Background="#1E1E1E" CornerRadius="25" Margin="10">
                                     <svg:SvgViewbox                  
                                         RenderOptions.BitmapScalingMode="HighQuality"
                                         SnapsToDevicePixels="True"
@@ -107,7 +280,14 @@
             <!-- infromation status -->
             <Grid Grid.Row="1" Margin="0,10,0,0">
                 <!-- panel container -->
-                <Border CornerRadius="15" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="2">
+                <Border Background="#242424" CornerRadius="20" BorderThickness="1.5">
+                    <Border.BorderBrush>
+                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                            <!-- This whole gradient is now at 50% of its original opacity -->
+                            <GradientStop Color="LightGray" Offset="0" />
+                            <GradientStop Color="Transparent" Offset="1" />
+                        </LinearGradientBrush>
+                    </Border.BorderBrush>
                     <Grid Margin="20">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto" /> <!-- jobs information -->
@@ -129,41 +309,89 @@
                             </Grid.RowDefinitions>
 
                             <!-- new -->
-                            <Grid Grid.Column="0" Grid.Row="0" Margin="0,0,0,20">
-                                <StackPanel Orientation="Vertical" Margin="10">
-                                    <TextBlock Foreground="LightCoral" Margin="5,0,0,0" Text="New" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
-                                    <TextBlock Margin="5,0,0,0" Text="{Binding NewJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
-                                </StackPanel>                                       
+                            <Grid Grid.Column="0" Grid.Row="0" Margin="10,0,10,20">
+                                <Border CornerRadius="10" BorderThickness="1" SnapsToDevicePixels="True">
+                                    <Border.BorderBrush>
+                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                                            <!-- This whole gradient is now at 50% of its original opacity -->
+                                            <GradientStop Color="LightGray" Offset="0" />
+                                            <GradientStop Color="Transparent" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Border.BorderBrush>
+                                    <StackPanel Orientation="Vertical" Margin="10">
+                                        <TextBlock Foreground="LightCoral" Margin="5,0,0,0" Text="New" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
+                                        <TextBlock Margin="5,0,0,0" Text="{Binding NewJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
+                                    </StackPanel>    
+                                </Border>
                             </Grid>
                             
                             <!-- active (in progress) -->
-                            <Grid Grid.Column="1" Grid.Row="0" Margin="0,0,0,20">
-                                <StackPanel Orientation="Vertical" Margin="10">
-                                    <TextBlock Foreground="DarkOrange" Margin="5,0,0,0" Text="Active" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
-                                    <TextBlock Margin="5,0,0,0" Text="{Binding ActiveJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
-                                </StackPanel>
+                            <Grid Grid.Column="1" Grid.Row="0" Margin="10,0,10,20">
+                                <Border CornerRadius="10" BorderThickness="1" SnapsToDevicePixels="True">
+                                    <Border.BorderBrush>
+                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                                            <!-- This whole gradient is now at 50% of its original opacity -->
+                                            <GradientStop Color="LightGray" Offset="0" />
+                                            <GradientStop Color="Transparent" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Border.BorderBrush>
+                                    <StackPanel Orientation="Vertical" Margin="10">
+                                        <TextBlock Foreground="DarkOrange" Margin="5,0,0,0" Text="Active" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
+                                        <TextBlock Margin="5,0,0,0" Text="{Binding ActiveJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
+                                    </StackPanel>
+                                </Border>
                             </Grid>
 
                             <!-- Done (completed) -->
-                            <Grid Grid.Column="0" Grid.Row="1">
-                                <StackPanel Orientation="Vertical" Margin="10">
-                                    <TextBlock Foreground="LightGreen" Margin="5,0,0,0" Text="Done" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
-                                    <TextBlock Margin="5,0,0,0" Text="{Binding DoneJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
-                                </StackPanel>
+                            <Grid Grid.Column="0" Grid.Row="1" Margin="10,0,10,0">
+                                <Border CornerRadius="10" BorderThickness="1" SnapsToDevicePixels="True">
+                                    <Border.BorderBrush>
+                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                                            <!-- This whole gradient is now at 50% of its original opacity -->
+                                            <GradientStop Color="LightGray" Offset="0" />
+                                            <GradientStop Color="Transparent" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Border.BorderBrush>
+                                    <StackPanel Orientation="Vertical" Margin="10">
+                                        <TextBlock Foreground="LightGreen" Margin="5,0,0,0" Text="Done" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
+                                        <TextBlock Margin="5,0,0,0" Text="{Binding DoneJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
+                                    </StackPanel>
+                                </Border>
                             </Grid>                            
 
                             <!-- invoiced -->
-                            <Grid Grid.Column="1" Grid.Row="1">
-                                <StackPanel Orientation="Vertical" Margin="10">
-                                    <TextBlock Foreground="LightBlue" Margin="5,0,0,0" Text="Invoiced" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
-                                    <TextBlock Margin="5,0,0,0" Text="{Binding InvoicedJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
-                                </StackPanel>
+                            <Grid Grid.Column="1" Grid.Row="1" Margin="10,0,10,0">
+                                <Border CornerRadius="10" BorderThickness="1" SnapsToDevicePixels="True">
+                                    <Border.BorderBrush>
+                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                                            <!-- This whole gradient is now at 50% of its original opacity -->
+                                            <GradientStop Color="LightGray" Offset="0" />
+                                            <GradientStop Color="Transparent" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Border.BorderBrush>
+                                    <StackPanel Orientation="Vertical" Margin="10">
+                                        <TextBlock Foreground="LightBlue" Margin="5,0,0,0" Text="Invoiced" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
+                                        <TextBlock Margin="5,0,0,0" Text="{Binding InvoicedJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
+                                    </StackPanel>
+                                </Border>
                             </Grid>
                         </Grid>
                         
                         <!-- spacer -->
                         <Grid Grid.Row="1">
-                            <Border Margin="30,0" Opacity="0.3" Background="#555555" Height="2" />
+                            <Border Margin="30,0" Height="1" SnapsToDevicePixels="True">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5" Opacity="1">
+                                        <!-- Left: Transparent -->
+                                        <GradientStop Color="#00555555" Offset="0" />
+                                        <!-- Middle: Your #555555 color -->
+                                        <GradientStop Color="#FF555555" Offset="0.8" />
+                                        <GradientStop Color="#FF555555" Offset="0.2" />
+                                        <!-- Right: Transparent -->
+                                        <GradientStop Color="#00555555" Offset="1" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
                         </Grid>
                         
                         <!-- money information -->
@@ -179,15 +407,32 @@
                             <Grid Grid.Row="0">
                                 <StackPanel Orientation="Vertical" Margin="10,10,10,30">
                                     <TextBlock Margin="5,0,0,0" Text="Gross" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
-                                    <TextBox IsReadOnly="True" Text="{Binding GrossAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderThickness="0" />
+                                    <Border CornerRadius="10" BorderThickness="1.5" SnapsToDevicePixels="True">
+                                        <Border.BorderBrush>
+                                            <SolidColorBrush Color="LightGray" Opacity="0.25" />
+                                        </Border.BorderBrush>
+                                        <!--<Border.BorderBrush>
+                                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.15">
+                                                --><!-- This whole gradient is now at 50% of its original opacity --><!--
+                                                <GradientStop Color="LightGray" Offset="1" />
+                                                <GradientStop Color="Black" Offset="0" />
+                                            </LinearGradientBrush>
+                                        </Border.BorderBrush>-->
+                                        <TextBox Style="{StaticResource TextBoxReadOnly}" Cursor="Arrow" Foreground="{StaticResource FontSecondaryBrush}" IsReadOnly="True" Text="{Binding GrossAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderThickness="0" />                                        
+                                    </Border>
                                 </StackPanel>
                             </Grid>
                             
                             <!-- received payment -->
                             <Grid Grid.Row="1">
-                                <StackPanel Orientation="Vertical" Margin="10,10,10,30">
-                                    <TextBlock Margin="5,0,0,0" Text="Received" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
-                                    <TextBox IsReadOnly="True" Text="{Binding ReceivedAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderThickness="0" />
+                                    <StackPanel Orientation="Vertical" Margin="10,10,10,30">
+                                        <TextBlock Margin="5,0,0,0" Text="Received" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
+                                    <Border CornerRadius="10" BorderThickness="1.5" SnapsToDevicePixels="True">
+                                        <Border.BorderBrush>
+                                            <SolidColorBrush Color="LightGray" Opacity="0.25" />
+                                        </Border.BorderBrush>
+                                        <TextBox Style="{StaticResource TextBoxReadOnly}" Cursor="Arrow" Foreground="{StaticResource FontSecondaryBrush}" IsReadOnly="True" Text="{Binding ReceivedAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderThickness="0" />
+                                    </Border>
                                 </StackPanel>
                             </Grid>              
                             
@@ -195,27 +440,56 @@
                             <Grid Grid.Row="2">
                                 <StackPanel Orientation="Vertical" Margin="10">
                                     <TextBlock Margin="5,0,0,0" Text="Outstanding" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
-                                    <TextBox IsReadOnly="True" Text="{Binding OutstandingAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderThickness="0" />
+                                    <Border CornerRadius="10" BorderThickness="1.5" SnapsToDevicePixels="True">
+                                        <Border.BorderBrush>
+                                            <SolidColorBrush Color="LightGray" Opacity="0.25" />
+                                        </Border.BorderBrush>
+                                        <TextBox Style="{StaticResource TextBoxReadOnly}" Cursor="Arrow" Foreground="{StaticResource FontSecondaryBrush}" IsReadOnly="True" Text="{Binding OutstandingAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderThickness="0" />
+                                    </Border>
                                 </StackPanel>
                             </Grid>   
                             
                             <!-- overdue payment -->
-                            <Grid Visibility="Collapsed" Grid.Row="3">
+                            <!--<Grid Visibility="Collapsed" Grid.Row="3">
                                 <StackPanel Orientation="Vertical" Margin="10">
                                     <TextBlock Margin="5,0,0,0" Text="Overdue" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
-                                    <TextBox IsReadOnly="True" Text="{Binding OverdueAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderBrush="#3D3D3D" BorderThickness="2" />
+                                    <TextBox Cursor="Arrow" Foreground="{StaticResource FontSecondaryBrush}" IsReadOnly="True" Text="{Binding OverdueAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderBrush="#3D3D3D" BorderThickness="2" />
                                 </StackPanel>
-                            </Grid>     
+                            </Grid>-->     
                         </Grid>
 
                         <!-- spacer -->
                         <Grid Grid.Row="3">
-                            <Border Margin="30,0" Opacity="0.3"  Background="#555555" Height="2" />
+                            <Border Margin="30,0" Height="1" SnapsToDevicePixels="True">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5" Opacity="1">
+                                        <!-- Left: Transparent -->
+                                        <GradientStop Color="#00555555" Offset="0" />
+                                        <!-- Middle: Your #555555 color -->
+                                        <GradientStop Color="#FF555555" Offset="0.8" />
+                                        <GradientStop Color="#FF555555" Offset="0.2" />
+                                        <!-- Right: Transparent -->
+                                        <GradientStop Color="#00555555" Offset="1" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
                         </Grid>
 
                         <!-- profile / account -->
                         <Grid Grid.Row="4">
-                            <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenUserContenxtMenu($source)]" Background="Black" CornerRadius="15" Height="65" Padding="5,0">
+                            <Border  SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenUserContenxtMenu($source)]" Background="#121212" CornerRadius="15" Height="65" Padding="5,0" BorderThickness="1">
+                                <Border.Style>
+                                    <!--<SolidColorBrush Color="LightGray" Opacity="0.5" />-->
+                                    <Style TargetType="Border">
+                                        <Setter Property="BorderBrush" Value="#121212"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="BorderBrush" Value="#80D3D3D3"/>
+                                                <Setter Property="BorderThickness" Value="1"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0">
                                     <Border Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="50" Width="50">
                                         <svg:SvgViewbox                         
@@ -233,35 +507,74 @@
         </Grid>
         
         <!-- main panel -->
-        <Grid Grid.Column="1" Margin="10,20,20,20">
+        <Grid Grid.Column="1" Margin="10,10,20,20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.04*" /> <!-- search / filter / sort -->
                 <RowDefinition Height="*" /> <!-- job cards -->
             </Grid.RowDefinitions>
 
             <!-- search / filter / sort -->
-            <Grid Grid.Row="0" Margin="0,0,0,0">
-                <Border CornerRadius="15" Background="Transparent" BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="0" >
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,0">
-                        <Border Margin="0,0,10,0" Opacity="0.8" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFilterContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
-                            <svg:SvgViewbox                         
-                                        RenderOptions.BitmapScalingMode="HighQuality"
-                                        SnapsToDevicePixels="True"
-                                        Source="/Resources/Media/Images/Icons/Lucide/list-filter.svg" Width="15" Height="15"/>
+            <Grid Grid.Row="0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" /> <!-- total jobs (to become search bar) -->
+                        <ColumnDefinition Width="*" /> <!-- line spacer -->
+                        <ColumnDefinition Width="auto" /> <!-- filter/sort -->
+                    </Grid.ColumnDefinitions>
+
+                    <!-- total jobs (to become search bar) -->
+                    <Grid Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock Margin="5,0,0,0" Text="Total Jobs: 2" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
+                    </Grid>
+
+                    <!-- line spacer -->
+                    <Grid Grid.Column="1" VerticalAlignment="Center">
+                        <Border Margin="30,0" Height="1" SnapsToDevicePixels="True">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5" Opacity="1">
+                                    <!-- Left: Transparent -->
+                                    <GradientStop Color="#00555555" Offset="0" />
+                                    <!-- Middle: Your #555555 color -->
+                                    <GradientStop Color="#FF555555" Offset="0.5" />
+                                    <!-- Right: Transparent -->
+                                    <GradientStop Color="#00555555" Offset="1" />
+                                </LinearGradientBrush>
+                            </Border.Background>
                         </Border>
-                        <Border Opacity="0.8" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenSortContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
-                            <svg:SvgViewbox                         
-                                        RenderOptions.BitmapScalingMode="HighQuality"
-                                        SnapsToDevicePixels="True"
-                                        Source="/Resources/Media/Images/Icons/Lucide/arrow-up-down.svg" Width="15" Height="15"/>
-                        </Border>                        
-                    </StackPanel>
-                </Border>
+                    </Grid>
+
+                    <!-- filter/sort -->
+                    <Grid Grid.Column="2" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,0">
+                            <Border Margin="0,0,10,0" Opacity="0.8" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFilterContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                                <svg:SvgViewbox                         
+                                    RenderOptions.BitmapScalingMode="HighQuality"
+                                    SnapsToDevicePixels="True"
+                                    Source="/Resources/Media/Images/Icons/Lucide/list-filter.svg" Width="15" Height="15"/>
+                            </Border>
+                            <Border Opacity="0.8" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenSortContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                                <svg:SvgViewbox                         
+                                    RenderOptions.BitmapScalingMode="HighQuality"
+                                    SnapsToDevicePixels="True"
+                                    Source="/Resources/Media/Images/Icons/Lucide/arrow-up-down.svg" Width="15" Height="15"/>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+                
+
             </Grid>
 
             <!-- job cards -->
             <Grid Grid.Row="1" Margin="0,10,0,0">
-                <Border Background="#121212" CornerRadius="20">
+                <Border Background="#242424" CornerRadius="20" BorderThickness="1.5" SnapsToDevicePixels="True">
+                    <Border.BorderBrush>
+                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                            <!-- This whole gradient is now at 50% of its original opacity -->
+                            <GradientStop Color="LightGray" Offset="0" />
+                            <GradientStop Color="Transparent" Offset="1" />
+                        </LinearGradientBrush>
+                    </Border.BorderBrush>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10" Padding="0,0,10,0">
                         <ItemsControl ItemsSource="{Binding DashboardData}">
                             <ItemsControl.ItemTemplate>
@@ -401,139 +714,6 @@
                     </ScrollViewer>
                 </Border>
             </Grid>
-        </Grid>
-        
-        <Grid Grid.Column="1" Margin="10,20,20,20">
-            <!--<Border Background="#121212" CornerRadius="20">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10" Padding="0,0,10,0">
-                    <ItemsControl ItemsSource="{Binding DashboardData}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border Background="#242424" 
-                                        BorderThickness="1"
-                                        BorderBrush="#333333"
-                                        Height="135"
-                                    CornerRadius="10" 
-                                    Margin="0,0,0,10" 
-                                    Padding="10"
-                                    cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SelectJob($dataContext)];
-                                                        [Event MouseRightButtonUp] = [Action OpenContextMenu($dataContext)];"
-                                        Cursor="Hand"
-                                    MouseLeftButtonDown="EditJob">
-
-                                    <Grid IsHitTestVisible="False">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="0.3*" />                                            --><!-- type --><!--
-                                            <ColumnDefinition Width="*" />                                            --><!-- full name / job title --><!--
-                                            <ColumnDefinition Width="0.2*" />                                            --><!-- spacer --><!--
-                                            <ColumnDefinition Width="*" />                                            --><!-- job status / due date --><!--
-                                            <ColumnDefinition Width="0.2*" />                                            --><!-- spacer --><!--
-                                            <ColumnDefinition Width="*" />                                            --><!-- job price --><!--
-                                        </Grid.ColumnDefinitions>
-
-                                        --><!-- type --><!--
-                                        <Grid Grid.Column="0">
-                                            <Border Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="80" Width="80">
-                                                <svg:SvgViewbox                         
-                                                RenderOptions.BitmapScalingMode="HighQuality"
-                                                SnapsToDevicePixels="True"
-                                                Source="{Binding TypeIcon}" Width="40" Height="40"/>
-                                            </Border>
-                                        </Grid>
-
-                                        --><!-- full name / job title --><!--
-                                        <Grid Grid.Column="1" VerticalAlignment="Center">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="*" />                                                --><!-- full name --><!--
-                                                <RowDefinition Height="*" />                                                --><!-- spacer --><!--
-                                                <RowDefinition Height="*" />                                                --><!-- job title --><!--
-                                            </Grid.RowDefinitions>
-
-                                            --><!-- full name --><!--
-                                            <Grid Grid.Row="0">
-                                                <TextBlock Margin="5,0,0,0" Text="{Binding ClientName}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Black" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32" />
-                                            </Grid>
-                                            
-                                            --><!-- spacer --><!--
-                                            <Grid Grid.Row="1" Margin="0,10" />
-
-                                            --><!-- job title --><!--
-                                            <Grid Grid.Row="2">
-                                                <TextBlock Margin="5,0,0,0" Opacity="0.8" Text="{Binding JobTitle}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />
-                                            </Grid>
-                                        </Grid>
-
-                                        --><!-- spacer--><!--
-                                        <Grid Grid.Column="2">
-                                            <Border Background="#555555" Width="2" Margin="0,10" />
-                                        </Grid>
-
-                                        --><!-- job status / due date --><!--
-                                        <Grid Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="*" />                                                --><!-- job status --><!--
-                                                <RowDefinition Height="0.5*" />                                                --><!-- spacer --><!--
-                                                <RowDefinition Height="*" />                                                --><!-- due date --><!--
-                                            </Grid.RowDefinitions>
-
-                                            --><!-- job status --><!--
-                                            <Grid Grid.Row="0">
-                                                <TextBlock Margin="0" Text="{Binding JobStatus}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Black" FontSize="32">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock">
-                                                            <Setter Property="Foreground" Value="{StaticResource FontPrimaryBrush}" />
-
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding JobStatus}" Value="Invoiced">
-                                                                    <Setter Property="Foreground" Value="LightBlue" />
-                                                                    <Setter Property="FontWeight" Value="Bold" />
-                                                                </DataTrigger>
-
-                                                                <DataTrigger Binding="{Binding JobStatus}" Value="Done">
-                                                                    <Setter Property="Foreground" Value="LightGreen" />
-                                                                </DataTrigger>
-                                                                
-                                                                <DataTrigger Binding="{Binding JobStatus}" Value="New">
-                                                                    <Setter Property="Foreground" Value="LightCoral" />
-                                                                </DataTrigger>
-                                                                
-                                                                <DataTrigger Binding="{Binding JobStatus}" Value="Active">
-                                                                    <Setter Property="Foreground" Value="DarkOrange" />
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
-                                            </Grid>
-
-                                            --><!-- spacer --><!--
-                                            <Grid Grid.Row="1" Margin="0,10" />
-
-                                            --><!-- due date --><!--
-                                            <Grid Grid.Row="2">
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock HorizontalAlignment="Left" Margin="0" Text="Due" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="24" />
-                                                    <TextBlock Margin="10,0,0,0" Text="{Binding DueDate}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />                                                    
-                                                </StackPanel>
-                                            </Grid>
-                                        </Grid>
-
-                                        --><!-- spacer --><!--
-                                        <Grid Grid.Column="4">
-                                            <Border Background="#555555" Width="2" Margin="0,10" />
-                                        </Grid>
-
-                                        --><!-- job price --><!--
-                                        <Grid Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <TextBlock Margin="0" Text="{Binding Price}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Black" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32" />
-                                        </Grid>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </Border>-->
         </Grid>
     </Grid>
 </UserControl>

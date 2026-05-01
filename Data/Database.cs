@@ -862,7 +862,7 @@ namespace Traker.Database
         /// <summary>
         /// Add a new row to the Jobs table for an existing client. This is done by opening a connection to the database, executing a SQL command to insert a new row into the Jobs table with a foreign key reference to the specified client, and then closing the connection. The function takes four parameters: the client ID, job description, final price, and due date. If any errors occur during this process, an error message is displayed to the user. If the row is added successfully, a log entry is made indicating that the operation was successful along with the client ID and job ID.
         /// </summary>
-        public static Task AddNewJobToClient(int clientId, string JobTitle, string jobDescription, decimal finalPrice, DateOnly dueDate)
+        public static Task AddNewJobToClient(int clientId, string JobTitle, decimal finalPrice, DateOnly dueDate)
         {
             try
             {
@@ -877,16 +877,15 @@ namespace Traker.Database
                     jobsCmd.CommandText = @"
 
                     INSERT INTO Jobs
-                    (ClientId, Title, Description, Status, FinalPrice, CreatedDate, DueDate)
+                    (ClientId, Title, Status, FinalPrice, CreatedDate, DueDate)
 
                     VALUES
-                    (@clientId, @title, @description, @status, @finalPrice, @createdDate, @dueDate);
+                    (@clientId, @title, @status, @finalPrice, @createdDate, @dueDate);
 
                     ";
 
                     jobsCmd.Parameters.AddWithValue("@clientId", clientId);
                     jobsCmd.Parameters.AddWithValue("@title", JobTitle);
-                    jobsCmd.Parameters.AddWithValue("@description", jobDescription);
                     jobsCmd.Parameters.AddWithValue("@status", "New");
                     jobsCmd.Parameters.AddWithValue("@finalPrice", finalPrice);
                     jobsCmd.Parameters.AddWithValue("@createdDate", DateTime.Now.Date);

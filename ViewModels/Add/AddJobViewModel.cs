@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Traker.Models;
 
-namespace Traker.ViewModels
+namespace Traker.ViewModels.Add
 {
     using Database;
     using System.Globalization;
@@ -55,28 +55,20 @@ namespace Traker.ViewModels
             State = appState;
         }
 
-        //protected override Task OnInitializedAsync(CancellationToken cancellationToken)
-        //{
-        //    foreach (var client in dashboardData)
-        //    {
-        //        ClientsList.Add(client.ClientName);
-        //    }
-        //    return base.OnInitializedAsync(cancellationToken);
-        //}
-
-        protected override void OnViewLoaded(object view) // REPLACE WITH INITIALISED
+        protected override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
             foreach (var client in dashboardData.DistinctBy(x => x.ClientId))
             {
                 AddJob.Add(new AddJobModel
                 {
                     ClientId = client.ClientId,
+                    CreatedDate = client.CreatedDate.ToString(),
                     FullName = client.ClientName,
                     JobDescription = client.JobDescription,
                     Price = client.Price
                 });
             }
-            base.OnViewLoaded(view);
+            return base.OnInitializedAsync(cancellationToken);
         }
 
         protected override Task OnDeactivateAsync(bool close, CancellationToken cancellationToken)
@@ -86,12 +78,12 @@ namespace Traker.ViewModels
         }
 
 
-        public Task AddJobToClient()
+        public async Task AddJobToClient()
         {
             var dueDate = DateOnly.MinValue;
             decimal amount = 0;
 
-            if (DueDate != String.Empty)
+            if (DueDate != string.Empty)
             {
                 dueDate = DateOnly.ParseExact(
                 DueDate,
@@ -100,7 +92,7 @@ namespace Traker.ViewModels
                 );
             }
 
-            if (Price != String.Empty)
+            if (Price != string.Empty)
             {
                 amount = decimal.Parse(
                     Price,
@@ -108,11 +100,9 @@ namespace Traker.ViewModels
                 );
             }
 
-            Database.AddNewJobToClient(SelectedClient.ClientId, JobTitle, JobDescription, amount, dueDate);
-
-            _events.PublishOnUIThreadAsync(new RefreshDatabase());
-
-            return Task.CompletedTask;
+            await Database.AddNewJobToClient(SelectedClient.ClientId, JobTitle, amount, dueDate);
+            await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+            await TryCloseAsync();
         }
 
         public async Task Exit()
@@ -142,7 +132,7 @@ namespace Traker.ViewModels
             }
         }
 
-        public String JobTitle
+        public string JobTitle
         {
             get { return _jobTitle; }
             set
@@ -151,7 +141,7 @@ namespace Traker.ViewModels
                 NotifyOfPropertyChange(() => JobTitle);
             }
         }
-        public String JobDescription
+        public string JobDescription
         {
             get { return _jobDescription; }
             set
@@ -161,7 +151,7 @@ namespace Traker.ViewModels
             }
         }
 
-        public String Price
+        public string Price
         {
             get { return _price; }
             set
@@ -171,7 +161,7 @@ namespace Traker.ViewModels
             }
         }
 
-        public String DueDate
+        public string DueDate
         {
             get { return _dueDate; }
             set

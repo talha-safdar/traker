@@ -59,7 +59,14 @@ format and have a button maybe to access deleted clients, jobs, invoices (howeve
 - blur money if user wants to hide
 - rename folders if user name renamed
 - fix date format to dd/mm/yyyy
-
+- use icons such as for paid use ✔ Paid
+- add logging
+- validation input
+- backup strategy
+- for individual and company for edit client auto fill the damn company name
+- if status option is 0 dim it alongside the label
+- make job status clickable to sort automatically
+- dont forget to re-design the filter/sort buttons
 
 
 

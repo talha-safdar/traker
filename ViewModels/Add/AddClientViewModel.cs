@@ -1,7 +1,7 @@
 ﻿using Caliburn.Micro;
 using Traker.States;
 
-namespace Traker.ViewModels
+namespace Traker.ViewModels.Add
 {
     using Database;
     using System.Globalization;
@@ -35,12 +35,12 @@ namespace Traker.ViewModels
             _events = events;
             _dataService = dataService;
 
-            _clientType = String.Empty;
-            _clientName = String.Empty;
-            _jobTitle = String.Empty;
-            _jobDescription = String.Empty;
-            _price = String.Empty;
-            _dueDate = String.Empty;
+            _clientType = string.Empty;
+            _clientName = string.Empty;
+            _jobTitle = string.Empty;
+            _jobDescription = string.Empty;
+            _price = string.Empty;
+            _dueDate = string.Empty;
 
             State = appState;
         }
@@ -85,7 +85,7 @@ namespace Traker.ViewModels
             decimal amount = 0;
 
             // due date conversion
-            if (DueDate != String.Empty)
+            if (DueDate != string.Empty)
             {
                 dueDate = DateOnly.ParseExact(
                 DueDate,
@@ -95,7 +95,7 @@ namespace Traker.ViewModels
             }
 
             // money conversion
-            if (Price != String.Empty)
+            if (Price != string.Empty)
             {
                 amount = decimal.Parse(
                     Price,
@@ -113,6 +113,7 @@ namespace Traker.ViewModels
 
             // refresh database
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+            await TryCloseAsync();
         }
         #endregion
 

@@ -33,7 +33,7 @@
             </Grid.RowDefinitions>
 
             <!-- top bar -->
-            <Grid Grid.Row="0" Background="Black" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MouseLeftButtonDown="DragWindow">
+            <Grid Grid.Row="0" Background="#242424" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MouseLeftButtonDown="DragWindow">
                 <Grid Margin="20,0,20,0">
                     <TextBlock Text="TRAKER" FontWeight="ExtraBlack" Foreground="{StaticResource FontPrimaryBrush}" FontSize="25" VerticalAlignment="Center" HorizontalAlignment="Left" />
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -48,7 +48,7 @@
             </Grid>
 
             <!-- body -->
-            <Grid Grid.Row="1" Background="Black">
+            <Grid Grid.Row="1">
                 <ContentControl x:Name="ActiveItem" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
             </Grid>
         </Grid>

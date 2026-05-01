@@ -18,6 +18,7 @@ namespace Traker.ViewModels
     using Traker.Models;
     using Traker.Services;
     using Traker.States;
+    using Traker.ViewModels.Add;
     using Traker.ViewModels.Edit;
     using Traker.ViewModels.User;
 
@@ -264,10 +265,10 @@ namespace Traker.ViewModels
         public async Task OpenContextMenu(DashboardModel selectedJob)
         {
             // if add menu open do nothing
-            if (State.IsWindowOpen == true)
-            {
-                return;
-            }
+            //if (State.IsWindowOpen == true)
+            //{
+            //    return;
+            //}
 
             if (_contextMenuVM != null)
             {
@@ -315,7 +316,7 @@ namespace Traker.ViewModels
                     _editJobViewModel.SelectedJob = SelectedJob;
 
                 }
-                await _windowManager.ShowWindowAsync(_editJobViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
+                await _windowManager.ShowDialogAsync(_editJobViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
             }
 
 
@@ -332,7 +333,7 @@ namespace Traker.ViewModels
         {
             Debug.WriteLine("ADDING client..");
 
-            if (State.IsWindowOpen == false)
+            //if (State.IsWindowOpen == false)
             {
                 // if is not free then report it with a message box
                 // move this to a private function later
@@ -348,22 +349,22 @@ namespace Traker.ViewModels
                 }
 
                 _addClientViewModel = new AddClientViewModel(_events, State, Data);
-                await _windowManager.ShowWindowAsync(_addClientViewModel, null, CustomWindow.SettingsForDialog(600, 500, false));
+                await _windowManager.ShowDialogAsync(_addClientViewModel, null, CustomWindow.SettingsForDialog(790, 600, false));
                 State.IsWindowOpen = true; // flag as open accross the project
             }
 
             // the state State.IsAddRowEntryOpen will be false again from addrowentryVM when user closes the window
-            else if (State.IsWindowOpen == true)
-            {
-                return; // do nothing
-            }
+            //else if (State.IsWindowOpen == true)
+            //{
+            //    return; // do nothing
+            //}
         }
 
         public async Task AddJob()
         {
             //Debug.WriteLine("ADDING job..");
 
-            if (State.IsWindowOpen == false)
+            //if (State.IsWindowOpen == false)
             {
                 // if State.popup is not free then report it with a message box
                 if (_contextMenuVM != null)
@@ -379,15 +380,15 @@ namespace Traker.ViewModels
 
                 _addJobViewModel = new AddJobViewModel(_events, State);
                 _addJobViewModel.dashboardData = _dashboardData; // pass dashboard data to AddJob
-                await _windowManager.ShowWindowAsync(_addJobViewModel, null, CustomWindow.SettingsForDialog(600, 500, false));
+                await _windowManager.ShowDialogAsync(_addJobViewModel, null, CustomWindow.SettingsForDialog(700, 550, false));
                 State.IsWindowOpen = true; // flag as open accross the project
             }
 
             // the state State.IsAddRowEntryOpen will be false again from addrowentryVM when user closes the window
-            else if (State.IsWindowOpen == true)
-            {
-                return; // do nothing
-            }
+            //else if (State.IsWindowOpen == true)
+            //{
+            //    return; // do nothing
+            //}
         }
 
         public async Task OnMouseDownEvent(Grid gridSource)

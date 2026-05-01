@@ -13,6 +13,7 @@ using Traker.States;
 using Traker.ViewModels;
 using Traker.ViewModels.User;
 using Traker.ViewModels.Edit;
+using Traker.ViewModels.Add;
 
 namespace Traker
 {
