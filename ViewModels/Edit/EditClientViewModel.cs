@@ -83,10 +83,11 @@ namespace Traker.ViewModels.Edit
         }
 
         #region Public View Functions
-        public void ConfirmEditClient()
+        public async void ConfirmEditClient()
         {
-            Database.EditClient(SelectedRow.ClientId, ClientType, ClientName, ClientEmail, CompanyName, PhoneNumber, BillingAddress, City, Postcode, Country, IsActive);
-            _events.PublishOnUIThreadAsync(new RefreshDatabase());
+            await Database.EditClient(SelectedRow.ClientId, ClientType, ClientName, ClientEmail, CompanyName, PhoneNumber, BillingAddress, City, Postcode, Country, IsActive);
+            await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+            await TryCloseAsync();
         }
 
         public async Task Exit()
