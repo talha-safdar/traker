@@ -48,6 +48,7 @@ namespace Traker.ViewModels
         private string _activeJobsCount;
         private string _doneJobsCount;
         private string _invoicedJobsCount;
+        private int _totalJobsCount;
         private ObservableCollection<DashboardModel> _dashboardData; // listo of data shown on the data grid
         public DashboardModel _selectedJob; // selected data row automatically filled on click
         #endregion
@@ -138,10 +139,10 @@ namespace Traker.ViewModels
         public async Task OpenFilterContextMenu(FrameworkElement anchorElement)
         {
             // if add menu open do nothing
-            if (State.IsWindowOpen == true)
-            {
-                return;
-            }
+            //if (State.IsWindowOpen == true)
+            //{
+            //    return;
+            //}
 
             if (_filterJobsViewModel != null)
             {
@@ -177,10 +178,10 @@ namespace Traker.ViewModels
         public async Task OpenSortContextMenu(FrameworkElement anchorElement)
         {
             // if add menu open do nothing
-            if (State.IsWindowOpen == true)
-            {
-                return;
-            }
+            //if (State.IsWindowOpen == true)
+            //{
+            //    return;
+            //}
 
             if (_sortJobsViewModel != null)
             {
@@ -681,22 +682,6 @@ namespace Traker.ViewModels
                 index++;
             }
 
-            // ascending order job title
-            //_dashboardData = new ObservableCollection<DashboardModel>(_dashboardData.OrderBy(j => j.JobTitle));
-
-            // job status order
-            //_dashboardData = new ObservableCollection<DashboardModel>(_dashboardData.OrderBy(
-            //    j =>
-            //    {
-            //        switch (j.JobStatus.ToLower())
-            //        {
-            //            case "new": return 1;
-            //            case "active": return 2;
-            //            case "done": return 3;
-            //            case "invoiced": return 4;
-            //            default: return 5; // Anything else goes to the bottom
-            //        }
-            //    }));
             _dashboardDataBackup = DashboardData; // backup for filtering
             _dashboardDataStatusFiltered = DashboardData;
             _dashboardDataTypeFiltered = DashboardData;
@@ -706,7 +691,6 @@ namespace Traker.ViewModels
             ActiveJobsCount = Data.Jobs.Where(j => j.Status == Names.Active).Count().ToString(); // active jobs count
             InvoicedJobsCount = Data.Jobs.Where(j => j.Status == Names.Invoiced).Count().ToString(); // invoiced jobs count
             GrossAmount = Data.Jobs.Sum(gross => gross.FinalPrice).ToString("C"); // gross amount
-            //ReceivedAmount = Data.Jobs.Where(j => j.Status == Names.Paid).Sum(j => j.FinalPrice).ToString("C");
             ReceivedAmount = Data.Jobs
                 .Join(Data.Invoices,
                 j => j.JobId,
@@ -725,6 +709,8 @@ namespace Traker.ViewModels
                                       inv => inv.JobId, (job, inv) => new { job.FinalPrice, inv.DueDate })
                                 .Where(x => x.DueDate < DateOnly.FromDateTime(DateTime.Now))
                                 .Sum(x => x.FinalPrice).ToString("C"); // overdue
+
+            TotalJobsCount = Data.Jobs.Count();
             return Task.CompletedTask;
         }
         #endregion
@@ -923,6 +909,16 @@ namespace Traker.ViewModels
             {
                 _invoicedJobsCount = value;
                 NotifyOfPropertyChange(() => InvoicedJobsCount);
+            }
+        }
+
+        public int TotalJobsCount
+        {
+            get { return _totalJobsCount; }
+            set
+            {
+                _totalJobsCount = value;
+                NotifyOfPropertyChange(() => TotalJobsCount);
             }
         }
 

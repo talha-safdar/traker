@@ -447,15 +447,7 @@
                                         <TextBox Style="{StaticResource TextBoxReadOnly}" Cursor="Arrow" Foreground="{StaticResource FontSecondaryBrush}" IsReadOnly="True" Text="{Binding OutstandingAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderThickness="0" />
                                     </Border>
                                 </StackPanel>
-                            </Grid>   
-                            
-                            <!-- overdue payment -->
-                            <!--<Grid Visibility="Collapsed" Grid.Row="3">
-                                <StackPanel Orientation="Vertical" Margin="10">
-                                    <TextBlock Margin="5,0,0,0" Text="Overdue" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
-                                    <TextBox Cursor="Arrow" Foreground="{StaticResource FontSecondaryBrush}" IsReadOnly="True" Text="{Binding OverdueAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderBrush="#3D3D3D" BorderThickness="2" />
-                                </StackPanel>
-                            </Grid>-->     
+                            </Grid>     
                         </Grid>
 
                         <!-- spacer -->
@@ -477,7 +469,7 @@
 
                         <!-- profile / account -->
                         <Grid Grid.Row="4">
-                            <Border  SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenUserContenxtMenu($source)]" Background="#121212" CornerRadius="15" Height="65" Padding="5,0" BorderThickness="1">
+                            <Border SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenUserContenxtMenu($source)]" Background="#121212" CornerRadius="15" Height="65" Padding="5,0" BorderThickness="1">
                                 <Border.Style>
                                     <!--<SolidColorBrush Color="LightGray" Opacity="0.5" />-->
                                     <Style TargetType="Border">
@@ -524,19 +516,19 @@
 
                     <!-- total jobs (to become search bar) -->
                     <Grid Grid.Column="0" VerticalAlignment="Center">
-                        <TextBlock Margin="5,0,0,0" Text="Total Jobs: 2" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
+                        <TextBlock Margin="5,0,0,0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22">
+                            <Run Text="Total Jobs: " />
+                            <Run Text="{Binding TotalJobsCount}" />
+                        </TextBlock>
                     </Grid>
 
                     <!-- line spacer -->
                     <Grid Grid.Column="1" VerticalAlignment="Center">
                         <Border Margin="30,0" Height="1" SnapsToDevicePixels="True">
                             <Border.Background>
-                                <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5" Opacity="1">
-                                    <!-- Left: Transparent -->
-                                    <GradientStop Color="#00555555" Offset="0" />
-                                    <!-- Middle: Your #555555 color -->
-                                    <GradientStop Color="#FF555555" Offset="0.5" />
-                                    <!-- Right: Transparent -->
+                                <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5" Opacity="1">                                    <!-- Left: Transparent -->
+                                    <GradientStop Color="#00555555" Offset="0" />                                    <!-- Middle: Your #555555 color -->
+                                    <GradientStop Color="#FF555555" Offset="0.5" />                                    <!-- Right: Transparent -->
                                     <GradientStop Color="#00555555" Offset="1" />
                                 </LinearGradientBrush>
                             </Border.Background>
@@ -546,13 +538,13 @@
                     <!-- filter/sort -->
                     <Grid Grid.Column="2" VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,0">
-                            <Border Margin="0,0,10,0" Opacity="0.8" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFilterContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                            <Border Cursor="Hand" Margin="0,0,10,0" Opacity="0.8" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFilterContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
                                 <svg:SvgViewbox                         
                                     RenderOptions.BitmapScalingMode="HighQuality"
                                     SnapsToDevicePixels="True"
                                     Source="/Resources/Media/Images/Icons/Lucide/list-filter.svg" Width="15" Height="15"/>
                             </Border>
-                            <Border Opacity="0.8" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenSortContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                            <Border Cursor="Hand" Opacity="0.8" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenSortContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
                                 <svg:SvgViewbox                         
                                     RenderOptions.BitmapScalingMode="HighQuality"
                                     SnapsToDevicePixels="True"
@@ -575,57 +567,82 @@
                             <GradientStop Color="Transparent" Offset="1" />
                         </LinearGradientBrush>
                     </Border.BorderBrush>
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10" Padding="0,0,10,0">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10,20,10,10" Padding="0,0,10,0">
                         <ItemsControl ItemsSource="{Binding DashboardData}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Background="#242424" 
+                                    <Border 
+                                        Background="#242424"
                             BorderThickness="1"
-                            BorderBrush="#333333"
                             Height="135"
-                        CornerRadius="10" 
-                        Margin="0,0,0,10" 
-                        Padding="10"
-                        cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SelectJob($dataContext)];
-                                            [Event MouseRightButtonUp] = [Action OpenContextMenu($dataContext)];"
-                            Cursor="Hand"
-                        MouseLeftButtonDown="EditJob">
+                            CornerRadius="20" 
+                            Margin="20,10,20,10" 
+                            Padding="10"
+                            cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SelectJob($dataContext)];
+                                                [Event MouseRightButtonUp] = [Action OpenContextMenu($dataContext)];"
+                                Cursor="Hand"
+                            MouseLeftButtonDown="EditJob">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <!-- 1. Default BorderBrush -->
+                                                <Setter Property="BorderBrush" Value="#121212"/>
+
+                                                <!-- 2. Default Shadow (Moved from local to Style) -->
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect Color="Black" 
+                                                          BlurRadius="15" 
+                                                          ShadowDepth="0" 
+                                                          Opacity="0.3" 
+                                                          RenderingBias="Quality"/>
+                                                    </Setter.Value>
+                                                </Setter>
+
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="BorderBrush" Value="#80404040"/>
+
+                                                        <!-- 3. Increased Blur Shadow on Hover -->
+                                                        <Setter Property="Effect">
+                                                            <Setter.Value>
+                                                                <DropShadowEffect Color="Black" 
+                                                              BlurRadius="30" 
+                                                              ShadowDepth="0" 
+                                                              Opacity="0.8" 
+                                                              RenderingBias="Quality"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
 
                                         <Grid IsHitTestVisible="False">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="0.3*" />
-                                                <!-- type -->
-                                                <ColumnDefinition Width="*" />
-                                                <!-- full name / job title -->
-                                                <ColumnDefinition Width="0.2*" />
-                                                <!-- spacer -->
-                                                <ColumnDefinition Width="*" />
-                                                <!-- job status / due date -->
-                                                <ColumnDefinition Width="0.2*" />
-                                                <!-- spacer -->
-                                                <ColumnDefinition Width="*" />
-                                                <!-- job price -->
+                                                <ColumnDefinition Width="0.3*" />                                                <!-- type -->
+                                                <ColumnDefinition Width="*" />                                                <!-- full name / job title -->
+                                                <ColumnDefinition Width="0.2*" />                                                <!-- spacer -->
+                                                <ColumnDefinition Width="0.5*" />                                                <!-- job status / due date -->
+                                                <ColumnDefinition Width="0.2*" />                                                <!-- spacer -->
+                                                <ColumnDefinition Width="*" />                                                <!-- job price -->
                                             </Grid.ColumnDefinitions>
 
                                             <!-- type -->
                                             <Grid Grid.Column="0">
                                                 <Border Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="80" Width="80">
                                                     <svg:SvgViewbox                         
-                                    RenderOptions.BitmapScalingMode="HighQuality"
-                                    SnapsToDevicePixels="True"
-                                    Source="{Binding TypeIcon}" Width="40" Height="40"/>
+                                                        RenderOptions.BitmapScalingMode="HighQuality"
+                                                        SnapsToDevicePixels="True"
+                                                        Source="{Binding TypeIcon}" Width="40" Height="40"/>
                                                 </Border>
                                             </Grid>
 
                                             <!-- full name / job title -->
                                             <Grid Grid.Column="1" VerticalAlignment="Center">
                                                 <Grid.RowDefinitions>
-                                                    <RowDefinition Height="*" />
-                                                    <!-- full name -->
-                                                    <RowDefinition Height="*" />
-                                                    <!-- spacer -->
-                                                    <RowDefinition Height="*" />
-                                                    <!-- job title -->
+                                                    <RowDefinition Height="*" />                                                    <!-- full name -->
+                                                    <RowDefinition Height="*" />                                                    <!-- spacer -->
+                                                    <RowDefinition Height="*" />                                                    <!-- job title -->
                                                 </Grid.RowDefinitions>
 
                                                 <!-- full name -->
@@ -638,24 +655,34 @@
 
                                                 <!-- job title -->
                                                 <Grid Grid.Row="2">
-                                                    <TextBlock Margin="5,0,0,0" Opacity="0.8" Text="{Binding JobTitle}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />
+                                                    <TextBlock Margin="5,0,0,0" Opacity="0.8" Text="{Binding JobTitle}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="24" />
                                                 </Grid>
                                             </Grid>
 
                                             <!-- spacer-->
                                             <Grid Grid.Column="2">
-                                                <Border Background="#555555" Width="2" Margin="0,10" />
+                                                <!--<Border Margin="0,0" Width="1" SnapsToDevicePixels="True" Opacity="0.6">
+                                                    <Border.Background>
+                                                        --><!-- Changed StartPoint/EndPoint to move vertically (Top to Bottom) --><!--
+                                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="1">
+                                                            --><!-- Top: Transparent --><!--
+                                                            <GradientStop Color="#00555555" Offset="0" />
+                                                            --><!-- Middle: Your #555555 color --><!--
+                                                            <GradientStop Color="#FF555555" Offset="0.2" />
+                                                            <GradientStop Color="#FF555555" Offset="0.8" />
+                                                            --><!-- Bottom: Transparent --><!--
+                                                            <GradientStop Color="#00555555" Offset="1" />
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                </Border>-->
                                             </Grid>
 
                                             <!-- job status / due date -->
                                             <Grid Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center">
                                                 <Grid.RowDefinitions>
-                                                    <RowDefinition Height="*" />
-                                                    <!-- job status -->
-                                                    <RowDefinition Height="0.5*" />
-                                                    <!-- spacer -->
-                                                    <RowDefinition Height="*" />
-                                                    <!-- due date -->
+                                                    <RowDefinition Height="*" />                                                    <!-- job status -->
+                                                    <RowDefinition Height="0.5*" />                                                    <!-- spacer -->
+                                                    <RowDefinition Height="*" />                                                    <!-- due date -->
                                                 </Grid.RowDefinitions>
 
                                                 <!-- job status -->
@@ -691,7 +718,7 @@
                                                 <!-- due date -->
                                                 <Grid Grid.Row="2">
                                                     <StackPanel Orientation="Horizontal">
-                                                        <TextBlock HorizontalAlignment="Left" Margin="0" Text="Due" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="24" />
+                                                        <TextBlock HorizontalAlignment="Left" Margin="0" Text="Due" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="#888888" FontSize="24" />
                                                         <TextBlock Margin="10,0,0,0" Text="{Binding DueDate}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />
                                                     </StackPanel>
                                                 </Grid>
@@ -699,12 +726,25 @@
 
                                             <!-- spacer -->
                                             <Grid Grid.Column="4">
-                                                <Border Background="#555555" Width="2" Margin="0,10" />
+                                                <!--<Border Margin="0,0" Width="1" SnapsToDevicePixels="True" Opacity="0.6">
+                                                    <Border.Background>
+                                                        --><!-- Changed StartPoint/EndPoint to move vertically (Top to Bottom) --><!--
+                                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="1">
+                                                            --><!-- Top: Transparent --><!--
+                                                            <GradientStop Color="#00555555" Offset="0" />
+                                                            --><!-- Middle: Your #555555 color --><!--
+                                                            <GradientStop Color="#FF555555" Offset="0.2" />
+                                                            <GradientStop Color="#FF555555" Offset="0.8" />
+                                                            --><!-- Bottom: Transparent --><!--
+                                                            <GradientStop Color="#00555555" Offset="1" />
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                </Border>-->
                                             </Grid>
 
                                             <!-- job price -->
                                             <Grid Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                <TextBlock Margin="0" Text="{Binding Price}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Black" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32" />
+                                                <TextBlock Margin="0" Text="{Binding Price}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="SemiBold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32" />
                                             </Grid>
                                         </Grid>
                                     </Border>

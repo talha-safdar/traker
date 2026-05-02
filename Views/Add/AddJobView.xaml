@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
              xmlns:cal="http://caliburnmicro.com"
-             xmlns:local="clr-namespace:Traker.Views" xmlns:viewmodels="clr-namespace:Traker.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:AddJobViewModel}"
+             xmlns:local="clr-namespace:Traker.Views" xmlns:viewmodels="clr-namespace:Traker.ViewModels" 
              mc:Ignorable="d" 
              xmlns:conv="clr-namespace:Traker.Converters"
              d:DesignHeight="600" 

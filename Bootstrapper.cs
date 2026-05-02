@@ -47,6 +47,7 @@ namespace Traker
             _container.PerRequest<DashboardViewModel>();
             _container.PerRequest<AddClientViewModel>();
             _container.PerRequest<JobContextMenuViewModel>();
+            _container.PerRequest<JobsListViewModel>();
             _container.PerRequest<CreateInvoiceViewModel>();
             _container.PerRequest<EditClientViewModel>();
             _container.PerRequest<EditJobViewModel>();

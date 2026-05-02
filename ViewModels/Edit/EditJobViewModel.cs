@@ -62,7 +62,7 @@ namespace Traker.ViewModels.Edit
         }
 
         #region Public View Functions
-        public void ConfirmJobChanges()
+        public async Task ConfirmJobChanges()
         {
             // price
             decimal.TryParse(Price,
@@ -77,26 +77,16 @@ namespace Traker.ViewModels.Edit
             out var AmountReceivedFormatted);
 
 
-            Database.EditJob(SelectedJob.JobId, JobTitle, JobDescription, Status, priceFormatted.ToString(), AmountReceivedFormatted.ToString(), StartDate, DueDate);
-
-            _events.PublishOnUIThreadAsync(new RefreshDatabase());
-        }
-
-        public Task CancelJobChanges()
-        {
-            // for type 
-
-            // Database.EditClient(SelectedRow.ClientId, ClientType, ClientName, ClientEmail, CompanyName, PhoneNumber, BillingAddress, City, Postcode, Country, IsActive);
-
-            _events.PublishOnUIThreadAsync(new RefreshDatabase());
-
-            return Task.CompletedTask;
+            await Database.EditJob(SelectedJob.JobId, JobTitle, JobDescription, Status, priceFormatted.ToString(), AmountReceivedFormatted.ToString(), StartDate, DueDate);
+            await TryCloseAsync();
+            await _events.PublishOnUIThreadAsync(new RefreshDatabase());
         }
 
         public async Task DeleteJob()
         {
             await Database.DeleteJob(SelectedJob.JobId);
             await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
+            await TryCloseAsync();
         }
 
         public async Task Exit()

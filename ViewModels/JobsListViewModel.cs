@@ -23,6 +23,7 @@ namespace Traker.ViewModels
         #region Private View Variables
         private ObservableCollection<DashboardModel> _jobsList;
         private string _clientName;
+        private string _clientType;
         #endregion
 
         #region Public State Variable
@@ -47,13 +48,14 @@ namespace Traker.ViewModels
         {
             var jobsForClient = Data.Jobs.Where(j => j.ClientId == SelectedJob.ClientId).ToList();
             _clientName = SelectedJob.ClientName;
+            _clientType = SelectedJob.TypeIcon;
 
             foreach (var job in jobsForClient)
             {
                 DashboardModel currentJob = new DashboardModel
                 {
                     ClientId = job.ClientId,
-                    TypeIcon = (SelectedJob.TypeIcon == "Individual") ? "/Resources/Media/Images/Icons/Lucide/user-round.svg" : "/Resources/Media/Images/Icons/Lucide/building.svg",
+                    TypeIcon = SelectedJob.TypeIcon,
                     ClientName = SelectedJob.ClientName,
                     ClientEmail = SelectedJob.ClientEmail,
                     ClientPhone = SelectedJob.ClientPhone,
@@ -126,6 +128,16 @@ namespace Traker.ViewModels
             {
                 _clientName = value;
                 NotifyOfPropertyChange(() => ClientName);
+            }
+        }
+
+        public string ClientType
+        {
+            get { return _clientType; }
+            set
+            {
+                _clientType = value;
+                NotifyOfPropertyChange(() => ClientType);
             }
         }
         #endregion
