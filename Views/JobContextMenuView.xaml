@@ -3,62 +3,119 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
              xmlns:cal="http://caliburnmicro.com"
              xmlns:local="clr-namespace:Traker.Views"
              mc:Ignorable="d" 
              d:DesignHeight="300" 
              d:DesignWidth="250">
-    <Border Background="#1E1E1E" CornerRadius="20" BorderBrush="#3F3F46" BorderThickness="1" Width="310" Height="335">
+    <Border Background="#1E1E1E" CornerRadius="20" BorderBrush="#3F3F46" BorderThickness="1" Width="280" Height="335">
         <Grid Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.4*" /> <!-- stauts -->
                 <RowDefinition Height="*" /> <!-- main buttons -->
-                <RowDefinition Height="0.15*" /> <!-- spacer -->
                 <RowDefinition Height="0.4*" /> <!-- delete -->
             </Grid.RowDefinitions>
 
             <!-- status -->
-            <Grid Grid.Row="0">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Active')]" Background="#332B1B" CornerRadius="10" Height="35" Margin="0,0,30,0" Width="110" BorderThickness="1" BorderBrush="#FFAA00">
+            <Grid Grid.Row="0" Margin="5,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" /> <!-- active -->
+                    <ColumnDefinition Width="*" /> <!-- done -->
+                </Grid.ColumnDefinitions>
+                
+                <!-- active -->
+                <Grid Grid.Column="0">
+                    <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Active')]" Background="#332B1B" CornerRadius="10" Height="35" Margin="0,0,10,0" BorderThickness="1" BorderBrush="#FFAA00">
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="⏳ Active" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#FFAA00" FontSize="14" />
                     </Border>
-                    <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Done')]" Background="#1B3320" CornerRadius="10" Height="35" Margin="0,0,0,0" Width="110" BorderThickness="1" BorderBrush="#00FF00">
+                </Grid>
+
+                <!-- done -->
+                <Grid Grid.Column="1">
+                    <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Done')]" Background="#1B3320" CornerRadius="10" Height="35" Margin="0,0,0,0" BorderThickness="1" BorderBrush="#00FF00">
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="✔ Done" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#4CAF50" FontSize="14" />
                     </Border>
-                </StackPanel>
+                </Grid>
             </Grid>
 
             <!-- main buttons -->
-            <Grid Grid.Row="1">
-                <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFolder()]" Background="#2D2D30" CornerRadius="17" Height="35" Margin="0,0,0,15" Width="250" BorderThickness="2" BorderBrush="#333333">
-                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Open Folder" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+            <Grid Grid.Row="1" Margin="5,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" /> <!-- folder -->
+                    <RowDefinition Height="*" /> <!-- invoice -->
+                    <RowDefinition Height="*" /> <!-- client -->
+                </Grid.RowDefinitions>
+                
+                <!-- folder -->
+                <Grid Grid.Row="0">
+                    <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFolder()]" CornerRadius="20" Height="40" Background="#242424" BorderThickness="1">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="BorderBrush" Value="#242424"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="BorderBrush" Value="#80D3D3D3"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0" Text="📂 Open Folder" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
                     </Border>
-                    <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action CreateInvoice()]" Background="#2D2D30" CornerRadius="17" Height="35" Margin="0,0,0,15" Width="250" BorderThickness="2" BorderBrush="#333333">
-                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Create Invoice" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                </Grid>
+
+                <!-- invoice -->
+                <Grid Grid.Row="1" VerticalAlignment="Center">
+                    <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action CreateInvoice()]" CornerRadius="20" Height="40" Background="#242424" BorderThickness="1">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="BorderBrush" Value="#242424"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="BorderBrush" Value="#80D3D3D3"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0" Text="📋 Create Invoice" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
                     </Border>
-                    <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditClient()]" Background="#2D2D30" CornerRadius="17" Height="35" Margin="0,0,0,5" Width="250" BorderThickness="2" BorderBrush="#333333">
-                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Edit Client" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                </Grid>
+
+                <!-- client -->
+                <Grid Grid.Row="2">
+                    <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditClient()]" CornerRadius="20" Height="40" Background="#242424" BorderThickness="1">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="BorderBrush" Value="#242424"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="BorderBrush" Value="#80D3D3D3"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0" Text="👤 Edit Client" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
                     </Border>
-                </StackPanel>
-            </Grid>
-            <Grid Grid.Row="2" Margin="0,10">
-                <Rectangle Height="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="20,0">
-                    <Rectangle.Fill>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                            <GradientStop Color="Transparent" Offset="0" />
-                            <GradientStop Color="White" Offset="0.5" />
-                            <GradientStop Color="Transparent" Offset="1" />
-                        </LinearGradientBrush>
-                    </Rectangle.Fill>
-                </Rectangle>
+                </Grid>
             </Grid>
 
-            <!-- edit / delete -->
-            <Grid Grid.Row="3">
-                <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteRow()]" Background="Transparent" CornerRadius="17" Height="35" Margin="0,0,0,5" Width="250" BorderThickness="2" BorderBrush="#F87171">
-                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Delete Job" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#F87171" FontSize="14" />
+            <!-- delete -->
+            <Grid Grid.Row="2" Margin="5,0">
+                <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteRow()]" Background="Transparent" CornerRadius="17" Height="35" BorderThickness="2" BorderBrush="#B04141">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Opacity" Value="0.7"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Opacity" Value="0.5"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Delete Job" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#B04141" FontSize="14" />
                 </Border>
             </Grid>
         </Grid>
