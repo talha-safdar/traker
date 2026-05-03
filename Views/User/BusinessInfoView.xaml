@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:conv="clr-namespace:UltraAnalysis.Converters"
+             xmlns:conv="clr-namespace:Traker.Converters"
              xmlns:local="clr-namespace:Traker.Views"
              xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
              xmlns:cal="http://caliburnmicro.com"

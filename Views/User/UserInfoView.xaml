@@ -6,127 +6,291 @@
              xmlns:local="clr-namespace:Traker.Views"
              xmlns:cal="http://caliburnmicro.com"
              xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
-             xmlns:conv="clr-namespace:UltraAnalysis.Converters"
+             xmlns:conv="clr-namespace:Traker.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Resources>
         <conv:BoolToVisibilityCollapsed x:Key="BoolToVisCollapsed"/>
     </UserControl.Resources>
+    <Border Background="#1E1E1E" CornerRadius="20" BorderThickness="1" SnapsToDevicePixels="True">
+        <Border.BorderBrush>
+            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                <GradientStop Color="LightGray" Offset="0" />
+                <GradientStop Color="Transparent" Offset="1" />
+            </LinearGradientBrush>
+        </Border.BorderBrush>
 
 
-    <Border Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
-        <Grid Margin="0">
+        <Grid Margin="30,20,30,20">
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.12*" />                <!-- top bar -->
-                <RowDefinition Height="0.12*" />                <!-- spacer -->
-                <RowDefinition Height="*" />                <!-- main content -->
-                <RowDefinition Height="0.5*" />                <!-- buttons -->
+                <RowDefinition Height="0.1*" />                <!-- top bar        -->
+                <RowDefinition Height="*" />                <!-- main contents       -->
+                <RowDefinition Height="0.15*" />                <!-- buttons        -->
             </Grid.RowDefinitions>
 
             <!-- top bar -->
-            <Grid Grid.Row="0" Margin="30,20,30,0" Height="50">
-                <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="| User Information" Opacity="0.7" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="58" />
-                <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action Exit()]" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="20" Width="20">
-                    <svg:SvgViewbox                         
-                RenderOptions.BitmapScalingMode="HighQuality"
-                SnapsToDevicePixels="True"
-                Source="/Resources/Media/Images/Icons/Lucide/x.svg" Width="15" Height="15"/>
+            <Grid Grid.Row="0">
+                <!-- close -->
+                <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action Exit()]" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="35" Width="35">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="#404040"/>
+                            <Setter Property="Opacity" Value="0.5"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Opacity" Value="0.4"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <svg:SvgViewbox RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" Source="/Resources/Media/Images/Icons/Lucide/x.svg" Width="15" Height="15"/>
                 </Border>
             </Grid>
 
-            <!-- spacer -->
-            <Grid Grid.Row="1" />
+            <!-- main contents -->
+            <Grid Grid.Row="1" Height="620" Width="1000">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />                    <!-- user info -->
+                    <RowDefinition Height="0.5*" />                    <!-- business type -->
+                </Grid.RowDefinitions>
 
-            <!-- main content -->
-            <Grid Grid.Row="2" Height="620" Width="1000">
-                <!-- contents go here -->
-                <Grid Margin="20"  HorizontalAlignment="Center" VerticalAlignment="Center">
+                <!-- user info -->
+                <Grid Grid.Row="0" Margin="80,0,80,0">
+                    <Border Background="#242424" CornerRadius="15" BorderThickness="1.5" Margin="40,20" SnapsToDevicePixels="True">
+                        <Border.BorderBrush>
+                            <SolidColorBrush Color="LightGray" Opacity="0.25" />
+                        </Border.BorderBrush>
+                        <Grid Margin="30">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />                                <!-- name -->
+                                <RowDefinition Height="*" />                                <!-- email -->
+                                <RowDefinition Height="*" />                                <!-- phone -->
+                            </Grid.RowDefinitions>
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="600" />
-                    </Grid.ColumnDefinitions>
-
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="*" />
-                        <!-- user information -->
-                    </Grid.RowDefinitions>
-
-                    <!-- user info -->
-                    <Grid Grid.Column="0" Grid.Row="0">
-                        <Border Background="#494949" CornerRadius="20" Margin="20">
-                            <StackPanel Orientation="Vertical" Margin="50,40,50,50" VerticalAlignment="Center">
+                            <!-- name -->
+                            <Grid Grid.Row="0" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Margin="5,0,0,0" Text="Full Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                                    <TextBox Text="{Binding FullName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBlock Margin="5,0,0,5" Text="Business Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding FullName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                                 </StackPanel>
-                                <StackPanel Orientation="Vertical">
-                                    <TextBlock Margin="5,0,0,0" Text="Email" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                                    <TextBox Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
-                                </StackPanel>
-                                <StackPanel Orientation="Vertical">
-                                    <TextBlock Margin="5,0,0,0" Text="Phone" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                                    <TextBox Text="{Binding Phone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
-                                </StackPanel>
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-
-                    <!--company type -->
-                    <Grid Grid.Column="0" Grid.Row="1">
-                        <Border Background="#494949" Height="150"  CornerRadius="20" Margin="20">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-
-                                <Grid Grid.Row="0">
-                                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="Please choose yout type of business" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="28" />
-                                </Grid>
-
-                                <Grid Grid.Row="1">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetBusinessType('Individual')]" Background="Black" CornerRadius="25" Height="45" Width="200" Margin="0,0,100,0" BorderThickness="2" BorderBrush="DimGray">
-                                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Individual" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="16" />
-                                        </Border>
-                                        <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetBusinessType('Company')]" Background="Black" CornerRadius="25" Height="45" Width="200" Margin="0,0,0,0" BorderThickness="2" BorderBrush="DimGray">
-                                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Company" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="16" />
-                                        </Border>
-                                    </StackPanel>
-                                </Grid>
                             </Grid>
-                        </Border>
-                    </Grid>
+
+                            <!-- email -->
+                            <Grid Grid.Row="1">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Margin="5,0,0,5" Text="Business Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- phone -->
+                            <Grid Grid.Row="2">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Margin="5,0,0,5" Text="Business Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Phone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- business type -->
+                <Grid Grid.Row="1"  Margin="80,0,80,0">
+                    <Border Background="#242424" CornerRadius="15" BorderThickness="1.5" Margin="40,20" SnapsToDevicePixels="True">
+                        <Border.BorderBrush>
+                            <SolidColorBrush Color="LightGray" Opacity="0.25" />
+                        </Border.BorderBrush>
+                        <Grid Margin="30">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+
+                            <!-- title -->
+                            <Grid Grid.Row="0">
+                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="Busienss Type" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="28" />
+                            </Grid>
+                            
+                            <!-- spacer -->
+                            <Grid Grid.Row="1" />
+
+                            <Grid Grid.Row="2" HorizontalAlignment="Center">
+                                <Border Background="#1A1A1A" CornerRadius="25" BorderThickness="1.5" VerticalAlignment="Center" SnapsToDevicePixels="True">
+
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <!-- indiviudal -->
+                                        <Border IsEnabled="{Binding ToggleButtons[0]}" x:Name="Indvidualbtn" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetBusinessType('Individual')]" Background="{Binding BackgroundButtons[0]}" CornerRadius="25" Height="45" Width="200" Margin="0,0,100,0" BorderThickness="1">
+                                            <Border.BorderBrush>
+                                                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                                                    <GradientStop Color="#2E2E2E" Offset="0" />
+                                                    <GradientStop Color="Transparent" Offset="1" />
+                                                </LinearGradientBrush>
+                                            </Border.BorderBrush>
+                                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Individual" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Medium" FontSize="16">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <!-- Default State -->
+                                                        <Setter Property="Foreground" Value="{Binding ForegroundText[0]}" />
+
+                                                        <Style.Triggers>
+                                                            <!-- Watch the 'IsMouseOver' property of the element named 'MyBorder' -->
+                                                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=Indvidualbtn}" Value="True">
+                                                                <Setter Property="Foreground" Value="#CCCCCC" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Border>
+
+                                        <!-- company -->
+                                        <Border IsEnabled="{Binding ToggleButtons[1]}" x:Name="Companybtn" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetBusinessType('Company')]" Background="{Binding BackgroundButtons[1]}" CornerRadius="20" Height="45" Width="200" Margin="0,0,0,0" BorderThickness="1">
+                                            <Border.BorderBrush>
+                                                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                                                    <GradientStop Color="#FFFFFF" Offset="0" />
+                                                    <GradientStop Color="Transparent" Offset="1" />
+                                                </LinearGradientBrush>
+                                            </Border.BorderBrush>
+                                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Company" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Medium" FontSize="16">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <!-- Default State -->
+                                                        <Setter Property="Foreground" Value="{Binding ForegroundText[1]}" />
+
+                                                        <Style.Triggers>
+                                                            <!-- Watch the 'IsMouseOver' property of the element named 'MyBorder' -->
+                                                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=Companybtn}" Value="True">
+                                                                <Setter Property="Foreground" Value="#CCCCCC" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Border>                                        
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </Grid>
+                    </Border>
                 </Grid>
             </Grid>
 
-            <!-- buttons -->
-            <Grid Grid.Row="4">
-                <Border Background="#181818" CornerRadius="0,0,20,20">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action CancelEditClient()]" Background="Transparent" CornerRadius="25" Height="40" Width="150" Margin="0,0,30,0" BorderThickness="2" BorderBrush="Red">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Cancel" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="Red" FontSize="16" />
-                        </Border>
-                        <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmUserInfoChanges()]" Background="Green" CornerRadius="25" Height="40" Width="150" Margin="0,0,0,0" BorderThickness="2" BorderBrush="Green">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Confirm" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="16" />
-                        </Border>
-                    </StackPanel>
-                </Border>
+            <!-- butons -->
+            <Grid Grid.Row="2">
+                <!-- save -->
+                <Grid Grid.Column="2">
+                    <Border Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmUserInfoChanges()]" Background="#333333" CornerRadius="23" Height="45" Width="200" BorderThickness="1">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <!-- DEFAULT STATE -->
+                                <Setter Property="BorderBrush">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                                            <GradientStop Color="LightGray" Offset="0" />
+                                            <GradientStop Color="Transparent" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+
+                                <!-- HOVER STATE -->
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="BorderBrush" Value="#80D3D3D3"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <TextBlock conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Save Changes" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="18" />
+                    </Border>
+                </Grid>
             </Grid>
         </Grid>
     </Border>
-
-
-
-
-
-
-
-
-
-
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+       
 
 
 

@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace UltraAnalysis.Converters
+namespace Traker.Converters
 {
     [ValueConversion(typeof(bool), typeof(bool))]
     public class BoolToVisibilityCollapsed : IValueConverter

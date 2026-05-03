@@ -48,6 +48,7 @@ namespace Traker.ViewModels.User
                 _bankInfoViewModel = new BankInfoViewModel(_events, _dataService);
                 await _windowManager.ShowWindowAsync(_bankInfoViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
             }
+            await TryCloseAsync();
         }
         #endregion
     }

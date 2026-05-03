@@ -219,10 +219,10 @@ namespace Traker.ViewModels
         public async Task OpenUserContenxtMenu(FrameworkElement anchorElement)
         {
             // if add menu open do nothing
-            if (State.IsWindowOpen == true)
-            {
-                return;
-            }
+            //if (State.IsWindowOpen == true)
+            //{
+            //    return;
+            //}
 
             if (_userContextMenuViewModel != null)
             {
@@ -298,7 +298,7 @@ namespace Traker.ViewModels
         public async Task EditJob(DashboardModel jobSelected)
         {
 
-            if (Data.Invoices.Any(i => i.JobId == jobSelected.JobId && i.IsDeleted == false) == true) // if already invoiced
+            if (jobSelected != null &&  Data.Invoices.Any(i => i.JobId == jobSelected.JobId && i.IsDeleted == false) == true) // if already invoiced
             {
                 _editInvoiceViewModel = new EditInvoiceViewModel(Data, _events);
                 _editInvoiceViewModel.SelectedJob = jobSelected;
