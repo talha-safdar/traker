@@ -31,7 +31,7 @@ namespace Traker.ViewModels
         private List<bool> _sortOptions;
         private int _selectedOption = -1;
         private double _fullOpacity = 1.0;
-        private double _halfOpacity = 0.5;
+        private double _halfOpacity = 0.7;
 
         private bool _isInitialized; // This stays 'true' because the VM is a Singleton
         #endregion

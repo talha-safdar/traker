@@ -14,101 +14,145 @@
         <conv:BoolToVisibilityCollapsed x:Key="BoolToVisCollapsed"/>
     </UserControl.Resources>
 
+    <Border Height="800" Width="1000" Visibility="{Binding IndividualView, Converter={StaticResource BoolToVisCollapsed}}" Background="#1E1E1E" CornerRadius="20" BorderThickness="1" SnapsToDevicePixels="True">
+        <Border.BorderBrush>
+            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                <GradientStop Color="LightGray" Offset="0" />
+                <GradientStop Color="Transparent" Offset="1" />
+            </LinearGradientBrush>
+        </Border.BorderBrush>
 
-    <Border Background="{StaticResource BorderBrush}" CornerRadius="20" BorderThickness="5" BorderBrush="{StaticResource LightBorderBrush}">
-        <Grid Margin="0">
+
+        <Grid Margin="30,20,30,20">
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.12*" />
-                <!-- top bar -->
-                <RowDefinition Height="0.12*" />
-                <!-- spacer -->
-                <RowDefinition Height="*" />
-                <!-- main content -->
-                <RowDefinition Height="0.5*" />
-                <!-- buttons -->
+                <RowDefinition Height="0.1*" />                <!-- top bar        -->
+                <RowDefinition Height="*" />                <!-- main contents       -->
+                <RowDefinition Height="0.15*" />                <!-- buttons        -->
             </Grid.RowDefinitions>
 
             <!-- top bar -->
-            <Grid Grid.Row="0" Margin="30,20,30,0" Height="50">
-                <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="| Bank Information" Opacity="0.7" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="58" />
-                <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action Exit()]" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="20" Width="20">
-                    <svg:SvgViewbox                         
-                RenderOptions.BitmapScalingMode="HighQuality"
-                SnapsToDevicePixels="True"
-                Source="/Resources/Media/Images/Icons/Lucide/x.svg" Width="15" Height="15"/>
+            <Grid Grid.Row="0">
+                <!-- close -->
+                <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action Exit()]" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="35" Width="35">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="#404040"/>
+                            <Setter Property="Opacity" Value="0.5"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Opacity" Value="0.4"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <svg:SvgViewbox RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" Source="/Resources/Media/Images/Icons/Lucide/x.svg" Width="15" Height="15"/>
                 </Border>
             </Grid>
 
-            <!-- spacer -->
-            <Grid Grid.Row="1" />
+            <!-- main contents -->
+            <Grid Grid.Row="1" VerticalAlignment="Center" Margin="80,0,80,0">
+                <Border Background="#242424" CornerRadius="15" BorderThickness="1.5" Margin="40,20" SnapsToDevicePixels="True">
+                    <Border.BorderBrush>
+                        <SolidColorBrush Color="LightGray" Opacity="0.25" />
+                    </Border.BorderBrush>
 
-            <!-- main content -->
-            <Grid Grid.Row="2" Height="620" Width="1000">
-                <!-- contents go here -->
-                <Grid Margin="20"  HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Grid Margin="30">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />                            <!-- name -->
+                            <RowDefinition Height="auto" />                            <!-- account -->
+                            <RowDefinition Height="auto" />                            <!-- number / sortcode -->
+                            <RowDefinition Height="auto" />                            <!-- iban -->
+                            <RowDefinition Height="auto" />                            <!-- bic -->
+                        </Grid.RowDefinitions>
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="600" />
-                    </Grid.ColumnDefinitions>
-
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
-                        <!-- user information -->
-                    </Grid.RowDefinitions>
-
-                    <!-- business information -->
-                    <Grid Grid.Column="0" Grid.Row="0" VerticalAlignment="Center">
-                        <Border Background="#494949" CornerRadius="20" Margin="0,0" Padding="30">
-                            <StackPanel Orientation="Vertical" Margin="0" VerticalAlignment="Center" >
-                                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
-                                    <TextBlock Margin="5,0,0,0" Text="Bank Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                                    <TextBox Text="{Binding BankName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
-                                </StackPanel>
-                                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
-                                    <TextBlock Margin="5,0,0,0" Text="Account Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                                    <TextBox Text="{Binding AccountName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
-                                </StackPanel>
-                                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
-                                    <TextBlock Margin="5,0,0,0" Text="Account Number" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                                    <TextBox Text="{Binding AccountNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
-                                </StackPanel>
-                                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
-                                    <TextBlock Margin="5,0,0,0" Text="Sort Code" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                                    <TextBox Text="{Binding Sortcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
-                                </StackPanel>
-                                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
-                                    <TextBlock Margin="5,0,0,0" Text="IBAN" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                                    <TextBox Text="{Binding IBAN, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
-                                </StackPanel>
-                                <StackPanel Orientation="Vertical">
-                                    <TextBlock Margin="5,0,0,0" Text="BIC" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" />
-                                    <TextBox Text="{Binding BIC, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
-                                </StackPanel>
+                        <!-- name -->
+                        <Grid Grid.Row="0" Margin="0,0,0,25">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Margin="5,0,0,5" Text="Bank Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BankName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                             </StackPanel>
-                        </Border>
+                        </Grid>
+
+                        <!-- account -->
+                        <Grid Grid.Row="1" Margin="0,0,0,25">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Margin="5,0,0,5" Text="Account Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding AccountName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- number / sortcode -->
+                        <Grid Grid.Row="2" Margin="0,0,0,25">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" /> <!-- number -->
+                                <ColumnDefinition Width="*" /> <!-- sortcode -->
+                            </Grid.ColumnDefinitions>
+                            
+                            <!-- number -->
+                            <Grid Grid.Column="0" Margin="0,0,5,0">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Margin="5,0,0,5" Text="Account Number" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding AccountNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                </StackPanel>
+                            </Grid>
+                            
+                            <!-- sortcode -->
+                            <Grid Grid.Column="1">
+                                <StackPanel Orientation="Vertical" Margin="5,0,0,0">
+                                    <TextBlock Margin="5,0,0,5" Text="Sort code" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Sortcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                </StackPanel>
+                            </Grid>      
+                        </Grid>
+
+                        <!-- iban -->
+                        <Grid Grid.Row="3" Margin="0,0,0,25">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Margin="5,0,0,5" Text="IBAN" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding IBAN, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- bic -->
+                        <Grid Grid.Row="4" Margin="0,0,0,25">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Margin="5,0,0,5" Text="BIC" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BIC, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                            </StackPanel>
+                        </Grid>
                     </Grid>
-
-
-
-
-
-
-
-                </Grid>
+                </Border>
             </Grid>
 
-            <!-- buttons -->
-            <Grid Grid.Row="4">
-                <Border Background="#181818" CornerRadius="0,0,20,20">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action CancelEditClient()]" Background="Transparent" CornerRadius="25" Height="40" Width="150" Margin="0,0,30,0" BorderThickness="2" BorderBrush="Red">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Cancel" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="Red" FontSize="16" />
-                        </Border>
-                        <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBankInfoChanges()]" Background="Green" CornerRadius="25" Height="40" Width="150" Margin="0,0,0,0" BorderThickness="2" BorderBrush="Green">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Confirm" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="16" />
-                        </Border>
-                    </StackPanel>
-                </Border>
+            <!-- butons -->
+            <Grid Grid.Row="2">
+                <!-- save -->
+                <Grid Grid.Column="2">
+                    <Border Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBankInfoChanges()]" Background="#333333" CornerRadius="23" Height="45" Width="200" BorderThickness="1">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <!-- DEFAULT STATE -->
+                                <Setter Property="BorderBrush">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                                            <GradientStop Color="LightGray" Offset="0" />
+                                            <GradientStop Color="Transparent" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+
+                                <!-- HOVER STATE -->
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="BorderBrush" Value="#80D3D3D3"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <TextBlock conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Save Changes" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="18" />
+                    </Border>
+                </Grid>
             </Grid>
         </Grid>
     </Border>

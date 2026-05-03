@@ -50,6 +50,7 @@ namespace Traker.ViewModels.User
         {
             await Database.EditBank(_dataService.User[0].UserId, BankName, AccountName, AccountNumber, Sortcode, IBAN, BIC);
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+            await TryCloseAsync();
         }
 
         public async Task Exit()

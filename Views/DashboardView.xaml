@@ -489,7 +489,7 @@
                                         SnapsToDevicePixels="True"
                                         Source="/Resources/Media/Images/Icons/Lucide/user-round-cog.svg" Width="25" Height="25"/>
                                     </Border>
-                                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="{Binding Data.User[0].FullName}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
+                                    <TextBlock VerticalAlignment="Center" Margin="15,0,0,0" Text="{Binding Data.User[0].FullName}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
                                 </StackPanel>                                
                             </Border>
                         </Grid>

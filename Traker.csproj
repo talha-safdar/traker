@@ -29,6 +29,7 @@
     <None Remove="Resources\Media\Images\Icons\Lucide\arrow-up-down.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\briefcase-business.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\building.svg" />
+    <None Remove="Resources\Media\Images\Icons\Lucide\chevron-right.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\download.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\landmark.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\list-filter.svg" />
@@ -98,6 +99,7 @@
     <Resource Include="Resources\Media\Images\Icons\Lucide\arrow-up-down.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\briefcase-business.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\building.svg" />
+    <Resource Include="Resources\Media\Images\Icons\Lucide\chevron-right.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\download.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\landmark.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\list-filter.svg" />

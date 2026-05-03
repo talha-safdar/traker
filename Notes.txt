@@ -71,6 +71,8 @@ format and have a button maybe to access deleted clients, jobs, invoices (howeve
 - add delete/edit buttons inside cards
 - add inner left border colours for status
 - add tooltip info
+- for text input only letters and for numeric only digits
+- disable filter / sort on add, edit client
 
 
 

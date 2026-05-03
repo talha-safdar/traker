@@ -20,11 +20,11 @@
             <!-- status -->
             <Grid Grid.Row="0">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Done')]" Background="#1B3320" CornerRadius="10" Height="35" Margin="0,0,30,0" Width="110" BorderThickness="1" BorderBrush="#00FF00">
-                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Done" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#4CAF50" FontSize="14" />
+                    <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Active')]" Background="#332B1B" CornerRadius="10" Height="35" Margin="0,0,30,0" Width="110" BorderThickness="1" BorderBrush="#FFAA00">
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="⏳ Active" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#FFAA00" FontSize="14" />
                     </Border>
-                    <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Active')]" Background="#332B1B" CornerRadius="10" Height="35" Margin="0,0,0,0" Width="110" BorderThickness="1" BorderBrush="#FFAA00">
-                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Active" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#FFAA00" FontSize="14" />
+                    <Border cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Done')]" Background="#1B3320" CornerRadius="10" Height="35" Margin="0,0,0,0" Width="110" BorderThickness="1" BorderBrush="#00FF00">
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="✔ Done" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#4CAF50" FontSize="14" />
                     </Border>
                 </StackPanel>
             </Grid>

@@ -73,6 +73,7 @@ namespace Traker.ViewModels.User
         {
             await Database.EditBusiness(_dataService.User[0].UserId, BusinessName, Country, City, Address, Postcode, VatNumber, RegistrationNumber);
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+            await TryCloseAsync();
         }
 
         public async Task Exit()

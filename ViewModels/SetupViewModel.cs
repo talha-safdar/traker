@@ -13,6 +13,8 @@ namespace Traker.ViewModels
     using System.Collections.ObjectModel;
     using System.Net;
     using System.Threading;
+    using System.Windows.Controls.Primitives;
+    using System.Windows.Media;
     using Traker.Events;
     using Traker.Helper;
 
@@ -31,6 +33,9 @@ namespace Traker.ViewModels
         private string _email;
         private string _phone;
         private string _businessType;
+        private ObservableCollection<bool> _toggleButtons;
+        private ObservableCollection<Brush> _backgroundButtons; // active=#333333. inactive=#1A1A1A
+        private ObservableCollection<Brush> _foregroundText; // active=#FFFFFF. inactive=#888888
 
         // business info
         private string _businessName;
@@ -53,6 +58,20 @@ namespace Traker.ViewModels
 
         // window management
         private ObservableCollection<bool> _setupWindows;
+
+        // next button
+        private bool _enableNextBtn;
+        private double _opacityBtn;
+        #endregion
+
+        #region Private Class Field Variables
+        private string _activeButonColour = "#333333";
+        private string _inactiveButonColour = "#1A1A1A";
+        private string _activeTextColour = "#FFFFFF";
+        private string _inactiveTextColour = "#888888";
+
+        private double _fullOpacity = 1.0;
+        private double _halfOpacity = 0.5;
         #endregion
 
         public SetupViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState, DataService dataService)
@@ -66,41 +85,53 @@ namespace Traker.ViewModels
 
         protected override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
-            // user info
-            _fullName = string.Empty;
-            _email = string.Empty;
-            _phone = string.Empty;
-            _businessType = string.Empty;
-            // debug
-            _fullName = "Adolf Hitler";
-            _email = "adolf@gmail.com";
-            _phone = "34345435";
+            ToggleButtons = new ObservableCollection<bool>() { true, true };
+            BackgroundButtons = new ObservableCollection<Brush>() { new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveButonColour)), new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveButonColour)) };
+            ForegroundText = new ObservableCollection<Brush>() { new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveTextColour)), new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveTextColour)) };
+
+            // pre-set business values for if is indiviudal
+            _vatNumber = string.Empty;
+            _registrationNumber = string.Empty;
+
+            //user next button
+            EnableNextBtn = false;
+            OpacityBtn = _halfOpacity;
+
+            //// user info
+            //_fullName = string.Empty;
+            //_email = string.Empty;
+            //_phone = string.Empty;
+            //_businessType = string.Empty;
+            //// debug
+            //_fullName = "Adolf Hitler";
+            //_email = "adolf@gmail.com";
+            //_phone = "34345435";
 
             // business info
-            _businessName = string.Empty;
+            //_businessName = string.Empty;
             //_address = string.Empty;
             //_city = string.Empty;
             //_postcode = string.Empty;
             //_country = string.Empty;
             //debug
-            _businessName = "Nigga Destroyer Ltd";
-            _address = "32 Woodlands Street";
-            _city = "Berlin";
-            _postcode = "M4kr00t";
-            _country = "Germany";
+            //_businessName = "Nigga Destroyer Ltd";
+            //_address = "32 Woodlands Street";
+            //_city = "Berlin";
+            //_postcode = "M4kr00t";
+            //_country = "Germany";
 
-            _vatNumber = "-1"; // default -1 for non vat registered
-            _registrationNumber = "-1"; // default -1 for non company
-            _isIndividual = true;
-            _businessNameOpacity = 1.0;
+            //_vatNumber = "-1"; // default -1 for non vat registered
+            //_registrationNumber = "-1"; // default -1 for non company
+            //_isIndividual = true;
+            //_businessNameOpacity = 1.0;
 
-            // bank
-            _bankName = "Nazi Bank Ltd";
-            _accountName = "Adolf Muhammad Hitler";
-            _accountNumber = "1232434";
-            _sortcode = "12-12-12";
-            _IBAN = "342423423";
-            _BIC = "2342423";
+            //// bank
+            //_bankName = "Nazi Bank Ltd";
+            //_accountName = "Adolf Muhammad Hitler";
+            //_accountNumber = "1232434";
+            //_sortcode = "12-12-12";
+            //_IBAN = "342423423";
+            //_BIC = "2342423";
 
         // window management
         SetupWindows = new ObservableCollection<bool>() { true, false, false, false }; // 0=user, (1=individual, 2=company), 3=bank
@@ -138,8 +169,11 @@ namespace Traker.ViewModels
                     BusinessNameOpacity = 1.0; // set opacity to full
                     await UIHelper.SwitchBetweenViews(SetupWindows, 2); // 2=company
                 }
-
             }
+
+            // reset the next button
+            EnableNextBtn = false;
+            OpacityBtn = _halfOpacity;
         }
 
         /// <summary>
@@ -152,6 +186,10 @@ namespace Traker.ViewModels
             await Database.CreateBusiness(_dataService.User[0].UserId, BusinessName, BusinessType, Country, City, Address, Postcode, VatNumber, RegistrationNumber);
 
             await UIHelper.SwitchBetweenViews(SetupWindows, 3); // 3=bank
+
+            // reset the next button
+            EnableNextBtn = false;
+            OpacityBtn = _halfOpacity;
         }
 
         /// <summary>
@@ -168,8 +206,83 @@ namespace Traker.ViewModels
         public Task SetBusinessType(string businessType)
         {
             BusinessType = businessType;
+            if (BusinessType == Names.Individual)
+            {
+                ToggleButtons = new ObservableCollection<bool>() { false, true };
+                BackgroundButtons = new ObservableCollection<Brush>() { new SolidColorBrush((Color)ColorConverter.ConvertFromString(_activeButonColour)), new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveButonColour)) };
+                ForegroundText = new ObservableCollection<Brush>() { new SolidColorBrush((Color)ColorConverter.ConvertFromString(_activeTextColour)), new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveTextColour)) };
+            }
+            else if (BusinessType == Names.Company)
+            {
+                ToggleButtons = new ObservableCollection<bool>() { true, false };
+                BackgroundButtons = new ObservableCollection<Brush>() { new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveButonColour)), new SolidColorBrush((Color)ColorConverter.ConvertFromString(_activeButonColour)) };
+                ForegroundText = new ObservableCollection<Brush>() { new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveTextColour)), new SolidColorBrush((Color)ColorConverter.ConvertFromString(_activeTextColour)) };
+            }
             return Task.CompletedTask;
         }
+        #endregion
+
+        #region Private Functions
+        private Task CanMoveFromUserWindow()
+        {
+            if (string.IsNullOrEmpty(FullName) == false && string.IsNullOrEmpty(Email) == false && string.IsNullOrEmpty(Phone) == false && string.IsNullOrEmpty(BusinessType) == false)
+            {
+                EnableNextBtn = true;
+                OpacityBtn = _fullOpacity;
+            }
+            else
+            {
+                EnableNextBtn = false;
+                OpacityBtn = _halfOpacity;
+            }
+            return Task.CompletedTask;
+        }
+
+        private Task CanMoveFromBusinessWindow()
+        {
+            if (BusinessType == Names.Individual)
+            {
+                if (string.IsNullOrEmpty(BusinessName) == false && string.IsNullOrEmpty(Country) == false && string.IsNullOrEmpty(City) == false && string.IsNullOrEmpty(Address) == false && string.IsNullOrEmpty(Postcode) == false)
+                {
+                    EnableNextBtn = true;
+                    OpacityBtn = _fullOpacity;
+                }
+                else
+                {
+                    EnableNextBtn = false;
+                    OpacityBtn = _halfOpacity;
+                }
+            }
+            else if (BusinessType == Names.Company)
+            {
+                if (string.IsNullOrEmpty(BusinessName) == false && string.IsNullOrEmpty(Country) == false && string.IsNullOrEmpty(City) == false && string.IsNullOrEmpty(Address) == false && string.IsNullOrEmpty(Postcode) == false && string.IsNullOrEmpty(VatNumber) == false && string.IsNullOrEmpty(RegistrationNumber) == false)
+                {
+                    EnableNextBtn = true;
+                    OpacityBtn = _fullOpacity;
+                }
+                else
+                {
+                    EnableNextBtn = false;
+                    OpacityBtn = _halfOpacity;
+                }
+            }
+            return Task.CompletedTask;
+        }        
+
+        private Task CanMoveFromBankWindow()
+        {
+            if (string.IsNullOrEmpty(BankName) == false && string.IsNullOrEmpty(AccountName) == false && string.IsNullOrEmpty(AccountNumber) == false && string.IsNullOrEmpty(Sortcode) == false && string.IsNullOrEmpty(IBAN) == false && string.IsNullOrEmpty(BIC) == false)
+            {
+                EnableNextBtn = true;
+                OpacityBtn = _fullOpacity;
+            }
+            else
+            {
+                EnableNextBtn = false;
+                OpacityBtn = _halfOpacity;
+            }
+            return Task.CompletedTask;
+        }        
         #endregion
 
         #region Public View Variables
@@ -181,6 +294,7 @@ namespace Traker.ViewModels
             {
                 _fullName = value;
                 NotifyOfPropertyChange(() => FullName);
+                CanMoveFromUserWindow();
             }
         }
 
@@ -191,6 +305,7 @@ namespace Traker.ViewModels
             {
                 _email = value;
                 NotifyOfPropertyChange(() => Email);
+                CanMoveFromUserWindow();
             }
         }
 
@@ -201,6 +316,7 @@ namespace Traker.ViewModels
             {
                 _phone = value;
                 NotifyOfPropertyChange(() => Phone);
+                CanMoveFromUserWindow();
             }
         }
 
@@ -211,6 +327,37 @@ namespace Traker.ViewModels
             {
                 _businessType = value;
                 NotifyOfPropertyChange(() => BusinessType);
+                CanMoveFromUserWindow();
+            }
+        }
+
+        public ObservableCollection<bool> ToggleButtons
+        {
+            get { return _toggleButtons; }
+            set
+            {
+                _toggleButtons = value;
+                NotifyOfPropertyChange(() => ToggleButtons);
+            }
+        }
+
+        public ObservableCollection<Brush> BackgroundButtons
+        {
+            get { return _backgroundButtons; }
+            set
+            {
+                _backgroundButtons = value;
+                NotifyOfPropertyChange(() => BackgroundButtons);
+            }
+        }
+
+        public ObservableCollection<Brush> ForegroundText
+        {
+            get { return _foregroundText; }
+            set
+            {
+                _foregroundText = value;
+                NotifyOfPropertyChange(() => ForegroundText);
             }
         }
         #endregion
@@ -223,6 +370,7 @@ namespace Traker.ViewModels
             {
                 _businessName = value;
                 NotifyOfPropertyChange(() => BusinessName);
+                CanMoveFromBusinessWindow();
             }
         }
 
@@ -233,6 +381,7 @@ namespace Traker.ViewModels
             {
                 _country = value;
                 NotifyOfPropertyChange(() => Country);
+                CanMoveFromBusinessWindow();
             }
         }
 
@@ -243,6 +392,7 @@ namespace Traker.ViewModels
             {
                 _city = value;
                 NotifyOfPropertyChange(() => City);
+                CanMoveFromBusinessWindow();
             }
         }
 
@@ -253,6 +403,7 @@ namespace Traker.ViewModels
             {
                 _address = value;
                 NotifyOfPropertyChange(() => Address);
+                CanMoveFromBusinessWindow();
             }
         }
 
@@ -263,6 +414,7 @@ namespace Traker.ViewModels
             {
                 _postcode = value;
                 NotifyOfPropertyChange(() => Postcode);
+                CanMoveFromBusinessWindow();
             }
         }
 
@@ -273,6 +425,7 @@ namespace Traker.ViewModels
             {
                 _vatNumber = value;
                 NotifyOfPropertyChange(() => VatNumber);
+                CanMoveFromBusinessWindow();
             }
         }
 
@@ -283,6 +436,7 @@ namespace Traker.ViewModels
             {
                 _registrationNumber = value;
                 NotifyOfPropertyChange(() => RegistrationNumber);
+                CanMoveFromBusinessWindow();
             }
         }
 
@@ -326,6 +480,7 @@ namespace Traker.ViewModels
             {
                 _bankName = value;
                 NotifyOfPropertyChange(() => BankName);
+                CanMoveFromBankWindow();
             }
         }
 
@@ -336,6 +491,7 @@ namespace Traker.ViewModels
             {
                 _accountName = value;
                 NotifyOfPropertyChange(() => AccountName);
+                CanMoveFromBankWindow();
             }
         }
 
@@ -346,6 +502,7 @@ namespace Traker.ViewModels
             {
                 _accountNumber = value;
                 NotifyOfPropertyChange(() => AccountNumber);
+                CanMoveFromBankWindow();
             }
         }
 
@@ -356,6 +513,7 @@ namespace Traker.ViewModels
             {
                 _sortcode = value;
                 NotifyOfPropertyChange(() => Sortcode);
+                CanMoveFromBankWindow();
             }
         }
 
@@ -366,6 +524,7 @@ namespace Traker.ViewModels
             {
                 _IBAN = value;
                 NotifyOfPropertyChange(() => IBAN);
+                CanMoveFromBankWindow();
             }
         }
 
@@ -376,9 +535,30 @@ namespace Traker.ViewModels
             {
                 _BIC = value;
                 NotifyOfPropertyChange(() => BIC);
+                CanMoveFromBankWindow();
             }
         }
         #endregion
+
+        public bool EnableNextBtn
+        {
+            get { return _enableNextBtn; }
+            set
+            {
+                _enableNextBtn = value;
+                NotifyOfPropertyChange(() => EnableNextBtn);
+            }
+        }
+
+        public double OpacityBtn
+        {
+            get { return _opacityBtn; }
+            set
+            {
+                _opacityBtn = value;
+                NotifyOfPropertyChange(() => OpacityBtn);
+            }
+        }
         #endregion
     }
 }
