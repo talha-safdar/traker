@@ -8,6 +8,7 @@ namespace Traker.ViewModels.Add
     using System.Windows;
     using Traker.Data;
     using Traker.Events;
+    using Traker.Helper;
     using Traker.Services;
 
     public class AddClientViewModel : Screen
@@ -19,15 +20,21 @@ namespace Traker.ViewModels.Add
 
         #region Private View Variables
         private string _clientType;
-        private string _clientName;
+        private string _businessName; // generalised for both client or company name
         private string _jobTitle;
         private string _jobDescription;
         private string _price;
         private string _dueDate;
+        private string _businessNameText; // individual=client name, company=company name
         #endregion
 
         #region Public State Variable
         public AppState State { get; } // state binding variable accessible from other viewmodels
+        #endregion
+
+        #region Private Class Field Variables
+        private string _clientNameTxt = "Client Name";
+        private string _companyNameTxt = "Company Name";
         #endregion
 
         public AddClientViewModel(IEventAggregator events, AppState appState, DataService dataService)
@@ -36,13 +43,22 @@ namespace Traker.ViewModels.Add
             _dataService = dataService;
 
             _clientType = string.Empty;
-            _clientName = string.Empty;
+            _businessName = string.Empty;
             _jobTitle = string.Empty;
             _jobDescription = string.Empty;
             _price = string.Empty;
             _dueDate = string.Empty;
+            _businessNameText = string.Empty;
 
             State = appState;
+        }
+
+        protected override Task OnInitializedAsync(CancellationToken cancellationToken)
+        {
+            ClientType = Names.Individual; // default start with individual
+            BusinessNameText = _clientNameTxt;
+
+            return base.OnInitializedAsync(cancellationToken);
         }
 
         #region Caliburn Functions
@@ -103,17 +119,39 @@ namespace Traker.ViewModels.Add
                 );
             }
 
-            await Database.AddRow(ClientName, ClientType, JobTitle, JobDescription, amount, dueDate);
+            if (ClientType == Names.Individual)
+            {
+                await Database.AddIndividualClient(BusinessName, ClientType, JobTitle, JobDescription, amount, dueDate);
+            }
+            else if (ClientType == Names.Company)
+            {
+                await Database.AddCompanyClient(BusinessName, ClientType, JobTitle, JobDescription, amount, dueDate);
+            }
 
             // refresh database
             await _dataService.RefreshDatabase();
 
             // create folders
-            await FileStore.CreateFolder(_dataService.Clients.OrderByDescending(c => c.ClientId).First().ClientId, ClientName);
+            await FileStore.CreateFolder(_dataService.Clients.OrderByDescending(c => c.ClientId).First().ClientId, BusinessName);
 
             // refresh database
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
             await TryCloseAsync();
+        }
+        #endregion
+
+        #region Private Functions
+        private Task ToggleClientType()
+        {
+            if (ClientType == Names.Individual)
+            {
+                BusinessNameText = _clientNameTxt;
+            }
+            else if (ClientType == Names.Company)
+            {
+                BusinessNameText = _companyNameTxt;
+            }
+            return Task.CompletedTask;
         }
         #endregion
 
@@ -125,16 +163,17 @@ namespace Traker.ViewModels.Add
             {
                 _clientType = value;
                 NotifyOfPropertyChange(() => ClientType);
+                ToggleClientType();
             }
         }
 
-        public string ClientName
+        public string BusinessName
         {
-            get { return _clientName; }
+            get { return _businessName; }
             set
             {
-                _clientName = value;
-                NotifyOfPropertyChange(() => ClientName);
+                _businessName = value;
+                NotifyOfPropertyChange(() => BusinessName);
             }
         }
 
@@ -175,6 +214,16 @@ namespace Traker.ViewModels.Add
             {
                 _dueDate = value;
                 NotifyOfPropertyChange(() => DueDate);
+            }
+        }
+
+        public string BusinessNameText
+        {
+            get { return _businessNameText; }
+            set
+            {
+                _businessNameText = value;
+                NotifyOfPropertyChange(() => BusinessNameText);
             }
         }
         #endregion

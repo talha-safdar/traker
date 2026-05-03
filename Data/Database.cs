@@ -580,7 +580,7 @@ namespace Traker.Database
         /// <summary>
         /// Add a new row to the Clients and Jobs tables in the database. This is done by opening a connection to the database, starting a transaction, and then executing two SQL commands: one to insert a new row into the Clients table and another to insert a new row into the Jobs table with a foreign key reference to the newly inserted client. If any errors occur during this process, an error message is displayed to the user and the transaction is rolled back. If the rows are added successfully, a log entry is made indicating that the operation was successful along with the new client and job IDs.
         /// </summary>
-        public static Task AddRow(string clientName, string clientType, string jobTitle, string jobDescription, decimal finalPrice, DateOnly dueDate)
+        public static Task AddIndividualClient(string clientName, string clientType, string jobTitle, string jobDescription, decimal finalPrice, DateOnly dueDate)
         {
             try
             {
@@ -673,6 +673,109 @@ namespace Traker.Database
                 MessageBox.Show(
                     $"An error occurred while adding a new client and job. Please try again.\n\t{ex.Message}",
                     "Add Client and Job",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: AddRow() FAIL");
+                return Task.CompletedTask;
+            }
+        }
+
+        /// <summary>
+        /// Add a new row to the Clients and Jobs tables in the database. This is done by opening a connection to the database, starting a transaction, and then executing two SQL commands: one to insert a new row into the Clients table and another to insert a new row into the Jobs table with a foreign key reference to the newly inserted client. If any errors occur during this process, an error message is displayed to the user and the transaction is rolled back. If the rows are added successfully, a log entry is made indicating that the operation was successful along with the new client and job IDs.
+        /// </summary>
+        public static Task AddCompanyClient(string companyName, string clientType, string jobTitle, string jobDescription, decimal finalPrice, DateOnly dueDate)
+        {
+            try
+            {
+                long clientId = 0;
+                long jobId = 0;
+
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+
+                using (var pragma = conn.CreateCommand())
+                {
+                    pragma.CommandText = "PRAGMA foreign_keys = ON;";
+                    pragma.ExecuteNonQuery();
+                }
+
+                // work all at once, if one query fails it rolls back
+                // if you don't care about failures you can avoid transaction
+                using var tx = conn.BeginTransaction();
+
+                // insert into Clients table
+                using (var clienstCmd = conn.CreateCommand())
+                {
+                    clienstCmd.CommandText = @"
+
+                    INSERT INTO Clients
+                    (CompanyName, Type, CreatedDate)
+
+                    VALUES
+                    (@companyName, @type, @createdDate);
+
+                    ";
+                    clienstCmd.Parameters.AddWithValue("@type", clientType);
+                    clienstCmd.Parameters.AddWithValue("@companyName", companyName);
+                    clienstCmd.Parameters.AddWithValue("@createdDate", DateOnly.FromDateTime(DateTime.Now));
+                    clienstCmd.ExecuteNonQuery();
+                }
+
+
+                // get last inserted client id
+                using (var clientIdCmd = conn.CreateCommand())
+                {
+                    clientIdCmd.CommandText = "SELECT last_insert_rowid();";
+                    clientId = (long)clientIdCmd.ExecuteScalar()!;
+                }
+
+                // insert into jobs table
+                using (var jobsCmd = conn.CreateCommand())
+                {
+                    jobsCmd.CommandText = @"
+
+                    INSERT INTO Jobs
+                    (ClientId, Title, Description, Status, FinalPrice, CreatedDate, DueDate)
+
+                    VALUES
+                    (@clientId, @title, @description, @status, @finalPrice, @createdDate, @dueDate);
+
+                    ";
+
+                    jobsCmd.Parameters.AddWithValue("@clientId", clientId);
+                    jobsCmd.Parameters.AddWithValue("@title", jobTitle);
+                    jobsCmd.Parameters.AddWithValue("@description", jobDescription);
+                    jobsCmd.Parameters.AddWithValue("@status", "New");
+                    jobsCmd.Parameters.AddWithValue("@finalPrice", finalPrice);
+                    jobsCmd.Parameters.AddWithValue("@createdDate", DateTime.Now.Date);
+                    jobsCmd.Parameters.AddWithValue("@dueDate", dueDate.ToString("yyyy-MM-dd"));
+                    jobsCmd.ExecuteNonQuery();
+                }
+
+                // get last inserted job id based on current clientId
+                using (var jobIdCmd = conn.CreateCommand())
+                {
+                    jobIdCmd.CommandText = @"
+                        SELECT JobId
+                        FROM Jobs
+                        WHERE ClientId = @clientId
+                        ORDER BY JobId DESC
+                        LIMIT 1;
+                    ";
+                    jobIdCmd.Parameters.AddWithValue("@clientId", clientId);
+                    jobId = (long)jobIdCmd.ExecuteScalar()!;
+                }
+
+                // Commit both together
+                tx.Commit();
+                Logger.LogActivity(Logger.INFO, $"Database: AddRow() OK - ClientId: {clientId}, JobId: {jobId}");
+                return Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while adding a new company client and job. Please try again.\n\t{ex.Message}",
+                    "Add Company Client and Job",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 Logger.LogActivity(Logger.ERROR, $"Database: AddRow() FAIL");

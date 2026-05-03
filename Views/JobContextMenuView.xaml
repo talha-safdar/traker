@@ -26,14 +26,34 @@
                 
                 <!-- active -->
                 <Grid Grid.Column="0">
-                    <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Active')]" Background="#332B1B" CornerRadius="10" Height="35" Margin="0,0,10,0" BorderThickness="1" BorderBrush="#FFAA00">
+                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Active')]" Background="#332B1B" CornerRadius="10" Height="35" Margin="0,0,10,0" BorderThickness="1" BorderBrush="#FFAA00">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Opacity" Value="1.0"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Opacity" Value="0.8"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="⏳ Active" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#FFAA00" FontSize="14" />
                     </Border>
                 </Grid>
 
                 <!-- done -->
                 <Grid Grid.Column="1">
-                    <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Done')]" Background="#1B3320" CornerRadius="10" Height="35" Margin="0,0,0,0" BorderThickness="1" BorderBrush="#00FF00">
+                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Done')]" Background="#1B3320" CornerRadius="10" Height="35" Margin="0,0,0,0" BorderThickness="1" BorderBrush="#00FF00">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Opacity" Value="1.0"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Opacity" Value="0.8"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="✔ Done" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#4CAF50" FontSize="14" />
                     </Border>
                 </Grid>
@@ -49,7 +69,7 @@
                 
                 <!-- folder -->
                 <Grid Grid.Row="0">
-                    <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFolder()]" CornerRadius="20" Height="40" Background="#242424" BorderThickness="1">
+                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFolder()]" CornerRadius="20" Height="40" Background="#242424" BorderThickness="1">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="BorderBrush" Value="#242424"/>
@@ -67,7 +87,7 @@
 
                 <!-- invoice -->
                 <Grid Grid.Row="1" VerticalAlignment="Center">
-                    <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action CreateInvoice()]" CornerRadius="20" Height="40" Background="#242424" BorderThickness="1">
+                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action CreateInvoice()]" CornerRadius="20" Height="40" Background="#242424" BorderThickness="1">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="BorderBrush" Value="#242424"/>
@@ -85,7 +105,7 @@
 
                 <!-- client -->
                 <Grid Grid.Row="2">
-                    <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditClient()]" CornerRadius="20" Height="40" Background="#242424" BorderThickness="1">
+                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditClient()]" CornerRadius="20" Height="40" Background="#242424" BorderThickness="1">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="BorderBrush" Value="#242424"/>
@@ -104,7 +124,7 @@
 
             <!-- delete -->
             <Grid Grid.Row="2" Margin="5,0">
-                <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteRow()]" Background="Transparent" CornerRadius="17" Height="35" BorderThickness="2" BorderBrush="#B04141">
+                <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteRow()]" Background="Transparent" CornerRadius="17" Height="35" BorderThickness="2" BorderBrush="#B04141">
                     <Border.Style>
                         <Style TargetType="Border">
                             <Setter Property="Opacity" Value="0.7"/>

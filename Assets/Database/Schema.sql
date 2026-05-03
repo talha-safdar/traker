@@ -4,7 +4,7 @@
 CREATE TABLE IF NOT EXISTS Clients (
     ClientId INTEGER PRIMARY KEY AUTOINCREMENT,
     Type VARCHAR(20) CHECK (Type IN ('Company', 'Individual')),
-    FullName VARCHAR(100) NOT NULL,
+    FullName VARCHAR(100),
     Email VARCHAR(100),
     CompanyName VARCHAR(100),
     PhoneNumber VARCHAR(20),

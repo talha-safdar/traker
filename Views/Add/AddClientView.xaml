@@ -69,7 +69,7 @@
                             <StackPanel Orientation="Vertical">
                                 <TextBlock VerticalAlignment="Center" Margin="5,0,0,5" Text="Client Type" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22" />
                                 <ComboBox Style="{DynamicResource ComboBoxNormal}" SelectedValue="{Binding ClientType, Mode=TwoWay}" SelectedValuePath="Content" FontSize="22">
-                                    <ComboBoxItem Content="Individual" IsSelected="True" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <ComboBoxItem Content="Individual" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                                     <ComboBoxItem HorizontalAlignment="Stretch" Content="Company" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                                 </ComboBox>
                             </StackPanel>
@@ -78,8 +78,8 @@
                         <!-- client name -->
                         <Grid Grid.Row="1" Margin="0,0,0,25">
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Margin="5,0,0,5" Text="Client Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                <TextBlock Margin="5,0,0,5" Text="{Binding BusinessNameText}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BusinessName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                             </StackPanel>
                         </Grid>
 

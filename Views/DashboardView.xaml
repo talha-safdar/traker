@@ -647,7 +647,20 @@
 
                                                 <!-- full name -->
                                                 <Grid Grid.Row="0">
-                                                    <TextBlock Margin="5,0,0,0" Text="{Binding ClientName}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Black" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32" />
+                                                    <TextBlock Margin="5,0,0,0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Black" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <!-- Default Value client name -->
+                                                                <Setter Property="Text" Value="{Binding ClientName}" />
+                                                                <Style.Triggers>
+                                                                    <!-- if client type is company use company name -->
+                                                                    <DataTrigger Binding="{Binding ClientType}" Value="Company">
+                                                                        <Setter Property="Text" Value="{Binding CompanyName}" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
                                                 </Grid>
 
                                                 <!-- spacer -->

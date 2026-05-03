@@ -33,7 +33,20 @@
                 <!-- button -->
                 <Grid Grid.Column="0">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock VerticalAlignment="Center" Margin="5,0,10,0" Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34" />
+                        <TextBlock VerticalAlignment="Center" Margin="5,0,10,0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <!-- Default Value client name -->
+                                    <Setter Property="Text" Value="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <Style.Triggers>
+                                        <!-- if client type is company use company name -->
+                                        <DataTrigger Binding="{Binding ClientType}" Value="Company">
+                                            <Setter Property="Text" Value="{Binding CompanyName}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
 
                         <Border SnapsToDevicePixels="True" BorderThickness="1" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenJobsList()]" Background="#444444"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="45" Width="45">
                             <Border.Style>
@@ -149,11 +162,29 @@
                                     </StackPanel>
                                 </Grid>
 
-                                <!-- business name -->
+                                <!-- company name -->
                                 <Grid Grid.Row="1" Margin="0,0,0,25">
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock Margin="5,0,0,5" Text="Business Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                        <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding CompanyName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                        <TextBox Text="{Binding CompanyName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans">
+                                            <TextBox.Style>
+                                                <!-- Use BasedOn to keep your existing style's look -->
+                                                <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxNormal}">
+
+                                                    <Setter Property="Opacity" Value="1.0" />
+                                                    <Setter Property="IsHitTestVisible" Value="True" />
+                                                    <Setter Property="Focusable" Value="True" />
+
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ClientType}" Value="Individual">
+                                                            <Setter Property="Opacity" Value="0.5" />
+                                                            <Setter Property="IsHitTestVisible" Value="False" />
+                                                            <Setter Property="Focusable" Value="False" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
                                     </StackPanel>
                                 </Grid>
 

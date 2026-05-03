@@ -102,6 +102,23 @@ namespace Traker.ViewModels.Edit
         }
         #endregion
 
+        #region Private Functions
+        private Task ToggleClientType()
+        {
+            if (ClientType == Names.Individual)
+            {
+                ClientName = CompanyName;
+                CompanyName = string.Empty;
+            }
+            else if (ClientType == Names.Company)
+            {
+                CompanyName = ClientName;
+                ClientName = string.Empty;
+            }
+                return Task.CompletedTask;
+        }
+        #endregion
+
         #region Public View Variables
         public string ClientType
         {
@@ -110,6 +127,7 @@ namespace Traker.ViewModels.Edit
             {
                 _clientType = value;
                 NotifyOfPropertyChange(() => ClientType);
+                ToggleClientType();
             }
         }
 

@@ -62,7 +62,7 @@ namespace Traker.ViewModels
         {
             _createInvoice = new CreateInvoiceViewModel(_events, Data);
             _createInvoice.SelectedJob = SelectedJob;
-            _windowManager.ShowWindowAsync(_createInvoice, null, CustomWindow.SettingsForDialog(800, 500, false));
+            _windowManager.ShowWindowAsync(_createInvoice, null, CustomWindow.SettingsForDialog(800, 1000, false));
             await TryCloseAsync();
         }
 
