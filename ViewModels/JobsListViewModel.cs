@@ -22,7 +22,7 @@ namespace Traker.ViewModels
 
         #region Private View Variables
         private ObservableCollection<DashboardModel> _jobsList;
-        private string _clientName;
+        private string _businessName;
         private string _clientType;
         #endregion
 
@@ -47,7 +47,7 @@ namespace Traker.ViewModels
         protected override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
             var jobsForClient = Data.Jobs.Where(j => j.ClientId == SelectedJob.ClientId).ToList();
-            _clientName = SelectedJob.ClientName;
+            _businessName = SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName;
             _clientType = SelectedJob.TypeIcon;
 
             foreach (var job in jobsForClient)
@@ -121,13 +121,13 @@ namespace Traker.ViewModels
             }
         }
 
-        public string ClientName
+        public string BusinessName
         {
-            get { return _clientName; }
+            get { return _businessName; }
             set
             {
-                _clientName = value;
-                NotifyOfPropertyChange(() => ClientName);
+                _businessName = value;
+                NotifyOfPropertyChange(() => BusinessName);
             }
         }
 

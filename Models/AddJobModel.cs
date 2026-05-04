@@ -10,7 +10,7 @@
         public int ClientId { get; set; } = 0;
         public string CreatedDate { get; set; } = string.Empty;
         public string ClientType { get; set; } = string.Empty;
-        public string FullName { get; set; } = string.Empty;
+        public string BusinessName { get; set; } = string.Empty;
         public string JobDescription { get; set; } = string.Empty;
         public string Price { get; set; } = string.Empty;
     }

@@ -68,7 +68,7 @@
                                     SnapsToDevicePixels="True"
                                     Source="{Binding ClientType}" Width="20" Height="20"/>
                             </Border>
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34" />
+                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" Text="{Binding BusinessName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34" />
                         </StackPanel>                        
                     </Border>
                 </Grid>

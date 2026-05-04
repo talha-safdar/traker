@@ -12,6 +12,7 @@ namespace Traker.ViewModels.Add
     using Database;
     using System.Globalization;
     using Traker.Events;
+    using Traker.Helper;
     using Traker.States;
 
     // try use inheritance or a design pattern to avoid repetation
@@ -63,7 +64,7 @@ namespace Traker.ViewModels.Add
                 {
                     ClientId = client.ClientId,
                     CreatedDate = client.CreatedDate.ToString(),
-                    FullName = client.ClientName,
+                    BusinessName = client.ClientType == Names.Individual ? client.ClientName : client.CompanyName,
                     JobDescription = client.JobDescription,
                     Price = client.Price
                 });
