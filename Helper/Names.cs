@@ -12,7 +12,6 @@ namespace Traker.Helper
         public const string New = "New";
         public const string Active = "Active";
         public const string Done = "Done";
-
         public const string Invoiced = "Invoiced";
         public const string Overdue = "Overdue";
         public const string Paid = "Paid";

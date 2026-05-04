@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
              xmlns:cal="http://caliburnmicro.com"
+             xmlns:conv="clr-namespace:Traker.Converters"
              xmlns:local="clr-namespace:Traker.Views" xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -574,7 +575,6 @@
                                 <DataTemplate>
                                     <Border 
                                         Background="#242424"
-                            BorderThickness="1"
                             Height="135"
                             CornerRadius="20" 
                             Margin="20,10,20,10" 
@@ -583,6 +583,18 @@
                                                 [Event MouseRightButtonUp] = [Action OpenContextMenu($dataContext)];"
                                 Cursor="Hand"
                             MouseLeftButtonDown="EditJob">
+                                        <Border.BorderBrush>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                <!-- The "Rim Light" on the top edge -->
+                                                <GradientStop Color="#40FFFFFF" Offset="0" />
+                                                <!-- Fades to transparent so the bottom/sides stay dark -->
+                                                <GradientStop Color="Transparent" Offset="0.2" />
+                                            </LinearGradientBrush>
+                                        </Border.BorderBrush>
+                                        <Border.BorderThickness>0,1,0,0</Border.BorderThickness>
+                                        <!-- Only top edge! -->
+
+
                                         <Border.Style>
                                             <Style TargetType="Border">
                                                 <!-- 1. Default BorderBrush -->
@@ -593,8 +605,9 @@
                                                     <Setter.Value>
                                                         <DropShadowEffect Color="Black" 
                                                           BlurRadius="15" 
-                                                          ShadowDepth="0" 
-                                                          Opacity="0.3" 
+                                                         Direction="270"
+                                                          ShadowDepth="5" 
+                                                          Opacity="0.4" 
                                                           RenderingBias="Quality"/>
                                                     </Setter.Value>
                                                 </Setter>
@@ -630,11 +643,42 @@
 
                                             <!-- type -->
                                             <Grid Grid.Column="0">
-                                                <Border Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="80" Width="80">
+                                                <Border Width="6" HorizontalAlignment="Left" CornerRadius="3" Margin="0,10" >
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="Background" Value="#1E1E1E" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding JobStatus}" Value="New">
+                                                                    <Setter Property="Background" Value="{StaticResource JobStatusNew}" />
+                                                                    <Setter Property="Opacity" Value="1.0" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding JobStatus}" Value="Active">
+                                                                    <Setter Property="Background" Value="{StaticResource JobStatusActive}" />
+                                                                    <Setter Property="Opacity" Value="1.0" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding JobStatus}" Value="Done">
+                                                                    <Setter Property="Background" Value="{StaticResource JobStatusDone}" />
+                                                                    <Setter Property="Opacity" Value="1.0" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding JobStatus}" Value="Invoiced">
+                                                                    <Setter Property="Background" Value="{StaticResource JobStatusInvoiced}" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding JobStatus}" Value="Overdue">
+                                                                    <Setter Property="Background" Value="{StaticResource JobStatusOverdue}" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding JobStatus}" Value="Paid">
+                                                                    <Setter Property="Background" Value="{StaticResource JobStatusPaid}" />
+                                                                    <Setter Property="Opacity" Value="1.0" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                </Border>
+                                                <Border Background="#1A1A1A"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="80" Width="80">
                                                     <svg:SvgViewbox                         
                                                         RenderOptions.BitmapScalingMode="HighQuality"
                                                         SnapsToDevicePixels="True"
-                                                        Source="{Binding TypeIcon}" Width="40" Height="40"/>
+                                                        Source="{Binding TypeIcon}" Width="35" Height="35"/>
                                                 </Border>
                                             </Grid>
 
@@ -687,35 +731,7 @@
 
                                                 <!-- job status -->
                                                 <Grid Grid.Row="0">
-                                                    <TextBlock Margin="0" Text="{Binding JobStatus}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Black" FontSize="32">
-                                                        <TextBlock.Style>
-                                                            <Style TargetType="TextBlock">
-                                                                <Setter Property="Foreground" Value="{StaticResource FontPrimaryBrush}" />
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding JobStatus}" Value="New">
-                                                                        <Setter Property="Foreground" Value="LightCoral" />
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding JobStatus}" Value="Active">
-                                                                        <Setter Property="Foreground" Value="DarkOrange" />
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding JobStatus}" Value="Done">
-                                                                        <Setter Property="Foreground" Value="LightGreen" />
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding JobStatus}" Value="Overdue">
-                                                                        <Setter Property="Foreground" Value="Red" />
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding JobStatus}" Value="Invoiced">
-                                                                        <Setter Property="Foreground" Value="LightBlue" />
-                                                                        <Setter Property="FontWeight" Value="Bold" />
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding JobStatus}" Value="Paid">
-                                                                        <Setter Property="Foreground" Value="Green" />
-                                                                        <Setter Property="FontWeight" Value="Bold" />
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </TextBlock.Style>
-                                                    </TextBlock>
+                                                    <TextBlock Margin="0" Text="{Binding JobStatus}" Foreground="#E0E0E0" Typography.Capitals="AllSmallCaps" conv:TextBlockSpacer.LetterSpacing="0.50" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" FontSize="32" />
                                                 </Grid>
 
                                                 <!-- spacer -->
@@ -724,7 +740,7 @@
                                                 <!-- due date -->
                                                 <Grid Grid.Row="2">
                                                     <StackPanel Orientation="Horizontal">
-                                                        <TextBlock HorizontalAlignment="Left" Margin="0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="#888888" FontSize="24">
+                                                        <TextBlock HorizontalAlignment="Left" Margin="0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="#555555" FontSize="24">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="TextBlock">
                                                                     <Setter Property="Text" Value="Due" />
@@ -778,7 +794,7 @@
 
                                             <!-- job price -->
                                             <Grid Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                <TextBlock Margin="0" Text="{Binding Price}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="SemiBold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32" />
+                                                <TextBlock Margin="0" Text="{Binding Price}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="#E0E0E0" FontSize="32" />
                                             </Grid>
                                         </Grid>
                                     </Border>

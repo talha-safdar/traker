@@ -1,6 +1,20 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    
+    <!-- job status -->
+    <SolidColorBrush x:Key="JobStatusNew" Color="#7A8C99" />
+    <SolidColorBrush x:Key="JobStatusActive" Color="#5DA7DB" />
+    <SolidColorBrush x:Key="JobStatusDone" Color="#BDE8CA" />
+    <SolidColorBrush x:Key="JobStatusInvoiced" Color="#E8C08D" />
+    <SolidColorBrush x:Key="JobStatusOverdue" Color="#D68A8A" />
+    <SolidColorBrush x:Key="JobStatusPaid" Color="#4E9A78" />
+    
+    
+    
+    
+    
+    
 
     <SolidColorBrush x:Key="MainBackgroundBrush" Color="#1A1A1A" />
     <SolidColorBrush x:Key="PanelBrush" Color="#252525" />
