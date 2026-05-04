@@ -31,57 +31,7 @@
 
                 <!-- button -->
                 <Grid Grid.Column="0">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock VerticalAlignment="Center" Margin="5,0,10,0" Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34" />
-
-                        <Border SnapsToDevicePixels="True" BorderThickness="1" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenJobsList()]" Background="#444444"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="45" Width="45">
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <!-- 1. Base Background (rgba 255,255,255, 0.05) -->
-                                    <Setter Property="Background" Value="#0DFFFFFF" />
-
-                                    <!-- 2. The 1px Gradient Border -->
-                                    <Setter Property="BorderThickness" Value="1" />
-                                    <Setter Property="BorderBrush">
-                                        <Setter.Value>
-                                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">                                                <!-- Top Highlight -->
-                                                <GradientStop Color="#40FFFFFF" Offset="0" />                                                <!-- Bottom Fade -->
-                                                <GradientStop Color="#05FFFFFF" Offset="1" />
-                                            </LinearGradientBrush>
-                                        </Setter.Value>
-                                    </Setter>
-
-                                    <Style.Triggers>
-                                        <!-- 3. Hover State -->
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <!-- Increase opacity to rgba 255,255,255, 0.1 -->
-                                            <Setter Property="Background" Value="#1AFFFFFF" />
-                                            <Setter Property="Cursor" Value="Hand" />
-
-                                            <!-- 4. Subtle Glow -->
-                                            <Setter Property="Effect">
-                                                <Setter.Value>
-                                                    <DropShadowEffect BlurRadius="10" 
-                                              Color="LightGray" 
-                                              Opacity="0.15" 
-                                              ShadowDepth="0" />
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-
-                            <Canvas>
-                                <svg:SvgViewbox Canvas.Left="10" Canvas.Top="10" RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" Source="/Resources/Media/Images/Icons/Lucide/briefcase-business.svg" Width="20" Height="20"/>
-                                <Border Canvas.Left="20" Canvas.Top="18">
-                                    <Grid Background="#444444" Width="18" Height="18">
-                                        <svg:SvgViewbox RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" Source="/Resources/Media/Images/Icons/Lucide/list.svg" Width="10" Height="10"/>
-                                    </Grid>
-                                </Border>
-                            </Canvas>
-                        </Border>
-                    </StackPanel>
+                    <TextBlock VerticalAlignment="Center" Margin="5,0,10,0" Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34" />
                 </Grid>
 
                 <!-- close -->
@@ -164,7 +114,7 @@
 
                                 <!-- stauts -->
                                 <Grid Grid.Row="0">
-                                    <StackPanel Orientation="Vertical" Margin="5,0,0,0">
+                                    <StackPanel Orientation="Vertical">
                                         <TextBlock VerticalAlignment="Center" Margin="5,0,0,5" Text="Status" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22" />
                                         <ComboBox Style="{DynamicResource ComboBoxNormal}" SelectedValue="{Binding Status, Mode=TwoWay}" SelectedValuePath="Content" FontSize="22">
                                             <ComboBoxItem Content="New" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
@@ -193,9 +143,9 @@
                                 <!-- remeaning -->
                                 <Grid Grid.Row="3">
                                     <StackPanel Orientation="Vertical">
-                                        <TextBlock Margin="5,0,0,0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" FontWeight="Bold" Foreground="#888888" FontSize="22">
+                                        <TextBlock Margin="5,0,0,0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" FontWeight="Regular" Foreground="#888888" FontSize="22">
                                             <Run Text="Remeaning: " />
-                                            <Run Text="{Binding ReaminingAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" FontWeight="Bold"  />
+                                            <Run Text="{Binding ReaminingAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" FontWeight="SemiBold" FontSize="26" />
                                         </TextBlock>
                                     </StackPanel>
                                 </Grid>

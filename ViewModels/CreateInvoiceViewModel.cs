@@ -34,9 +34,9 @@ namespace Traker.ViewModels
         private string _billingPostcode;
         private string _billingCountry;
         private string _dueDate;
-        private decimal _subtotal;
+        private string _subtotal; // subTotAmount#2 used for UI with proper currency symbol and decimal
         private string _vatValue;
-        private decimal _totalAmount;
+        private string _totalAmount; // totAmount#1 used for UI with proper currency symbol and decimal
         #endregion
 
         #region Public Variables
@@ -47,6 +47,11 @@ namespace Traker.ViewModels
          * the invoice form could be using DashboardModel since it's under row selection
          */
         public DashboardModel SelectedJob; // data passed by DashboardVM
+        #endregion
+
+        #region Private Class Field Variables
+        private decimal _subtotalAmountDb; // subTotAmount#1 used for database
+        private decimal _totalAmountDb; // totAmount#1 used for database
         #endregion
 
         public CreateInvoiceViewModel(IEventAggregator events, DataService dataService)
@@ -62,9 +67,11 @@ namespace Traker.ViewModels
             _billingPostcode = string.Empty;
             _billingCountry = string.Empty;
             _dueDate = string.Empty;
-            _subtotal = 0.0m;
+            _subtotal = "0";
             _vatValue = "0%";
-            _totalAmount = 0.0m;
+            _totalAmount = "0";
+            _subtotalAmountDb = 0.0m;
+            _totalAmountDb = 0.0m;
 
         }
 
@@ -76,8 +83,8 @@ namespace Traker.ViewModels
             BillingPostcode = SelectedJob.Postcode;
             BillingCountry = SelectedJob.Country;
             DueDate = DateOnly.FromDateTime(DateTime.Now.Date.Add(TimeSpan.FromDays(7))).ToString();
-            Subtotal = decimal.Parse(SelectedJob.Price, NumberStyles.Currency, CultureInfo.CurrentCulture);
-
+            _subtotalAmountDb = decimal.Parse(SelectedJob.Price, NumberStyles.Currency, CultureInfo.CurrentCulture);
+            Subtotal = (decimal.Parse(SelectedJob.Price, NumberStyles.Currency, CultureInfo.CurrentCulture)).ToString("C");
             return base.OnInitializedAsync(cancellationToken);
         }
 
@@ -140,7 +147,7 @@ namespace Traker.ViewModels
 
 
 
-            await Database.CreateInvoice(SelectedJob.ClientId, SelectedJob.JobId, Subtotal, result, TotalAmount, dueDate, BillingName, BillingAddress, BillingCity, BillingPostcode, BillingCountry, dateTimeIssued);
+            await Database.CreateInvoice(SelectedJob.ClientId, SelectedJob.JobId, _subtotalAmountDb, result, _totalAmountDb, dueDate, BillingName, BillingAddress, BillingCity, BillingPostcode, BillingCountry, dateTimeIssued);
             await _dataService.RefreshDatabase();
 
             var invoiceId = Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId);
@@ -321,7 +328,7 @@ namespace Traker.ViewModels
                                 Subtotal.RelativeItem().Text("Total").ExtraBold().FontSize(14);
 
                                 // cell 2
-                                Subtotal.RelativeItem().Text(TotalAmount.ToString("C")).FontSize(14);
+                                Subtotal.RelativeItem().Text(_totalAmountDb.ToString("C")).FontSize(14);
                             });
                         });
 
@@ -475,13 +482,14 @@ namespace Traker.ViewModels
             }
         }
 
-        public decimal Subtotal
+        public string Subtotal
         {
             get { return _subtotal; }
             set
             {
                 _subtotal = value;
-                TotalAmount = _subtotal + (_subtotal * (decimal.Parse(VatValue.TrimEnd('%')) / 100));
+                _totalAmountDb = _subtotalAmountDb + (_subtotalAmountDb * (decimal.Parse(VatValue.TrimEnd('%')) / 100));
+                TotalAmount = _totalAmountDb.ToString("C");
                 NotifyOfPropertyChange(() => Subtotal);
             }
         }
@@ -492,14 +500,15 @@ namespace Traker.ViewModels
             set
             {
                 _vatValue = value;
-                TotalAmount = _subtotal + (_subtotal * (decimal.Parse(VatValue.TrimEnd('%')) / 100));
+                _totalAmountDb = _subtotalAmountDb + (_subtotalAmountDb * (decimal.Parse(VatValue.TrimEnd('%')) / 100));
+                TotalAmount = _totalAmountDb.ToString("C");
                 NotifyOfPropertyChange(() => VatValue);
 
                 // update VAT calculation
             }
         }
 
-        public decimal TotalAmount
+        public string TotalAmount
         {
             get { return _totalAmount; }
             set

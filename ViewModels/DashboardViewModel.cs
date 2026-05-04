@@ -21,6 +21,7 @@ namespace Traker.ViewModels
     using Traker.ViewModels.Add;
     using Traker.ViewModels.Edit;
     using Traker.ViewModels.User;
+    using Database;
 
     public class DashboardViewModel : Screen, IHandle<RefreshDatabase>, IHandle<DashboardVMEvents>
     {
@@ -72,6 +73,9 @@ namespace Traker.ViewModels
         private bool _isFilterClientTypeOn = false; // to flag wether the client type filter is on
         private bool _isFilterClientTypeIndividual = false;
         private bool _isFilterClientTypeCompany = false;
+
+        private CancellationTokenSource _cts; // for checking overude
+        private ManualResetEventSlim _pauseEvent = new ManualResetEventSlim(true); // true = start open
         #endregion
 
         public DashboardViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState, DataService dataService)
@@ -130,6 +134,7 @@ namespace Traker.ViewModels
         protected override Task OnDeactivateAsync(bool close, CancellationToken cancellationToken)
         {
             _events.Unsubscribe(this);
+            _cts?.Cancel();
             return base.OnDeactivateAsync(close, cancellationToken);
         }
 
@@ -416,6 +421,84 @@ namespace Traker.ViewModels
         #endregion
 
         #region Private Functions
+        private void StartLoop()
+        {
+            if (_cts != null) return; // Already running
+            _cts = new CancellationTokenSource();
+            _pauseEvent.Set(); // Ensure gate is open
+            _ = RunLoopAsync(_cts.Token);
+        }
+
+        /// <summary>
+        /// Pause the loop call
+        /// </summary>
+        private void PauseLoop()
+        {
+            _pauseEvent.Reset(); // Close the gate
+        }
+
+        /// <summary>
+        /// Resume the loop call
+        /// </summary>
+        private void ResumeLoop()
+        {
+            _pauseEvent.Set(); // Open the gate
+        }
+
+        /// <summary>
+        /// Stop the loop call
+        /// </summary>
+        private void StopLoop()
+        {
+            _cts?.Cancel();
+            _cts = null;
+            _pauseEvent.Set(); // Release the gate so the loop can exit
+        }
+
+        /// <summary>
+        /// Allows to loop through a function every 1 second
+        /// </summary>
+        private async Task RunLoopAsync(CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
+            {
+                //await Task.Delay(1000, token); // every 1 second call the function
+                //await CheckAPIConnections();
+
+                // 1. Wait here if paused (non-blocking for the UI)
+                await Task.Run(() => _pauseEvent.Wait(token), token);
+
+                // 2. Perform work
+                await CheckOverDuePay();
+
+                // 3. Wait for the next interval
+                await Task.Delay(1000, token);
+            }
+        }
+
+        private async Task CheckOverDuePay()
+        {
+            await Task.Run(async () =>
+            {
+                foreach (var job in DashboardData.ToList())
+                {
+                    if (job.JobStatus == Names.Invoiced && DateOnly.FromDateTime(DateTime.Now) > job.InvoiceDueDate)
+                    {
+                        await Database.SetInvoiceStatus(Data.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.InvoiceId).First(), Names.Overdue, null);
+                        await Data.RefreshDatabase();
+                        await Execute.OnUIThreadAsync(async () => { await SetupDashboardData(); });
+                        
+                    }
+                    else if (job.JobStatus == Names.Overdue && DateOnly.FromDateTime(DateTime.Now) < job.InvoiceDueDate)
+                    {
+                        await Database.SetInvoiceStatus(Data.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.InvoiceId).First(), Names.Invoiced, null);
+                        await Data.RefreshDatabase();
+                        await Execute.OnUIThreadAsync(async () => { await SetupDashboardData(); });
+                    }
+                }
+            });
+        }
+
         private Task SortJobs(string command)
         {
             if (command == Names.ClientNameAsc)
@@ -652,6 +735,7 @@ namespace Traker.ViewModels
 
                 DashboardModel dashboardEntry = new DashboardModel
                 {
+                    // client
                     ClientId = client.ClientId,
                     ClientType = client.Type,
                     TypeIcon = (client.Type == "Individual") ? "/Resources/Media/Images/Icons/Lucide/user-round.svg" : "/Resources/Media/Images/Icons/Lucide/building.svg",
@@ -666,17 +750,21 @@ namespace Traker.ViewModels
                     CreatedDate = client.CreatedDate,
                     IsActive = client.IsActive,
 
+                    // job
                     JobId = job.JobId,
                     JobTitle = job.Title,
                     JobDescription = job.Description,
                     Price = job.FinalPrice.ToString("C"), // use toString("C") only for ui side
                     AmountReceived = job.AmountReceived.ToString("C"),
-                    JobStatus = job.Status.ToString(),
+                    JobStatus = Data.Invoices.Where(i => i.JobId == job.JobId && string.IsNullOrEmpty(i.Status) == false).Select(i => i.Status).FirstOrDefault() ?? job.Status.ToString(),
                     StartDate = job.StartDate,
                     DueDate = job.DueDate,
 
+                    // job
                     HasInvoice = Data.Invoices.Any(i => i.JobId == job.JobId && i.IsDeleted == false),
-                    InvoiceStatus = Data.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? "Not invoiced"
+                    InvoiceStatus = Data.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? "Not invoiced", // if left side not null return that else right side
+                    InvoiceDueDate = Data.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.DueDate).FirstOrDefault(),
+                    PaidDate = Data.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.PaidDate).FirstOrDefault()
                 };
                 DashboardData.Add(dashboardEntry);
                 index++;
@@ -699,7 +787,7 @@ namespace Traker.ViewModels
                 .Sum(combined => combined.j.FinalPrice).ToString("C");
 
             OutstandingAmount = Data.Jobs
-                .Where(j => j.Status == Names.Done || (j.Status == Names.Invoiced && Data.Invoices.Any(i => i.JobId == j.JobId && i.DueDate > DateOnly.FromDateTime(DateTime.Now) && i.Status == "Created")))
+                .Where(j => j.Status == Names.Done || (j.Status == Names.Invoiced && Data.Invoices.Any(i => i.JobId == j.JobId && i.DueDate > DateOnly.FromDateTime(DateTime.Now) && i.Status == Names.Invoiced)))
                 .Sum(j => j.FinalPrice).ToString("C");
 
             OverdueAmount = Data.Jobs
@@ -711,6 +799,9 @@ namespace Traker.ViewModels
                                 .Sum(x => x.FinalPrice).ToString("C"); // overdue
 
             TotalJobsCount = Data.Jobs.Count();
+
+            StartLoop();
+
             return Task.CompletedTask;
         }
         #endregion

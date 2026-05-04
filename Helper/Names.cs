@@ -9,41 +9,42 @@ namespace Traker.Helper
     public static class Names
     {
         // job status
-        public static string New { get; } = "New";
-        public static string Active { get; } = "Active";
-        public static string Done { get; } = "Done";
-        public static string Invoiced { get; } = "Invoiced";
-        public static string Paid { get; } = "Paid";
+        public const string New = "New";
+        public const string Active = "Active";
+        public const string Done = "Done";
+
+        public const string Invoiced = "Invoiced";
+        public const string Overdue = "Overdue";
+        public const string Paid = "Paid";
 
         // business type
-        public static string Individual { get; } = "Individual";
-        public static string Company { get; } = "Company";
-
+        public const string Individual = "Individual";
+        public const string Company = "Company";
         // events
-        public static string SetupCompleted { get; } = "SetupCompleted"; // for the user setup completion
+        public const string SetupCompleted = "SetupCompleted"; // for the user setup completion
 
         // sort/filter
-        public static string ClientNameAsc { get; } = "ClientNameAsc";
-        public static string ClientNameDesc { get; } = "ClientNameDesc";
-        public static string JobTitleAsc { get; } = "JobTitleAsc";
-        public static string JobTitleDesc { get; } = "JobTitleDesc";
-        public static string JobStatusAsc { get; } = "JobStatusAsc";
-        public static string JobStatusDesc { get; } = "JobStatusDesc";
-        public static string JobPriceAsc { get; } = "JobPriceAsc";
-        public static string JobPriceDesc { get; } = "JobPriceDesc";
-        public static string DueDateAsc { get; } = "DueDateAsc";
-        public static string DueDateDesc { get; } = "DueDateDesc";
-        public static string CreatedDateAsc { get; } = "CreatedDateAsc";
-        public static string CreatedDateDesc { get; } = "CreatedDateDesc";
-        public static string ClientTypeAsc { get; } = "ClientTypeAsc";
-        public static string ClientTypeDesc { get; } = "ClientTypeDesc";
-        public static string JobStatusNew { get; } = "JobStatusNew";
-        public static string JobStatusActive { get; } = "JobStatusActive";
-        public static string JobStatusDone { get; } = "JobStatusDone";
-        public static string JobStatusInvoiced { get; } = "JobStatusInvoiced";
-        public static string FilterIndividual { get; } = "FilterIndividual";
-        public static string FilterComapny { get; } = "FilterComapny";
-        public static string AllJobStatus { get; } = "AllJobStatus";
-        public static string UnfilterClientType { get; } = "UnfilterClientType";
+        public const string ClientNameAsc = "ClientNameAsc";
+        public const string ClientNameDesc = "ClientNameDesc";
+        public const string JobTitleAsc = "JobTitleAsc";
+        public const string JobTitleDesc = "JobTitleDesc";
+        public const string JobStatusAsc = "JobStatusAsc";
+        public const string JobStatusDesc = "JobStatusDesc";
+        public const string JobPriceAsc = "JobPriceAsc";
+        public const string JobPriceDesc = "JobPriceDesc";
+        public const string DueDateAsc = "DueDateAsc";
+        public const string DueDateDesc = "DueDateDesc";
+        public const string CreatedDateAsc = "CreatedDateAsc";
+        public const string CreatedDateDesc = "CreatedDateDesc";
+        public const string ClientTypeAsc = "ClientTypeAsc";
+        public const string ClientTypeDesc = "ClientTypeDesc";
+        public const string JobStatusNew = "JobStatusNew";
+        public const string JobStatusActive = "JobStatusActive";
+        public const string JobStatusDone = "JobStatusDone";
+        public const string JobStatusInvoiced = "JobStatusInvoiced";
+        public const string FilterIndividual = "FilterIndividual";
+        public const string FilterComapny = "FilterComapny";
+        public const string AllJobStatus = "AllJobStatus";
+        public const string UnfilterClientType = "UnfilterClientType";
     }
 }

@@ -15,7 +15,9 @@ using Traker.Services;
 namespace Traker.ViewModels.Edit
 {
     using Database;
+    using Microsoft.VisualBasic;
     using Microsoft.Win32;
+    using System.Globalization;
     using System.Threading;
     using System.Windows.Media;
     using Traker.Events;
@@ -51,15 +53,15 @@ namespace Traker.ViewModels.Edit
         protected override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
             // set button text
-            if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == "Created")
+            if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Invoiced || _dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Overdue)
             {
-                ButtonText = "✔ Paid";
+                ButtonText = "✔ Mark as Paid";
                 ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#16A34A")!;
                 ButtonHover = (Brush)new BrushConverter().ConvertFrom("#15803D")!;
             }
-            else if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == "Paid")
+            else if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Paid)
             {
-                ButtonText = "⏳ Not Paid";
+                ButtonText = "⏳ Mark as Not Paid";
                 ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#F59E0B")!;
                 ButtonHover = (Brush)new BrushConverter().ConvertFrom("#D97706")!;
             }
@@ -117,15 +119,34 @@ namespace Traker.ViewModels.Edit
              * - Paid
              */
 
-            if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == "Created")
+            if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Invoiced || _dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Overdue)
             {
-                await Database.SetInvoiceStatus(Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), "Paid");
+                //DateOny today = DateOnly.FromDateTime(DateTime.Now);
+                //string formattedDate = today.ToString("dd/MM/yyyy");
+
+                ButtonText = "✔ Paid";
+                ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#16A34A")!;
+                ButtonHover = (Brush)new BrushConverter().ConvertFrom("#15803D")!;
+
+                await Database.SetInvoiceStatus(Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), "Paid", DateOnly.FromDateTime(DateTime.Now));
                 await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+
+                ButtonText = "⏳ Marks as Not Paid";
+                ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#F59E0B")!;
+                ButtonHover = (Brush)new BrushConverter().ConvertFrom("#D97706")!;
             }
-            else if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == "Paid")
+            else if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Paid)
             {
-                await Database.SetInvoiceStatus(Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), "Created");
+                ButtonText = "⏳ Not Paid";
+                ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#F59E0B")!;
+                ButtonHover = (Brush)new BrushConverter().ConvertFrom("#D97706")!;
+
+                await Database.SetInvoiceStatus(Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), "Invoiced", null);
                 await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+
+                ButtonText = "✔ Mark as Paid";
+                ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#16A34A")!;
+                ButtonHover = (Brush)new BrushConverter().ConvertFrom("#15803D")!;
             }
             // add animation?
         }

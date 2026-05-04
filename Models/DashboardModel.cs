@@ -54,6 +54,8 @@ namespace Traker.Models
         public int JobId { get; set; } = 0;
         public List<JobsModel> Jobs { get; set; } = new List<JobsModel>(); // list of jobs of the client
         public List<InvoicesModel> Invoices { get; set; } = new List<InvoicesModel>(); // list of invoices of the client
+        public DateOnly InvoiceDueDate { get; set; } = new DateOnly();
+        public DateOnly PaidDate { get; set; } = new DateOnly();
         #endregion
 
         #region Public View Variables

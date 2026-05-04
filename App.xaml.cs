@@ -1,7 +1,9 @@
 ﻿using QuestPDF.Infrastructure;
 using System.Configuration;
 using System.Data;
+using System.Globalization;
 using System.Windows;
+using System.Windows.Markup;
 using Traker.Services;
 
 namespace Traker
@@ -17,6 +19,13 @@ namespace Traker
             {
                 QuestPDF.Settings.License = LicenseType.Community;
                 base.OnStartup(e);
+
+                // This forces WPF to use the local Windows culture for all Bindings
+                FrameworkElement.LanguageProperty.OverrideMetadata(
+                    typeof(FrameworkElement),
+                    new FrameworkPropertyMetadata(
+                        XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
+
                 Logger.LogActivity(Logger.INFO, "####################################### NEW EXECUTION #######################################");
             }
             catch (Exception ex)

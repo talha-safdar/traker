@@ -379,19 +379,19 @@
                         
                         <!-- spacer -->
                         <Grid Grid.Row="1">
-                            <Border Margin="30,0" Height="1" SnapsToDevicePixels="True">
+                            <!--<Border Margin="30,0" Height="1" SnapsToDevicePixels="True">
                                 <Border.Background>
                                     <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5" Opacity="1">
-                                        <!-- Left: Transparent -->
+                                        --><!-- Left: Transparent --><!--
                                         <GradientStop Color="#00555555" Offset="0" />
-                                        <!-- Middle: Your #555555 color -->
+                                        --><!-- Middle: Your #555555 color --><!--
                                         <GradientStop Color="#FF555555" Offset="0.8" />
                                         <GradientStop Color="#FF555555" Offset="0.2" />
-                                        <!-- Right: Transparent -->
+                                        --><!-- Right: Transparent --><!--
                                         <GradientStop Color="#00555555" Offset="1" />
                                     </LinearGradientBrush>
                                 </Border.Background>
-                            </Border>
+                            </Border>-->
                         </Grid>
                         
                         <!-- money information -->
@@ -423,22 +423,10 @@
                                 </StackPanel>
                             </Grid>
                             
-                            <!-- received payment -->
-                            <Grid Grid.Row="1">
-                                    <StackPanel Orientation="Vertical" Margin="10,10,10,30">
-                                        <TextBlock Margin="5,0,0,0" Text="Received" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
-                                    <Border CornerRadius="10" BorderThickness="1.5" SnapsToDevicePixels="True">
-                                        <Border.BorderBrush>
-                                            <SolidColorBrush Color="LightGray" Opacity="0.25" />
-                                        </Border.BorderBrush>
-                                        <TextBox Style="{StaticResource TextBoxReadOnly}" Cursor="Arrow" Foreground="{StaticResource FontSecondaryBrush}" IsReadOnly="True" Text="{Binding ReceivedAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderThickness="0" />
-                                    </Border>
-                                </StackPanel>
-                            </Grid>              
                             
                             <!-- outstanding payment -->
-                            <Grid Grid.Row="2">
-                                <StackPanel Orientation="Vertical" Margin="10">
+                            <Grid Grid.Row="1">
+                                <StackPanel Orientation="Vertical" Margin="10,10,10,30">
                                     <TextBlock Margin="5,0,0,0" Text="Outstanding" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
                                     <Border CornerRadius="10" BorderThickness="1.5" SnapsToDevicePixels="True">
                                         <Border.BorderBrush>
@@ -448,6 +436,19 @@
                                     </Border>
                                 </StackPanel>
                             </Grid>     
+                            
+                            <!-- received payment -->
+                            <Grid Grid.Row="2">
+                                    <StackPanel Orientation="Vertical" Margin="10">
+                                        <TextBlock Margin="5,0,0,0" Text="Received" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
+                                    <Border CornerRadius="10" BorderThickness="1.5" SnapsToDevicePixels="True">
+                                        <Border.BorderBrush>
+                                            <SolidColorBrush Color="LightGray" Opacity="0.25" />
+                                        </Border.BorderBrush>
+                                        <TextBox Style="{StaticResource TextBoxReadOnly}" Cursor="Arrow" Foreground="{StaticResource FontSecondaryBrush}" IsReadOnly="True" Text="{Binding ReceivedAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderThickness="0" />
+                                    </Border>
+                                </StackPanel>
+                            </Grid>              
                         </Grid>
 
                         <!-- spacer -->
@@ -674,20 +675,6 @@
 
                                             <!-- spacer-->
                                             <Grid Grid.Column="2">
-                                                <!--<Border Margin="0,0" Width="1" SnapsToDevicePixels="True" Opacity="0.6">
-                                                    <Border.Background>
-                                                        --><!-- Changed StartPoint/EndPoint to move vertically (Top to Bottom) --><!--
-                                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="1">
-                                                            --><!-- Top: Transparent --><!--
-                                                            <GradientStop Color="#00555555" Offset="0" />
-                                                            --><!-- Middle: Your #555555 color --><!--
-                                                            <GradientStop Color="#FF555555" Offset="0.2" />
-                                                            <GradientStop Color="#FF555555" Offset="0.8" />
-                                                            --><!-- Bottom: Transparent --><!--
-                                                            <GradientStop Color="#00555555" Offset="1" />
-                                                        </LinearGradientBrush>
-                                                    </Border.Background>
-                                                </Border>-->
                                             </Grid>
 
                                             <!-- job status / due date -->
@@ -704,7 +691,6 @@
                                                         <TextBlock.Style>
                                                             <Style TargetType="TextBlock">
                                                                 <Setter Property="Foreground" Value="{StaticResource FontPrimaryBrush}" />
-
                                                                 <Style.Triggers>
                                                                     <DataTrigger Binding="{Binding JobStatus}" Value="New">
                                                                         <Setter Property="Foreground" Value="LightCoral" />
@@ -715,8 +701,15 @@
                                                                     <DataTrigger Binding="{Binding JobStatus}" Value="Done">
                                                                         <Setter Property="Foreground" Value="LightGreen" />
                                                                     </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding JobStatus}" Value="Overdue">
+                                                                        <Setter Property="Foreground" Value="Red" />
+                                                                    </DataTrigger>
                                                                     <DataTrigger Binding="{Binding JobStatus}" Value="Invoiced">
                                                                         <Setter Property="Foreground" Value="LightBlue" />
+                                                                        <Setter Property="FontWeight" Value="Bold" />
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding JobStatus}" Value="Paid">
+                                                                        <Setter Property="Foreground" Value="Green" />
                                                                         <Setter Property="FontWeight" Value="Bold" />
                                                                     </DataTrigger>
                                                                 </Style.Triggers>
@@ -731,8 +724,36 @@
                                                 <!-- due date -->
                                                 <Grid Grid.Row="2">
                                                     <StackPanel Orientation="Horizontal">
-                                                        <TextBlock HorizontalAlignment="Left" Margin="0" Text="Due" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="#888888" FontSize="24" />
-                                                        <TextBlock Margin="10,0,0,0" Text="{Binding DueDate}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />
+                                                        <TextBlock HorizontalAlignment="Left" Margin="0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="#888888" FontSize="24">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Text" Value="Due" />
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding JobStatus}" Value="Invoiced">
+                                                                            <Setter Property="Text" Value="Due" />
+                                                                        </DataTrigger>
+                                                                        <DataTrigger Binding="{Binding JobStatus}" Value="Paid">
+                                                                            <Setter Property="Text" Value="On" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                        <TextBlock Margin="10,0,0,0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Text" Value="{Binding DueDate}" />
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding JobStatus}" Value="Invoiced">
+                                                                            <Setter Property="Text" Value="{Binding InvoiceDueDate}" />
+                                                                        </DataTrigger>
+                                                                        <DataTrigger Binding="{Binding JobStatus}" Value="Paid">
+                                                                            <Setter Property="Text" Value="{Binding PaidDate}" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
                                                     </StackPanel>
                                                 </Grid>
                                             </Grid>

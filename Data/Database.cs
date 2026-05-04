@@ -1092,7 +1092,7 @@ namespace Traker.Database
                     invoicesCmd.Parameters.AddWithValue("@billingCity", billingCity);
                     invoicesCmd.Parameters.AddWithValue("@billingPostcode", billingPostcode);
                     invoicesCmd.Parameters.AddWithValue("@billingCountry", billingCountry);
-                    invoicesCmd.Parameters.AddWithValue("@status", "Created");
+                    invoicesCmd.Parameters.AddWithValue("@status", "Invoiced");
 
                     invoicesCmd.ExecuteNonQuery();
                 }
@@ -1565,7 +1565,7 @@ namespace Traker.Database
             return Task.CompletedTask;
         }
         
-        public static Task SetInvoiceStatus(int invoiceId, string status)
+        public static Task SetInvoiceStatus(int invoiceId, string status, DateOnly? paidDate)
         {
             try
             {
@@ -1574,10 +1574,12 @@ namespace Traker.Database
                 using var cmd = conn.CreateCommand();
                 cmd.CommandText = @"
                     UPDATE Invoices
-                    SET Status = @invoiceName
+                    SET Status = @invoiceName,
+                        PaidDate = @paidDate
                     WHERE InvoiceId = @invoiceId;
                 ";
                 cmd.Parameters.AddWithValue("@invoiceName", status);
+                cmd.Parameters.AddWithValue("@paidDate", (object)paidDate ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@invoiceId", invoiceId);
                 cmd.ExecuteNonQuery();
                 Logger.LogActivity(Logger.INFO, $"Database: InvoicePaid() OK - InvoiceId: {invoiceId}");

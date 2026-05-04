@@ -107,15 +107,14 @@ namespace Traker.ViewModels.Edit
         {
             if (ClientType == Names.Individual)
             {
-                ClientName = CompanyName;
                 CompanyName = string.Empty;
             }
             else if (ClientType == Names.Company)
             {
-                CompanyName = ClientName;
-                ClientName = string.Empty;
+                //CompanyName = ClientName;
+                //ClientName = string.Empty;
             }
-                return Task.CompletedTask;
+            return Task.CompletedTask;
         }
         #endregion
 

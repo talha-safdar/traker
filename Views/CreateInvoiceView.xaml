@@ -153,10 +153,12 @@
                             </Grid>
                             
                             <!-- total -->
-                            <Grid Grid.Column="1" Grid.Row="1">
+                            <Grid Grid.ColumnSpan="3" Grid.Row="1" HorizontalAlignment="Center">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Margin="5,0,0,5" Text="Total" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                    <TextBox Opacity="0.6" IsHitTestVisible="False" Focusable="False" Style="{DynamicResource TextBoxNormal}" Text="{Binding TotalAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBlock Margin="5,0,0,5" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22">
+                                        <Run Text="Total: " />
+                                        <Run Text="{Binding TotalAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:C2}}" FontSize="38" FontWeight="SemiBold" />
+                                    </TextBlock>
                                 </StackPanel>
                             </Grid>
                         </Grid>

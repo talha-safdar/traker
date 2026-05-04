@@ -26,12 +26,12 @@ namespace Traker.Services
         {
             try
             {
-                string fileName = $"Log {DateTime.Now:yyyy-MM-dd}.txt"; // file name "Log YYYY-MM-dd.txt"
-                string basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Traker");
-                string logFolder = Path.Combine(basePath, "Logs");
-                Directory.CreateDirectory(logFolder);
-                string filePath = Path.Combine(logFolder, fileName); // Set file path directory
-                File.AppendAllText(filePath, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff} [{level}] {text}{Environment.NewLine}");
+                //string fileName = $"Log {DateTime.Now:yyyy-MM-dd}.txt"; // file name "Log YYYY-MM-dd.txt"
+                //string basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Traker");
+                //string logFolder = Path.Combine(basePath, "Logs");
+                //Directory.CreateDirectory(logFolder);
+                //string filePath = Path.Combine(logFolder, fileName); // Set file path directory
+                //File.AppendAllText(filePath, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff} [{level}] {text}{Environment.NewLine}");
             }
             catch (Exception ex)
             {
