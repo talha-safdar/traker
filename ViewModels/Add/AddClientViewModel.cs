@@ -5,6 +5,7 @@ namespace Traker.ViewModels.Add
 {
     using Database;
     using System.Globalization;
+    using System.Net;
     using System.Windows;
     using Traker.Data;
     using Traker.Events;
@@ -22,10 +23,13 @@ namespace Traker.ViewModels.Add
         private string _clientType;
         private string _businessName; // generalised for both client or company name
         private string _jobTitle;
-        private string _jobDescription;
         private string _price;
         private string _dueDate;
         private string _businessNameText; // individual=client name, company=company name
+
+        // add clieent button
+        private bool _enableAddBtn;
+        private double _opacityAddBtn;
         #endregion
 
         #region Public State Variable
@@ -35,6 +39,8 @@ namespace Traker.ViewModels.Add
         #region Private Class Field Variables
         private string _clientNameTxt = "Client Name";
         private string _companyNameTxt = "Company Name";
+        private double _fullOpacity = 1.0;
+        private double _halfOpacity = 0.5;
         #endregion
 
         public AddClientViewModel(IEventAggregator events, AppState appState, DataService dataService)
@@ -45,7 +51,6 @@ namespace Traker.ViewModels.Add
             _clientType = string.Empty;
             _businessName = string.Empty;
             _jobTitle = string.Empty;
-            _jobDescription = string.Empty;
             _price = string.Empty;
             _dueDate = string.Empty;
             _businessNameText = string.Empty;
@@ -60,6 +65,10 @@ namespace Traker.ViewModels.Add
             {
                 ClientType = Names.Individual; // default start with individual
                 BusinessNameText = _clientNameTxt;
+
+                // add button
+                _enableAddBtn = false;
+                OpacityAddBtn = _halfOpacity;
             }
             catch(Exception ex)
             {
@@ -178,6 +187,33 @@ namespace Traker.ViewModels.Add
             }
             return Task.CompletedTask;
         }
+
+        private bool ValidateDate()
+        {
+            return DateTime.TryParseExact(
+                DueDate,
+                "dd/MM/yyyy",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var parsedDate)
+                && parsedDate.Date >= DateTime.Today;
+        }
+
+        private Task CanSubmit()
+        {
+            if (string.IsNullOrEmpty(ClientType) == false && string.IsNullOrEmpty(BusinessName) == false && string.IsNullOrEmpty(JobTitle) == false && string.IsNullOrEmpty(Price) == false && ValidateDate() == true)
+            {
+                
+                EnableAddBtn = true;
+                OpacityAddBtn = _fullOpacity;
+            }
+            else
+            {
+                EnableAddBtn = false;
+                OpacityAddBtn = _halfOpacity;
+            }
+            return Task.CompletedTask;
+        }
         #endregion
 
         #region Public View Variables
@@ -189,6 +225,7 @@ namespace Traker.ViewModels.Add
                 _clientType = value;
                 NotifyOfPropertyChange(() => ClientType);
                 ToggleClientType();
+                CanSubmit();
             }
         }
 
@@ -199,6 +236,7 @@ namespace Traker.ViewModels.Add
             {
                 _businessName = value;
                 NotifyOfPropertyChange(() => BusinessName);
+                CanSubmit();
             }
         }
 
@@ -209,16 +247,7 @@ namespace Traker.ViewModels.Add
             {
                 _jobTitle = value;
                 NotifyOfPropertyChange(() => JobTitle);
-            }
-        }
-
-        public string JobDescription
-        {
-            get { return _jobDescription; }
-            set
-            {
-                _jobDescription = value;
-                NotifyOfPropertyChange(() => JobDescription);
+                CanSubmit();
             }
         }
 
@@ -229,6 +258,7 @@ namespace Traker.ViewModels.Add
             {
                 _price = value;
                 NotifyOfPropertyChange(() => Price);
+                CanSubmit();
             }
         }
 
@@ -239,6 +269,7 @@ namespace Traker.ViewModels.Add
             {
                 _dueDate = value;
                 NotifyOfPropertyChange(() => DueDate);
+                CanSubmit();
             }
         }
 
@@ -249,6 +280,27 @@ namespace Traker.ViewModels.Add
             {
                 _businessNameText = value;
                 NotifyOfPropertyChange(() => BusinessNameText);
+                CanSubmit();
+            }
+        }
+
+        public bool EnableAddBtn
+        {
+            get { return _enableAddBtn; }
+            set
+            {
+                _enableAddBtn = value;
+                NotifyOfPropertyChange(() => EnableAddBtn);
+            }
+        }
+
+        public double OpacityAddBtn
+        {
+            get { return _opacityAddBtn; }
+            set
+            {
+                _opacityAddBtn = value;
+                NotifyOfPropertyChange(() => OpacityAddBtn);
             }
         }
         #endregion

@@ -97,42 +97,6 @@ namespace Traker.ViewModels
             EnableNextBtn = false;
             OpacityBtn = _halfOpacity;
 
-            //// user info
-            //_fullName = string.Empty;
-            //_email = string.Empty;
-            //_phone = string.Empty;
-            //_businessType = string.Empty;
-            //// debug
-            //_fullName = "Adolf Hitler";
-            //_email = "adolf@gmail.com";
-            //_phone = "34345435";
-
-            // business info
-            //_businessName = string.Empty;
-            //_address = string.Empty;
-            //_city = string.Empty;
-            //_postcode = string.Empty;
-            //_country = string.Empty;
-            //debug
-            //_businessName = "Nigga Destroyer Ltd";
-            //_address = "32 Woodlands Street";
-            //_city = "Berlin";
-            //_postcode = "M4kr00t";
-            //_country = "Germany";
-
-            //_vatNumber = "-1"; // default -1 for non vat registered
-            //_registrationNumber = "-1"; // default -1 for non company
-            //_isIndividual = true;
-            //_businessNameOpacity = 1.0;
-
-            //// bank
-            //_bankName = "Nazi Bank Ltd";
-            //_accountName = "Adolf Muhammad Hitler";
-            //_accountNumber = "1232434";
-            //_sortcode = "12-12-12";
-            //_IBAN = "342423423";
-            //_BIC = "2342423";
-
         // window management
         SetupWindows = new ObservableCollection<bool>() { true, false, false, false }; // 0=user, (1=individual, 2=company), 3=bank
 

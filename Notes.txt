@@ -12,6 +12,7 @@ Fonts: {
 TO-DO:
 
 - make outstanding border reddish if overdue
+- make buttons unclikable where necessary
 
 V1:
 #- Esc button: to exit popup window
