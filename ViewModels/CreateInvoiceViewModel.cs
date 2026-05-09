@@ -101,17 +101,6 @@ namespace Traker.ViewModels
 
         public async Task CreateInvoice()
         {
-            //BillingName = "Obama";
-            //BillingAddress = "32 Downing Street";
-            //BillingCity = "London";
-            //BillingPostcode = "SW1A 2AA";
-            //BillingCountry = "United Kingdom";
-            //DueDate = "23/10/2026";
-            //Subtotal = 1000.00m;
-            //VatValue = "20%";
-            //TotalAmount = 1200.00m;
-
-
             /*
              * InvoiceNumber
              * IssueDate
@@ -158,6 +147,9 @@ namespace Traker.ViewModels
 
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
             await TryCloseAsync();
+
+
+            // on creation open the edit invoice view and not open the pdf in windows directly!!!
         }
 
         private async Task GenerateInvoice(string invoiceName)

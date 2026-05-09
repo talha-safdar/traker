@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using Traker.Helper;
 using Traker.Models.Database;
@@ -114,6 +115,7 @@ namespace Traker.Database
                                 var Postcode = reader["Postcode"];
                                 var Country = reader["Country"];
                                 var CreatedDate = reader["CreatedDate"];
+                                var FolderName = reader["FolderName"];
                                 var IsActive = reader["IsActive"];
 
                                 if (string.IsNullOrEmpty(ClientId.ToString()) == false ||
@@ -127,6 +129,7 @@ namespace Traker.Database
                                     string.IsNullOrEmpty(Postcode.ToString()) == false ||
                                     string.IsNullOrEmpty(Country.ToString()) == false ||
                                     string.IsNullOrEmpty(CreatedDate.ToString()) == false ||
+                                    string.IsNullOrEmpty(FolderName.ToString()) == false ||
                                     string.IsNullOrEmpty(IsActive.ToString()) == false)
                                 {
                                     clientsList.Add(new ClientsModel
@@ -142,6 +145,7 @@ namespace Traker.Database
                                         Postcode = Postcode.ToString()!,
                                         Country = Country.ToString()!,
                                         CreatedDate = DateOnly.FromDateTime(Convert.ToDateTime(CreatedDate))!,
+                                        FolderName = FolderName.ToString()!,
                                         IsActive = Convert.ToBoolean(IsActive)
                                     });
                                 }
@@ -199,8 +203,8 @@ namespace Traker.Database
                                 var StartDate = reader["StartDate"] == DBNull.Value ? DateTime.MinValue : reader["StartDate"];
                                 var CompletedDate = reader["CompletedDate"] == DBNull.Value ? DateTime.MinValue : reader["CompletedDate"];
                                 var DueDate = reader["DueDate"] == DBNull.Value ? DateTime.MinValue : reader["DueDate"]; ;
-                                var FolderPath = reader["FolderPath"] == DBNull.Value ? String.Empty : reader["FolderPath"];
                                 var Notes = reader["Notes"] == DBNull.Value ? String.Empty : reader["Notes"];
+                                var FolderName = reader["FolderName"] == DBNull.Value ? String.Empty : reader["FolderName"];
                                 var IsArchived = reader["IsArchived"] == DBNull.Value ? false : reader["IsArchived"];
 
                                 if (string.IsNullOrEmpty(JobId.ToString()) == false ||
@@ -215,8 +219,8 @@ namespace Traker.Database
                                     string.IsNullOrEmpty(StartDate.ToString()) == false ||
                                     string.IsNullOrEmpty(CompletedDate.ToString()) == false ||
                                     string.IsNullOrEmpty(DueDate.ToString()) == false ||
-                                    string.IsNullOrEmpty(FolderPath.ToString()) == false ||
                                     string.IsNullOrEmpty(Notes.ToString()) == false ||
+                                    string.IsNullOrEmpty(FolderName.ToString()) == false ||
                                     string.IsNullOrEmpty(IsArchived.ToString()) == false)
                                 {
                                     jobsList.Add(new JobsModel
@@ -233,8 +237,8 @@ namespace Traker.Database
                                         StartDate = DateOnly.FromDateTime(Convert.ToDateTime(StartDate)),
                                         CompletedDate = DateOnly.FromDateTime(Convert.ToDateTime(CompletedDate)),
                                         DueDate = DateOnly.FromDateTime(Convert.ToDateTime(DueDate)),
-                                        FolderPath = FolderPath.ToString()!,
                                         Notes = Notes.ToString()!,
+                                        FolderName = FolderName.ToString()!,
                                         IsArchived = Convert.ToBoolean(IsArchived),
                                     });
                                 }
@@ -294,11 +298,11 @@ namespace Traker.Database
                                 var BillingPostcode = reader["BillingPostcode"] == DBNull.Value ? String.Empty : reader["BillingPostcode"];
                                 var BillingCountry = reader["BillingCountry"] == DBNull.Value ? String.Empty : reader["BillingCountry"];
                                 var Status = reader["Status"] == DBNull.Value ? String.Empty : reader["Status"];
-                                var InvoiceName = reader["InvoiceName"] == DBNull.Value ? String.Empty : reader["InvoiceName"];
                                 var IsDeleted = reader["IsDeleted"] == DBNull.Value ? String.Empty : reader["IsDeleted"];
                                 var PaidDate = reader["PaidDate"] == DBNull.Value ? DateTime.MinValue : reader["PaidDate"];
                                 var PaymentMethod = reader["PaymentMethod"] == DBNull.Value ? String.Empty : reader["PaymentMethod"];
                                 var Notes = reader["Notes"] == DBNull.Value ? String.Empty : reader["Notes"];
+                                var InvoiceName = reader["InvoiceName"] == DBNull.Value ? String.Empty : reader["InvoiceName"];
 
                                 if (string.IsNullOrEmpty(InvoiceId.ToString()) == false ||
                                     string.IsNullOrEmpty(JobId.ToString()) == false ||
@@ -314,11 +318,11 @@ namespace Traker.Database
                                     string.IsNullOrEmpty(BillingPostcode.ToString()) == false ||
                                     string.IsNullOrEmpty(BillingCountry.ToString()) == false ||
                                     string.IsNullOrEmpty(Status.ToString()) == false ||
-                                    string.IsNullOrEmpty(InvoiceName.ToString()) == false ||
                                     string.IsNullOrEmpty(IsDeleted.ToString()) == false ||
                                     string.IsNullOrEmpty(PaidDate.ToString()) == false ||
                                     string.IsNullOrEmpty(PaymentMethod.ToString()) == false ||
-                                    string.IsNullOrEmpty(Notes.ToString()) == false)
+                                    string.IsNullOrEmpty(Notes.ToString()) == false ||
+                                    string.IsNullOrEmpty(InvoiceName.ToString()) == false)
                                 {
                                     invoicesList.Add(new InvoicesModel
                                     {
@@ -331,7 +335,6 @@ namespace Traker.Database
                                         IssueDate = Convert.ToDateTime(IssueDate),
                                         DueDate = DateOnly.FromDateTime(Convert.ToDateTime(DueDate)),
                                         Status = Status.ToString()!,
-                                        InvoiceName = InvoiceName.ToString()!,
                                         BillingName = BillingName.ToString()!,
                                         BillingAddress = BillingAddress.ToString()!,
                                         BillingCity = BillingCity.ToString()!,
@@ -341,6 +344,7 @@ namespace Traker.Database
                                         PaidDate = DateOnly.FromDateTime(Convert.ToDateTime(PaidDate)),
                                         PaymentMethod = PaymentMethod.ToString()!,
                                         Notes = Notes.ToString()!,
+                                        InvoiceName = InvoiceName.ToString()!,
                                     });
                                 }
                             }
@@ -580,10 +584,13 @@ namespace Traker.Database
         /// <summary>
         /// Add a new row to the Clients and Jobs tables in the database. This is done by opening a connection to the database, starting a transaction, and then executing two SQL commands: one to insert a new row into the Clients table and another to insert a new row into the Jobs table with a foreign key reference to the newly inserted client. If any errors occur during this process, an error message is displayed to the user and the transaction is rolled back. If the rows are added successfully, a log entry is made indicating that the operation was successful along with the new client and job IDs.
         /// </summary>
-        public static Task AddIndividualClient(string clientName, string clientType, string jobTitle, string jobDescription, decimal finalPrice, DateOnly dueDate)
+        public static Task<List<int>> AddIndividualClient(string clientName, string clientType, string jobTitle, decimal finalPrice, DateOnly dueDate)
         {
             try
             {
+                // list to be passed on add client to get hold of clientId and jobid
+                List<int> clientJobIds = new List<int>();
+
                 long clientId = 0;
                 long jobId = 0;
 
@@ -624,6 +631,7 @@ namespace Traker.Database
                 {
                     clientIdCmd.CommandText = "SELECT last_insert_rowid();";
                     clientId = (long)clientIdCmd.ExecuteScalar()!;
+                    clientJobIds.Add(Convert.ToInt32(clientId)); // add it to the list that will be passed to addclientVM
                 }
 
                 // insert into jobs table
@@ -632,16 +640,15 @@ namespace Traker.Database
                     jobsCmd.CommandText = @"
 
                     INSERT INTO Jobs
-                    (ClientId, Title, Description, Status, FinalPrice, CreatedDate, DueDate)
+                    (ClientId, Title, Status, FinalPrice, CreatedDate, DueDate)
 
                     VALUES
-                    (@clientId, @title, @description, @status, @finalPrice, @createdDate, @dueDate);
+                    (@clientId, @title, @status, @finalPrice, @createdDate, @dueDate);
 
                     ";
 
                     jobsCmd.Parameters.AddWithValue("@clientId", clientId);
                     jobsCmd.Parameters.AddWithValue("@title", jobTitle);
-                    jobsCmd.Parameters.AddWithValue("@description", jobDescription);
                     jobsCmd.Parameters.AddWithValue("@status", "New");
                     jobsCmd.Parameters.AddWithValue("@finalPrice", finalPrice);
                     jobsCmd.Parameters.AddWithValue("@createdDate", DateTime.Now.Date);
@@ -661,12 +668,13 @@ namespace Traker.Database
                     ";
                     jobIdCmd.Parameters.AddWithValue("@clientId", clientId);
                     jobId = (long)jobIdCmd.ExecuteScalar()!;
+                    clientJobIds.Add(Convert.ToInt32(jobId)); // add it to the list that will be passed to addclientVM
                 }
 
                 // Commit both together
                 tx.Commit();
                 Logger.LogActivity(Logger.INFO, $"Database: AddRow() OK - ClientId: {clientId}, JobId: {jobId}");
-                return Task.CompletedTask;
+                return Task.FromResult(clientJobIds);
             }
             catch (Exception ex)
             {
@@ -676,17 +684,20 @@ namespace Traker.Database
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 Logger.LogActivity(Logger.ERROR, $"Database: AddRow() FAIL");
-                return Task.CompletedTask;
+                throw;
             }
         }
 
         /// <summary>
         /// Add a new row to the Clients and Jobs tables in the database. This is done by opening a connection to the database, starting a transaction, and then executing two SQL commands: one to insert a new row into the Clients table and another to insert a new row into the Jobs table with a foreign key reference to the newly inserted client. If any errors occur during this process, an error message is displayed to the user and the transaction is rolled back. If the rows are added successfully, a log entry is made indicating that the operation was successful along with the new client and job IDs.
         /// </summary>
-        public static Task AddCompanyClient(string companyName, string clientType, string jobTitle, string jobDescription, decimal finalPrice, DateOnly dueDate)
+        public static Task<List<int>>  AddCompanyClient(string companyName, string clientType, string jobTitle, decimal finalPrice, DateOnly dueDate)
         {
             try
             {
+                // list to be passed on add client to get hold of clientId and jobid
+                List<int> clientJobIds = new List<int>();
+
                 long clientId = 0;
                 long jobId = 0;
 
@@ -727,6 +738,7 @@ namespace Traker.Database
                 {
                     clientIdCmd.CommandText = "SELECT last_insert_rowid();";
                     clientId = (long)clientIdCmd.ExecuteScalar()!;
+                    clientJobIds.Add(Convert.ToInt32(clientId)); // add it to the list that will be passed to addclientVM
                 }
 
                 // insert into jobs table
@@ -735,16 +747,15 @@ namespace Traker.Database
                     jobsCmd.CommandText = @"
 
                     INSERT INTO Jobs
-                    (ClientId, Title, Description, Status, FinalPrice, CreatedDate, DueDate)
+                    (ClientId, Title, Status, FinalPrice, CreatedDate, DueDate)
 
                     VALUES
-                    (@clientId, @title, @description, @status, @finalPrice, @createdDate, @dueDate);
+                    (@clientId, @title, @status, @finalPrice, @createdDate, @dueDate);
 
                     ";
 
                     jobsCmd.Parameters.AddWithValue("@clientId", clientId);
                     jobsCmd.Parameters.AddWithValue("@title", jobTitle);
-                    jobsCmd.Parameters.AddWithValue("@description", jobDescription);
                     jobsCmd.Parameters.AddWithValue("@status", "New");
                     jobsCmd.Parameters.AddWithValue("@finalPrice", finalPrice);
                     jobsCmd.Parameters.AddWithValue("@createdDate", DateTime.Now.Date);
@@ -764,12 +775,13 @@ namespace Traker.Database
                     ";
                     jobIdCmd.Parameters.AddWithValue("@clientId", clientId);
                     jobId = (long)jobIdCmd.ExecuteScalar()!;
+                    clientJobIds.Add(Convert.ToInt32(jobId)); // add it to the list that will be passed to addclientVM
                 }
 
                 // Commit both together
                 tx.Commit();
                 Logger.LogActivity(Logger.INFO, $"Database: AddRow() OK - ClientId: {clientId}, JobId: {jobId}");
-                return Task.CompletedTask;
+                return Task.FromResult(clientJobIds);
             }
             catch (Exception ex)
             {
@@ -779,7 +791,7 @@ namespace Traker.Database
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 Logger.LogActivity(Logger.ERROR, $"Database: AddRow() FAIL");
-                return Task.CompletedTask;
+                throw;
             }
         }
 
@@ -965,7 +977,7 @@ namespace Traker.Database
         /// <summary>
         /// Add a new row to the Jobs table for an existing client. This is done by opening a connection to the database, executing a SQL command to insert a new row into the Jobs table with a foreign key reference to the specified client, and then closing the connection. The function takes four parameters: the client ID, job description, final price, and due date. If any errors occur during this process, an error message is displayed to the user. If the row is added successfully, a log entry is made indicating that the operation was successful along with the client ID and job ID.
         /// </summary>
-        public static Task AddNewJobToClient(int clientId, string JobTitle, decimal finalPrice, DateOnly dueDate)
+        public static Task<int> AddNewJobToClient(int clientId, string JobTitle, decimal finalPrice, DateOnly dueDate)
         {
             try
             {
@@ -1003,6 +1015,7 @@ namespace Traker.Database
                     jobId = (long)jobIdCmd.ExecuteScalar()!;
                 }
                 Logger.LogActivity(Logger.INFO, $"Database: AddNewJobToClient() OK - ClientId: {clientId}, JobId: {jobId}");
+                return Task.FromResult(Convert.ToInt32(jobId));
             }
             catch (Exception ex)
             {
@@ -1012,8 +1025,8 @@ namespace Traker.Database
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 Logger.LogActivity(Logger.ERROR, $"Database: AddNewJobToClient() FAIL - ClientId: {clientId}");
+                throw;
             }
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -1592,6 +1605,64 @@ namespace Traker.Database
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 Logger.LogActivity(Logger.ERROR, $"Database: InvoicePaid() FAIL - InvoiceId: {invoiceId}");
+            }
+            return Task.CompletedTask;
+        }
+        
+        public static Task SetClientFolderName(int clientId, string folderName)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = @"
+                    UPDATE Clients
+                    SET FolderName = @folderName
+                    WHERE ClientId = @clientId;
+                ";
+                cmd.Parameters.AddWithValue("@clientId", clientId);
+                cmd.Parameters.AddWithValue("@folderName", folderName);
+                cmd.ExecuteNonQuery();
+                Logger.LogActivity(Logger.INFO, $"Database: SetClientFoldername() OK - ClientId: {clientId}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while updating the invoice status. Please try again.\n\t{ex.Message}",
+                    "Update Clients Status",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: SetClientFoldername() FAIL - ClientId: {clientId}");
+            }
+            return Task.CompletedTask;
+        }
+        
+        public static Task SetJobFolderName(int jobId, string folderName)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = @"
+                    UPDATE Jobs
+                    SET FolderName = @folderName
+                    WHERE JobId = @jobId;
+                ";
+                cmd.Parameters.AddWithValue("@jobId", jobId);
+                cmd.Parameters.AddWithValue("@folderName", folderName);
+                cmd.ExecuteNonQuery();
+                Logger.LogActivity(Logger.INFO, $"Database: SetJobFolderName() OK - JobId: {jobId}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while updating the invoice status. Please try again.\n\t{ex.Message}",
+                    "Update Jobs",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Logger.LogActivity(Logger.ERROR, $"Database: SetJobFolderName() FAIL - JobId: {jobId}");
             }
             return Task.CompletedTask;
         }

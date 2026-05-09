@@ -12,6 +12,8 @@ namespace Traker.ViewModels.Edit
 {
     using Database;
     using System.Globalization;
+    using Traker.Data;
+    using Traker.Helper;
 
     public class EditJobViewModel : Screen
     {
@@ -84,7 +86,22 @@ namespace Traker.ViewModels.Edit
 
         public async Task DeleteJob()
         {
-            await Database.DeleteJob(SelectedJob.JobId);
+            // delete job folder (if only one job then delete whole client folder)
+            // it deletes the current job folder then it checks if it was the last one if true, then delete client folder
+            if (await FileStore.DeleteJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName, SelectedJob.JobTitle) == true)
+            {
+                // delete entire client folder too
+                await FileStore.DeleteClientFolder(SelectedJob.ClientId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName);
+
+                // delete client from database
+                await Database.DeleteClient(SelectedJob.ClientId);
+            }
+            else if (await FileStore.DeleteJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName, SelectedJob.JobTitle) == false)
+            {
+                // delete job from database
+                await Database.DeleteJob(SelectedJob.JobId);
+            }
+
             await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
             await TryCloseAsync();
         }

@@ -11,7 +11,9 @@ namespace Traker.Data
     /// </summary>
     public static class FileStore
     {
-        public static Task LocateFolder(int clientId, string fullname, List<JobsModel> jobs)
+        // create static path for Clients folder variable
+
+        public static Task<string> CreateJobFolder(int clientId, int jobId, string fullname, string jobTitle)
         {
             try
             {
@@ -20,47 +22,28 @@ namespace Traker.Data
 
                 // Documents/Traker
                 string appRoot = Path.Combine(documents, "Traker");
-                Directory.CreateDirectory(appRoot);
 
                 // Documents/Traker/Clients
                 string clientsFolder = Path.Combine(appRoot, "Clients");
-                Directory.CreateDirectory(clientsFolder);
 
                 // Documents/Traker/Clients/ID_clientName
                 string safeName = MakeSafeFolderName(fullname);
                 string clientFolderName = $"{clientId}_{safeName}";
                 string clientFolder = Path.Combine(clientsFolder, clientFolderName);
-                Directory.CreateDirectory(clientFolder);
 
                 // Documents/Traker/Clients/ID_clientName/Jobs
                 string jobsFolder = Path.Combine(clientFolder, "Jobs");
-                Directory.CreateDirectory(jobsFolder);
 
                 // Documents/Traker/Clients/ID_clientName/Jobs/ID_jobTitle
-                foreach (var job in jobs)
-                {
-                    string safeJobTitle = MakeSafeFolderName(job.Title);
-                    string jobFolderName = $"{job.JobId}_{safeJobTitle}";
-                    string jobFolder = Path.Combine(jobsFolder, jobFolderName);
+                string safeJobTitle = MakeSafeFolderName(jobTitle);
+                string jobFolderName = $"{jobId}_{safeJobTitle}";
+                string jobFolder = Path.Combine(jobsFolder, jobFolderName);
 
-                    Directory.CreateDirectory(jobFolder);
-                }
+                // create job folder if it doesn't exist
+                Directory.CreateDirectory(jobFolder);
 
-                // Documents/Traker/Clients/ID_clientName/Invoices
-                string invoicesFolder = Path.Combine(clientFolder, "Invoices");
-                Directory.CreateDirectory(invoicesFolder);
-
-                // Documents/Traker/Clients/ID_clientName/Notes
-                string notesFolder = Path.Combine(clientFolder, "Notes");
-                Directory.CreateDirectory(notesFolder);
-
-                // Open folder in Explorer
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = clientFolder,
-                    UseShellExecute = true
-                });
                 Logger.LogActivity(Logger.INFO, $"FileStore: LocateFolder() OK");
+                return Task.FromResult(jobFolderName);
             }
             catch (Exception ex)
             {
@@ -70,11 +53,74 @@ namespace Traker.Data
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 Logger.LogActivity(Logger.ERROR, $"FileStore: LocateFolder() FAIL");
+                throw;
             }
-            return Task.CompletedTask;
         }
 
-        public static Task CreateFolder(int clientId, string fullname)
+        //public static Task CreateJobFolder(int clientId, string fullname, List<JobsModel> jobs)
+        //{
+        //    try
+        //    {
+        //        // Documents/
+        //        string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+        //        // Documents/Traker
+        //        string appRoot = Path.Combine(documents, "Traker");
+        //        Directory.CreateDirectory(appRoot);
+
+        //        // Documents/Traker/Clients
+        //        string clientsFolder = Path.Combine(appRoot, "Clients");
+        //        Directory.CreateDirectory(clientsFolder);
+
+        //        // Documents/Traker/Clients/ID_clientName
+        //        string safeName = MakeSafeFolderName(fullname);
+        //        string clientFolderName = $"{clientId}_{safeName}";
+        //        string clientFolder = Path.Combine(clientsFolder, clientFolderName);
+        //        Directory.CreateDirectory(clientFolder);
+
+        //        // Documents/Traker/Clients/ID_clientName/Jobs
+        //        string jobsFolder = Path.Combine(clientFolder, "Jobs");
+        //        Directory.CreateDirectory(jobsFolder);
+
+        //        // Documents/Traker/Clients/ID_clientName/Jobs/ID_jobTitle
+        //        foreach (var job in jobs)
+        //        {
+        //            string safeJobTitle = MakeSafeFolderName(job.Title);
+        //            string jobFolderName = $"{job.JobId}_{safeJobTitle}";
+        //            string jobFolder = Path.Combine(jobsFolder, jobFolderName);
+
+        //            Directory.CreateDirectory(jobFolder);
+        //        }
+
+        //        // Documents/Traker/Clients/ID_clientName/Invoices
+        //        string invoicesFolder = Path.Combine(clientFolder, "Invoices");
+        //        Directory.CreateDirectory(invoicesFolder);
+
+        //        // Documents/Traker/Clients/ID_clientName/Notes
+        //        string notesFolder = Path.Combine(clientFolder, "Notes");
+        //        Directory.CreateDirectory(notesFolder);
+
+        //        // Open folder in Explorer
+        //        Process.Start(new ProcessStartInfo
+        //        {
+        //            FileName = clientFolder,
+        //            UseShellExecute = true
+        //        });
+        //        Logger.LogActivity(Logger.INFO, $"FileStore: LocateFolder() OK");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show(
+        //            $"An error occurred while locating the folder. Please try again.\n\n{ex.Message}",
+        //            "Open Folder",
+        //            MessageBoxButton.OK,
+        //            MessageBoxImage.Error);
+        //        Logger.LogActivity(Logger.ERROR, $"FileStore: LocateFolder() FAIL");
+        //    }
+        //    return Task.CompletedTask;
+        //}
+
+        public static Task<string> CreateClientFolder(int clientId, string fullname)
         {
             try
             {
@@ -108,6 +154,7 @@ namespace Traker.Data
                 Directory.CreateDirectory(notesFolder);
 
                 Logger.LogActivity(Logger.INFO, $"FileStore: CreateJobFolder() OK");
+                return Task.FromResult(clientFolderName);
             }
             catch (Exception ex)
             {
@@ -117,8 +164,8 @@ namespace Traker.Data
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 Logger.LogActivity(Logger.ERROR, $"FileStore: CreateJobFolder() FAIL");
+                throw;
             }
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -231,6 +278,80 @@ namespace Traker.Data
 
 
             return Task.FromResult(file);
+        }
+
+        public static Task DeleteClientFolder(int clientId, string clientName)
+        {
+            // Documents/
+            string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            // Documents/Traker
+            string appRoot = Path.Combine(documents, "Traker");
+
+            // Documents/Traker/Clients
+            string clientsFolder = Path.Combine(appRoot, "Clients");
+
+            // Documents/Traker/Clients/ID_clientName
+            string safeName = MakeSafeFolderName(clientName);
+            string clientFolderName = $"{clientId}_{safeName}";
+            string clientFolder = Path.Combine(clientsFolder, clientFolderName);
+
+            // check if folder exists
+            if (Directory.Exists(clientFolder))
+            {
+                Directory.Delete(clientFolder, true); // true means delete everything inside too
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public static Task<bool> DeleteJobFolder(int clientId, int jobId, string fullname, string jobTitle)
+        {
+            // if only one job left then delete client too
+            bool isLastJob = false;
+
+            // Documents/
+            string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            // Documents/Traker
+            string appRoot = Path.Combine(documents, "Traker");
+
+            // Documents/Traker/Clients
+            string clientsFolder = Path.Combine(appRoot, "Clients");
+
+            // Documents/Traker/Clients/ID_clientName
+            string safeName = MakeSafeFolderName(fullname);
+            string clientFolderName = $"{clientId}_{safeName}";
+            string clientFolder = Path.Combine(clientsFolder, clientFolderName);
+
+            // Documents/Traker/Clients/ID_clientName/Jobs
+            string jobsFolder = Path.Combine(clientFolder, "Jobs");
+
+            // Documents/Traker/Clients/ID_clientName/Jobs/ID_jobTitle
+            string safeJobTitle = MakeSafeFolderName(jobTitle);
+            string jobFolderName = $"{jobId}_{safeJobTitle}";
+            string jobFolder = Path.Combine(jobsFolder, jobFolderName);
+
+            // check if folder exists
+            if (Directory.Exists(jobFolder))
+            {
+                Directory.Delete(jobFolder, true); // true means delete everything inside too
+
+                // 1. Get the count of all subfolders inside Clients
+                string[] subFolders = Directory.GetDirectories(jobsFolder);
+                int folderCount = subFolders.Length;
+                Debug.WriteLine("Delete folder job: " + folderCount);
+
+                if (folderCount == 0)
+                {
+                    isLastJob = true;
+                }
+                else if (folderCount > 0)
+                {
+                    isLastJob = false;
+                }
+            }
+            return Task.FromResult(isLastJob);
         }
     }
 }

@@ -53,15 +53,27 @@ namespace Traker.ViewModels.Add
             State = appState;
         }
 
+        #region Caliburn Functions
         protected override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
-            ClientType = Names.Individual; // default start with individual
-            BusinessNameText = _clientNameTxt;
+            try
+            {
+                ClientType = Names.Individual; // default start with individual
+                BusinessNameText = _clientNameTxt;
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(
+                    $"An error occurred while initializing Add Client page. Please try again.\n\n{ex.Message}",
+                    "Add Client",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                //Logger.LogActivity(Logger.ERROR, $"AddClientViewModel: OnInitializedAsync() FAIL");
+            }
 
             return base.OnInitializedAsync(cancellationToken);
         }
 
-        #region Caliburn Functions
         protected override Task OnDeactivateAsync(bool close, CancellationToken cancellationToken)
         {
             _events.Unsubscribe(this);
@@ -119,20 +131,33 @@ namespace Traker.ViewModels.Add
                 );
             }
 
+            /*
+             * 0 = clientId
+             * 1 = jobId
+             */
+            List<int> clientJobIds = new List<int>();
+
             if (ClientType == Names.Individual)
             {
-                await Database.AddIndividualClient(BusinessName, ClientType, JobTitle, JobDescription, amount, dueDate);
+                clientJobIds = await Database.AddIndividualClient(BusinessName, ClientType, JobTitle, amount, dueDate);
             }
             else if (ClientType == Names.Company)
             {
-                await Database.AddCompanyClient(BusinessName, ClientType, JobTitle, JobDescription, amount, dueDate);
+                clientJobIds = await Database.AddCompanyClient(BusinessName, ClientType, JobTitle, amount, dueDate);
             }
 
             // refresh database
             await _dataService.RefreshDatabase();
 
-            // create folders
-            await FileStore.CreateFolder(_dataService.Clients.OrderByDescending(c => c.ClientId).First().ClientId, BusinessName);
+            // create Client folder in file store and get its name
+            string clientFolderName = await FileStore.CreateClientFolder(_dataService.Clients.OrderByDescending(c => c.ClientId).First().ClientId, BusinessName);
+
+            // create Job folder in file store and get its name
+            string jobFolderName = await FileStore.CreateJobFolder(clientJobIds[0], clientJobIds[1], BusinessName, JobTitle);
+
+            // update client and job databases with their fodler names
+            await Database.SetClientFolderName(clientJobIds[0], clientFolderName);
+            await Database.SetJobFolderName(clientJobIds[1], jobFolderName);
 
             // refresh database
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());

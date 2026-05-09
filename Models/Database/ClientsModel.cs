@@ -19,6 +19,7 @@
         public string Postcode { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;
         public DateOnly CreatedDate { get; set; } = new DateOnly();
+        public string FolderName { get; set; } = string.Empty;
         public bool IsActive { get; set; } = false;
     }
 }

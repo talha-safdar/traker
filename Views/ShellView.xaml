@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        xmlns:conv="clr-namespace:Traker.Converters"
         xmlns:local="clr-namespace:Traker.Views"
         xmlns:cal="http://caliburnmicro.com"
         mc:Ignorable="d"
@@ -35,7 +36,10 @@
             <!-- top bar -->
             <Grid Grid.Row="0" Background="#242424" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MouseLeftButtonDown="DragWindow">
                 <Grid Margin="20,0,20,0">
-                    <TextBlock Text="TRAKER" FontWeight="ExtraBlack" Foreground="{StaticResource FontPrimaryBrush}" FontSize="25" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock conv:TextBlockSpacer.LetterSpacing="2.20" Text="TRAKER " FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="ExtraBlack" Foreground="{StaticResource FontPrimaryBrush}" FontSize="26" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
+                        <TextBlock Text="for Employers" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="22" VerticalAlignment="Bottom" HorizontalAlignment="Left" />                        
+                    </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <Border Margin="0, 0, 20, 0" x:Name="MinimiseWindow" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Center">
                             <Image Width="25" Source="/Resources/Media/Images/Icons/minimise-button.png" Opacity="0.9" />

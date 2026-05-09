@@ -3,16 +3,17 @@
 
 CREATE TABLE IF NOT EXISTS Clients (
     ClientId INTEGER PRIMARY KEY AUTOINCREMENT,
-    Type VARCHAR(20) CHECK (Type IN ('Company', 'Individual')),
-    FullName VARCHAR(100),
-    Email VARCHAR(100),
-    CompanyName VARCHAR(100),
-    PhoneNumber VARCHAR(20),
-    BillingAddress VARCHAR(255),
-    City VARCHAR(50),
-    Postcode VARCHAR(20),
-    Country VARCHAR(50),
+    Type TEXT CHECK (Type IN ('Company', 'Individual')),
+    FullName TEXT,
+    Email TEXT,
+    CompanyName TEXT,
+    PhoneNumber TEXT,
+    BillingAddress TEXT,
+    City TEXT,
+    Postcode TEXT,
+    Country TEXT,
     CreatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FolderName TEXT,
     IsActive BIT DEFAULT 1
 );
 
@@ -21,7 +22,7 @@ CREATE TABLE IF NOT EXISTS Jobs (
     ClientId INTEGER NOT NULL,
     Title TEXT,
     Description TEXT,
-    Status VARCHAR(20),
+    Status TEXT,
     EstimatedPrice TEXT,
     FinalPrice TEXT,
     AmountReceived TEXT,
@@ -29,8 +30,8 @@ CREATE TABLE IF NOT EXISTS Jobs (
     StartDate DATETIME,
     CompletedDate DATETIME,
     DueDate DATETIME,
-    FolderPath TEXT,
     Notes TEXT,
+    FolderName TEXT,
     IsArchived BOOLEAN,
     FOREIGN KEY (ClientId) REFERENCES Clients(ClientId) ON DELETE CASCADE
 );
@@ -49,12 +50,12 @@ CREATE TABLE IF NOT EXISTS Invoices (
     BillingCity TEXT,
     BillingPostcode TEXT,
     BillingCountry TEXT,
-    Status VARCHAR(20), -- Overdue, Paid, Unpaid
-    InvoiceName TEXT,
+    Status TEXT, -- Overdue, Paid, Unpaid
     IsDeleted BIT DEFAULT 0,
     PaidDate DATETIME,
     PaymentMethod TEXT,
     Notes TEXT,
+    InvoiceName TEXT,
     FOREIGN KEY (JobId) REFERENCES Jobs(JobId) ON DELETE CASCADE
 );
 
@@ -71,7 +72,7 @@ CREATE TABLE IF NOT EXISTS Business (
     BusinessId INTEGER PRIMARY KEY AUTOINCREMENT,
     UserId INTEGER NOT NULL,
     BusinessName TEXT,
-    BusinessType VARCHAR(20) CHECK (BusinessType IN ('Company', 'Individual')),
+    BusinessType TEXT CHECK (BusinessType IN ('Company', 'Individual')),
     Country TEXT,
     City TEXT,
     Address TEXT,

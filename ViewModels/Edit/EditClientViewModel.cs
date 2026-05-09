@@ -14,6 +14,7 @@ using Traker.Models;
 namespace Traker.ViewModels.Edit
 {
     using Database;
+    using Traker.Data;
     using Traker.Helper;
     using Traker.Services;
     using Traker.States;
@@ -83,9 +84,20 @@ namespace Traker.ViewModels.Edit
         }
 
         #region Public View Functions
-        public async void ConfirmEditClient()
+        public async Task ConfirmEditClient()
         {
             await Database.EditClient(SelectedRow.ClientId, ClientType, ClientName, ClientEmail, CompanyName, PhoneNumber, BillingAddress, City, Postcode, Country, IsActive);
+            await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+            await TryCloseAsync();
+        }
+
+        public async Task DeleteClient()
+        {
+            // delete client folder
+            await FileStore.DeleteClientFolder(SelectedRow.ClientId, SelectedRow.ClientName);
+
+            // delete client database row
+            await Database.DeleteClient(SelectedRow.ClientId);
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
             await TryCloseAsync();
         }

@@ -278,7 +278,7 @@
                     
                     <!-- delete client -->
                     <Grid Grid.Column="0">
-                        <TextBlock Cursor="Hand" conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Delete Client" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" Foreground="#B04141" FontWeight="Regular" FontSize="16" />
+                        <TextBlock Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteClient()]" conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Delete Client" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" Foreground="#B04141" FontWeight="Regular" FontSize="16" />
                     </Grid>
 
                     <!-- save -->

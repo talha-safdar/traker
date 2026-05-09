@@ -486,8 +486,7 @@ namespace Traker.ViewModels
                     {
                         await Database.SetInvoiceStatus(Data.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.InvoiceId).First(), Names.Overdue, null);
                         await Data.RefreshDatabase();
-                        await Execute.OnUIThreadAsync(async () => { await SetupDashboardData(); });
-                        
+                        await Execute.OnUIThreadAsync(async () => { await SetupDashboardData(); });                        
                     }
                     else if (job.JobStatus == Names.Overdue && DateOnly.FromDateTime(DateTime.Now) < job.InvoiceDueDate)
                     {
@@ -760,7 +759,7 @@ namespace Traker.ViewModels
                     StartDate = job.StartDate,
                     DueDate = job.DueDate,
 
-                    // job
+                    // invoice
                     HasInvoice = Data.Invoices.Any(i => i.JobId == job.JobId && i.IsDeleted == false),
                     InvoiceStatus = Data.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? "Not invoiced", // if left side not null return that else right side
                     InvoiceDueDate = Data.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.DueDate).FirstOrDefault(),
@@ -787,8 +786,11 @@ namespace Traker.ViewModels
                 .Sum(combined => combined.j.FinalPrice).ToString("C");
 
             OutstandingAmount = Data.Jobs
-                .Where(j => j.Status == Names.Done || (j.Status == Names.Invoiced && Data.Invoices.Any(i => i.JobId == j.JobId && i.DueDate > DateOnly.FromDateTime(DateTime.Now) && i.Status == Names.Invoiced)))
-                .Sum(j => j.FinalPrice).ToString("C");
+                .Where(
+                j => j.Status == Names.Done || // job = done
+                    j.Status == Names.Invoiced || // job = invoiced
+                    Data.Invoices.Any(i => i.JobId == j.JobId && i.DueDate < DateOnly.FromDateTime(DateTime.Now) && i.Status == Names.Overdue) // invoice = overdue
+                ).Sum(j => j.FinalPrice).ToString("C");
 
             OverdueAmount = Data.Jobs
                                 .Where(j => j.Status == Names.Invoiced)

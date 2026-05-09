@@ -748,6 +748,9 @@
                                                                         <DataTrigger Binding="{Binding JobStatus}" Value="Invoiced">
                                                                             <Setter Property="Text" Value="Due" />
                                                                         </DataTrigger>
+                                                                        <DataTrigger Binding="{Binding JobStatus}" Value="Overdue">
+                                                                            <Setter Property="Text" Value="Due" />
+                                                                        </DataTrigger>
                                                                         <DataTrigger Binding="{Binding JobStatus}" Value="Paid">
                                                                             <Setter Property="Text" Value="On" />
                                                                         </DataTrigger>
@@ -761,6 +764,9 @@
                                                                     <Setter Property="Text" Value="{Binding DueDate}" />
                                                                     <Style.Triggers>
                                                                         <DataTrigger Binding="{Binding JobStatus}" Value="Invoiced">
+                                                                            <Setter Property="Text" Value="{Binding InvoiceDueDate}" />
+                                                                        </DataTrigger>
+                                                                        <DataTrigger Binding="{Binding JobStatus}" Value="Overdue">
                                                                             <Setter Property="Text" Value="{Binding InvoiceDueDate}" />
                                                                         </DataTrigger>
                                                                         <DataTrigger Binding="{Binding JobStatus}" Value="Paid">

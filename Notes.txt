@@ -10,69 +10,78 @@ Fonts: {
  // 0 = individual, 1 = company
 
 TO-DO:
-- Esc button: to exit popup window
-- add window shadow for cool effect
-- database export/import?
-- on popup menu open and clicked one option close the menu
-- allow multi database selection?
-- logics: create extra column in a txt file/settings and disable rest keep the one you want ( maybe using 1 and 0)
-- if no date use DateTime.MinValue then replace that with custom text after checking e.g.
-- if datetime is less than today then show "to set"?
-- on edit row add a spy signal "amber" for changes that have not been saved yet
-- Delete invoice row after confirmation.
-- remove with spaces for the textbox text entry
-But only if:
-Not paid
-Not exported
-Not finalised
-- cancel makes no sense, I'd say if the user selected not invoiced after he sent it for some reason that he changed mind. 
-he selected not invoiced then confirmation box yes/no. that row with invoice details will be saved in a e.g. "rubbish" folder in txt. 
-format and have a button maybe to access deleted clients, jobs, invoices (however this is out of scope for the first version)
-- on delete row delete folder too
-- add location based activities (e.g. invoice created at company on a map)
-- check use of override function and correct wether before or after the return thingg
-- can create invoice only if job is done
-- set default type to individual
-- might add total number of clients and jobs
-- once status is set to "Invoiced" user cannot change it
-- only create invoice if status done?
-- for currency use public string FormattedPrice => Price.ToString("C", new CultureInfo("en-GB")); dynamic change
-- top right add icon for user's settings: company profile, invoice template, accoutn settings
+
+- make outstanding border reddish if overdue
+
+V1:
+#- Esc button: to exit popup window
+#- add window shadow for cool effect
+#- on popup menu open and clicked one option close the menu
+#- if datetime is less than today then show "to set"?
+#- Delete invoice row after confirmation.
+#- remove with spaces for the textbox text entry
+#- cancel makes no sense, I'd say if the user selected not invoiced after he sent it for some reason that he changed mind. 
+#- the selected not invoiced then confirmation box yes/no. that row with invoice details will be saved in a e.g. "rubbish" folder in txt. 
+#- on delete row delete folder too
+#- check use of override function and correct wether before or after the return thingg
+#- can create invoice only if job is done
+#- set default type to individual
+#- might add total number of clients and jobs
+#- only create invoice if status done?
+#- for currency use public string FormattedPrice => Price.ToString("C", new CultureInfo("en-GB")); dynamic change
+#- top right add icon for user's settings: company profile, invoice template, accoutn settings
     🏢 Company Profile: This is the Input Form. The user types their Company Name, Address, VAT number, and Bank Details. This is "static" data.
 
     📄 Invoice Templates: This is the Customizer. The user chooses if they want their invoice to say "Due in 14 days" or "Due in 30 days," and what their logo looks like.
 
     👤 Account Settings: This is just for Security. Change password, change login email, or manage their subscription to your app.
-- on new launch ask user to set up profile to save time
-- add duotone effect to cards and rest
-- add 3 dots for set up phase to track progress
-- use viewbox for zoom in/out
-- maybe remove textboxes for job statues? (new, active, done, invoiced) since is read only
-- when deleting a job also delete its folders and all files
-- ask for confirmation for deletion
-- if need to re-create the user empty tables first for user bank and company then add new
-- use background and UI threads
-- use try-catch
-- allow adding custom image if company
-- add skip button for some parts in the setup and ask later if missing when creating invoice
-- if sort disabled resotre the original primary key based order
-- blur money if user wants to hide
-- rename folders if user name renamed
-- fix date format to dd/mm/yyyy
-- use icons such as for paid use ✔ Paid
-- add logging
-- validation input
-- backup strategy
-- for individual and company for edit client auto fill the damn company name
-- if status option is 0 dim it alongside the label
-- make job status clickable to sort automatically
-- dont forget to re-design the filter/sort buttons
-- addd are sure for deletion
-- add delete/edit buttons inside cards
-- add inner left border colours for status
-- add tooltip info
-- for text input only letters and for numeric only digits
-- disable filter / sort on add, edit client
+#- on new launch ask user to set up profile to save time
+#- add duotone effect to cards and rest
+#- add 3 dots for set up phase to track progress
+#- use viewbox for zoom in/out
+#- maybe remove textboxes for job statues? (new, active, done, invoiced) since is read only
+#- when deleting a job also delete its folders and all files
+#- ask for confirmation for deletion
+#- use background and UI threads
+#- use try-catch
+#- if sort disabled resotre the original primary key based order
+#- rename folders if user name renamed
+#- fix date format to dd/mm/yyyy
+#- use icons such as for paid use ✔ Paid
+#- add logging
+#- validation input
+#- for individual and company for edit client auto fill the damn company name
+#- dont forget to re-design the filter/sort buttons
+#- addd are sure for deletion
+#- add delete/edit buttons inside cards
+#- add inner left border colours for status
+#- add tooltip info
+#- for text input only letters and for numeric only digits
+#- disable filter / sort on add, edit client
+#- calculate the total price for job using (total - remaining)
+#- add splash screen if necessary
+
+V2:
+#- on edit row add a spy signal "amber" for changes that have not been saved yet
+#- database export/import?
+#- allow multi database selection?
+#- logics: create extra column in a txt file/settings and disable rest keep the one you want ( maybe using 1 and 0)
+#- if no date use DateTime.MinValue then replace that with custom text after checking e.g.
+But only if:
+Not paid
+Not exported
+Not finalised
+#- format and have a button maybe to access deleted clients, jobs, invoices (however this is out of scope for the first version)
+#- add location based activities (e.g. invoice created at company on a map)
+#- once status is set to "Invoiced" user cannot change it
+#- if need to re-create the user empty tables first for user bank and company then add new
+#- allow adding custom image if company
+#- add skip button for some parts in the setup and ask later if missing when creating invoice
+#- blur money if user wants to hide
+#- backup strategy
+#- if status option is 0 dim it alongside the label
+#- make job status clickable to sort automatically
+
 
 
 

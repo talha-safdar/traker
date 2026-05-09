@@ -11,6 +11,7 @@ namespace Traker.ViewModels.Add
 {
     using Database;
     using System.Globalization;
+    using Traker.Data;
     using Traker.Events;
     using Traker.Helper;
     using Traker.States;
@@ -39,7 +40,6 @@ namespace Traker.ViewModels.Add
         #region Private View Variables
         // dont need private as it only displays names with IDs
         private AddJobModel _selectedClient;
-        private string _jobDescription;
         private string _jobTitle;
         private string _price;
         private string _dueDate;
@@ -101,7 +101,13 @@ namespace Traker.ViewModels.Add
                 );
             }
 
-            await Database.AddNewJobToClient(SelectedClient.ClientId, JobTitle, amount, dueDate);
+            // add job under the client's id
+            int jobId = await Database.AddNewJobToClient(SelectedClient.ClientId, JobTitle, amount, dueDate);
+
+            // add job folder
+            await FileStore.CreateJobFolder(SelectedClient.ClientId, jobId, SelectedClient.BusinessName, JobTitle);
+
+            // refresh database
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
             await TryCloseAsync();
         }
@@ -140,15 +146,6 @@ namespace Traker.ViewModels.Add
             {
                 _jobTitle = value;
                 NotifyOfPropertyChange(() => JobTitle);
-            }
-        }
-        public string JobDescription
-        {
-            get { return _jobDescription; }
-            set
-            {
-                _jobDescription = value;
-                NotifyOfPropertyChange(() => JobDescription);
             }
         }
 

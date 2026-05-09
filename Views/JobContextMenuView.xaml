@@ -122,9 +122,9 @@
                 </Grid>
             </Grid>
 
-            <!-- delete -->
+            <!-- delete job -->
             <Grid Grid.Row="2" Margin="5,0">
-                <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteRow()]" Background="Transparent" CornerRadius="17" Height="35" BorderThickness="2" BorderBrush="#B04141">
+                <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteJob()]" Background="Transparent" CornerRadius="17" Height="35" BorderThickness="2" BorderBrush="#B04141">
                     <Border.Style>
                         <Style TargetType="Border">
                             <Setter Property="Opacity" Value="0.7"/>

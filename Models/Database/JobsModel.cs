@@ -27,8 +27,8 @@ namespace Traker.Models.Database
         public DateOnly StartDate { get; set; } = new DateOnly();
         public DateOnly CompletedDate { get; set; } = new DateOnly();
         public DateOnly DueDate { get; set; } = new DateOnly();
-        public string FolderPath { get; set; } = string.Empty;
         public string Notes { get; set; } = string.Empty;
+        public string FolderName { get; set; } = string.Empty;
         public bool IsArchived { get; set; } = false;
     }
 }

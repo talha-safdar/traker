@@ -54,7 +54,7 @@ namespace Traker.ViewModels
             List<JobsModel> jobDetails = new List<JobsModel>();
             jobDetails = Data.Jobs.Where(j => j.ClientId == SelectedJob.ClientId).ToList();
 
-            await FileStore.LocateFolder(SelectedJob.ClientId, SelectedJob.ClientName, jobDetails);
+            //await FileStore.LocateFolder(SelectedJob.ClientId, SelectedJob.ClientName, jobDetails);
             await TryCloseAsync();;
         }
 
@@ -72,9 +72,24 @@ namespace Traker.ViewModels
             await TryCloseAsync();
         }
 
-        public async Task DeleteRow()
+        public async Task DeleteJob()
         {
-            await Database.DeleteJob(SelectedJob.JobId);
+            // delete job folder (if only one job then delete whole client folder)
+            // it deletes the current job folder then it checks if it was the last one if true, then delete client folder
+            if (await FileStore.DeleteJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName, SelectedJob.JobTitle) == true)
+            {
+                // delete entire client folder too
+                await FileStore.DeleteClientFolder(SelectedJob.ClientId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName);
+
+                // delete client from database
+                await Database.DeleteClient(SelectedJob.ClientId);
+            }
+            else if (await FileStore.DeleteJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName, SelectedJob.JobTitle) == false)
+            {
+                // delete job from database
+                await Database.DeleteJob(SelectedJob.JobId);
+            }
+
             await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
             await TryCloseAsync();
         }
