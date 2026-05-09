@@ -18,6 +18,8 @@ namespace Traker.ViewModels
     using System.IO;
     using Traker.Data;
     using Traker.Events;
+    using Traker.Events.DashboardVM;
+    using Traker.Helper;
     using Traker.Services;
 
     public class CreateInvoiceViewModel : Screen
@@ -140,13 +142,15 @@ namespace Traker.ViewModels
             await _dataService.RefreshDatabase();
 
             var invoiceId = Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId);
-            var invoiceName = $"INV-{invoiceId}_{SelectedJob.JobId}_{SelectedJob.ClientId}_{FileStore.MakeSafeFolderName(SelectedJob.ClientName)}_{dateTimeIssued.ToString("dd-MM-yyyy")}_{dateTimeIssued.ToString("HHmmss")}.pdf";
+            var invoiceName = $"INV-{invoiceId}_{SelectedJob.JobId}_{SelectedJob.ClientId}_{FileStore.MakeSafeFolderName(SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName)}_{dateTimeIssued.ToString("dd-MM-yyyy")}_{dateTimeIssued.ToString("HHmmss")}.pdf";
             await Database.SetInvoiceName(invoiceId, invoiceName);
 
             await GenerateInvoice(invoiceName);
 
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+            await Task.Delay(5000);
             await TryCloseAsync();
+            await _events.PublishOnUIThreadAsync(new DashboardVMEvents { Command = Names.ShowInvoice });
 
 
             // on creation open the edit invoice view and not open the pdf in windows directly!!!
@@ -170,7 +174,7 @@ namespace Traker.ViewModels
                     page.Header().PaddingBottom(60).Row(row =>
                     {
                         // cell 1
-                        row.RelativeItem().Text(SelectedJob.CompanyName).ExtraBold().FontSize(36).FontColor(Colors.Blue.Medium);
+                        row.RelativeItem().Text(SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName).ExtraBold().FontSize(36).FontColor(Colors.Blue.Medium);
 
                         // cell 2
                         row.RelativeItem().AlignRight().Text("Invoice").SemiBold().FontSize(36).FontColor(Colors.Black);
@@ -406,11 +410,11 @@ namespace Traker.ViewModels
             }).GeneratePdf(filePath);
 
             // Open it
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = filePath,
-                UseShellExecute = true
-            });
+            //Process.Start(new ProcessStartInfo
+            //{
+            //    FileName = filePath,
+            //    UseShellExecute = true
+            //});
         }
 
         #region Public View Variables

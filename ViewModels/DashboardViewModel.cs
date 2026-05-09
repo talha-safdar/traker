@@ -782,13 +782,13 @@ namespace Traker.ViewModels
                 .Join(Data.Invoices,
                 j => j.JobId,
                 i => i.JobId,
-                (j, i) => new { j, i }).Where(combined => combined.i.Status == "Paid")
+                (j, i) => new { j, i }).Where(combined => combined.i.Status == Names.Paid)
                 .Sum(combined => combined.j.FinalPrice).ToString("C");
 
             OutstandingAmount = Data.Jobs
                 .Where(
-                j => j.Status == Names.Done || // job = done
-                    j.Status == Names.Invoiced || // job = invoiced
+                    j => j.Status == Names.Done || // job = done
+                    (j.Status == Names.Invoiced && Data.Invoices.Any(i => i.JobId == j.JobId && i.Status != Names.Paid)) || // job = invoiced
                     Data.Invoices.Any(i => i.JobId == j.JobId && i.DueDate < DateOnly.FromDateTime(DateTime.Now) && i.Status == Names.Overdue) // invoice = overdue
                 ).Sum(j => j.FinalPrice).ToString("C");
 
@@ -906,6 +906,12 @@ namespace Traker.ViewModels
                 else if (message.Command == Names.UnfilterClientType)
                 {
                     await FilterJobs(Names.UnfilterClientType);
+                }
+                else if (message.Command == Names.ShowInvoice)
+                {
+                    _editInvoiceViewModel = new EditInvoiceViewModel(Data, _events);
+                    _editInvoiceViewModel.SelectedJob = SelectedJob;
+                    await _windowManager.ShowWindowAsync(_editInvoiceViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
                 }
             }
         }

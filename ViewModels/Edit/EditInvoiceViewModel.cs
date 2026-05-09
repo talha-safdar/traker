@@ -77,8 +77,8 @@ namespace Traker.ViewModels.Edit
                 Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).JobId), 
                 SelectedJob.JobTitle, 
                 Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), 
-                SelectedJob.ClientId, 
-                SelectedJob.ClientName, 
+                SelectedJob.ClientId,
+                SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName, 
                 _dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).IssueDate);
 
 
