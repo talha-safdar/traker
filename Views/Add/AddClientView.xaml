@@ -120,7 +120,6 @@
                                     Text="{Binding DueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     MaxLength="10" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                     behaviours:TextboxFilter.EnableFilter="True"
-                                    behaviours:TextboxFilter.MaxLength="10"
                                     behaviours:TextboxFilter.FilterMode="DateDDMMYYYY" />
                                     <TextBlock Opacity="0.3" IsHitTestVisible="False" Visibility="{Binding ElementName=DueDateInput, Path=Text.IsEmpty, Converter={StaticResource BoolToVisCollapsed}}" Background="Transparent" VerticalAlignment="Center" Margin="10,5,0,5" Text="dd/mm/yyyy" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
                                 </Grid>

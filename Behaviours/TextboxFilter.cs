@@ -11,11 +11,14 @@ namespace Traker.Behaviours
     public enum TextFilterMode
     {
         AlphaNumeric,
+        AlphaNumericWithSpaces,
         DigitsOnly,
+        DigitsWithSpaces,
         DigitsAndDotsOnly,
-        Currency,               // Strict: 123.45 format
+        Currency,
         LettersOnly,
         LettersAndSpacesOnly,
+        Email,
         Time24,
         DateDDMMYYYY
     }
@@ -23,14 +26,20 @@ namespace Traker.Behaviours
     public static class TextboxFilter
     {
         private static readonly Regex AlphaNumericRegex = new Regex(@"^[A-Za-z0-9_]+$");
+        private static readonly Regex AlphaNumericWithSpacesRegex = new Regex(@"^[A-Za-z0-9_\s]+$");
         private static readonly Regex DigitsOnlyRegex = new Regex(@"^\d+$");
+        private static readonly Regex DigitsWithSpacesRegex = new Regex(@"^[0-9\s]+$");
         private static readonly Regex DigitsAndDotsRegex = new Regex(@"^[0-9.]+$");
         private static readonly Regex LettersOnlyRegex = new Regex(@"^[A-Za-z]+$");
         private static readonly Regex LettersAndSpacesRegex = new Regex(@"^[A-Za-z\s]+$");
 
-        // Strict Currency: Must start with digit, max one dot, max 2 decimals, no trailing dot
+        // EMAIL FIXED: 
+        // Final check for pasting/validation
+        private static readonly Regex EmailPartialRegex = new Regex(@"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]*@?[a-zA-Z0-9-]*(\.[a-zA-Z0-9-]*)*$");
+        // Final: Standard RFC check for pasting
+        private static readonly Regex EmailFinalRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+
         private static readonly Regex CurrencyFinalRegex = new Regex(@"^[0-9]+(\.[0-9]{1,2})?$");
-        // Partial Currency: Allows typing (e.g., allows a trailing dot while user is mid-type)
         private static readonly Regex CurrencyPartialRegex = new Regex(@"^[0-9]*\.?[0-9]{0,2}$");
 
         private static readonly Regex Time24Partial = new Regex(@"^([0-1]?\d|2[0-3])?(:([0-5]?\d)?)?$");
@@ -39,7 +48,6 @@ namespace Traker.Behaviours
         private static readonly Regex DateFinal = new Regex(@"^(0[1-9]|[12]\d|3[01])/(0[1-9]|1[0-2])/\d{4}$");
 
         #region Attached Properties
-
         public static bool GetEnableFilter(DependencyObject obj) => (bool)obj.GetValue(EnableFilterProperty);
         public static void SetEnableFilter(DependencyObject obj, bool value) => obj.SetValue(EnableFilterProperty, value);
         public static readonly DependencyProperty EnableFilterProperty = DependencyProperty.RegisterAttached("EnableFilter", typeof(bool), typeof(TextboxFilter), new PropertyMetadata(false, OnChanged));
@@ -51,7 +59,6 @@ namespace Traker.Behaviours
         public static int GetMaxLength(DependencyObject obj) => (int)obj.GetValue(MaxLengthProperty);
         public static void SetMaxLength(DependencyObject obj, int value) => obj.SetValue(MaxLengthProperty, value);
         public static readonly DependencyProperty MaxLengthProperty = DependencyProperty.RegisterAttached("MaxLength", typeof(int), typeof(TextboxFilter), new PropertyMetadata(int.MaxValue));
-
         #endregion
 
         private static void OnChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -62,7 +69,7 @@ namespace Traker.Behaviours
                 {
                     tb.PreviewTextInput += OnPreviewText;
                     tb.PreviewKeyDown += OnPreviewKey;
-                    tb.LostFocus += OnLostFocus; // Added to clean up trailing dots
+                    tb.LostFocus += OnLostFocus;
                     DataObject.AddPastingHandler(tb, OnPaste);
                 }
                 else
@@ -78,38 +85,52 @@ namespace Traker.Behaviours
         private static void OnLostFocus(object sender, RoutedEventArgs e)
         {
             var tb = (TextBox)sender;
-            if (GetFilterMode(tb) == TextFilterMode.Currency)
-            {
-                // If user leaves "123.", remove the trailing dot
-                if (tb.Text.EndsWith(".")) tb.Text = tb.Text.TrimEnd('.');
-                // If user left it empty or just a dot, handle as needed
-            }
+            var mode = GetFilterMode(tb);
+            if (mode == TextFilterMode.Currency && tb.Text.EndsWith("."))
+                tb.Text = tb.Text.TrimEnd('.');
         }
 
         private static void OnPreviewKey(object sender, KeyEventArgs e)
         {
             var mode = GetFilterMode((DependencyObject)sender);
-            if (e.Key == Key.Space && mode != TextFilterMode.LettersAndSpacesOnly) e.Handled = true;
+            bool allowsSpaces = mode == TextFilterMode.LettersAndSpacesOnly ||
+                                mode == TextFilterMode.AlphaNumericWithSpaces ||
+                                mode == TextFilterMode.DigitsWithSpaces;
+
+            // Space is strictly blocked for Email
+            if (e.Key == Key.Space && !allowsSpaces) e.Handled = true;
         }
 
         private static void OnPreviewText(object sender, TextCompositionEventArgs e)
         {
             var tb = (TextBox)sender;
             var mode = GetFilterMode(tb);
+
+            if (tb.Text.Length >= GetMaxLength(tb) && tb.SelectionLength == 0)
+            {
+                e.Handled = true;
+                return;
+            }
+
             string raw = tb.Text.Insert(tb.CaretIndex, e.Text);
 
             switch (mode)
             {
                 case TextFilterMode.AlphaNumeric: e.Handled = !AlphaNumericRegex.IsMatch(e.Text); return;
+                case TextFilterMode.AlphaNumericWithSpaces: e.Handled = !AlphaNumericWithSpacesRegex.IsMatch(e.Text); return;
                 case TextFilterMode.DigitsOnly: e.Handled = !DigitsOnlyRegex.IsMatch(e.Text); return;
+                case TextFilterMode.DigitsWithSpaces: e.Handled = !DigitsWithSpacesRegex.IsMatch(e.Text); return;
                 case TextFilterMode.DigitsAndDotsOnly: e.Handled = !DigitsAndDotsRegex.IsMatch(e.Text); return;
                 case TextFilterMode.LettersOnly: e.Handled = !LettersOnlyRegex.IsMatch(e.Text); return;
                 case TextFilterMode.LettersAndSpacesOnly: e.Handled = !LettersAndSpacesRegex.IsMatch(e.Text); return;
 
+                case TextFilterMode.Email:
+                    // Validates the full string for structure while typing (preventing double @, double dots, etc)
+                    if (!EmailPartialRegex.IsMatch(raw)) e.Handled = true;
+                    break;
+
                 case TextFilterMode.Currency:
-                    // Prevent leading dot
                     if (raw.StartsWith(".")) { e.Handled = true; return; }
-                    // Allow digits and one dot only
                     if (!CurrencyPartialRegex.IsMatch(raw)) { e.Handled = true; return; }
                     break;
 
@@ -137,11 +158,14 @@ namespace Traker.Behaviours
             bool valid = mode switch
             {
                 TextFilterMode.AlphaNumeric => AlphaNumericRegex.IsMatch(text),
+                TextFilterMode.AlphaNumericWithSpaces => AlphaNumericWithSpacesRegex.IsMatch(text),
                 TextFilterMode.DigitsOnly => DigitsOnlyRegex.IsMatch(text),
+                TextFilterMode.DigitsWithSpaces => DigitsWithSpacesRegex.IsMatch(text),
                 TextFilterMode.DigitsAndDotsOnly => DigitsAndDotsRegex.IsMatch(text),
                 TextFilterMode.LettersOnly => LettersOnlyRegex.IsMatch(text),
                 TextFilterMode.LettersAndSpacesOnly => LettersAndSpacesRegex.IsMatch(text),
                 TextFilterMode.Currency => CurrencyFinalRegex.IsMatch(text),
+                TextFilterMode.Email => EmailFinalRegex.IsMatch(text),
                 TextFilterMode.Time24 => Time24Final.IsMatch(text),
                 TextFilterMode.DateDDMMYYYY => DateFinal.IsMatch(text),
                 _ => true
