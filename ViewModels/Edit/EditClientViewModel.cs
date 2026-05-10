@@ -67,7 +67,7 @@ namespace Traker.ViewModels.Edit
             ClientEmail = SelectedRow.ClientEmail;
             CompanyName = SelectedRow.CompanyName;
             PhoneNumber = SelectedRow.ClientPhone;
-            BillingAddress = SelectedRow.BillingAddress;
+            BillingAddress = SelectedRow.Address;
             City = SelectedRow.City;
             Postcode = SelectedRow.Postcode;
             Country = SelectedRow.Country;

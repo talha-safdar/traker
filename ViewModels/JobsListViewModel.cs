@@ -60,7 +60,7 @@ namespace Traker.ViewModels
                     ClientEmail = SelectedJob.ClientEmail,
                     ClientPhone = SelectedJob.ClientPhone,
                     CompanyName = SelectedJob.CompanyName,
-                    BillingAddress = SelectedJob.BillingAddress,
+                    Address = SelectedJob.Address,
                     City = SelectedJob.City,
                     Postcode = SelectedJob.Postcode,
                     Country = SelectedJob.Country,

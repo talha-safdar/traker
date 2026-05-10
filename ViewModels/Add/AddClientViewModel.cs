@@ -67,7 +67,7 @@ namespace Traker.ViewModels.Add
                 BusinessNameText = _clientNameTxt;
 
                 // add button
-                _enableAddBtn = false;
+                EnableAddBtn = false;
                 OpacityAddBtn = _halfOpacity;
             }
             catch(Exception ex)

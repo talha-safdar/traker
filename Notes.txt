@@ -16,6 +16,9 @@ TO-DO:
 - fix logics on invoice cancelled what should happen? to the status?
 - fix edit client window enlarging on large name entry
 - create invoice window the textboxes should update the database too
+- fix bug with outstanding invocied
+- purify inputs like remove white spaces etc before saving
+- use cutlutre invariant for datetiem and money
 
 V1:
 #- Esc button: to exit popup window

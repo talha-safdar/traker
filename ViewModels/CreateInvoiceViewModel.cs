@@ -39,6 +39,10 @@ namespace Traker.ViewModels
         private string _subtotal; // subTotAmount#2 used for UI with proper currency symbol and decimal
         private string _vatValue;
         private string _totalAmount; // totAmount#1 used for UI with proper currency symbol and decimal
+
+        // submit button
+        private bool _enableSubmitBtn;
+        private double _opacitySubmitBtn;
         #endregion
 
         #region Public Variables
@@ -52,6 +56,9 @@ namespace Traker.ViewModels
         #endregion
 
         #region Private Class Field Variables
+        private double _fullOpacity = 1.0;
+        private double _halfOpacity = 0.5;
+
         private decimal _subtotalAmountDb; // subTotAmount#1 used for database
         private decimal _totalAmountDb; // totAmount#1 used for database
         #endregion
@@ -79,8 +86,10 @@ namespace Traker.ViewModels
 
         protected override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
+            CanSubmit(); // check wether to enable/disbale submit button
+
             BillingName = SelectedJob.ClientName;
-            BillingAddress = SelectedJob.BillingAddress;
+            BillingAddress = SelectedJob.Address;
             BillingCity = SelectedJob.City;
             BillingPostcode = SelectedJob.Postcode;
             BillingCountry = SelectedJob.Country;
@@ -404,6 +413,33 @@ namespace Traker.ViewModels
             //});
         }
 
+        private bool ValidateDate()
+        {
+            return DateTime.TryParseExact(
+                DueDate,
+                "dd/MM/yyyy",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var parsedDate)
+                && parsedDate.Date >= DateTime.Today;
+        }
+
+        private Task CanSubmit()
+        {
+            if (string.IsNullOrEmpty(BillingName) == false && string.IsNullOrEmpty(BillingAddress) == false && string.IsNullOrEmpty(BillingCity) == false && string.IsNullOrEmpty(BillingCountry) == false && string.IsNullOrEmpty(BillingPostcode) == false && ValidateDate() == true)
+            {
+
+                EnableSubmitBtn = true;
+                OpacitySubmitBtn = _fullOpacity;
+            }
+            else
+            {
+                EnableSubmitBtn = false;
+                OpacitySubmitBtn = _halfOpacity;
+            }
+            return Task.CompletedTask;
+        }
+
         #region Public View Variables
         public string BillingName
         {
@@ -412,6 +448,7 @@ namespace Traker.ViewModels
             {
                 _billingName = value;
                 NotifyOfPropertyChange(() => BillingName);
+                CanSubmit();
             }
         }
 
@@ -422,6 +459,7 @@ namespace Traker.ViewModels
             {
                 _billingAddress = value;
                 NotifyOfPropertyChange(() => BillingAddress);
+                CanSubmit();
             }
         }
 
@@ -432,6 +470,7 @@ namespace Traker.ViewModels
             {
                 _billingCity = value;
                 NotifyOfPropertyChange(() => BillingCity);
+                CanSubmit();
             }
         }
 
@@ -442,6 +481,7 @@ namespace Traker.ViewModels
             {
                 _billingPostcode = value;
                 NotifyOfPropertyChange(() => BillingPostcode);
+                CanSubmit();
             }
         }
 
@@ -452,6 +492,7 @@ namespace Traker.ViewModels
             {
                 _billingCountry = value;
                 NotifyOfPropertyChange(() => BillingCountry);
+                CanSubmit();
             }
         }
 
@@ -462,6 +503,7 @@ namespace Traker.ViewModels
             {
                 _dueDate = value;
                 NotifyOfPropertyChange(() => DueDate);
+                CanSubmit();
             }
         }
 
@@ -498,6 +540,26 @@ namespace Traker.ViewModels
             {
                 _totalAmount = value;
                 NotifyOfPropertyChange(() => TotalAmount);
+            }
+        }
+
+        public bool EnableSubmitBtn
+        {
+            get { return _enableSubmitBtn; }
+            set
+            {
+                _enableSubmitBtn = value;
+                NotifyOfPropertyChange(() => EnableSubmitBtn);
+            }
+        }
+
+        public double OpacitySubmitBtn
+        {
+            get { return _opacitySubmitBtn; }
+            set
+            {
+                _opacitySubmitBtn = value;
+                NotifyOfPropertyChange(() => OpacitySubmitBtn);
             }
         }
         #endregion

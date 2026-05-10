@@ -27,7 +27,7 @@ namespace Traker.Models
         public string CompanyName { get; set; } = string.Empty;
         public string ClientEmail { get; set; } = string.Empty;
         public string ClientPhone { get; set; } = string.Empty;
-        public string BillingAddress { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
         public string City { get; set; } = string.Empty;
         public string Postcode { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;

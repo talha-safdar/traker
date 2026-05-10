@@ -6,6 +6,7 @@
              xmlns:conv="clr-namespace:Traker.Converters"
              xmlns:local="clr-namespace:Traker.Views"
              xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
+             xmlns:behaviours="clr-namespace:Traker.Behaviours"
              xmlns:cal="http://caliburnmicro.com"
              mc:Ignorable="d" 
              d:DesignHeight="1000" d:DesignWidth="800">
@@ -74,7 +75,9 @@
                                         <Grid Grid.Row="1" Margin="0,0,0,25">
                                             <StackPanel Orientation="Vertical">
                                                 <TextBlock Margin="5,0,0,5" Text="Full Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding FullName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding FullName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                                behaviours:TextboxFilter.EnableFilter="True"
+                                                behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
                                             </StackPanel>
                                         </Grid>
 
@@ -82,7 +85,9 @@
                                         <Grid Grid.Row="2" Margin="0,0,0,25">
                                             <StackPanel Orientation="Vertical">
                                                 <TextBlock Margin="5,0,0,5" Text="Email" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                                behaviours:TextboxFilter.EnableFilter="True"
+                                                behaviours:TextboxFilter.FilterMode="Email" />
                                             </StackPanel>
                                         </Grid>
 
@@ -90,7 +95,9 @@
                                         <Grid Grid.Row="3">
                                             <StackPanel Orientation="Vertical">
                                                 <TextBlock Margin="5,0,0,5" Text="Phone" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Phone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Phone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                                behaviours:TextboxFilter.EnableFilter="True"
+                                                behaviours:TextboxFilter.FilterMode="DigitsOnly" />
                                             </StackPanel>
                                         </Grid>
                                     </Grid>
@@ -280,7 +287,9 @@
                             <Grid Grid.Row="0" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="Business Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                    <TextBox Opacity="0.6" IsHitTestVisible="False" Focusable="False" Style="{DynamicResource TextBoxNormal}" Text="{Binding BusinessName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBox Opacity="0.6" IsHitTestVisible="False" Focusable="False" Style="{DynamicResource TextBoxNormal}" Text="{Binding BusinessName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                    behaviours:TextboxFilter.EnableFilter="True"
+                                    behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
                                 </StackPanel>
                             </Grid>
 
@@ -288,7 +297,9 @@
                             <Grid Grid.Row="1" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="Country" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Country, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Country, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                    behaviours:TextboxFilter.EnableFilter="True"
+                                    behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
                                 </StackPanel>
                             </Grid>
 
@@ -296,7 +307,9 @@
                             <Grid Grid.Row="2" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="City" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding City, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding City, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                    behaviours:TextboxFilter.EnableFilter="True"
+                                    behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
                                 </StackPanel>
                             </Grid>
 
@@ -304,7 +317,9 @@
                             <Grid Grid.Row="3" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="Address" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                    behaviours:TextboxFilter.EnableFilter="True"
+                                    behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
                                 </StackPanel>
                             </Grid>
 
@@ -312,7 +327,9 @@
                             <Grid Grid.Row="4" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="Postcode" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Postcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Postcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                    behaviours:TextboxFilter.EnableFilter="True"
+                                    behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
                                 </StackPanel>
                             </Grid>
                         </Grid>
@@ -417,7 +434,9 @@
                             <Grid Grid.Row="0" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="Business Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BusinessName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BusinessName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                        behaviours:TextboxFilter.EnableFilter="True"
+                                        behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
                                 </StackPanel>
                             </Grid>
 
@@ -432,7 +451,9 @@
                                 <Grid Grid.Column="0" Margin="0,0,5,0">
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock Margin="5,0,0,5" Text="Country" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                        <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Country, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                        <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Country, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                            behaviours:TextboxFilter.EnableFilter="True"
+                                            behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
                                     </StackPanel>
                                 </Grid>
 
@@ -440,7 +461,9 @@
                                 <Grid Grid.Column="1" Margin="5,0,0,0">
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock Margin="5,0,0,5" Text="City" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                        <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding City, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                        <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding City, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                            behaviours:TextboxFilter.EnableFilter="True"
+                                            behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
                                     </StackPanel>
                                 </Grid>
                             </Grid>
@@ -449,7 +472,9 @@
                             <Grid Grid.Row="2" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="Address" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                        behaviours:TextboxFilter.EnableFilter="True"
+                                        behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
                                 </StackPanel>
                             </Grid>
 
@@ -457,7 +482,9 @@
                             <Grid Grid.Row="3" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="Postcode" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Postcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Postcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                        behaviours:TextboxFilter.EnableFilter="True"
+                                        behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
                                 </StackPanel>
                             </Grid>
 
@@ -472,7 +499,9 @@
                                 <Grid Grid.Column="0">
                                     <StackPanel Orientation="Vertical" Margin="0,0,5,0">
                                         <TextBlock Margin="5,0,0,5" Text="VAT Number" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                        <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding VatNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                        <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding VatNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                        behaviours:TextboxFilter.EnableFilter="True"
+                                        behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
                                     </StackPanel>
                                 </Grid>
 
@@ -480,7 +509,9 @@
                                 <Grid Grid.Column="1">
                                     <StackPanel Orientation="Vertical" Margin="5,0,0,0">
                                         <TextBlock Margin="5,0,0,5" Text="Registration Number" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                        <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding RegistrationNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                        <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding RegistrationNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                            behaviours:TextboxFilter.EnableFilter="True"
+                                            behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
                                     </StackPanel>
                                 </Grid>
                             </Grid>
@@ -589,7 +620,9 @@
                             <Grid Grid.Row="0" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="Bank Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BankName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BankName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" 
+                                        behaviours:TextboxFilter.EnableFilter="True"
+                                        behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
                                 </StackPanel>
                             </Grid>
 
@@ -597,7 +630,9 @@
                             <Grid Grid.Row="1" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="Account Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding AccountName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding AccountName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                        behaviours:TextboxFilter.EnableFilter="True"
+                                        behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
                                 </StackPanel>
                             </Grid>
 
@@ -612,7 +647,9 @@
                                 <Grid Grid.Column="0" Margin="0,0,5,0">
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock Margin="5,0,0,5" Text="Account Number" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                        <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding AccountNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                        <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding AccountNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                            behaviours:TextboxFilter.EnableFilter="True"
+                                            behaviours:TextboxFilter.FilterMode="DigitsOnly" />
                                     </StackPanel>
                                 </Grid>
 
@@ -620,7 +657,9 @@
                                 <Grid Grid.Column="1">
                                     <StackPanel Orientation="Vertical" Margin="5,0,0,0">
                                         <TextBlock Margin="5,0,0,5" Text="Sort code" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                        <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Sortcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                        <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Sortcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="8" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                        behaviours:TextboxFilter.EnableFilter="True"
+                                        behaviours:TextboxFilter.FilterMode="DigitsWithSpaces" />
                                     </StackPanel>
                                 </Grid>
                             </Grid>
@@ -629,7 +668,9 @@
                             <Grid Grid.Row="3" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="IBAN" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding IBAN, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding IBAN, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                        behaviours:TextboxFilter.EnableFilter="True"
+                                        behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
                                 </StackPanel>
                             </Grid>
 
@@ -637,7 +678,9 @@
                             <Grid Grid.Row="4" Margin="0,0,0,0">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="BIC" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BIC, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BIC, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                        behaviours:TextboxFilter.EnableFilter="True"
+                                        behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
                                 </StackPanel>
                             </Grid>
                         </Grid>

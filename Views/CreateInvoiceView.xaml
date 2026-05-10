@@ -78,7 +78,9 @@
                             <Grid Grid.Column="0" Grid.Row="0" Margin="0,0,5,25">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="Billing Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BillingName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BillingName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                        behaviours:TextboxFilter.EnableFilter="True"
+                                        behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
                                 </StackPanel>
                             </Grid>
 
@@ -86,7 +88,9 @@
                             <Grid Grid.Column="1" Grid.Row="0" Margin="5,0,0,25">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="Billing City" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BillingCity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BillingCity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                        behaviours:TextboxFilter.EnableFilter="True"
+                                        behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
                                 </StackPanel>
                             </Grid>
 
@@ -94,7 +98,9 @@
                             <Grid Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" Margin="0,0,5,25">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="Billing Address" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                    <TextBox Height="153" Style="{DynamicResource TextBoxNormal}" Text="{Binding BillingAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="100" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBox Height="153" Style="{DynamicResource TextBoxNormal}" Text="{Binding BillingAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="100" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                        behaviours:TextboxFilter.EnableFilter="True"
+                                        behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
                                 </StackPanel>
                             </Grid>
 
@@ -102,7 +108,9 @@
                             <Grid Grid.Column="1" Grid.Row="1" Grid.RowSpan="1" Margin="5,0,0,25">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="Billing Country" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BillingCountry, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BillingCountry, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                        behaviours:TextboxFilter.EnableFilter="True"
+                                        behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
                                 </StackPanel>
                             </Grid>
 
@@ -110,7 +118,9 @@
                             <Grid Grid.Column="1" Grid.Row="2" Grid.RowSpan="1" Margin="5,0,0,25">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="Billing Postcode" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BillingPostcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BillingPostcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                        behaviours:TextboxFilter.EnableFilter="True"
+                                        behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
                                 </StackPanel>
                             </Grid>
                         </Grid>
@@ -132,7 +142,9 @@
                             <Grid Grid.Column="0" Grid.Row="0" Margin="0,0,5,25">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="Due Date" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding DueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="10" behaviours:TextboxFilter.EnableFilter="True" behaviours:TextboxFilter.MaxLength="10" behaviours:TextboxFilter.FilterMode="DateDDMMYYYY"  AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                    <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding DueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="10" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                        behaviours:TextboxFilter.EnableFilter="True"
+                                        behaviours:TextboxFilter.FilterMode="DateDDMMYYYY" />
                                 </StackPanel>
                             </Grid>
                             
@@ -168,9 +180,9 @@
 
             <!-- butons -->
             <Grid Grid.Row="2">
-                <!-- save -->
+                <!-- submit -->
                 <Grid Grid.Column="2">
-                    <Border Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action CreateInvoice()]" Background="#333333" CornerRadius="23" Height="45" Width="200" BorderThickness="1">
+                    <Border Cursor="Hand" IsEnabled="{Binding EnableSubmitBtn}" Opacity="{Binding OpacitySubmitBtn}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action CreateInvoice()]" Background="#333333" CornerRadius="23" Height="45" Width="200" BorderThickness="1">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <!-- DEFAULT STATE -->

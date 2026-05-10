@@ -13,6 +13,7 @@
              d:DesignWidth="500"
              MaxHeight="790"
              MaxWidth="600">
+    
     <UserControl.Resources>
         <conv:BoolToVisibilityCollapsed x:Key="BoolToVisCollapsed"/>
     </UserControl.Resources>

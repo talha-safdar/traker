@@ -742,7 +742,7 @@ namespace Traker.ViewModels
                     ClientEmail = client.Email,
                     ClientPhone = client.PhoneNumber,
                     CompanyName = client.CompanyName,
-                    BillingAddress = client.BillingAddress,
+                    Address = client.BillingAddress,
                     City = client.City,
                     Postcode = client.Postcode,
                     Country = client.Country,
