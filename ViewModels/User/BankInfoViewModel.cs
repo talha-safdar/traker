@@ -48,7 +48,7 @@ namespace Traker.ViewModels.User
         #region Public View Functions
         public async Task ConfirmBankInfoChanges()
         {
-            await Database.EditBank(_dataService.User[0].UserId, BankName, AccountName, AccountNumber, Sortcode, IBAN, BIC);
+            await Database.EditBank(_dataService.User[0].UserId, BankName.Trim(), AccountName.Trim(), AccountNumber.Trim(), Sortcode.Trim(), IBAN.Trim(), BIC.Trim());
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
             await TryCloseAsync();
         }

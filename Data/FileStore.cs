@@ -167,7 +167,10 @@ namespace Traker.Data
                 string clientNewFolder = Path.Combine(clientsFolder, clientFolderNewName);
 
                 // repalce names
-                Directory.Move(clientFolder, clientNewFolder);
+                if (clientFolder != clientNewFolder)
+                {
+                    Directory.Move(clientFolder, clientNewFolder);
+                }
             }
             catch
             {
@@ -208,7 +211,10 @@ namespace Traker.Data
                 string jobNewFolder = Path.Combine(jobsFolder, newName);
 
                 // repalce names
-                Directory.Move(jobFolder, jobNewFolder);
+                if (jobFolder != jobNewFolder)
+                {
+                    Directory.Move(jobFolder, jobNewFolder);
+                }
             }
             catch
             {

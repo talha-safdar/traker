@@ -109,7 +109,7 @@ namespace Traker.ViewModels
         /// </summary>
         public async Task ConfirmUserSetup()
         {
-            await Database.CreateUser(FullName, Email, Phone);
+            await Database.CreateUser(FullName.Trim(), Email.Trim(), Phone.Trim());
 
             // refresh database
             await _dataService.RefreshDatabase();
@@ -147,7 +147,7 @@ namespace Traker.ViewModels
         {
             // use checks and try-catch
 
-            await Database.CreateBusiness(_dataService.User[0].UserId, BusinessName, BusinessType, Country, City, Address, Postcode, VatNumber, RegistrationNumber);
+            await Database.CreateBusiness(_dataService.User[0].UserId, BusinessName.Trim(), BusinessType.Trim(), Country.Trim(), City.Trim(), Address.Trim(), Postcode.Trim(), VatNumber.Trim(), RegistrationNumber.Trim());
 
             await UIHelper.SwitchBetweenViews(SetupWindows, 3); // 3=bank
 
@@ -161,7 +161,7 @@ namespace Traker.ViewModels
         /// </summary>
         public async Task ConfirmBankSetup()
         {
-            await Database.CreateBank(_dataService.User[0].UserId, BankName, AccountName, AccountNumber, Sortcode, IBAN, BIC);
+            await Database.CreateBank(_dataService.User[0].UserId, BankName.Trim(), AccountName.Trim(), AccountNumber.Trim(), Sortcode.Trim(), IBAN.Trim(), BIC.Trim());
             await TryCloseAsync();            
             await _dataService.RefreshDatabase(); // refresh the data service
             await _events.PublishOnUIThreadAsync(new ShellVM { Command = Names.SetupCompleted });

@@ -134,12 +134,12 @@ namespace Traker.ViewModels.Edit
                 dueDate = DateOnly.ParseExact(DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
             }
 
-            await Database.EditJob(SelectedJob.JobId, JobTitle, JobDescription, Status, priceFormatted.ToString(), AmountReceivedFormatted.ToString(), startDate, dueDate);
+            await Database.EditJob(SelectedJob.JobId, JobTitle.Trim(), JobDescription.Trim(), Status.Trim(), priceFormatted.ToString().Trim(), AmountReceivedFormatted.ToString().Trim(), startDate, dueDate);
 
             // check if job title changed 
             if (SelectedJob.JobTitle != JobTitle)
             {
-                await FileStore.UpdateJobFolderName(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName, SelectedJob.JobTitle, JobTitle);
+                await FileStore.UpdateJobFolderName(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim(), SelectedJob.JobTitle.Trim(), JobTitle.Trim());
             }
 
             await TryCloseAsync();
@@ -150,15 +150,15 @@ namespace Traker.ViewModels.Edit
         {
             // delete job folder (if only one job then delete whole client folder)
             // it deletes the current job folder then it checks if it was the last one if true, then delete client folder
-            if (await FileStore.DeleteJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName, SelectedJob.JobTitle) == true)
+            if (await FileStore.DeleteJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim(), SelectedJob.JobTitle.Trim()) == true)
             {
                 // delete entire client folder too
-                await FileStore.DeleteClientFolder(SelectedJob.ClientId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName);
+                await FileStore.DeleteClientFolder(SelectedJob.ClientId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim());
 
                 // delete client from database
                 await Database.DeleteClient(SelectedJob.ClientId);
             }
-            else if (await FileStore.DeleteJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName, SelectedJob.JobTitle) == false)
+            else if (await FileStore.DeleteJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim(), SelectedJob.JobTitle.Trim()) == false)
             {
                 // delete job from database
                 await Database.DeleteJob(SelectedJob.JobId);

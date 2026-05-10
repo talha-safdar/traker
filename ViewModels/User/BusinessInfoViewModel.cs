@@ -71,7 +71,7 @@ namespace Traker.ViewModels.User
         #region Public View Functions
         public async Task ConfirmBusinessInfoChanges()
         {
-            await Database.EditBusiness(_dataService.User[0].UserId, BusinessName, Country, City, Address, Postcode, VatNumber, RegistrationNumber);
+            await Database.EditBusiness(_dataService.User[0].UserId, BusinessName.Trim(), Country.Trim(), City.Trim(), Address.Trim(), Postcode.Trim(), VatNumber.Trim(), RegistrationNumber.Trim());
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
             await TryCloseAsync();
         }

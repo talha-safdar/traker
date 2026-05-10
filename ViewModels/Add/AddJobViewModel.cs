@@ -114,10 +114,10 @@ namespace Traker.ViewModels.Add
             }
 
             // add job under the client's id
-            int jobId = await Database.AddNewJobToClient(SelectedClient.ClientId, JobTitle, amount, dueDate);
+            int jobId = await Database.AddNewJobToClient(SelectedClient.ClientId, JobTitle.Trim(), amount, dueDate);
 
             // add job folder
-            await FileStore.CreateJobFolder(SelectedClient.ClientId, jobId, SelectedClient.BusinessName, JobTitle);
+            await FileStore.CreateJobFolder(SelectedClient.ClientId, jobId, SelectedClient.BusinessName.Trim(), JobTitle.Trim());
 
             // refresh database
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());

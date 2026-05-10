@@ -52,6 +52,7 @@ namespace Traker.ViewModels
         private int _totalJobsCount;
         private ObservableCollection<DashboardModel> _dashboardData; // listo of data shown on the data grid
         public DashboardModel _selectedJob; // selected data row automatically filled on click
+        private string _outstandingStatusBorder; // grey=normal, pink=overdue
 
         /*
          * for buttons:
@@ -104,6 +105,7 @@ namespace Traker.ViewModels
             _activeJobsCount = "0";
             _doneJobsCount = "0";
             _invoicedJobsCount = "0";
+            _outstandingStatusBorder = string.Empty;
 
             _dashboardData = new ObservableCollection<DashboardModel>();
             _dashboardDataBackup = new ObservableCollection<DashboardModel>();
@@ -195,12 +197,6 @@ namespace Traker.ViewModels
 
         public async Task OpenSortContextMenu(FrameworkElement anchorElement)
         {
-            // if add menu open do nothing
-            //if (State.IsWindowOpen == true)
-            //{
-            //    return;
-            //}
-
             if (_sortJobsViewModel != null)
             {
                 await _sortJobsViewModel.TryCloseAsync(false);
@@ -236,11 +232,6 @@ namespace Traker.ViewModels
 
         public async Task OpenUserContenxtMenu(FrameworkElement anchorElement)
         {
-            // if add menu open do nothing
-            //if (State.IsWindowOpen == true)
-            //{
-            //    return;
-            //}
 
             if (_userContextMenuViewModel != null)
             {
@@ -283,12 +274,6 @@ namespace Traker.ViewModels
 
         public async Task OpenContextMenu(DashboardModel selectedJob)
         {
-            // if add menu open do nothing
-            //if (State.IsWindowOpen == true)
-            //{
-            //    return;
-            //}
-
             if (_contextMenuVM != null)
             {
                 await _contextMenuVM.TryCloseAsync(false);
@@ -323,7 +308,7 @@ namespace Traker.ViewModels
             {
                 _editInvoiceViewModel = new EditInvoiceViewModel(Data, _events);
                 _editInvoiceViewModel.SelectedJob = jobSelected;
-                await _windowManager.ShowWindowAsync(_editInvoiceViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
+                await _windowManager.ShowDialogAsync(_editInvoiceViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
             }
             else
             {
@@ -348,7 +333,7 @@ namespace Traker.ViewModels
         {
             _editClientViewModel = new EditClientViewModel(_events, _windowManager, Data);
             _editClientViewModel.SelectedRow = SelectedJob; // pass selected row to EditClientViewModel
-            await _windowManager.ShowWindowAsync(_editClientViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
+            await _windowManager.ShowDialogAsync(_editClientViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
         }
 
         public async Task AddClient()
@@ -450,7 +435,10 @@ namespace Traker.ViewModels
         /// </summary>
         private void PauseLoop()
         {
-            _pauseEvent.Reset(); // Close the gate
+            if (_pauseEvent != null)
+            {
+                _pauseEvent.Reset(); // Close the gate
+            }
         }
 
         /// <summary>
@@ -741,6 +729,8 @@ namespace Traker.ViewModels
 
         private Task SetupDashboardData()
         {
+            PauseLoop();
+
             // row data
             _dashboardData.Clear();
             int index = 0;
@@ -812,8 +802,8 @@ namespace Traker.ViewModels
                                 .Where(j => j.Status == Names.Invoiced)
                                 .Join(Data.Invoices, 
                                       job => job.JobId, 
-                                      inv => inv.JobId, (job, inv) => new { job.FinalPrice, inv.DueDate })
-                                .Where(x => x.DueDate < DateOnly.FromDateTime(DateTime.Now))
+                                      inv => inv.JobId, (job, inv) => new { job.FinalPrice, inv.DueDate, inv.Status })
+                                .Where(x => x.DueDate < DateOnly.FromDateTime(DateTime.Now) && x.Status != Names.Paid)
                                 .Sum(x => x.FinalPrice).ToString("C"); // overdue
 
             TotalJobsCount = Data.Jobs.Count();
@@ -829,6 +819,16 @@ namespace Traker.ViewModels
             {
                 EnableBtns = true;
                 OpacityBtns = _fullOpacity;
+            }
+
+            // if there is any overdue
+            if (decimal.Parse(OverdueAmount, NumberStyles.Currency, CultureInfo.CurrentCulture) > 0.0m)
+            {
+                OutstandingStatusBorder = "Overdue";
+            }
+            else
+            {
+                OutstandingStatusBorder = string.Empty;
             }
 
             StartLoop();
@@ -1095,6 +1095,16 @@ namespace Traker.ViewModels
             {
                 _opacityBtns = value;
                 NotifyOfPropertyChange(() => OpacityBtns);
+            }
+        }
+
+        public string OutstandingStatusBorder
+        {
+            get { return _outstandingStatusBorder; }
+            set
+            {
+                _outstandingStatusBorder = value;
+                NotifyOfPropertyChange(() => OutstandingStatusBorder);
             }
         }
         #endregion

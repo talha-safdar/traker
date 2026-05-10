@@ -148,25 +148,25 @@ namespace Traker.ViewModels.Add
 
             if (ClientType == Names.Individual)
             {
-                clientJobIds = await Database.AddIndividualClient(BusinessName, ClientType, JobTitle, amount, dueDate);
+                clientJobIds = await Database.AddIndividualClient(BusinessName.Trim(), ClientType.Trim(), JobTitle.Trim(), amount, dueDate);
             }
             else if (ClientType == Names.Company)
             {
-                clientJobIds = await Database.AddCompanyClient(BusinessName, ClientType, JobTitle, amount, dueDate);
+                clientJobIds = await Database.AddCompanyClient(BusinessName.Trim(), ClientType.Trim(), JobTitle.Trim(), amount, dueDate);
             }
 
             // refresh database
             await _dataService.RefreshDatabase();
 
             // create Client folder in file store and get its name
-            string clientFolderName = await FileStore.CreateClientFolder(_dataService.Clients.OrderByDescending(c => c.ClientId).First().ClientId, BusinessName);
+            string clientFolderName = await FileStore.CreateClientFolder(_dataService.Clients.OrderByDescending(c => c.ClientId).First().ClientId, BusinessName.Trim());
 
             // create Job folder in file store and get its name
-            string jobFolderName = await FileStore.CreateJobFolder(clientJobIds[0], clientJobIds[1], BusinessName, JobTitle);
+            string jobFolderName = await FileStore.CreateJobFolder(clientJobIds[0], clientJobIds[1], BusinessName.Trim(), JobTitle.Trim());
 
             // update client and job databases with their fodler names
-            await Database.SetClientFolderName(clientJobIds[0], clientFolderName);
-            await Database.SetJobFolderName(clientJobIds[1], jobFolderName);
+            await Database.SetClientFolderName(clientJobIds[0], clientFolderName.Trim());
+            await Database.SetJobFolderName(clientJobIds[1], jobFolderName.Trim());
 
             // refresh database
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());

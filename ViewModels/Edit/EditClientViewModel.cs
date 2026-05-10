@@ -86,12 +86,12 @@ namespace Traker.ViewModels.Edit
         #region Public View Functions
         public async Task ConfirmEditClient()
         {
-            await Database.EditClient(SelectedRow.ClientId, ClientType, ClientName, ClientEmail, CompanyName, PhoneNumber, BillingAddress, City, Postcode, Country, IsActive);
+            await Database.EditClient(SelectedRow.ClientId, ClientType.Trim(), ClientName.Trim(), ClientEmail.Trim(), CompanyName.Trim(), PhoneNumber.Trim(), BillingAddress.Trim(), City.Trim(), Postcode.Trim(), Country.Trim(), IsActive);
 
             // check if name changes for folder naming purpose
             if ((SelectedRow.ClientType == Names.Individual ? SelectedRow.ClientName : SelectedRow.CompanyName) != ClientName)
             {
-                await FileStore.UpdateClientFolderName(SelectedRow.ClientId, SelectedRow.ClientType == Names.Individual ? SelectedRow.ClientName : SelectedRow.CompanyName, SelectedRow.ClientType == Names.Individual ? ClientName : CompanyName);
+                await FileStore.UpdateClientFolderName(SelectedRow.ClientId, SelectedRow.ClientType == Names.Individual ? SelectedRow.ClientName.Trim() : SelectedRow.CompanyName.Trim(), SelectedRow.ClientType == Names.Individual ? ClientName.Trim() : CompanyName.Trim());
             }
 
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
@@ -101,7 +101,7 @@ namespace Traker.ViewModels.Edit
         public async Task DeleteClient()
         {
             // delete client folder
-            await FileStore.DeleteClientFolder(SelectedRow.ClientId, SelectedRow.ClientName);
+            await FileStore.DeleteClientFolder(SelectedRow.ClientId, SelectedRow.ClientName.Trim());
 
             // delete client database row
             await Database.DeleteClient(SelectedRow.ClientId);

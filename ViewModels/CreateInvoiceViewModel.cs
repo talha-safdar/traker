@@ -134,17 +134,16 @@ namespace Traker.ViewModels
 
 
 
-            await Database.CreateInvoice(SelectedJob.ClientId, SelectedJob.JobId, _subtotalAmountDb, result, _totalAmountDb, dueDate, BillingName, BillingAddress, BillingCity, BillingPostcode, BillingCountry, dateTimeIssued);
+            await Database.CreateInvoice(SelectedJob.ClientId, SelectedJob.JobId, _subtotalAmountDb, result, _totalAmountDb, dueDate, BillingName.Trim(), BillingAddress.Trim(), BillingCity.Trim(), BillingPostcode.Trim(), BillingCountry.Trim(), dateTimeIssued);
             await _dataService.RefreshDatabase();
 
             var invoiceId = Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId);
             var invoiceName = $"INV-{invoiceId}_{SelectedJob.JobId}_{SelectedJob.ClientId}_{FileStore.MakeSafeFolderName(SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName)}_{dateTimeIssued.ToString("dd-MM-yyyy")}_{dateTimeIssued.ToString("HHmmss")}.pdf";
-            await Database.SetInvoiceName(invoiceId, invoiceName);
+            await Database.SetInvoiceName(invoiceId, invoiceName.Trim());
 
             await GenerateInvoice(invoiceName);
 
             await _events.PublishOnUIThreadAsync(new RefreshDatabase() { Command = "Invoice" });
-            await Task.Delay(5000);
             await TryCloseAsync();
             await _events.PublishOnUIThreadAsync(new DashboardVMEvents { Command = Names.ShowInvoice });
 

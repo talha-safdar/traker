@@ -252,7 +252,7 @@
                                         </LinearGradientBrush>
                                     </Border.BorderBrush>
                                     <StackPanel Orientation="Vertical" Margin="10">
-                                        <TextBlock Foreground="LightCoral" Margin="5,0,0,0" Text="New" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
+                                        <TextBlock Foreground="{StaticResource JobStatusNew}" Margin="5,0,0,0" Text="New" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
                                         <TextBlock Margin="5,0,0,0" Text="{Binding NewJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
                                     </StackPanel>    
                                 </Border>
@@ -269,7 +269,7 @@
                                         </LinearGradientBrush>
                                     </Border.BorderBrush>
                                     <StackPanel Orientation="Vertical" Margin="10">
-                                        <TextBlock Foreground="DarkOrange" Margin="5,0,0,0" Text="Active" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
+                                        <TextBlock Foreground="{StaticResource JobStatusActive}" Margin="5,0,0,0" Text="Active" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
                                         <TextBlock Margin="5,0,0,0" Text="{Binding ActiveJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
                                     </StackPanel>
                                 </Border>
@@ -286,7 +286,7 @@
                                         </LinearGradientBrush>
                                     </Border.BorderBrush>
                                     <StackPanel Orientation="Vertical" Margin="10">
-                                        <TextBlock Foreground="LightGreen" Margin="5,0,0,0" Text="Done" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
+                                        <TextBlock Foreground="{StaticResource JobStatusDone}" Margin="5,0,0,0" Text="Done" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
                                         <TextBlock Margin="5,0,0,0" Text="{Binding DoneJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
                                     </StackPanel>
                                 </Border>
@@ -303,7 +303,7 @@
                                         </LinearGradientBrush>
                                     </Border.BorderBrush>
                                     <StackPanel Orientation="Vertical" Margin="10">
-                                        <TextBlock Foreground="LightBlue" Margin="5,0,0,0" Text="Invoiced" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
+                                        <TextBlock Foreground="{StaticResource JobStatusInvoiced}" Margin="5,0,0,0" Text="Invoiced" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="22" />
                                         <TextBlock Margin="5,0,0,0" Text="{Binding InvoicedJobsCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="42" />
                                     </StackPanel>
                                 </Border>
@@ -342,9 +342,21 @@
                                 <StackPanel Orientation="Vertical" Margin="10,10,10,30">
                                     <TextBlock Margin="5,0,0,5" Text="Outstanding" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
                                     <Border CornerRadius="10" BorderThickness="1.5" SnapsToDevicePixels="True">
-                                        <Border.BorderBrush>
-                                            <SolidColorBrush Color="LightGray" Opacity="0.25" />
-                                        </Border.BorderBrush>
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="BorderBrush">
+                                                    <Setter.Value>
+                                                        <SolidColorBrush Color="LightGray" Opacity="0.25"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding OutstandingStatusBorder}" Value="Overdue">
+                                                        <Setter Property="BorderBrush" Value="{StaticResource JobStatusOverdue}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+
                                         <TextBox Style="{StaticResource TextBoxReadOnly}" Cursor="Arrow" Foreground="{StaticResource FontSecondaryBrush}" IsReadOnly="True" Text="{Binding OutstandingAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderThickness="0" />
                                     </Border>
                                 </StackPanel>
@@ -509,8 +521,26 @@
                                             </LinearGradientBrush>
                                         </Border.BorderBrush>
                                             <Border.ToolTip>
-                                                <ToolTip Style="{StaticResource DarkToolTip}"
-                                                Content="Double-click to edit job | right click for more"/>
+                                                <ToolTip Style="{StaticResource DarkToolTip}">
+                                                    <TextBlock>
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Text" Value="Double-click to edit job | right click for more"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding JobStatus}" Value="Invoiced">
+                                                                        <Setter Property="Text" Value="Double-click to view invoice | right click for more"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding JobStatus}" Value="Overdue">
+                                                                        <Setter Property="Text" Value="Double-click to view invoice | right click for more"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding JobStatus}" Value="Paid">
+                                                                        <Setter Property="Text" Value="Double-click to view invoice | right click for more"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </ToolTip>
                                             </Border.ToolTip>
 
                                             <Border.BorderThickness>0,1,0,0</Border.BorderThickness>
