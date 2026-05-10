@@ -800,7 +800,7 @@
 
                                             <!-- job price -->
                                             <Grid Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                <TextBlock Margin="0" Text="{Binding Price}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="#E0E0E0" FontSize="32" />
+                                                <TextBlock Margin="0" Text="{Binding Price, StringFormat={}{0:C}}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="#E0E0E0" FontSize="32" />
                                             </Grid>
                                         </Grid>
                                     </Border>

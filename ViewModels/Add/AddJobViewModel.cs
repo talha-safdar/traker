@@ -16,7 +16,7 @@ namespace Traker.ViewModels.Add
     using Traker.Helper;
     using Traker.States;
 
-    // try use inheritance or a design pattern to avoid repetation
+    // try use inheritance or a design pattern to avoid repetition
 
     public class AddJobViewModel : Screen
     {
@@ -45,13 +45,17 @@ namespace Traker.ViewModels.Add
         private string _dueDate;
         #endregion
 
-
         private ObservableCollection<AddJobModel> _addJob;
 
         public AddJobViewModel(IEventAggregator events, AppState appState)
         {
             _events = events;
             _addJob = new ObservableCollection<AddJobModel>();
+
+            _selectedClient = new AddJobModel();
+            _jobTitle = string.Empty;
+            _price = string.Empty;
+            _dueDate = string.Empty;
 
             State = appState;
         }
@@ -65,8 +69,6 @@ namespace Traker.ViewModels.Add
                     ClientId = client.ClientId,
                     CreatedDate = client.CreatedDate.ToString(),
                     BusinessName = client.ClientType == Names.Individual ? client.ClientName : client.CompanyName,
-                    JobDescription = client.JobDescription,
-                    Price = client.Price
                 });
             }
             return base.OnInitializedAsync(cancellationToken);

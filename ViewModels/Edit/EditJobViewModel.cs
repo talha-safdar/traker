@@ -11,7 +11,10 @@ using Traker.Models;
 namespace Traker.ViewModels.Edit
 {
     using Database;
+    using Microsoft.VisualBasic;
+    using System.Diagnostics;
     using System.Globalization;
+    using System.Text.RegularExpressions;
     using Traker.Data;
     using Traker.Helper;
 
@@ -27,11 +30,25 @@ namespace Traker.ViewModels.Edit
         private string _jobTitle;
         private string _jobDescription;
         private string _status;
-        private string _price;
-        private string _amountReceived;
-        private DateOnly _startDate;
-        private DateOnly _dueDate;
-        private string _reaminingAmount;
+        private decimal _price;
+        private decimal _amountReceived;
+        private string _startDate;
+        private string _dueDate;
+        private string _remainingAmount;
+
+        // confirm button
+        private bool _enableSubmitBtn;
+        private double _opacitySubmitBtn;
+        #endregion
+
+        #region Private Class Field Variables
+        private double _fullOpacity = 1.0;
+        private double _halfOpacity = 0.5;
+
+        private string _priceText;
+        private string _amountReceivedText;
+        private bool _isEditingPrice;
+        private bool _isEditingReceived;
         #endregion
 
         public DashboardModel SelectedJob; // data passed by DashboardVM
@@ -49,10 +66,10 @@ namespace Traker.ViewModels.Edit
             JobTitle = SelectedJob.JobTitle;
             JobDescription = SelectedJob.JobDescription;
             Status = SelectedJob.JobStatus;
-            Price = SelectedJob.Price;
-            AmountReceived = SelectedJob.AmountReceived;
-            StartDate = SelectedJob.StartDate;
-            DueDate = SelectedJob.DueDate;
+            Price = SelectedJob.Price.ToString();
+            AmountReceived = SelectedJob.AmountReceived.ToString();
+            StartDate = SelectedJob.StartDate == DateOnly.FromDateTime(DateTime.MinValue) ? string.Empty : SelectedJob.StartDate.ToString();
+            DueDate = SelectedJob.DueDate.ToString();
 
             return base.OnInitializedAsync(cancellationToken);
         }
@@ -64,6 +81,33 @@ namespace Traker.ViewModels.Edit
         }
 
         #region Public View Functions
+
+        // focus/unfocus behaviours for price edit
+        public void PriceFocused()
+        {
+            _isEditingPrice = true;
+            NotifyOfPropertyChange(nameof(Price));
+        }
+
+        public void PriceUnfocused()
+        {
+            _isEditingPrice = false;
+            NotifyOfPropertyChange(nameof(Price));
+        }
+
+        public void ReceivedFocused()
+        {
+            _isEditingReceived = true;
+            NotifyOfPropertyChange(nameof(AmountReceived));
+        }
+
+        public void ReceivedUnfocused()
+        {
+            _isEditingReceived = false;
+            NotifyOfPropertyChange(nameof(AmountReceived));
+        }
+        // focus/unfocus behaviours for price edit
+
         public async Task ConfirmJobChanges()
         {
             // price
@@ -78,8 +122,19 @@ namespace Traker.ViewModels.Edit
             CultureInfo.CurrentCulture,
             out var AmountReceivedFormatted);
 
+            var startDate = DateOnly.MinValue;
+            if (StartDate != String.Empty)
+            {
+                startDate = DateOnly.ParseExact(StartDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+            }
 
-            await Database.EditJob(SelectedJob.JobId, JobTitle, JobDescription, Status, priceFormatted.ToString(), AmountReceivedFormatted.ToString(), StartDate, DueDate);
+            var dueDate = DateOnly.MinValue;
+            if (DueDate != String.Empty)
+            {
+                dueDate = DateOnly.ParseExact(DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+            }
+
+            await Database.EditJob(SelectedJob.JobId, JobTitle, JobDescription, Status, priceFormatted.ToString(), AmountReceivedFormatted.ToString(), startDate, dueDate);
             await TryCloseAsync();
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
         }
@@ -109,6 +164,76 @@ namespace Traker.ViewModels.Edit
         public async Task Exit()
         {
             await TryCloseAsync();
+        }
+        #endregion
+
+        #region Private Functions
+        private Task ValidateDate()
+        {
+            if (string.IsNullOrEmpty(StartDate) == false)
+            {
+                bool startDate =  DateTime.TryParseExact(StartDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None,  out var parsedStartDate);
+                bool dueDate = DateTime.TryParseExact(DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDueDate);
+
+                if (startDate == true && dueDate == true)
+                {
+                    if (DateOnly.ParseExact(StartDate, "dd/MM/yyyy", CultureInfo.InvariantCulture) < DateOnly.ParseExact(DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture))
+                    {
+                        EnableSubmitBtn = true;
+                        OpacitySubmitBtn = _fullOpacity;
+                    }
+                    else
+                    {
+                        EnableSubmitBtn = false;
+                        OpacitySubmitBtn = _halfOpacity;
+                    }
+                }
+                else
+                {
+                    EnableSubmitBtn = false;
+                    OpacitySubmitBtn = _halfOpacity;
+                }
+            }
+            else
+            {
+                EnableSubmitBtn = true;
+                OpacitySubmitBtn = _fullOpacity;
+            }
+            return Task.CompletedTask;
+        }
+
+        private Task ValidateAmountDifference()
+        {
+           if (string.IsNullOrEmpty(Price) == false && string.IsNullOrEmpty(AmountReceived) == false)
+            {
+                if (decimal.TryParse(Price, NumberStyles.Currency, CultureInfo.CurrentCulture, out decimal PriceRes) == true && decimal.TryParse(AmountReceived, NumberStyles.Currency, CultureInfo.CurrentCulture, out decimal AmountReceivedRes) == true)
+                {
+                    if (decimal.Parse(AmountReceived, NumberStyles.Currency, CultureInfo.CurrentCulture) <= decimal.Parse(Price, NumberStyles.Currency, CultureInfo.CurrentCulture))
+                    {
+                        EnableSubmitBtn = true;
+                        OpacitySubmitBtn = _fullOpacity;
+                    }
+                    else
+                    {
+                        // cap remaining amount to 0
+                        RemainingAmount = "0.00";
+
+                        EnableSubmitBtn = false;
+                        OpacitySubmitBtn = _halfOpacity;
+                    }  
+                }
+                else
+                {
+                    EnableSubmitBtn = false;
+                    OpacitySubmitBtn = _halfOpacity;
+                }
+            }
+            else
+            {
+                EnableSubmitBtn = false;
+                OpacitySubmitBtn = _halfOpacity;
+            }
+            return Task.CompletedTask;
         }
         #endregion
 
@@ -165,56 +290,134 @@ namespace Traker.ViewModels.Edit
 
         public string Price
         {
-            get { return _price; }
+            get
+            {
+                if (_isEditingPrice == true)
+                {
+                    return _priceText;
+                }
+
+                return _price.ToString("C", CultureInfo.CurrentCulture);
+            }
             set
             {
-                _price = value;
-                if (AmountReceived != null)
+                _priceText = value;
+
+                decimal parsed;
+
+                bool success = decimal.TryParse(
+                    value,
+                    NumberStyles.Any,
+                    CultureInfo.CurrentCulture,
+                    out parsed);
+
+                if (success)
                 {
-                   ReaminingAmount = (decimal.Parse(Price, NumberStyles.Currency, CultureInfo.CurrentCulture) - decimal.Parse(AmountReceived, NumberStyles.Currency, CultureInfo.CurrentCulture)).ToString("c");
+                    _price = parsed;
+
+                    RemainingAmount =
+                        (_price - _amountReceived)
+                        .ToString("C", CultureInfo.CurrentCulture);
+
+                    NotifyOfPropertyChange(nameof(RemainingAmount));
                 }
-                NotifyOfPropertyChange(() => Price);
+
+                NotifyOfPropertyChange(nameof(Price));
+                ValidateAmountDifference();
             }
         }
 
         public string AmountReceived
         {
-            get { return _amountReceived; }
+            get
+            {
+                if (_isEditingReceived == true)
+                {
+                    return _amountReceivedText;
+                }
+
+                return _amountReceived.ToString("C", CultureInfo.CurrentCulture);
+            }
+
             set
             {
-                _amountReceived = value;
-               ReaminingAmount = (decimal.Parse(Price, NumberStyles.Currency, CultureInfo.CurrentCulture) - decimal.Parse(AmountReceived, NumberStyles.Currency, CultureInfo.CurrentCulture)).ToString("c");
-                NotifyOfPropertyChange(() => AmountReceived);
+                _amountReceivedText = value;
+
+                decimal parsed;
+
+                bool success = decimal.TryParse(
+                    value,
+                    NumberStyles.Any,
+                    CultureInfo.CurrentCulture,
+                    out parsed);
+
+                if (success)
+                {
+                    _amountReceived = parsed;
+                }
+
+                RemainingAmount =
+                    (_price - _amountReceived)
+                    .ToString("C", CultureInfo.CurrentCulture);
+
+                NotifyOfPropertyChange(nameof(AmountReceived));
+                NotifyOfPropertyChange(nameof(RemainingAmount));
+                ValidateAmountDifference();
             }
         }
 
-        public DateOnly StartDate
+        public string StartDate
         {
             get { return _startDate; }
             set
             {
                 _startDate = value;
                 NotifyOfPropertyChange(() => StartDate);
+                ValidateDate();
             }
         }
 
-        public DateOnly DueDate
+        public string DueDate
         {
             get { return _dueDate; }
             set
             {
                 _dueDate = value;
                 NotifyOfPropertyChange(() => DueDate);
+                ValidateDate();
             }
         }
 
-        public string ReaminingAmount
+        public string RemainingAmount
         {
-            get { return _reaminingAmount; }
+            get { return _remainingAmount; }
             set
             {
-                _reaminingAmount = value;
-                NotifyOfPropertyChange(() => ReaminingAmount);
+                if (decimal.Parse(value, NumberStyles.Currency, CultureInfo.CurrentCulture) >= 0.0m)
+                {
+                    _remainingAmount = value;
+                    NotifyOfPropertyChange(() => RemainingAmount);
+                }
+            }
+        }
+
+        public bool EnableSubmitBtn
+        {
+            get { return _enableSubmitBtn; }
+            set
+            {
+                _enableSubmitBtn = value;
+                NotifyOfPropertyChange(() => EnableSubmitBtn);
+            }
+        }
+
+        public double OpacitySubmitBtn
+        {
+            get { return _opacitySubmitBtn; }
+            set
+            {
+                _opacitySubmitBtn = value;
+                NotifyOfPropertyChange(() => OpacitySubmitBtn);
             }
         }
         #endregion

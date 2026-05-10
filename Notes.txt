@@ -13,6 +13,7 @@ TO-DO:
 
 - make outstanding border reddish if overdue
 - make buttons unclikable where necessary
+- fix logics on invoice cancelled what should happen? to the status?
 
 V1:
 #- Esc button: to exit popup window

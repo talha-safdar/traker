@@ -19,29 +19,11 @@ namespace Traker.Models
     /// and invoices for the client. </para></remarks>
     public class DashboardModel : PropertyChangedBase
     {
-        #region Private View Variables
-        // editable and shown on the data grid
-        private string _clientName = string.Empty;
-        private string _jobTitle = string.Empty;
-        private string _jobDescription = string.Empty;
-        private string _price = string.Empty;
-        private string _amountReceived = string.Empty;
-        private string _jobStatus = string.Empty;
-        private DateOnly _startDate = new DateOnly();
-        private DateOnly _dueDate = new DateOnly();
-        private string _invoiceStatus = string.Empty;
-
-        /*
-         * to add information that could potentially pre-fill the invoice form
-         */
-
-        // to show or not to show dropdown menu box for invoice status
-        public bool HasInvoice { get; set; } = false;
-
-        // useful for data searching and storing extra data about the client
+        // client
         public int ClientId { get; set; } = 0;
         public string ClientType { get; set; } = string.Empty;
-        public string TypeIcon { get; set; } = string.Empty;
+        public string ClientName { get; set; } = string.Empty;
+        public string InvoiceStatus { get; set; } = string.Empty;
         public string CompanyName { get; set; } = string.Empty;
         public string ClientEmail { get; set; } = string.Empty;
         public string ClientPhone { get; set; } = string.Empty;
@@ -49,113 +31,28 @@ namespace Traker.Models
         public string City { get; set; } = string.Empty;
         public string Postcode { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;
-        public DateOnly CreatedDate { get; set; } = new DateOnly();
         public bool IsActive { get; set; } = true;
+
+        // jobs
         public int JobId { get; set; } = 0;
+        public string JobTitle { get; set; } = string.Empty;
+        public string JobDescription { get; set; } = string.Empty;
+        public decimal Price { get; set; } = 0.0m;
+        public string JobStatus { get; set; } = string.Empty;
+        public DateOnly StartDate { get; set; } = new DateOnly();
+        public DateOnly DueDate { get; set; } = new DateOnly();
+        public decimal AmountReceived { get; set; } = 0.0m;
         public List<JobsModel> Jobs { get; set; } = new List<JobsModel>(); // list of jobs of the client
-        public List<InvoicesModel> Invoices { get; set; } = new List<InvoicesModel>(); // list of invoices of the client
+        public DateOnly CreatedDate { get; set; } = new DateOnly();
+
+
+        // invoice
+        public bool HasInvoice { get; set; } = false;
         public DateOnly InvoiceDueDate { get; set; } = new DateOnly();
         public DateOnly PaidDate { get; set; } = new DateOnly();
-        #endregion
+        public List<InvoicesModel> Invoices { get; set; } = new List<InvoicesModel>(); // list of invoices of the client
 
-        #region Public View Variables
-        public string ClientName
-        {
-            get { return _clientName; }
-            set
-            {
-                _clientName = value;
-                // update database here
-                NotifyOfPropertyChange(() => ClientName);
-            }
-        }
-
-        public string JobTitle
-        {
-            get { return _jobTitle; }
-            set
-            {
-                _jobTitle = value;
-                // update database here
-                NotifyOfPropertyChange(() => JobTitle);
-            }
-        }
-
-        public string JobDescription
-        {
-            get { return _jobDescription; }
-            set
-            {
-                _jobDescription = value;
-                // update database here
-                NotifyOfPropertyChange(() => JobDescription);
-            }
-        }
-
-        public string Price
-        {
-            get { return _price; }
-            set
-            {
-                _price = value;
-                // update database here
-                NotifyOfPropertyChange(() => Price);
-            }
-        }
-
-        public string AmountReceived
-        {
-            get { return _amountReceived; }
-            set
-            {
-                _amountReceived = value;
-                // update database here
-                NotifyOfPropertyChange(() => AmountReceived);
-            }
-        }
-
-        public string JobStatus
-        {
-            get { return _jobStatus; }
-            set
-            {
-                _jobStatus = value;
-                // update database here
-                NotifyOfPropertyChange(() => JobStatus);
-            }
-        }
-
-        public DateOnly StartDate
-        {
-            get { return _startDate; }
-            set
-            {
-                _startDate = value;
-                // update database here
-                NotifyOfPropertyChange(() => StartDate);
-            }
-        }
-        public DateOnly DueDate
-        {
-            get { return _dueDate; }
-            set
-            {
-                _dueDate = value;
-                // update database here
-                NotifyOfPropertyChange(() => DueDate);
-            }
-        }
-
-        public string InvoiceStatus
-        {
-            get { return _invoiceStatus; }
-            set
-            {
-                _invoiceStatus = value;
-                // update database here
-                NotifyOfPropertyChange(() => InvoiceStatus);
-            }
-        }
-        #endregion
+        // UI
+        public string TypeIcon { get; set; } = string.Empty;
     }
 }

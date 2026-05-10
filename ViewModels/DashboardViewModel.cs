@@ -549,11 +549,11 @@ namespace Traker.ViewModels
 
             else if (command == Names.JobPriceAsc)
             {
-                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => Decimal.Parse(j.Price, NumberStyles.Currency)));
+                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => Decimal.Parse(j.Price.ToString(), NumberStyles.Currency)));
             }
             else if (command == Names.JobPriceDesc)
             {
-                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => Decimal.Parse(j.Price, NumberStyles.Currency)));
+                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => Decimal.Parse(j.Price.ToString(), NumberStyles.Currency)));
             }
 
             else if (command == Names.DueDateAsc)
@@ -753,8 +753,8 @@ namespace Traker.ViewModels
                     JobId = job.JobId,
                     JobTitle = job.Title,
                     JobDescription = job.Description,
-                    Price = job.FinalPrice.ToString("C"), // use toString("C") only for ui side
-                    AmountReceived = job.AmountReceived.ToString("C"),
+                    Price = job.FinalPrice, // use toString("C") only for ui side
+                    AmountReceived = job.AmountReceived,
                     JobStatus = Data.Invoices.Where(i => i.JobId == job.JobId && string.IsNullOrEmpty(i.Status) == false).Select(i => i.Status).FirstOrDefault() ?? job.Status.ToString(),
                     StartDate = job.StartDate,
                     DueDate = job.DueDate,

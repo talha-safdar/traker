@@ -85,8 +85,8 @@ namespace Traker.ViewModels
             BillingPostcode = SelectedJob.Postcode;
             BillingCountry = SelectedJob.Country;
             DueDate = DateOnly.FromDateTime(DateTime.Now.Date.Add(TimeSpan.FromDays(7))).ToString();
-            _subtotalAmountDb = decimal.Parse(SelectedJob.Price, NumberStyles.Currency, CultureInfo.CurrentCulture);
-            Subtotal = (decimal.Parse(SelectedJob.Price, NumberStyles.Currency, CultureInfo.CurrentCulture)).ToString("C");
+            _subtotalAmountDb = decimal.Parse(SelectedJob.Price.ToString(), NumberStyles.Currency, CultureInfo.CurrentCulture);
+            Subtotal = (decimal.Parse(SelectedJob.Price.ToString(), NumberStyles.Currency, CultureInfo.CurrentCulture)).ToString("C");
             return base.OnInitializedAsync(cancellationToken);
         }
 
@@ -113,23 +113,10 @@ namespace Traker.ViewModels
 
 
             var dueDate = DateOnly.MinValue;
-            //decimal amount = 0;
-
-            //if (DueDate != String.Empty)
-            //{
-            //    dueDate = DateOnly.ParseExact(DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
-            //}
-
             if (DueDate != String.Empty)
             {
                 dueDate = DateOnly.ParseExact(DueDate,"dd/MM/yyyy", CultureInfo.InvariantCulture);
             }
-
-            //if (VatValue != String.Empty)
-            //{
-            //    amount = decimal.Parse(VatValue, CultureInfo.InvariantCulture);
-            //}
-
 
             int result = int.Parse(VatValue.TrimEnd('%'));
 

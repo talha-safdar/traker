@@ -305,6 +305,7 @@
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Padding" Value="8,6"/>
     <Setter Property="CaretBrush" Value="White"/>
+    <Setter Property="Height" Value="48"/>
     <Setter Property="Template">
         <Setter.Value>
             <ControlTemplate TargetType="TextBox">

@@ -82,7 +82,7 @@
                         <Grid Grid.Row="1" Margin="0,0,0,25">
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Margin="5,0,0,5" Text="{Binding BusinessNameText}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BusinessName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="30" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" 
+                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BusinessName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" 
                                     behaviours:TextboxFilter.EnableFilter="True"
                                     behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
                             </StackPanel>
@@ -92,9 +92,8 @@
                         <Grid Grid.Row="2" Margin="0,0,0,25">
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Margin="5,0,0,5" Text="Job Title" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding JobTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="254" AcceptsReturn="True" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
-                                    behaviours:TextboxFilter.EnableFilter="False"
-                                    behaviours:TextboxFilter.MaxLength="35"
+                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding JobTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="True" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                    behaviours:TextboxFilter.EnableFilter="True"
                                     behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
                             </StackPanel>
                         </Grid>
@@ -106,7 +105,7 @@
                                 <TextBlock Margin="5,0,0,5" Text="Price" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
                                 <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Price, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="12" AcceptsReturn="False" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"      
                                     behaviours:TextboxFilter.EnableFilter="True"
-                                    behaviours:TextboxFilter.FilterMode="DigitsOnly" />
+                                    behaviours:TextboxFilter.FilterMode="Currency" />
                             </StackPanel>
                         </Grid>
 
