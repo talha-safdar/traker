@@ -230,7 +230,7 @@
 
                 <!-- delete job -->
                 <Grid Grid.Column="0" Margin="40,0,0,0">
-                    <TextBlock Cursor="Hand" conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Delete Job" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" Foreground="#B04141" FontWeight="Regular" FontSize="16" />
+                    <TextBlock Cursor="Hand" conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteJob()]" HorizontalAlignment="Center" Text="Delete Job" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" Foreground="#B04141" FontWeight="Regular" FontSize="16" />
                 </Grid>
 
                 <!-- save -->

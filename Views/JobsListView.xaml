@@ -86,15 +86,31 @@
                                 <DataTemplate>
                                     <Border 
                                         Background="#242424"
-                            BorderThickness="1"
-                            Height="135"
-                            CornerRadius="20" 
-                            Margin="20,10,20,10" 
-                            Padding="10"
-                            cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SelectJob($dataContext)];
-                                                [Event MouseRightButtonUp] = [Action OpenContextMenu($dataContext)];"
-                                Cursor="Hand"
-                            MouseLeftButtonDown="EditJob">
+                                        Height="135"
+                                        CornerRadius="20" 
+                                        Margin="20,10,20,10" 
+                                        Padding="10"
+                                        cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SelectJob($dataContext)];
+                                                            [Event MouseRightButtonUp] = [Action OpenContextMenu($dataContext)];"
+                                            Cursor="Hand"
+                                        MouseLeftButtonDown="EditJob">
+                                        <Border.BorderBrush>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                <!-- The "Rim Light" on the top edge -->
+                                                <GradientStop Color="#40FFFFFF" Offset="0" />
+                                                <!-- Fades to transparent so the bottom/sides stay dark -->
+                                                <GradientStop Color="Transparent" Offset="0.2" />
+                                            </LinearGradientBrush>
+                                        </Border.BorderBrush>
+                                        <Border.ToolTip>
+                                            <ToolTip Style="{StaticResource DarkToolTip}"
+                                                Content="Double-click to edit job | right click for more"/>
+                                        </Border.ToolTip>
+
+                                        <Border.BorderThickness>0,1,0,0</Border.BorderThickness>
+                                        <!-- Only top edge! -->
+
+
                                         <Border.Style>
                                             <Style TargetType="Border">
                                                 <!-- 1. Default BorderBrush -->
@@ -105,8 +121,9 @@
                                                     <Setter.Value>
                                                         <DropShadowEffect Color="Black" 
                                                           BlurRadius="15" 
-                                                          ShadowDepth="0" 
-                                                          Opacity="0.3" 
+                                                         Direction="270"
+                                                          ShadowDepth="5" 
+                                                          Opacity="0.4" 
                                                           RenderingBias="Quality"/>
                                                     </Setter.Value>
                                                 </Setter>
@@ -119,10 +136,10 @@
                                                         <Setter Property="Effect">
                                                             <Setter.Value>
                                                                 <DropShadowEffect Color="Black" 
-                                                                  BlurRadius="30" 
-                                                                  ShadowDepth="0" 
-                                                                  Opacity="0.8" 
-                                                                  RenderingBias="Quality"/>
+                                                              BlurRadius="30" 
+                                                              ShadowDepth="0" 
+                                                              Opacity="0.8" 
+                                                              RenderingBias="Quality"/>
                                                             </Setter.Value>
                                                         </Setter>
                                                     </Trigger>
@@ -155,30 +172,16 @@
                                                 </Grid>
 
                                                 <!-- spacer -->
-                                                <Grid Grid.Row="1" Margin="0,2" />
+                                                <Grid Grid.Row="1" Margin="0,10" />
 
                                                 <!-- job title -->
                                                 <Grid Grid.Row="2">
-                                                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="{Binding JobTitle}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />                                                    
+                                                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="{Binding JobTitle}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Medium" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />                                                    
                                                 </Grid>
                                             </Grid>
 
                                             <!-- spacer-->
                                             <Grid Grid.Column="1">
-                                                <!--<Border Margin="0,0" Width="1" SnapsToDevicePixels="True" Opacity="0.6">
-                                                    <Border.Background>
-                                                        --><!-- Changed StartPoint/EndPoint to move vertically (Top to Bottom) --><!--
-                                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="1">
-                                                            --><!-- Top: Transparent --><!--
-                                                            <GradientStop Color="#00555555" Offset="0" />
-                                                            --><!-- Middle: Your #555555 color --><!--
-                                                            <GradientStop Color="#FF555555" Offset="0.2" />
-                                                            <GradientStop Color="#FF555555" Offset="0.8" />
-                                                            --><!-- Bottom: Transparent --><!--
-                                                            <GradientStop Color="#00555555" Offset="1" />
-                                                        </LinearGradientBrush>
-                                                    </Border.Background>
-                                                </Border>-->
                                             </Grid>
 
                                             <!-- job status / due date -->
@@ -192,7 +195,7 @@
 
                                                     <!-- job status -->
                                                     <Grid Grid.Row="0">
-                                                        <TextBlock Margin="0" Text="{Binding JobStatus}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Black" FontSize="32">
+                                                        <TextBlock Margin="0" Text="{Binding JobStatus}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Black" FontSize="24">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="TextBlock">
                                                                     <Setter Property="Foreground" Value="{StaticResource FontPrimaryBrush}" />
@@ -232,25 +235,11 @@
 
                                             <!-- spacer -->
                                             <Grid Grid.Column="3">
-                                                <!--<Border Margin="0,0" Width="1" SnapsToDevicePixels="True" Opacity="0.6">
-                                                    <Border.Background>
-                                                        --><!-- Changed StartPoint/EndPoint to move vertically (Top to Bottom) --><!--
-                                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="1">
-                                                            --><!-- Top: Transparent --><!--
-                                                            <GradientStop Color="#00555555" Offset="0" />
-                                                            --><!-- Middle: Your #555555 color --><!--
-                                                            <GradientStop Color="#FF555555" Offset="0.2" />
-                                                            <GradientStop Color="#FF555555" Offset="0.8" />
-                                                            --><!-- Bottom: Transparent --><!--
-                                                            <GradientStop Color="#00555555" Offset="1" />
-                                                        </LinearGradientBrush>
-                                                    </Border.Background>
-                                                </Border>-->
                                             </Grid>
 
                                             <!-- job price -->
                                             <Grid Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                <TextBlock Margin="0" Text="{Binding Price}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="SemiBold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32" />
+                                                <TextBlock Margin="0" Text="{Binding Price, StringFormat={}{0:C}}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="SemiBold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32" />
                                             </Grid>
                                         </Grid>
                                     </Border>

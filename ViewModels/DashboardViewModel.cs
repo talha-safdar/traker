@@ -52,6 +52,13 @@ namespace Traker.ViewModels
         private int _totalJobsCount;
         private ObservableCollection<DashboardModel> _dashboardData; // listo of data shown on the data grid
         public DashboardModel _selectedJob; // selected data row automatically filled on click
+
+        /*
+         * for buttons:
+         * edit client, edit job, add job, filter, sort
+         */
+        private bool _enableBtns; 
+        private double _opacityBtns;
         #endregion
 
         #region Private Field Variables
@@ -76,6 +83,9 @@ namespace Traker.ViewModels
 
         private CancellationTokenSource _cts; // for checking overude
         private ManualResetEventSlim _pauseEvent = new ManualResetEventSlim(true); // true = start open
+
+        private double _fullOpacity = 1.0;
+        private double _halfOpacity = 0.5;
         #endregion
 
         public DashboardViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState, DataService dataService)
@@ -115,6 +125,9 @@ namespace Traker.ViewModels
         {
             try
             {
+                EnableBtns = false;
+                OpacityBtns = _halfOpacity;
+
                 await SetupDashboardData();
 
                 //return base.OnInitializedAsync(cancellationToken);
@@ -292,11 +305,14 @@ namespace Traker.ViewModels
              * and the latter must become required hence Id seems perfect.
              * In fact we just swapped to clientId :)
              */
-            if (SelectedJob.ClientId == selectedJob.ClientId)
+            if (SelectedJob != null)
             {
-                _contextMenuVM = new JobContextMenuViewModel(_events, _windowManager, Data);
-                _contextMenuVM.SelectedJob = selectedJob; // pass row selected
-                await _windowManager.ShowPopupAsync(_contextMenuVM, null, CustomWindow.SettingsForDialog(310, 335, false)); // vertical, horizontal
+                if (SelectedJob.ClientId == selectedJob.ClientId)
+                {
+                    _contextMenuVM = new JobContextMenuViewModel(_events, _windowManager, Data);
+                    _contextMenuVM.SelectedJob = selectedJob; // pass row selected
+                    await _windowManager.ShowPopupAsync(_contextMenuVM, null, CustomWindow.SettingsForDialog(310, 335, false)); // vertical, horizontal
+                }
             }
         }
 
@@ -802,6 +818,19 @@ namespace Traker.ViewModels
 
             TotalJobsCount = Data.Jobs.Count();
 
+            // if job count is zero then disable edit buttons and add jobs
+            if (TotalJobsCount == 0)
+            {
+                EnableBtns = false;
+                OpacityBtns = _halfOpacity;
+                SelectedJob = null;
+            }
+            else if (TotalJobsCount > 0)
+            {
+                EnableBtns = true;
+                OpacityBtns = _fullOpacity;
+            }
+
             StartLoop();
 
             return Task.CompletedTask;
@@ -1031,13 +1060,33 @@ namespace Traker.ViewModels
             }
         }
 
-        public DashboardModel SelectedJob
+        public DashboardModel? SelectedJob
         {
             get { return _selectedJob; }
             set
             {
                 _selectedJob = value;
                 NotifyOfPropertyChange(() => SelectedJob);
+            }
+        }
+
+        public bool EnableBtns
+        {
+            get { return _enableBtns; }
+            set
+            {
+                _enableBtns = value;
+                NotifyOfPropertyChange(() => EnableBtns);
+            }
+        }
+
+        public double OpacityBtns
+        {
+            get { return _opacityBtns; }
+            set
+            {
+                _opacityBtns = value;
+                NotifyOfPropertyChange(() => OpacityBtns);
             }
         }
         #endregion

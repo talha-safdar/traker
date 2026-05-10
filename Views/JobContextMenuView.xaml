@@ -18,7 +18,7 @@
             </Grid.RowDefinitions>
 
             <!-- status -->
-            <Grid Grid.Row="0" Margin="5,0">
+            <Grid Grid.Row="0" Margin="5,0" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" /> <!-- active -->
                     <ColumnDefinition Width="*" /> <!-- done -->
@@ -26,7 +26,7 @@
                 
                 <!-- active -->
                 <Grid Grid.Column="0">
-                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Active')]" Background="#332B1B" CornerRadius="10" Height="35" Margin="0,0,10,0" BorderThickness="1" BorderBrush="#FFAA00">
+                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Active')]" Background="#332B1B" CornerRadius="10" Height="35" Margin="0,0,5,0" BorderThickness="1" BorderBrush="#FFAA00">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="Opacity" Value="1.0"/>
@@ -43,7 +43,7 @@
 
                 <!-- done -->
                 <Grid Grid.Column="1">
-                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Done')]" Background="#1B3320" CornerRadius="10" Height="35" Margin="0,0,0,0" BorderThickness="1" BorderBrush="#00FF00">
+                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Done')]" Background="#1B3320" CornerRadius="10" Height="35" Margin="5,0,0,0" BorderThickness="1" BorderBrush="#00FF00">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="Opacity" Value="1.0"/>
