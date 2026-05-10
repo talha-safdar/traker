@@ -5,8 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
              xmlns:cal="http://caliburnmicro.com"
-             xmlns:local="clr-namespace:Traker.Views" xmlns:viewmodels="clr-namespace:Traker.ViewModels" 
+             xmlns:local="clr-namespace:Traker.Views" 
+             xmlns:viewmodels="clr-namespace:Traker.ViewModels" 
              mc:Ignorable="d" 
+             xmlns:behaviours="clr-namespace:Traker.Behaviours"
              xmlns:conv="clr-namespace:Traker.Converters"
              d:DesignHeight="600" 
              d:DesignWidth="500"
@@ -68,8 +70,7 @@
                                 <Run Text="Number of Clients: " />
                                     <Run Text="{Binding AddJob.Count, Mode=OneWay}" />
                                 </TextBlock>
-                                <ComboBox Style="{DynamicResource ComboBoxNormal}"
-                                         
+                                <ComboBox Style="{DynamicResource ComboBoxNormal}"                                         
                                       IsEditable="False"
                                       FontWeight="Regular"
                                       HorizontalAlignment="Stretch" 
@@ -78,10 +79,10 @@
                                       SelectedItem="{Binding SelectedClient, Mode=TwoWay}">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
-                                            <StackPanel Margin="0,10" HorizontalAlignment="Stretch">
+                                            <StackPanel Margin="0,0" HorizontalAlignment="Stretch">
                                                 <TextBlock Text="{Binding BusinessName}"
-                                                    FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Regular" FontSize="22" Margin="0,0,0,10"/>
-                                                <TextBlock FontSize="18" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Medium" Opacity="0.7">
+                                                    FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Regular" FontSize="22" Margin="0,0,0,0"/>
+                                                <TextBlock FontSize="12" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Medium" Opacity="0.5">
                                                     <Run Text="Created Date: " />
                                                     <Run Text="{Binding CreatedDate}" />
                                                 </TextBlock>
@@ -96,7 +97,9 @@
                         <Grid Grid.Row="1" Margin="0,0,0,25">
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Margin="5,0,0,5" Text="Job Title" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding JobTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding JobTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                    behaviours:TextboxFilter.EnableFilter="True"
+                                    behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
                             </StackPanel>
                         </Grid>
 
@@ -105,7 +108,9 @@
                         <Grid Grid.Row="2" Margin="0,0,0,25">
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Margin="5,0,0,5" Text="Price" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Price, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Price, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                    behaviours:TextboxFilter.EnableFilter="True"
+                                    behaviours:TextboxFilter.FilterMode="Currency" />
                             </StackPanel>
                         </Grid>
 
@@ -113,7 +118,9 @@
                         <Grid Grid.Row="3" Margin="0,0,0,0">
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Margin="5,0,0,5" Text="Due Date" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
-                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding DueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+                                <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding DueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                    behaviours:TextboxFilter.EnableFilter="True"
+                                    behaviours:TextboxFilter.FilterMode="DateDDMMYYYY" />
                             </StackPanel>
                         </Grid>
                     </Grid>
@@ -122,7 +129,7 @@
 
             <!-- butons -->
             <Grid Grid.Row="2">
-                <Border Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddJobToClient()]" Background="#333333" CornerRadius="25" Height="45" Margin="150,0" BorderThickness="1">
+                <Border Cursor="Hand" IsEnabled="{Binding EnableSubmitBtn}" Opacity="{Binding OpacitySubmitBtn}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddJobToClient()]" Background="#333333" CornerRadius="25" Height="45" Margin="150,0" BorderThickness="1">
                     <Border.Style>
                         <Style TargetType="Border">
                             <!-- DEFAULT STATE -->

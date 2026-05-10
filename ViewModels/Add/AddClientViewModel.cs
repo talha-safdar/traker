@@ -27,9 +27,9 @@ namespace Traker.ViewModels.Add
         private string _dueDate;
         private string _businessNameText; // individual=client name, company=company name
 
-        // add clieent button
-        private bool _enableAddBtn;
-        private double _opacityAddBtn;
+        // submit button
+        private bool _enableSubmitBtn;
+        private double _opacitySubmitBtn;
         #endregion
 
         #region Public State Variable
@@ -66,9 +66,9 @@ namespace Traker.ViewModels.Add
                 ClientType = Names.Individual; // default start with individual
                 BusinessNameText = _clientNameTxt;
 
-                // add button
-                EnableAddBtn = false;
-                OpacityAddBtn = _halfOpacity;
+                // submit button
+                EnableSubmitBtn = false;
+                OpacitySubmitBtn = _halfOpacity;
             }
             catch(Exception ex)
             {
@@ -204,13 +204,13 @@ namespace Traker.ViewModels.Add
             if (string.IsNullOrEmpty(ClientType) == false && string.IsNullOrEmpty(BusinessName) == false && string.IsNullOrEmpty(JobTitle) == false && string.IsNullOrEmpty(Price) == false && ValidateDate() == true)
             {
                 
-                EnableAddBtn = true;
-                OpacityAddBtn = _fullOpacity;
+                EnableSubmitBtn = true;
+                OpacitySubmitBtn = _fullOpacity;
             }
             else
             {
-                EnableAddBtn = false;
-                OpacityAddBtn = _halfOpacity;
+                EnableSubmitBtn = false;
+                OpacitySubmitBtn = _halfOpacity;
             }
             return Task.CompletedTask;
         }
@@ -284,23 +284,23 @@ namespace Traker.ViewModels.Add
             }
         }
 
-        public bool EnableAddBtn
+        public bool EnableSubmitBtn
         {
-            get { return _enableAddBtn; }
+            get { return _enableSubmitBtn; }
             set
             {
-                _enableAddBtn = value;
-                NotifyOfPropertyChange(() => EnableAddBtn);
+                _enableSubmitBtn = value;
+                NotifyOfPropertyChange(() => EnableSubmitBtn);
             }
         }
 
-        public double OpacityAddBtn
+        public double OpacitySubmitBtn
         {
-            get { return _opacityAddBtn; }
+            get { return _opacitySubmitBtn; }
             set
             {
-                _opacityAddBtn = value;
-                NotifyOfPropertyChange(() => OpacityAddBtn);
+                _opacitySubmitBtn = value;
+                NotifyOfPropertyChange(() => OpacitySubmitBtn);
             }
         }
         #endregion

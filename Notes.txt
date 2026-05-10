@@ -19,6 +19,8 @@ TO-DO:
 - fix bug with outstanding invocied
 - purify inputs like remove white spaces etc before saving
 - use cutlutre invariant for datetiem and money
+- fix the matter with billingaddress in createinvoice
+- add margin for money textboxes with the title
 
 V1:
 #- Esc button: to exit popup window

@@ -28,11 +28,6 @@ namespace Traker.ViewModels.Add
         public ObservableCollection<DashboardModel> dashboardData; // to obtain the current dashboard clients list
         #endregion
 
-        #region Public View Variables
-        // dont need private as it only displays names with IDs
-        // public BindableCollection<string> ClientsList { get; } = new BindableCollection<string>();
-        #endregion
-
         #region Public State Variable
         public AppState State { get; } // state binding variable accessible from other viewmodels
         #endregion
@@ -43,6 +38,15 @@ namespace Traker.ViewModels.Add
         private string _jobTitle;
         private string _price;
         private string _dueDate;
+
+        // submit button
+        private bool _enableSubmitBtn;
+        private double _opacitySubmitBtn;
+        #endregion
+
+        #region Private Class Field Variables
+        private double _fullOpacity = 1.0;
+        private double _halfOpacity = 0.5;
         #endregion
 
         private ObservableCollection<AddJobModel> _addJob;
@@ -62,6 +66,9 @@ namespace Traker.ViewModels.Add
 
         protected override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
+            EnableSubmitBtn = false;
+            OpacitySubmitBtn = _halfOpacity;
+
             foreach (var client in dashboardData.DistinctBy(x => x.ClientId))
             {
                 AddJob.Add(new AddJobModel
@@ -71,6 +78,9 @@ namespace Traker.ViewModels.Add
                     BusinessName = client.ClientType == Names.Individual ? client.ClientName : client.CompanyName,
                 });
             }
+
+            SelectedClient = AddJob.First(); // pre-select the first item in the list
+
             return base.OnInitializedAsync(cancellationToken);
         }
 
@@ -130,7 +140,38 @@ namespace Traker.ViewModels.Add
                 NotifyOfPropertyChange(() => SelectedClient);
             }
         }
+        #endregion
 
+        #region Private Functions
+        private bool ValidateDate()
+        {
+            return DateTime.TryParseExact(
+                DueDate,
+                "dd/MM/yyyy",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var parsedDate)
+                && parsedDate.Date >= DateTime.Today;
+        }
+
+        private Task CanSubmit()
+        {
+            if (string.IsNullOrEmpty(SelectedClient.BusinessName) == false && string.IsNullOrEmpty(JobTitle) == false && string.IsNullOrEmpty(Price) == false && ValidateDate() == true)
+            {
+
+                EnableSubmitBtn = true;
+                OpacitySubmitBtn = _fullOpacity;
+            }
+            else
+            {
+                EnableSubmitBtn = false;
+                OpacitySubmitBtn = _halfOpacity;
+            }
+            return Task.CompletedTask;
+        }
+        #endregion
+
+        #region Public View Variables
         public ObservableCollection<AddJobModel> AddJob
         {
             get { return _addJob; }
@@ -148,6 +189,7 @@ namespace Traker.ViewModels.Add
             {
                 _jobTitle = value;
                 NotifyOfPropertyChange(() => JobTitle);
+                CanSubmit();
             }
         }
 
@@ -158,6 +200,7 @@ namespace Traker.ViewModels.Add
             {
                 _price = value;
                 NotifyOfPropertyChange(() => Price);
+                CanSubmit();
             }
         }
 
@@ -168,6 +211,27 @@ namespace Traker.ViewModels.Add
             {
                 _dueDate = value;
                 NotifyOfPropertyChange(() => DueDate);
+                CanSubmit();
+            }
+        }
+
+        public bool EnableSubmitBtn
+        {
+            get { return _enableSubmitBtn; }
+            set
+            {
+                _enableSubmitBtn = value;
+                NotifyOfPropertyChange(() => EnableSubmitBtn);
+            }
+        }
+
+        public double OpacitySubmitBtn
+        {
+            get { return _opacitySubmitBtn; }
+            set
+            {
+                _opacitySubmitBtn = value;
+                NotifyOfPropertyChange(() => OpacitySubmitBtn);
             }
         }
         #endregion
