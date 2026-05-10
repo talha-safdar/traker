@@ -60,16 +60,16 @@ namespace Traker.ViewModels
 
         public async Task CreateInvoice()
         {
+            await TryCloseAsync();
             _createInvoice = new CreateInvoiceViewModel(_events, Data);
             _createInvoice.SelectedJob = SelectedJob;
             _windowManager.ShowWindowAsync(_createInvoice, null, CustomWindow.SettingsForDialog(800, 1000, false));
-            await TryCloseAsync();
         }
 
         public async Task EditClient()
         {
-            await _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = "EditClient" });
             await TryCloseAsync();
+            await _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = "EditClient" });
         }
 
         public async Task DeleteJob()

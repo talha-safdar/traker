@@ -9,7 +9,9 @@
              xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
              xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+                          Focusable="True"
+             cal:Message.Attach="[Event PreviewKeyDown] = [Action HandleKeyPress($eventArgs)]">
     
     <Border Height="800" Width="1000" Background="#1E1E1E" CornerRadius="20" BorderThickness="1" SnapsToDevicePixels="True">
         <Border.BorderBrush>

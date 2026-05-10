@@ -19,6 +19,7 @@ namespace Traker.ViewModels.Edit
     using Microsoft.Win32;
     using System.Globalization;
     using System.Threading;
+    using System.Windows.Input;
     using System.Windows.Media;
     using Traker.Events;
     using Traker.Helper;
@@ -111,6 +112,15 @@ namespace Traker.ViewModels.Edit
         }
 
         #region Public View Functions
+        public async Task HandleKeyPress(KeyEventArgs e)
+        {
+            // ESC button
+            if (e.Key == Key.Escape)
+            {
+                await TryCloseAsync();
+            }
+        }
+
         public async Task TogglePaid()
         {
             /*

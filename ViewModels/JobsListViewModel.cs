@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Traker.Helper;
 using Traker.Models;
 using Traker.Services;
@@ -86,6 +87,15 @@ namespace Traker.ViewModels
         }
 
         #region Public View FUnctions
+        public async Task HandleKeyPress(KeyEventArgs e)
+        {
+            // ESC button
+            if (e.Key == Key.Escape)
+            {
+                await TryCloseAsync();
+            }
+        }
+
         public async Task EditJob(DashboardModel jobSelected)
         {
             _editJobViewModel = new EditJobViewModel(_events);

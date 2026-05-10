@@ -8,7 +8,9 @@
              xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
              xmlns:cal="http://caliburnmicro.com"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Focusable="True"
+             cal:Message.Attach="[Event PreviewKeyDown] = [Action HandleKeyPress($eventArgs)]">
 
     <UserControl.Resources>
         <conv:BoolToVisibilityCollapsed x:Key="BoolToVisCollapsed"/>

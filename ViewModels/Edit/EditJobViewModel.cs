@@ -15,6 +15,7 @@ namespace Traker.ViewModels.Edit
     using System.Diagnostics;
     using System.Globalization;
     using System.Text.RegularExpressions;
+    using System.Windows.Input;
     using Traker.Data;
     using Traker.Helper;
 
@@ -145,6 +146,16 @@ namespace Traker.ViewModels.Edit
             await TryCloseAsync();
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
         }
+
+        public async Task HandleKeyPress(KeyEventArgs e)
+        {
+            // ESC button
+            if (e.Key == Key.Escape)
+            {
+                await TryCloseAsync();
+            }
+        }
+
 
         public async Task DeleteJob()
         {

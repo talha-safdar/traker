@@ -3,10 +3,14 @@ using Traker.States;
 
 namespace Traker.ViewModels.Add
 {
+    using CommunityToolkit.Mvvm.Input;
     using Database;
+    using System.Diagnostics;
     using System.Globalization;
     using System.Net;
+    using System.Threading.Tasks;
     using System.Windows;
+    using System.Windows.Input;
     using Traker.Data;
     using Traker.Events;
     using Traker.Helper;
@@ -91,6 +95,15 @@ namespace Traker.ViewModels.Add
         #endregion
 
         #region Public View Functions
+        public async Task HandleKeyPress(KeyEventArgs e)
+        {
+            // ESC button
+            if (e.Key == Key.Escape)
+            {
+                await TryCloseAsync();
+            }
+        }
+
         public async Task Exit()
         {
             try

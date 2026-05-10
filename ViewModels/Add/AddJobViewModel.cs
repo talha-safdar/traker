@@ -11,6 +11,7 @@ namespace Traker.ViewModels.Add
 {
     using Database;
     using System.Globalization;
+    using System.Windows.Input;
     using Traker.Data;
     using Traker.Events;
     using Traker.Helper;
@@ -90,6 +91,14 @@ namespace Traker.ViewModels.Add
             return base.OnDeactivateAsync(close, cancellationToken);
         }
 
+        public async Task HandleKeyPress(KeyEventArgs e)
+        {
+            // ESC button
+            if (e.Key == Key.Escape)
+            {
+                await TryCloseAsync();
+            }
+        }
 
         public async Task AddJobToClient()
         {

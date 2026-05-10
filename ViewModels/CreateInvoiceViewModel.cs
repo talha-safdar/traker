@@ -16,6 +16,7 @@ namespace Traker.ViewModels
     using System.Diagnostics;
     using System.Globalization;
     using System.IO;
+    using System.Windows.Input;
     using Traker.Data;
     using Traker.Events;
     using Traker.Events.DashboardVM;
@@ -103,6 +104,15 @@ namespace Traker.ViewModels
         {
             _events.Unsubscribe(this);
             return base.OnDeactivateAsync(close, cancellationToken);
+        }
+
+        public async Task HandleKeyPress(KeyEventArgs e)
+        {
+            // ESC button
+            if (e.Key == Key.Escape)
+            {
+                await TryCloseAsync();
+            }
         }
 
         public async Task Exit()

@@ -23,6 +23,12 @@ namespace Traker.Views.Add
         public AddClientView()
         {
             InitializeComponent();
+
+            //this.Loaded += (s, e) => {
+            //    this.Focus();
+            //    // Or better yet, focus a specific child like a button or textbox
+            //    //Keyboard.Focus(this);
+            //};
         }
     }
 }

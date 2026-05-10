@@ -11,6 +11,7 @@ namespace Traker.ViewModels.User
     using Database;
     using System.Collections.ObjectModel;
     using System.Windows.Controls.Primitives;
+    using System.Windows.Input;
     using System.Windows.Media;
     using Traker.Events;
     using Traker.Helper;
@@ -71,6 +72,15 @@ namespace Traker.ViewModels.User
         }
 
         #region Public View Functions
+        public async Task HandleKeyPress(KeyEventArgs e)
+        {
+            // ESC button
+            if (e.Key == Key.Escape)
+            {
+                await TryCloseAsync();
+            }
+        }
+
         public async Task ConfirmUserInfoChanges()
         {
             await Database.EditUser(_dataService.User[0].UserId, FullName.Trim(), Email.Trim(), Phone.Trim(), BusinessType.Trim());

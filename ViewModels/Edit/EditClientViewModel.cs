@@ -14,6 +14,7 @@ using Traker.Models;
 namespace Traker.ViewModels.Edit
 {
     using Database;
+    using System.Windows.Input;
     using Traker.Data;
     using Traker.Helper;
     using Traker.Services;
@@ -84,6 +85,15 @@ namespace Traker.ViewModels.Edit
         }
 
         #region Public View Functions
+        public async Task HandleKeyPress(KeyEventArgs e)
+        {
+            // ESC button
+            if (e.Key == Key.Escape)
+            {
+                await TryCloseAsync();
+            }
+        }
+
         public async Task ConfirmEditClient()
         {
             await Database.EditClient(SelectedRow.ClientId, ClientType.Trim(), ClientName.Trim(), ClientEmail.Trim(), CompanyName.Trim(), PhoneNumber.Trim(), BillingAddress.Trim(), City.Trim(), Postcode.Trim(), Country.Trim(), IsActive);

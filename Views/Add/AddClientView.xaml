@@ -7,12 +7,14 @@
              xmlns:cal="http://caliburnmicro.com"
              xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
              xmlns:behaviours="clr-namespace:Traker.Behaviours"
-             xmlns:conv="clr-namespace:Traker.Converters"
+             xmlns:conv="clr-namespace:Traker.Converters" xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="600" 
              d:DesignWidth="500"
              MaxHeight="790"
-             MaxWidth="600">
+             MaxWidth="600"
+             Focusable="True"
+             cal:Message.Attach="[Event PreviewKeyDown] = [Action HandleKeyPress($eventArgs)]">
     
     <UserControl.Resources>
         <conv:BoolToVisibilityCollapsed x:Key="BoolToVisCollapsed"/>
@@ -25,6 +27,8 @@
                 <GradientStop Color="Transparent" Offset="1" />
             </LinearGradientBrush>
         </Border.BorderBrush>
+        
+
         <Grid Margin="30,20,30,20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.1*" /> <!-- top bar        -->

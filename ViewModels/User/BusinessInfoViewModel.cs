@@ -11,6 +11,7 @@ using Traker.Services;
 namespace Traker.ViewModels.User
 {
     using Database;
+    using System.Windows.Input;
 
     public class BusinessInfoViewModel : Screen
     {
@@ -69,6 +70,15 @@ namespace Traker.ViewModels.User
         }
 
         #region Public View Functions
+        public async Task HandleKeyPress(KeyEventArgs e)
+        {
+            // ESC button
+            if (e.Key == Key.Escape)
+            {
+                await TryCloseAsync();
+            }
+        }
+
         public async Task ConfirmBusinessInfoChanges()
         {
             await Database.EditBusiness(_dataService.User[0].UserId, BusinessName.Trim(), Country.Trim(), City.Trim(), Address.Trim(), Postcode.Trim(), VatNumber.Trim(), RegistrationNumber.Trim());

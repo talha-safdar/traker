@@ -11,6 +11,7 @@ using Traker.Services;
 namespace Traker.ViewModels.User
 {
     using Database;
+    using System.Windows.Input;
 
     public class BankInfoViewModel : Screen
     {
@@ -46,6 +47,15 @@ namespace Traker.ViewModels.User
         }
 
         #region Public View Functions
+        public async Task HandleKeyPress(KeyEventArgs e)
+        {
+            // ESC button
+            if (e.Key == Key.Escape)
+            {
+                await TryCloseAsync();
+            }
+        }
+
         public async Task ConfirmBankInfoChanges()
         {
             await Database.EditBank(_dataService.User[0].UserId, BankName.Trim(), AccountName.Trim(), AccountNumber.Trim(), Sortcode.Trim(), IBAN.Trim(), BIC.Trim());
