@@ -70,7 +70,7 @@ namespace Traker.ViewModels
                     JobId = job.JobId,
                     JobTitle = job.Title,
                     JobDescription = job.Description,
-                    Price = job.FinalPrice.ToString("C"),
+                    Price = job.FinalPrice,
                     AmountReceived = job.AmountReceived,
                     JobStatus = job.Status.ToString(),
                     StartDate = job.StartDate,

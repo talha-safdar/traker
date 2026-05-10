@@ -56,70 +56,7 @@ namespace Traker.Data
                 throw;
             }
         }
-
-        //public static Task CreateJobFolder(int clientId, string fullname, List<JobsModel> jobs)
-        //{
-        //    try
-        //    {
-        //        // Documents/
-        //        string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-        //        // Documents/Traker
-        //        string appRoot = Path.Combine(documents, "Traker");
-        //        Directory.CreateDirectory(appRoot);
-
-        //        // Documents/Traker/Clients
-        //        string clientsFolder = Path.Combine(appRoot, "Clients");
-        //        Directory.CreateDirectory(clientsFolder);
-
-        //        // Documents/Traker/Clients/ID_clientName
-        //        string safeName = MakeSafeFolderName(fullname);
-        //        string clientFolderName = $"{clientId}_{safeName}";
-        //        string clientFolder = Path.Combine(clientsFolder, clientFolderName);
-        //        Directory.CreateDirectory(clientFolder);
-
-        //        // Documents/Traker/Clients/ID_clientName/Jobs
-        //        string jobsFolder = Path.Combine(clientFolder, "Jobs");
-        //        Directory.CreateDirectory(jobsFolder);
-
-        //        // Documents/Traker/Clients/ID_clientName/Jobs/ID_jobTitle
-        //        foreach (var job in jobs)
-        //        {
-        //            string safeJobTitle = MakeSafeFolderName(job.Title);
-        //            string jobFolderName = $"{job.JobId}_{safeJobTitle}";
-        //            string jobFolder = Path.Combine(jobsFolder, jobFolderName);
-
-        //            Directory.CreateDirectory(jobFolder);
-        //        }
-
-        //        // Documents/Traker/Clients/ID_clientName/Invoices
-        //        string invoicesFolder = Path.Combine(clientFolder, "Invoices");
-        //        Directory.CreateDirectory(invoicesFolder);
-
-        //        // Documents/Traker/Clients/ID_clientName/Notes
-        //        string notesFolder = Path.Combine(clientFolder, "Notes");
-        //        Directory.CreateDirectory(notesFolder);
-
-        //        // Open folder in Explorer
-        //        Process.Start(new ProcessStartInfo
-        //        {
-        //            FileName = clientFolder,
-        //            UseShellExecute = true
-        //        });
-        //        Logger.LogActivity(Logger.INFO, $"FileStore: LocateFolder() OK");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(
-        //            $"An error occurred while locating the folder. Please try again.\n\n{ex.Message}",
-        //            "Open Folder",
-        //            MessageBoxButton.OK,
-        //            MessageBoxImage.Error);
-        //        Logger.LogActivity(Logger.ERROR, $"FileStore: LocateFolder() FAIL");
-        //    }
-        //    return Task.CompletedTask;
-        //}
-
+        
         public static Task<string> CreateClientFolder(int clientId, string fullname)
         {
             try
@@ -168,16 +105,116 @@ namespace Traker.Data
             }
         }
 
-        /// <summary>
-        /// Makes a string safe for use as a folder name by replacing invalid characters with underscores and trimming whitespace.
-        /// </summary>
-        public static string MakeSafeFolderName(string name)
+        public static Task LocateJobFolder(int clientId, int jobId, string fullName, string jobTitle)
         {
-            foreach (var c in Path.GetInvalidFileNameChars())
+            try
             {
-                name = name.Replace(c, '_');
+                // Documents/
+                string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+                // Documents/Traker
+                string appRoot = Path.Combine(documents, "Traker");
+
+                // Documents/Traker/Clients
+                string clientsFolder = Path.Combine(appRoot, "Clients");
+
+                // Documents/Traker/Clients/ID_clientName
+                string safeName = MakeSafeFolderName(fullName);
+                string clientFolderName = $"{clientId}_{safeName}";
+                string clientFolder = Path.Combine(clientsFolder, clientFolderName);
+
+                // Documents/Traker/Clients/ID_clientName/Jobs
+                string jobsFolder = Path.Combine(clientFolder, "Jobs");
+
+                string safeJobTitle = MakeSafeFolderName(jobTitle);
+                string jobFolderName = $"{jobId}_{safeJobTitle}";
+                string jobFolder = Path.Combine(jobsFolder, jobFolderName);
+
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = jobFolder,
+                    UseShellExecute = true
+                });
             }
-            return name.Trim();
+            catch(Exception ex)
+            {
+
+            }
+            return Task.CompletedTask;
+        }
+
+        public static Task UpdateClientFolderName(int clientId, string fullName, string newName)
+        {
+            try
+            {
+                // Documents/
+                string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+                // Documents/Traker
+                string appRoot = Path.Combine(documents, "Traker");
+
+                // Documents/Traker/Clients
+                string clientsFolder = Path.Combine(appRoot, "Clients");
+
+                // Documents/Traker/Clients/ID_clientName
+                string safeName = MakeSafeFolderName(fullName);
+                string clientFolderName = $"{clientId}_{safeName}";
+                string clientFolder = Path.Combine(clientsFolder, clientFolderName);
+
+                // new folder name
+                string safeNewName = MakeSafeFolderName(newName);
+                string clientFolderNewName = $"{clientId}_{safeNewName}";
+                string clientNewFolder = Path.Combine(clientsFolder, clientFolderNewName);
+
+                // repalce names
+                Directory.Move(clientFolder, clientNewFolder);
+            }
+            catch
+            {
+
+            }
+            return Task.CompletedTask;
+        }
+
+        public static Task UpdateJobFolderName(int clientId, int jobId, string fullName, string jobTitle, string newJobTitle)
+        {
+            try
+            {
+                // Documents/
+                string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+                // Documents/Traker
+                string appRoot = Path.Combine(documents, "Traker");
+
+                // Documents/Traker/Clients
+                string clientsFolder = Path.Combine(appRoot, "Clients");
+
+                // Documents/Traker/Clients/ID_clientName
+                string safeName = MakeSafeFolderName(fullName);
+                string clientFolderName = $"{clientId}_{safeName}";
+                string clientFolder = Path.Combine(clientsFolder, clientFolderName);
+
+                // Documents/Traker/Clients/ID_clientName/Jobs
+                string jobsFolder = Path.Combine(clientFolder, "Jobs");
+
+                // Documents/Traker/Clients/ID_clientName/Jobs/ID_jobTitle
+                string safeJobTitle = MakeSafeFolderName(jobTitle);
+                string jobFolderName = $"{jobId}_{safeJobTitle}";
+                string jobFolder = Path.Combine(jobsFolder, jobFolderName);
+
+                // new folder name
+                string safeNewName = MakeSafeFolderName(newJobTitle);
+                string newName = $"{jobId}_{safeNewName}";
+                string jobNewFolder = Path.Combine(jobsFolder, newName);
+
+                // repalce names
+                Directory.Move(jobFolder, jobNewFolder);
+            }
+            catch
+            {
+
+            }
+            return Task.CompletedTask;
         }
 
         public static Task<string> SaveInvoicePdf(int clientId, string clientName, string invoiceName)
@@ -243,27 +280,7 @@ namespace Traker.Data
             string invoicesFolder = Path.Combine(clientFolder, "Invoices");
             if (!Directory.Exists(invoicesFolder))
                 return null;
-
-            //// 2️⃣ Find job folder: [jobId]_[safeJobTitle]
-            //var jobFolder = Directory.GetDirectories(basePath)
-            //    .FirstOrDefault(d =>
-            //    {
-            //        var name = Path.GetFileName(d);
-            //        return name != null &&
-            //               name.StartsWith($"{jobId}_{MakeSafeFolderName(jobTitle)}", StringComparison.OrdinalIgnoreCase);
-            //    });
-
-            //if (jobFolder == null)
-            //    throw new Exception("Job folder not found");
-
-            // 3️⃣ Go into Invoices folder
-            //string invoicesFolder = Path.Combine(jobFolder, "Invoices");
-            //if (!Directory.Exists(invoicesFolder))
-            //    return null;
-
-            //if (!Directory.Exists(invoicesFolder))
-            //    throw new Exception("Invoices folder not found");
-
+                       
             // 5️⃣ Build expected filename prefix
             string expectedPrefix = $"INV-{invoiceId}_{jobId}_{clientId}_{MakeSafeFolderName(clientName)}_{date.ToString("dd-MM-yyyy")}_{date.ToString("HHmmss")}";
 
@@ -352,6 +369,15 @@ namespace Traker.Data
                 }
             }
             return Task.FromResult(isLastJob);
+        }
+        
+        public static string MakeSafeFolderName(string name)
+        {
+            foreach (var c in Path.GetInvalidFileNameChars())
+            {
+                name = name.Replace(c, '_');
+            }
+            return name.Trim();
         }
     }
 }

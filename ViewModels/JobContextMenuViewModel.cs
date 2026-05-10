@@ -54,7 +54,7 @@ namespace Traker.ViewModels
             List<JobsModel> jobDetails = new List<JobsModel>();
             jobDetails = Data.Jobs.Where(j => j.ClientId == SelectedJob.ClientId).ToList();
 
-            //await FileStore.LocateFolder(SelectedJob.ClientId, SelectedJob.ClientName, jobDetails);
+            await FileStore.LocateJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName, SelectedJob.JobTitle);
             await TryCloseAsync();;
         }
 

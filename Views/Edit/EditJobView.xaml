@@ -39,7 +39,7 @@
 
                 <!-- button -->
                 <Grid Grid.Column="0">
-                    <TextBlock VerticalAlignment="Center" Margin="5,0,10,0" Text="{Binding ClientName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34" />
+                    <TextBlock VerticalAlignment="Center" Margin="5,0,10,0" Text="{Binding BusinessName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34" />
                 </Grid>
 
                 <!-- close -->
@@ -91,7 +91,7 @@
                                         <TextBlock Margin="5,0,0,5" Text="Job Title" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
                                         <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding JobTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                         behaviours:TextboxFilter.EnableFilter="True"
-                                        behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly"/>
+                                        behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces"/>
                                     </StackPanel>
                                 </Grid>
 
@@ -101,7 +101,7 @@
                                         <TextBlock Margin="5,0,0,5" Text="Job Description" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
                                         <TextBox Style="{DynamicResource TextBoxNormal}" HorizontalAlignment="Left" Text="{Binding JobDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Padding="10" MaxLength="1000" Height="310" Width="345" AcceptsReturn="False" FontSize="22"  FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" 
                                         behaviours:TextboxFilter.EnableFilter="True"
-                                        behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly"/>
+                                        behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces"/>
                                     </StackPanel>
                                 </Grid>
                             </Grid>

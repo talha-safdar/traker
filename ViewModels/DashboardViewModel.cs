@@ -949,6 +949,14 @@ namespace Traker.ViewModels
         {
             await Data.RefreshDatabase();
             await SetupDashboardData();
+
+            if (message != null)
+            {
+                if (message.Command != "Invoice") // skip for invoice creation as no data has been amneded
+                {
+                    SelectedJob = null;
+                }
+            }
         }
         #endregion
 

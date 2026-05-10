@@ -87,6 +87,13 @@ namespace Traker.ViewModels.Edit
         public async Task ConfirmEditClient()
         {
             await Database.EditClient(SelectedRow.ClientId, ClientType, ClientName, ClientEmail, CompanyName, PhoneNumber, BillingAddress, City, Postcode, Country, IsActive);
+
+            // check if name changes for folder naming purpose
+            if ((SelectedRow.ClientType == Names.Individual ? SelectedRow.ClientName : SelectedRow.CompanyName) != ClientName)
+            {
+                await FileStore.UpdateClientFolderName(SelectedRow.ClientId, SelectedRow.ClientType == Names.Individual ? SelectedRow.ClientName : SelectedRow.CompanyName, SelectedRow.ClientType == Names.Individual ? ClientName : CompanyName);
+            }
+
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
             await TryCloseAsync();
         }

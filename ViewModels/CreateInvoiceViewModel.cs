@@ -143,7 +143,7 @@ namespace Traker.ViewModels
 
             await GenerateInvoice(invoiceName);
 
-            await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+            await _events.PublishOnUIThreadAsync(new RefreshDatabase() { Command = "Invoice" });
             await Task.Delay(5000);
             await TryCloseAsync();
             await _events.PublishOnUIThreadAsync(new DashboardVMEvents { Command = Names.ShowInvoice });

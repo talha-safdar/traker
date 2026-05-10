@@ -95,7 +95,7 @@
                                 <TextBlock Margin="5,0,0,5" Text="Job Title" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
                                 <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding JobTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="True" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                     behaviours:TextboxFilter.EnableFilter="True"
-                                    behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
+                                    behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
                             </StackPanel>
                         </Grid>
 

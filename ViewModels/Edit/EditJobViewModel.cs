@@ -25,7 +25,7 @@ namespace Traker.ViewModels.Edit
         #endregion
 
         #region Private View Variables
-        private string _clientName;
+        private string _businessName;
         private DateOnly _createdDate;
         private string _jobTitle;
         private string _jobDescription;
@@ -61,7 +61,7 @@ namespace Traker.ViewModels.Edit
 
         protected override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
-            ClientName = SelectedJob.ClientName;
+            BusinessName = SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName;
             CreatedDate = SelectedJob.CreatedDate;
             JobTitle = SelectedJob.JobTitle;
             JobDescription = SelectedJob.JobDescription;
@@ -135,6 +135,13 @@ namespace Traker.ViewModels.Edit
             }
 
             await Database.EditJob(SelectedJob.JobId, JobTitle, JobDescription, Status, priceFormatted.ToString(), AmountReceivedFormatted.ToString(), startDate, dueDate);
+
+            // check if job title changed 
+            if (SelectedJob.JobTitle != JobTitle)
+            {
+                await FileStore.UpdateJobFolderName(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName, SelectedJob.JobTitle, JobTitle);
+            }
+
             await TryCloseAsync();
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
         }
@@ -238,13 +245,13 @@ namespace Traker.ViewModels.Edit
         #endregion
 
         #region Public View Variables
-        public string ClientName
+        public string BusinessName
         {
-            get { return _clientName; }
+            get { return _businessName; }
             set
             {
-                _clientName = value;
-                NotifyOfPropertyChange(() => ClientName);
+                _businessName = value;
+                NotifyOfPropertyChange(() => BusinessName);
             }
         }
 

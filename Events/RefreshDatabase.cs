@@ -5,5 +5,6 @@
     /// </summary>
     public class RefreshDatabase
     {
+        public string Command { get; set; } = string.Empty;
     }
 }
