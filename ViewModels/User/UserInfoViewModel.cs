@@ -14,6 +14,7 @@ namespace Traker.ViewModels.User
     using System.Windows.Input;
     using System.Windows.Media;
     using Traker.Events;
+    using Traker.Events.DashboardVM;
     using Traker.Helper;
 
     public class UserInfoViewModel : Screen

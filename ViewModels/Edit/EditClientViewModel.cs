@@ -16,6 +16,7 @@ namespace Traker.ViewModels.Edit
     using Database;
     using System.Windows.Input;
     using Traker.Data;
+    using Traker.Events.DashboardVM;
     using Traker.Helper;
     using Traker.Services;
     using Traker.States;

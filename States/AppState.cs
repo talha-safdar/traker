@@ -15,7 +15,7 @@ namespace Traker.States
     /// </summary>
     public class AppState : PropertyChangedBase
     {
-        public MessageBoxViewModel messageBoxVM = new MessageBoxViewModel(this);
+        public MessageBoxViewModel messageBoxVM = new MessageBoxViewModel();
         public bool allowProceed = false; // used for confirmation dialogs
     }
 }

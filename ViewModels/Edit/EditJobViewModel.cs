@@ -17,6 +17,7 @@ namespace Traker.ViewModels.Edit
     using System.Text.RegularExpressions;
     using System.Windows.Input;
     using Traker.Data;
+    using Traker.Events.DashboardVM;
     using Traker.Helper;
 
     public class EditJobViewModel : Screen

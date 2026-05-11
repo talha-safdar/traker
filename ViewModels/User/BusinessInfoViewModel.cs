@@ -12,6 +12,7 @@ namespace Traker.ViewModels.User
 {
     using Database;
     using System.Windows.Input;
+    using Traker.Events.DashboardVM;
 
     public class BusinessInfoViewModel : Screen
     {

@@ -22,6 +22,7 @@ namespace Traker.ViewModels.Edit
     using System.Windows.Input;
     using System.Windows.Media;
     using Traker.Events;
+    using Traker.Events.DashboardVM;
     using Traker.Helper;
 
     public class EditInvoiceViewModel : Screen

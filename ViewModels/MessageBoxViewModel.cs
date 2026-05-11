@@ -25,9 +25,9 @@ namespace Traker.ViewModels
 
         public Visibility IsVisible { get; set; } = Visibility.Collapsed; // for showing the window elements all at the same time
 
-        public MessageBoxViewModel(AppState appState) 
+        public MessageBoxViewModel() 
         {
-            State = appState;
+            //State = appState;
         }
 
         protected override async Task OnActivatedAsync(CancellationToken cancellationToken)
