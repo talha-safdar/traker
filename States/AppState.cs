@@ -17,6 +17,10 @@ namespace Traker.States
     /// user interface to respond to state changes.</remarks>
     public class AppState : PropertyChangedBase
     {
+        
+
+
+
         #region Private View State Variables
         //private bool _isWindowOpen = false;
         #endregion

@@ -10,6 +10,14 @@
     <SolidColorBrush x:Key="JobStatusOverdue" Color="#D68A8A" />
     <SolidColorBrush x:Key="JobStatusPaid" Color="#4E9A78" />
     
+    <!-- message box icon colours -->
+    <SolidColorBrush x:Key="MessageBoxInfo" Color="#88B0D0" />
+    <SolidColorBrush x:Key="MessageBoxInfoText" Color="#F8FBFD" />
+    <SolidColorBrush x:Key="MessageBoxWarning" Color="#E8C08D" />
+    <SolidColorBrush x:Key="MessageBoxWarningText" Color="#FDFBF8" />
+    <SolidColorBrush x:Key="MessageBoxError" Color="#D68A8A" />
+    <SolidColorBrush x:Key="MessageBoxErrorText" Color="#FCF8F8" />
+    <SolidColorBrush x:Key="MessageBoxText" Color="#A0A0A0" />
     
     
     

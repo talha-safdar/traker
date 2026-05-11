@@ -3,12 +3,9 @@
 namespace Traker.Services
 {
     /// <summary>
-    /// Provides static methods and constants for logging application events with various severity levels to a local log
-    /// file.
+    /// Creates log file as "Log YYY-MM-dd.txt".
+    /// It also shows the log level.
     /// </summary>
-    /// <remarks>The <see cref="Logger"/> class defines standard log level constants and a method for writing
-    /// log entries to a file in the user's local application data folder. Log entries are timestamped and categorized
-    /// by severity. This class is thread-safe for typical usage scenarios.</remarks>
     public static class Logger
     {
         #region Public Static Field Variables
@@ -19,6 +16,8 @@ namespace Traker.Services
         public static readonly string INFO = "INF"; // for successful loads up of initialisations, services etc.
         public static readonly string TRACE = "TRC"; // for tracing user inputs etc.
         public static readonly string DEBUG = "DBG"; // for debugging purpose
+
+        private static readonly object _logLock = new();
         #endregion
 
         #region Public Static Functions
@@ -26,12 +25,17 @@ namespace Traker.Services
         {
             try
             {
-                //string fileName = $"Log {DateTime.Now:yyyy-MM-dd}.txt"; // file name "Log YYYY-MM-dd.txt"
-                //string basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Traker");
-                //string logFolder = Path.Combine(basePath, "Logs");
-                //Directory.CreateDirectory(logFolder);
-                //string filePath = Path.Combine(logFolder, fileName); // Set file path directory
-                //File.AppendAllText(filePath, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff} [{level}] {text}{Environment.NewLine}");
+                string fileName = $"Log {DateTime.Now:yyyy-MM-dd}.txt"; // file name "Log YYYY-MM-dd.txt"
+                string LogDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Log");
+                Directory.CreateDirectory(LogDirectory);
+
+                string filePath = Path.Combine(LogDirectory, fileName); // Set file path directory
+
+                lock (_logLock)
+                {
+                    // add file path, and the message with timestamp
+                    File.AppendAllText(filePath, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff} [{level}] {text}{Environment.NewLine}");
+                }
             }
             catch (Exception ex)
             {

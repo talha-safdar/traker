@@ -34,6 +34,9 @@
     <None Remove="Resources\Media\Images\Icons\Lucide\landmark.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\list-filter.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\list.svg" />
+    <None Remove="Resources\Media\Images\Icons\Lucide\MessageBox\circle-x.svg" />
+    <None Remove="Resources\Media\Images\Icons\Lucide\MessageBox\info.svg" />
+    <None Remove="Resources\Media\Images\Icons\Lucide\MessageBox\triangle-alert.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\pen.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\plus.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\trash-2.svg" />
@@ -115,6 +118,12 @@
     <Resource Include="Resources\Media\Images\Icons\Lucide\user-round.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\x.svg" />
     <Resource Include="Resources\Media\Images\Icons\minimise-button.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Media\Images\Icons\Lucide\MessageBox\circle-x.svg" />
+    <Resource Include="Resources\Media\Images\Icons\Lucide\MessageBox\info.svg" />
+    <Resource Include="Resources\Media\Images\Icons\Lucide\MessageBox\triangle-alert.svg" />
   </ItemGroup>
 
 </Project>

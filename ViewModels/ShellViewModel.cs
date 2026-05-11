@@ -11,6 +11,7 @@ namespace Traker.ViewModels
     using System.Diagnostics;
     using System.Net.NetworkInformation;
     using System.Threading;
+    using System.Windows;
     using System.Windows.Controls;
     using Traker.Events;
     using Traker.Events.ShellVM;
@@ -21,8 +22,7 @@ namespace Traker.ViewModels
 
     public class ShellViewModel : Conductor<IScreen>.Collection.OneActive,
     #region Interfaces
-        IHandle<ShellVM>,
-        IHandle<MessageBoxTrigger>
+        IHandle<ShellVM>
     #endregion
     {
         #region Caliburn Variables
@@ -34,19 +34,29 @@ namespace Traker.ViewModels
         #region Public State Variable
         public AppState State { get; } // state binding variable accessible from other viewmodels
         #endregion
-
-        private MessageBoxViewModel _messageBoxVM;
+        private List<bool> a;
 
         public ShellViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState, DataService dataService)
         {
-            _events = events;
-            _windowManager = windowManager;
-            State = appState;
-            _dataService = dataService;
+            try
+            {
+                _events = events;
+                _windowManager = windowManager;
+                State = appState;
+                _dataService = dataService;
 
-            _messageBoxVM = new MessageBoxViewModel();
-
-            _events.SubscribeOnPublishedThread(this);
+                _events.SubscribeOnPublishedThread(this);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(
+                    $"{ex.Message}",
+                    "Shell Constructor",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+                Logger.LogActivity(Logger.ERROR, $"ShellViewModel: ShellViewModel() FAIL\n\t{ex.Message}");
+            }
         }
 
         //protected override async Task OnInitializedAsync(CancellationToken cancellationToken)
@@ -72,28 +82,38 @@ namespace Traker.ViewModels
         //    }
         //}
 
-
         protected async override void OnViewReady(object view)
         {
-            base.OnViewReady(view);
-
-            await Database.SetUpDatabase();
-            await _dataService.FetchDatabase();
-
-            // check if user table is empty
-            // if so, it means it's a fresh start
-            // else ignore
-            if (_dataService.User?.Any() == false)
+            try
             {
-                // open the setup window
-                await Task.Delay(2000);
-                SetupViewModel setupViewModel = new SetupViewModel(_events, _windowManager, State, _dataService);
-                await _windowManager.ShowWindowAsync(setupViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
+                a[0] = true;
+
+                base.OnViewReady(view);
+
+                await Database.SetUpDatabase();
+                await _dataService.FetchDatabase();
+
+                // check if user table is empty
+                // if so, it means it's a fresh start
+                // else ignore
+                if (_dataService.User?.Any() == false)
+                {
+                    // open the setup window
+                    await Task.Delay(2000);
+                    SetupViewModel setupViewModel = new SetupViewModel(_events, _windowManager, State, _dataService);
+                    await _windowManager.ShowWindowAsync(setupViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
+                }
+                else
+                {
+                    DashboardViewModel dashboardViewModel = new DashboardViewModel(_events, _windowManager, State, _dataService);
+                    await ActivateItemAsync(dashboardViewModel);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                DashboardViewModel dashboardViewModel = new DashboardViewModel(_events, _windowManager, State, _dataService);
-                await ActivateItemAsync(dashboardViewModel);
+                MessageBoxViewModel _messageBoxVM = new MessageBoxViewModel(2, "Shell OnViewReady", ex.Message, 0);
+                _windowManager.ShowDialogAsync(_messageBoxVM, null, CustomWindow.SettingsForDialog(790, 600, false));
+                Logger.LogActivity(Logger.ERROR, $"ShellViewModel: OnViewReady() FAIL\n\t{ex.Message}");
             }
         }
 
@@ -113,12 +133,6 @@ namespace Traker.ViewModels
                     ActivateItemAsync(dashboardViewModel, cancellationToken);
                 }
             }
-            return Task.CompletedTask;
-        }
-
-        public Task HandleAsync(MessageBoxTrigger message, CancellationToken cancellationToken)
-        {
-            _windowManager.ShowDialogAsync(_messageBoxVM, null, CustomWindow.SettingsForDialog(790, 600, false));
             return Task.CompletedTask;
         }
         #endregion

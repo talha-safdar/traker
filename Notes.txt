@@ -10,20 +10,24 @@ Fonts: {
  // 0 = individual, 1 = company
 
 TO-DO:
-
-- make outstanding border reddish if overdue
-- make buttons unclikable where necessary
-- fix logics on invoice cancelled what should happen? to the status?
-- fix edit client window enlarging on large name entry
-- create invoice window the textboxes should update the database too
-- fix bug with outstanding invocied
-- purify inputs like remove white spaces etc before saving
-- use cutlutre invariant for datetiem and money
-- fix the matter with billingaddress in createinvoice
-- add margin for money textboxes with the title
+make outstanding border reddish if overdue
+make buttons unclikable where necessary
+fix logics on invoice cancelled what should happen? to the status?
+fix edit client window enlarging on large name entry
+fix bug with outstanding invocied
+purify inputs like remove white spaces etc before saving
+use cutlutre invariant for datetiem and money
+add margin for money textboxes with the title
+add tooltip
+on edit client update folder names too
+tooltip change message for invocied "double-click to open invoice"
+user context if click on another window while preivous open close it
 
 V1:
-#- Esc button: to exit popup window
+- check all windows have fix width and height
+#- add confirmation window and error
+- Esc button: to exit popup window
+#- job context menu should hide or chage based on whether the invoice is created e.g. if invoice created disable status and create invoice button
 #- add window shadow for cool effect
 #- on popup menu open and clicked one option close the menu
 #- if datetime is less than today then show "to set"?
@@ -69,6 +73,7 @@ V1:
 #- disable filter / sort on add, edit client
 #- calculate the total price for job using (total - remaining)
 #- add splash screen if necessary
+#- add on click animation to the rest of the buttons
 
 V2:
 #- on edit row add a spy signal "amber" for changes that have not been saved yet
