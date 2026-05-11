@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Traker.Models.Database
 {
+    /// <summary>
+    /// User table model
+    /// </summary>
     public class UserModel
     {
         public int UserId { get; set; } = 0;

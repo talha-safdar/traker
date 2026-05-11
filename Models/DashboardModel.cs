@@ -10,13 +10,9 @@ using Traker.Models.Database;
 namespace Traker.Models
 {
     /// <summary>
-    /// Represents the data model for a client dashboard, including client details, job information, and invoice status.
+    /// Dashboard Job Cards view model. It contains all the necessary
+    /// data for the cards
     /// </summary>
-    /// <remarks><para> The <see cref="DashboardModel"/> class is designed to aggregate and expose information
-    /// relevant to a client dashboard view. It provides properties for client identification, contact details, job
-    /// descriptions, pricing, due dates, and invoice statuses. </para> <para> This model supports data binding
-    /// scenarios and notifies property changes to facilitate UI updates. It also includes collections of related jobs
-    /// and invoices for the client. </para></remarks>
     public class DashboardModel : PropertyChangedBase
     {
         // client

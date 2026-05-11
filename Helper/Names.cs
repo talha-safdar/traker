@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Traker.Helper
 {
+    /// <summary>
+    /// Repetitive general terms should be palced here
+    /// to prevnet typos
+    /// </summary>
     public static class Names
     {
         // job status
@@ -19,6 +23,7 @@ namespace Traker.Helper
         // business type
         public const string Individual = "Individual";
         public const string Company = "Company";
+
         // events
         public const string SetupCompleted = "SetupCompleted"; // for the user setup completion
         public const string ShowInvoice = "ShowInvoice"; // after invoice created open edit invoice
@@ -46,5 +51,9 @@ namespace Traker.Helper
         public const string FilterComapny = "FilterComapny";
         public const string AllJobStatus = "AllJobStatus";
         public const string UnfilterClientType = "UnfilterClientType";
+
+        // message box
+        public const string Close = "Close"; // cloe entire app
+        public const string ConfirmProceed = "ConfirmProceed"; // cloe entire app
     }
 }

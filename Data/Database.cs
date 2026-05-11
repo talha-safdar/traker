@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using Caliburn.Micro;
+using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.VisualBasic;
 using System.Data;
@@ -11,6 +12,7 @@ using System.Windows;
 using Traker.Helper;
 using Traker.Models.Database;
 using Traker.Services;
+using Traker.States;
 
 namespace Traker.Database
 {
@@ -24,12 +26,14 @@ namespace Traker.Database
         #endregion
 
         #region Public Static Functions
+
+        #region Set Up Database
         /// <summary>
-        /// Set up the database by creating the database file and tables if they don't exist. This is done by reading the Schema.sql file and executing the SQL commands within it. If any errors occur during this process, an error message is displayed to the user and the application is closed. If the database is set up successfully, a log entry is made indicating that the database is connected.
+        /// Set up the database by creating the database file if it doesn't exist
         /// </summary>
         public static async Task SetUpDatabase()
         {
-            await Task.Run(() =>
+            await Task.Run(async() =>
             {
                 try
                 {
@@ -50,41 +54,58 @@ namespace Traker.Database
                     if (stream != null)
                     {
                         using var reader = new StreamReader(stream); // get Schema.sql
-
                         string sql = reader.ReadToEnd(); // read Schema.sql
-
                         var _sqliteCommand = conn.CreateCommand();
                         _sqliteCommand.CommandText = sql; // set Schema.sqlwr
-
                         _sqliteCommand.ExecuteNonQuery(); // execute Schema.sql
                         Logger.LogActivity(Logger.INFO, "Database: SetUpDatabase() DATABASE CONNECTED");
                     }
                     else
                     {
-                        MessageBox.Show(
-                            $"An error occurred while setting up the database. Please try again.\n\tUnable to locate database schema.",
-                            "Database Setup",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Warning);
+                        await Execute.OnUIThreadAsync(() =>
+                        {
+                            AppState state = IoC.Get<AppState>();
+                            IWindowManager windowManager = IoC.Get<IWindowManager>();
+                            if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                            {
+                                state.messageBoxVM.Symbol = 2;
+                                state.messageBoxVM.HeadMessage = "Database Setup";
+                                state.messageBoxVM.Message = "Could not locate the database";
+                                state.messageBoxVM.ButtonStyle = 0;
+                                state.messageBoxVM.Action = Names.Close;
+                                windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                            }
+                            return Task.CompletedTask;
+                        });
                         Logger.LogActivity(Logger.WARNING, "Database: SetUpDatabase() DATABASE NOT CONNECTED");
-                        Environment.Exit(1); // kill process
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(
-                        $"An error occurred while setting up the database. Please try again.\n\t{ex.Message}",
-                        "Database Setup",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                    Environment.Exit(1); // kill process
-                    Logger.LogActivity(Logger.ERROR, "Database: SetUpDatabase() DATABASE ERROR");
+                    await Execute.OnUIThreadAsync(() =>
+                    {
+                        AppState state = IoC.Get<AppState>();
+                        IWindowManager windowManager = IoC.Get<IWindowManager>();
+                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                        {
+                            state.messageBoxVM.Symbol = 2;
+                            state.messageBoxVM.HeadMessage = "Database Setup";
+                            state.messageBoxVM.Message = ex.Message;
+                            state.messageBoxVM.ButtonStyle = 0;
+                            state.messageBoxVM.Action = Names.Close;
+                            windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        }
+                        return Task.CompletedTask;
+                    });
+                    Logger.LogActivity(Logger.ERROR, $"Database: SetUpDatabase() FAIL\n\t{ex.Message}");
                 }
             });
         }
-
+        #endregion
+        
+        #region Fetch Functions
         /// <summary>
-        /// Fetch all data from the Clients table and return it as a list of ClientsModel objects. This is done by opening a connection to the database, executing a SQL query to select all rows from the Clients table, and then reading the results using a SqliteDataReader. For each row, a new ClientsModel object is created and added to the list. If any errors occur during this process, an error message is displayed to the user and the application is closed. If the data is fetched successfully, a log entry is made indicating that the operation was successful.
+        /// Fetch Clients table
         /// </summary>
         public static List<ClientsModel> FetchClientsTable()
         {
@@ -158,20 +179,28 @@ namespace Traker.Database
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"An error occurred while fetching 'Client' table. Please try again.\n\t{ex.Message}",
-                    "Fetch Client Tables",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-
-                Logger.LogActivity(Logger.ERROR, $"Database: FetchClientsTable() FAIL");
-                Environment.Exit(1); // kill process
-                throw; // necessary otherwsie cries about no return value
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Fetch Clients Tables";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchClientsTable() FAIL\n\t{ex.Message}");
+                throw;
             }
         }
 
         /// <summary>
-        /// Fetch all data from the Jobs table and return it as a list of JobsModel objects. This is done by opening a connection to the database, executing a SQL query to select all rows from the Jobs table, and then reading the results using a SqliteDataReader. For each row, a new JobsModel object is created and added to the list. If any errors occur during this process, an error message is displayed to the user and the application is closed. If the data is fetched successfully, a log entry is made indicating that the operation was successful.
+        /// Fetch Jobs table
         /// </summary>
         public static List<JobsModel> FetchJobsTable()
         {
@@ -251,22 +280,30 @@ namespace Traker.Database
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"An error occurred while fetching 'Job' table. Please try again.\n\t{ex.Message}",
-                    "Fetch Job Tables",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-
-                Logger.LogActivity(Logger.ERROR, $"Database: FetchJobsTable() FAIL");
-                Environment.Exit(1); // kill process
-                throw; // necessary otherwsie cries about no return value
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Fetch Jobs Tables";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchJobsTable() FAIL\n\t{ex.Message}");
+                throw;
             }
         }
-
+              
         /// <summary>
-        /// Fetch all data from the Invoices table and return it as a list of InvoicesModel objects. This is done by opening a connection to the database, executing a SQL query to select all rows from the Invoices table, and then reading the results using a SqliteDataReader. For each row, a new InvoicesModel object is created and added to the list. If any errors occur during this process, an error message is displayed to the user and the application is closed. If the data is fetched successfully, a log entry is made indicating that the operation was successful.
+        /// Fetch Invoices table
         /// </summary>
-        public static List<InvoicesModel> FetchInvoiceTable()
+        public static List<InvoicesModel> FetchInvoicesTable()
         {
             List<InvoicesModel> invoicesList = new List<InvoicesModel>();
 
@@ -356,20 +393,28 @@ namespace Traker.Database
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"An error occurred while fetching 'Invoice' table. Please try again.\n\t{ex.Message}",
-                    "Fetch Invoice Tables",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-
-                Logger.LogActivity(Logger.ERROR, $"Database: FetchInvoiceTable() FAIL");
-                Environment.Exit(1); // kill process
-                throw; // necessary otherwsie cries about no return value
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Fetch Invoices Tables";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchInvoicesTable() FAIL\n\t{ex.Message}");
+                throw;
             }
         }
 
         /// <summary>
-        /// Fetch User information
+        /// Fetch User table
         /// </summary>
         public static List<UserModel> FetchUserTable()
         {
@@ -417,20 +462,28 @@ namespace Traker.Database
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"An error occurred while fetching 'User' table. Please try again.\n\t{ex.Message}",
-                    "Fetch User Table",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-
-                Logger.LogActivity(Logger.ERROR, $"Database: FetchUserTable() FAIL");
-                Environment.Exit(1); // kill process
-                throw; // necessary otherwsie cries about no return value
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Fetch User Table";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchUserTable() FAIL\n\t{ex.Message}");
+                throw;
             }
         }
 
         /// <summary>
-        /// Fetch Business information
+        /// Fetch Business table
         /// </summary>
         public static List<BusinessModel> FetchBusinessTable()
         {
@@ -496,22 +549,29 @@ namespace Traker.Database
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"An error occurred while fetching 'Business' table. Please try again.\n\t{ex.Message}",
-                    "Fetch Business Table",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-
-                Logger.LogActivity(Logger.ERROR, $"Database: FetchBusinessTable() FAIL");
-                Environment.Exit(1); // kill process
-                throw; // necessary otherwsie cries about no return value
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Fetch Business Table";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchBusinessTable() FAIL\n\t{ex.Message}");
+                throw;
             }
         }
-
+        
         /// <summary>
-        /// Fetch Bank information
+        /// Fetch Bank table
         /// </summary>
-        /// <returns></returns>
         public static List<BankModel> FetchBankTable()
         {
             List<BankModel> bankList = new List<BankModel>();
@@ -569,20 +629,296 @@ namespace Traker.Database
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"An error occurred while fetching 'Bank' table. Please try again.\n\t{ex.Message}",
-                    "Fetch Bank Table",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-
-                Logger.LogActivity(Logger.ERROR, $"Database: FetchBankTable() FAIL");
-                Environment.Exit(1); // kill process
-                throw; // necessary otherwsie cries about no return value
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Fetch Bank Table";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchBankTable() FAIL\n\t{ex.Message}");
+                throw;
             }
+        }
+        #endregion
+
+        #region Create Functions
+        /// <summary>
+        /// Create invoice
+        /// </summary>
+        public static Task CreateInvoice(int clientId, int jobId, decimal subtotal, int taxAmount, decimal totalAmount, DateOnly dueDate, string billingName, string billingAddress, string billingCity, string billingPostcode, string billingCountry, DateTime dateIssued)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+
+                using (var pragma = conn.CreateCommand())
+                {
+                    pragma.CommandText = "PRAGMA foreign_keys = ON;";
+                    pragma.ExecuteNonQuery();
+                }
+
+                using var transaction = conn.BeginTransaction();
+
+                long nextNumber;
+
+                // find the highest invoice number and add +1 for current entry
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.Transaction = transaction;
+                    cmd.CommandText = "SELECT IFNULL(MAX(InvoiceNumber), 0) FROM Invoices;";
+                    nextNumber = (long)cmd.ExecuteScalar()! + 1;
+                }
+
+                // insert into Invoices table
+                using (var invoicesCmd = conn.CreateCommand())
+                {
+                    invoicesCmd.CommandText = @"
+                    INSERT INTO Invoices
+                    (JobId, 
+                    InvoiceNumber, 
+                    Subtotal, 
+                    TaxAmount, 
+                    TotalAmount, 
+                    IssueDate, 
+                    DueDate,    
+                    BillingName, 
+                    BillingAddress,
+                    BillingCity,
+                    BillingPostcode,
+                    BillingCountry,
+                    Status)
+
+                    VALUES
+                    (@jobId, 
+                    @invoiceNumber, 
+                    @subtotal,
+                    @taxAmount,
+                    @totalAmount,
+                    @issueDate,
+                    @dueDate,
+                    @billingName,
+                    @billingAddress,
+                    @billingCity,
+                    @billingPostcode,
+                    @billingCountry,
+                    @status);
+                    ";
+                    invoicesCmd.Parameters.AddWithValue("@jobId", jobId);
+                    invoicesCmd.Parameters.AddWithValue("@invoiceNumber", nextNumber);
+                    invoicesCmd.Parameters.AddWithValue("@subtotal", subtotal);
+                    invoicesCmd.Parameters.AddWithValue("@taxAmount", taxAmount);
+                    invoicesCmd.Parameters.AddWithValue("@totalAmount", totalAmount);
+                    invoicesCmd.Parameters.AddWithValue("@issueDate", dateIssued);
+                    invoicesCmd.Parameters.AddWithValue("@dueDate", dueDate.ToString("dd-MM-yyyy"));
+                    invoicesCmd.Parameters.AddWithValue("@billingName", billingName);
+                    invoicesCmd.Parameters.AddWithValue("@billingAddress", billingAddress);
+                    invoicesCmd.Parameters.AddWithValue("@billingCity", billingCity);
+                    invoicesCmd.Parameters.AddWithValue("@billingPostcode", billingPostcode);
+                    invoicesCmd.Parameters.AddWithValue("@billingCountry", billingCountry);
+                    invoicesCmd.Parameters.AddWithValue("@status", "Invoiced");
+
+                    invoicesCmd.ExecuteNonQuery();
+                }
+
+                transaction.Commit();
+
+                // also update the status in Jobs table to "Invoiced"
+                SetJobStatus(Names.Invoiced, clientId, jobId);
+
+                Logger.LogActivity(Logger.INFO, $"Database: CreateInvoice() OK - JobId: {jobId}");
+            }
+            catch (Exception ex)
+            {
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Create Invoice";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: CreateInvoice() FAIL\n\t{ex.Message}");
+                throw;
+            }
+            return Task.CompletedTask;
         }
 
         /// <summary>
-        /// Add a new row to the Clients and Jobs tables in the database. This is done by opening a connection to the database, starting a transaction, and then executing two SQL commands: one to insert a new row into the Clients table and another to insert a new row into the Jobs table with a foreign key reference to the newly inserted client. If any errors occur during this process, an error message is displayed to the user and the transaction is rolled back. If the rows are added successfully, a log entry is made indicating that the operation was successful along with the new client and job IDs.
+        /// Create user
+        /// </summary>
+        public static Task CreateUser(string fullName, string email, string phone)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+
+                using var cmd = conn.CreateCommand();
+
+                cmd.CommandText = @"
+                    INSERT INTO User
+                    (FullName, Email, Phone)
+                    VALUES (@fullName, @email, @phone)
+                ";
+
+                cmd.Parameters.AddWithValue("@fullName", fullName);
+                cmd.Parameters.AddWithValue("@email", email);
+                cmd.Parameters.AddWithValue("@phone", phone);
+
+                cmd.ExecuteNonQuery();
+
+                Logger.LogActivity(Logger.INFO, $"Database: Createuser() OK");
+            }
+            catch (Exception ex)
+            {
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Create User";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: Createuser() FAIL\n\t{ex.Message}");
+                throw;
+            }
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Create business
+        /// </summary>
+        public static Task CreateBusiness(int userId, string businessName, string businessType, string country, string city, string address, string postcode, string vatNumber, string registrationNumber)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+
+                using var cmd = conn.CreateCommand();
+
+                cmd.CommandText = @"
+                    INSERT INTO Business
+                    (UserId, BusinessName, BusinessType, Country, City, Address, Postcode, VatNumber, RegistrationNumber)
+                    VALUES (@userId, @businessName, @businessType, @country, @city, @address, @postcode, @vatNumber, @registrationNumber)
+                ";
+
+                cmd.Parameters.AddWithValue("@userId", userId);
+                cmd.Parameters.AddWithValue("@businessName", businessName);
+                cmd.Parameters.AddWithValue("@businessType", businessType);
+                cmd.Parameters.AddWithValue("@country", country);
+                cmd.Parameters.AddWithValue("@city", city);
+                cmd.Parameters.AddWithValue("@address", address);
+                cmd.Parameters.AddWithValue("@postcode", postcode);
+                cmd.Parameters.AddWithValue("@vatNumber", vatNumber);
+                cmd.Parameters.AddWithValue("@registrationNumber", registrationNumber);
+
+                cmd.ExecuteNonQuery();
+
+                Logger.LogActivity(Logger.INFO, $"Database: CreateBusiness() OK");
+            }
+            catch (Exception ex)
+            {
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Create Business";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: CreateBusiness() FAIL\n\t{ex.Message}");
+                throw;
+            }
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Create bank
+        /// </summary>
+        public static Task CreateBank(int userId, string bankName, string accountName, string accountNumber, string sortcode, string IBAN, string BIC)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+
+                using var cmd = conn.CreateCommand();
+
+                cmd.CommandText = @"
+                    INSERT INTO Bank
+                    (UserId, BankName, AccountName, AccountNumber, SortCode, IBAN, BIC)
+                    VALUES (@userId, @bankName, @accountName, @accountNumber, @sortcode, @IBAN, @BIC)
+                ";
+
+                cmd.Parameters.AddWithValue("@userId", userId);
+                cmd.Parameters.AddWithValue("@bankName", bankName);
+                cmd.Parameters.AddWithValue("@accountName", accountName);
+                cmd.Parameters.AddWithValue("@accountNumber", accountNumber);
+                cmd.Parameters.AddWithValue("@sortcode", sortcode);
+                cmd.Parameters.AddWithValue("@IBAN", IBAN);
+                cmd.Parameters.AddWithValue("@BIC", BIC);
+                cmd.ExecuteNonQuery();
+
+                Logger.LogActivity(Logger.INFO, $"Database: CreateBank() OK");
+            }
+            catch (Exception ex)
+            {
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Create Bank";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: CreateBank() FAIL\n\t{ex.Message}");
+                throw;
+            }
+            return Task.CompletedTask;
+        }
+        #endregion
+
+        #region Add Functions
+        /// <summary>
+        /// Add Client as individual type
         /// </summary>
         public static Task<List<int>> AddIndividualClient(string clientName, string clientType, string jobTitle, decimal finalPrice, DateOnly dueDate)
         {
@@ -611,13 +947,11 @@ namespace Traker.Database
                 using (var clienstCmd = conn.CreateCommand())
                 {
                     clienstCmd.CommandText = @"
-
                     INSERT INTO Clients
                     (FullName, Type, CreatedDate)
 
                     VALUES
                     (@clientName, @type, @createdDate);
-
                     ";
                     clienstCmd.Parameters.AddWithValue("@type", clientType);
                     clienstCmd.Parameters.AddWithValue("@clientName", clientName);
@@ -638,13 +972,11 @@ namespace Traker.Database
                 using (var jobsCmd = conn.CreateCommand())
                 {
                     jobsCmd.CommandText = @"
-
                     INSERT INTO Jobs
                     (ClientId, Title, Status, FinalPrice, CreatedDate, DueDate)
 
                     VALUES
                     (@clientId, @title, @status, @finalPrice, @createdDate, @dueDate);
-
                     ";
 
                     jobsCmd.Parameters.AddWithValue("@clientId", clientId);
@@ -678,20 +1010,29 @@ namespace Traker.Database
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"An error occurred while adding a new client and job. Please try again.\n\t{ex.Message}",
-                    "Add Client and Job",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: AddRow() FAIL");
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Add Client";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: AddIndividualClient() FAIL\n\t{ex.Message}");
                 throw;
             }
         }
 
         /// <summary>
-        /// Add a new row to the Clients and Jobs tables in the database. This is done by opening a connection to the database, starting a transaction, and then executing two SQL commands: one to insert a new row into the Clients table and another to insert a new row into the Jobs table with a foreign key reference to the newly inserted client. If any errors occur during this process, an error message is displayed to the user and the transaction is rolled back. If the rows are added successfully, a log entry is made indicating that the operation was successful along with the new client and job IDs.
+        /// Add Client as company type
         /// </summary>
-        public static Task<List<int>>  AddCompanyClient(string companyName, string clientType, string jobTitle, decimal finalPrice, DateOnly dueDate)
+        public static Task<List<int>> AddCompanyClient(string companyName, string clientType, string jobTitle, decimal finalPrice, DateOnly dueDate)
         {
             try
             {
@@ -718,13 +1059,11 @@ namespace Traker.Database
                 using (var clienstCmd = conn.CreateCommand())
                 {
                     clienstCmd.CommandText = @"
-
                     INSERT INTO Clients
                     (CompanyName, Type, CreatedDate)
 
                     VALUES
                     (@companyName, @type, @createdDate);
-
                     ";
                     clienstCmd.Parameters.AddWithValue("@type", clientType);
                     clienstCmd.Parameters.AddWithValue("@companyName", companyName);
@@ -745,13 +1084,11 @@ namespace Traker.Database
                 using (var jobsCmd = conn.CreateCommand())
                 {
                     jobsCmd.CommandText = @"
-
                     INSERT INTO Jobs
                     (ClientId, Title, Status, FinalPrice, CreatedDate, DueDate)
 
                     VALUES
                     (@clientId, @title, @status, @finalPrice, @createdDate, @dueDate);
-
                     ";
 
                     jobsCmd.Parameters.AddWithValue("@clientId", clientId);
@@ -785,20 +1122,415 @@ namespace Traker.Database
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"An error occurred while adding a new company client and job. Please try again.\n\t{ex.Message}",
-                    "Add Company Client and Job",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: AddRow() FAIL");
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Add Client";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: AddCompanyClient() FAIL\n\t{ex.Message}");
                 throw;
             }
         }
 
         /// <summary>
-        /// Set the status of a job in the Jobs table. This is done by opening a connection to the database, executing a SQL command to update the Status column of the specified job, and then closing the connection. The function takes three parameters: the new status, the client ID, and the job ID. If any errors occur during this process, an error message is displayed to the user. If the status is updated successfully, a log entry is made indicating that the operation was successful along with the client ID, job ID, and new status.
+        /// Add a job to a client
         /// </summary>
-        public static Task SetStatus(string status, int clientId, int jobId)
+        public static Task<int> AddNewJobToClient(int clientId, string JobTitle, decimal finalPrice, DateOnly dueDate)
+        {
+            try
+            {
+                long jobId = 0;
+
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+
+                // insert into jobs table
+                using (var jobsCmd = conn.CreateCommand())
+                {
+                    jobsCmd.CommandText = @"
+                    INSERT INTO Jobs
+                    (ClientId, Title, Status, FinalPrice, CreatedDate, DueDate)
+
+                    VALUES
+                    (@clientId, @title, @status, @finalPrice, @createdDate, @dueDate);
+                    ";
+
+                    jobsCmd.Parameters.AddWithValue("@clientId", clientId);
+                    jobsCmd.Parameters.AddWithValue("@title", JobTitle);
+                    jobsCmd.Parameters.AddWithValue("@status", "New");
+                    jobsCmd.Parameters.AddWithValue("@finalPrice", finalPrice);
+                    jobsCmd.Parameters.AddWithValue("@createdDate", DateTime.Now.Date);
+                    jobsCmd.Parameters.AddWithValue("@dueDate", dueDate.ToString("yyyy-MM-dd"));
+                    jobsCmd.ExecuteNonQuery();
+                }
+
+                //// get last inserted job id based on current clientId
+                using (var jobIdCmd = conn.CreateCommand())
+                {
+                    jobIdCmd.CommandText = "SELECT last_insert_rowid();";
+                    jobId = (long)jobIdCmd.ExecuteScalar()!;
+                }
+                Logger.LogActivity(Logger.INFO, $"Database: AddNewJobToClient() OK - ClientId: {clientId}, JobId: {jobId}");
+                return Task.FromResult(Convert.ToInt32(jobId));
+            }
+            catch (Exception ex)
+            {
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Add Job";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: AddNewJobToClient() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+        #endregion
+
+        #region Edit Functions
+        /// <summary>
+        /// Edit client
+        /// </summary>
+        public static Task EditClient(int clientId, string type, string fullName, string email, string companyName, string phoneNumber, string billingAddress, string city, string postcode, string country, bool isActive)
+        {
+            // in the future replace the long ass arguments with a variable list :)
+
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+
+                using var cmd = conn.CreateCommand();
+
+                cmd.CommandText = @"
+                    UPDATE Clients
+                    SET Type = @type,
+                        FullName = @fullname,
+                        Email = @email,
+                        CompanyName = @companyName,
+                        PhoneNumber = @phoneNumber,
+                        BillingAddress = @billingAddress,
+                        City = @city,
+                        Postcode = @postcode,
+                        Country = @country,
+                        IsActive = @isActive
+                    WHERE ClientId = @clientId;
+                ";
+
+                cmd.Parameters.AddWithValue("@clientId", clientId);
+                cmd.Parameters.AddWithValue("@type", type);
+                cmd.Parameters.AddWithValue("@fullname", fullName);
+                cmd.Parameters.AddWithValue("@email", email);
+                cmd.Parameters.AddWithValue("@companyName", companyName);
+                cmd.Parameters.AddWithValue("@phoneNumber", phoneNumber);
+                cmd.Parameters.AddWithValue("@billingAddress", billingAddress);
+                cmd.Parameters.AddWithValue("@city", city);
+                cmd.Parameters.AddWithValue("@postcode", postcode);
+                cmd.Parameters.AddWithValue("@country", country);
+                cmd.Parameters.AddWithValue("@isActive", isActive);
+
+                cmd.ExecuteNonQuery();
+
+                Logger.LogActivity(Logger.INFO, $"Database: AddNewJobToClient() OK - ClientId: {clientId}");
+            }
+            catch (Exception ex)
+            {
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Edit Client";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: EditClient() FAIL\n\t{ex.Message}");
+                throw;
+            }
+            return Task.CompletedTask;
+        }
+        
+        /// <summary>
+        /// Edit job
+        /// </summary>
+        public static Task EditJob(int jobId, string jobTitle, string jobDescription, string status, string price, string amountReceived, DateOnly startDate, DateOnly dueDate)
+        {
+            // in the future replace the long ass arguments with a variable list :)
+
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+
+                using var cmd = conn.CreateCommand();
+
+                cmd.CommandText = @"
+                    UPDATE Jobs
+                    SET Title = @title,
+                        Description = @description,
+                        Status = @status,
+                        FinalPrice = @finalPrice,
+                        AmountReceived = @amountReceived,
+                        StartDate = @startDate,
+                        DueDate = @dueDate
+                    WHERE JobId = @jobId;
+                ";
+
+                cmd.Parameters.AddWithValue("@jobId", jobId);
+                cmd.Parameters.AddWithValue("@title", jobTitle);
+                cmd.Parameters.AddWithValue("@description", jobDescription);
+                cmd.Parameters.AddWithValue("@status", status);
+                cmd.Parameters.AddWithValue("@finalPrice", price);
+                cmd.Parameters.AddWithValue("@amountReceived", amountReceived);
+                cmd.Parameters.AddWithValue("@startDate", startDate);
+                cmd.Parameters.AddWithValue("@dueDate", dueDate);
+
+                cmd.ExecuteNonQuery();
+
+                Logger.LogActivity(Logger.INFO, $"Database: EditJob() OK - : {jobId}");
+            }
+            catch (Exception ex)
+            {
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Edit Job";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: EditJob() FAIL\n\t{ex.Message}");
+                throw;
+            }
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Edit user
+        /// </summary>
+        public static Task EditUser(int userId, string fullName, string email, string phone, string businessType)
+        {
+            // in the future replace the long ass arguments with a variable list :)
+            try
+            {
+                using (var conn = new SqliteConnection(_connectionString))
+                {
+                    conn.Open();
+                    using var cmd = conn.CreateCommand();
+
+                    cmd.CommandText = @"
+                    UPDATE User
+                    SET FullName = @fullname,
+                        Email = @email,
+                        Phone = @phone
+                    WHERE UserId = @userId;
+                    ";
+
+                    cmd.Parameters.AddWithValue("@userId", userId);
+                    cmd.Parameters.AddWithValue("@fullname", fullName);
+                    cmd.Parameters.AddWithValue("@email", email);
+                    cmd.Parameters.AddWithValue("@phone", phone);
+
+                    cmd.ExecuteNonQuery();
+                }
+
+                using (var conn = new SqliteConnection(_connectionString))
+                {
+                    conn.Open();
+                    using var cmd = conn.CreateCommand();
+
+                    cmd.CommandText = @"
+                    UPDATE Business
+                    SET BusinessType = @businessType
+                    WHERE UserId = @userId;
+                    ";
+
+                    cmd.Parameters.AddWithValue("@businessType", businessType);
+                    cmd.Parameters.AddWithValue("@userId", userId);
+
+                    cmd.ExecuteNonQuery();
+                }
+
+
+                Logger.LogActivity(Logger.INFO, $"Database: EditUser() OK - UserId: {userId}");
+            }
+            catch (Exception ex)
+            {
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Edit User";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: EditUser() FAIL\n\t{ex.Message}");
+                throw;
+            }
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Edit business
+        /// </summary>
+        public static Task EditBusiness(int userId, string businessName, string country, string city, string address, string postcode, string vatNumber, string registrationNumber)
+        {
+            // in the future replace the long ass arguments with a variable list :)
+
+            try
+            {
+                using (var conn = new SqliteConnection(_connectionString))
+                {
+                    conn.Open();
+                    using var cmd = conn.CreateCommand();
+
+                    cmd.CommandText = @"
+                    UPDATE Business
+                    SET BusinessName = @businessName,
+                        Country = @country,
+                        City = @city,
+                        Address = @address,
+                        Postcode = @postcode,
+                        VatNumber = @vatNumber,
+                        RegistrationNumber = @registrationNumber
+                    WHERE UserId = @userId;
+                    ";
+
+                    cmd.Parameters.AddWithValue("@userId", userId);
+                    cmd.Parameters.AddWithValue("@businessName", businessName);
+                    cmd.Parameters.AddWithValue("@country", country);
+                    cmd.Parameters.AddWithValue("@city", city);
+                    cmd.Parameters.AddWithValue("@address", address);
+                    cmd.Parameters.AddWithValue("@postcode", postcode);
+                    cmd.Parameters.AddWithValue("@vatNumber", vatNumber);
+                    cmd.Parameters.AddWithValue("@registrationNumber", registrationNumber);
+
+                    cmd.ExecuteNonQuery();
+                }
+
+                Logger.LogActivity(Logger.INFO, $"Database: EditBusiness() OK - UserId: {userId}");
+            }
+            catch (Exception ex)
+            {
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Edit Business";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: EditBusiness() FAIL\n\t{ex.Message}");
+                throw;
+            }
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Edit bank
+        /// </summary>
+        public static Task EditBank(int userId, string bankName, string accountName, string accountNumber, string sortcode, string IBAN, string BIC)
+        {
+            // in the future replace the long ass arguments with a variable list :)
+
+            try
+            {
+                using (var conn = new SqliteConnection(_connectionString))
+                {
+                    conn.Open();
+                    using var cmd = conn.CreateCommand();
+
+                    cmd.CommandText = @"
+                    UPDATE Bank
+                    SET BankName = @bankName,
+                        AccountName = @accountName,
+                        AccountNumber = @accountNumber,
+                        SortCode = @sortcode,
+                        IBAN = @IBAN,
+                        BIC = @BIC
+                    WHERE UserId = @userId;
+                    ";
+                    cmd.Parameters.AddWithValue("@userId", userId);
+                    cmd.Parameters.AddWithValue("@bankName", bankName);
+                    cmd.Parameters.AddWithValue("@accountName", accountName);
+                    cmd.Parameters.AddWithValue("@accountNumber", accountNumber);
+                    cmd.Parameters.AddWithValue("@sortcode", sortcode);
+                    cmd.Parameters.AddWithValue("@IBAN", IBAN);
+                    cmd.Parameters.AddWithValue("@BIC", BIC);
+
+                    cmd.ExecuteNonQuery();
+                }
+
+                Logger.LogActivity(Logger.INFO, $"Database: EditBank() OK - UserId: {userId}");
+            }
+            catch (Exception ex)
+            {
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Edit Bank";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: EditBank() FAIL\n\t{ex.Message}");
+                throw;
+            }
+            return Task.CompletedTask;
+        }
+        #endregion
+
+        #region Set Functions
+        /// <summary>
+        /// Set the status of a job
+        /// </summary>
+        public static Task SetJobStatus(string status, int clientId, int jobId)
         {
             try
             {
@@ -874,18 +1606,200 @@ namespace Traker.Database
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"An error occurred while updating job status. Please try again.\n\t{ex.Message}",
-                    "Update Job Status",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: SetStatus() FAIL - ClientId: {clientId}, JobId: {jobId}, Status: {status}");
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Set Job Status";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: SetJobStatus() FAIL\n\t{ex.Message}");
+                throw;
             }
             return Task.CompletedTask;
         }
 
         /// <summary>
-        /// Delete a row from the Clients table and all related rows from the Jobs table. This is done by opening a connection to the database, starting a transaction, and then executing a SQL command to delete the specified client from the Clients table. The command is set up to also delete any related rows from the Jobs table using a foreign key constraint with ON DELETE CASCADE. If any errors occur during this process, an error message is displayed to the user and the transaction is rolled back. If the row is deleted successfully, a log entry is made indicating that the operation was successful along with the client ID.
+        /// save invoice file name
+        /// </summary>
+        public static Task SetInvoiceName(int invoiceId, string invoiceName)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = @"
+                    UPDATE Invoices
+                    SET InvoiceName = @invoiceName
+                    WHERE InvoiceId = @invoiceId;
+                ";
+                cmd.Parameters.AddWithValue("@invoiceName", invoiceName);
+                cmd.Parameters.AddWithValue("@invoiceId", invoiceId);
+                cmd.ExecuteNonQuery();
+                Logger.LogActivity(Logger.INFO, $"Database: SetInvoiceName() OK - InvoiceId: {invoiceId}");
+            }
+            catch (Exception ex)
+            {
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Set Invoice Name";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: SetInvoiceName() FAIL\n\t{ex.Message}");
+                throw;
+            }
+            return Task.CompletedTask;
+        }
+                    
+        /// <summary>
+        /// set invoice status
+        /// </summary>
+        public static Task SetInvoiceStatus(int invoiceId, string status, DateOnly? paidDate)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = @"
+                    UPDATE Invoices
+                    SET Status = @invoiceName,
+                        PaidDate = @paidDate
+                    WHERE InvoiceId = @invoiceId;
+                ";
+                cmd.Parameters.AddWithValue("@invoiceName", status);
+                cmd.Parameters.AddWithValue("@paidDate", (object)paidDate ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@invoiceId", invoiceId);
+                cmd.ExecuteNonQuery();
+                Logger.LogActivity(Logger.INFO, $"Database: InvoicePaid() OK - InvoiceId: {invoiceId}");
+            }
+            catch (Exception ex)
+            {
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Set Invoice Status";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: SetInvoiceStatus() FAIL\n\t{ex.Message}");
+                throw;
+            }
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// save client folder name
+        /// </summary>
+        public static Task SetClientFolderName(int clientId, string folderName)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = @"
+                    UPDATE Clients
+                    SET FolderName = @folderName
+                    WHERE ClientId = @clientId;
+                ";
+                cmd.Parameters.AddWithValue("@clientId", clientId);
+                cmd.Parameters.AddWithValue("@folderName", folderName);
+                cmd.ExecuteNonQuery();
+                Logger.LogActivity(Logger.INFO, $"Database: SetClientFoldername() OK - ClientId: {clientId}");
+            }
+            catch (Exception ex)
+            {
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Set Client Folder";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: SetClientFolderName() FAIL\n\t{ex.Message}");
+                throw;
+            }
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// save clijobent folder name
+        /// </summary>
+        public static Task SetJobFolderName(int jobId, string folderName)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = @"
+                    UPDATE Jobs
+                    SET FolderName = @folderName
+                    WHERE JobId = @jobId;
+                ";
+                cmd.Parameters.AddWithValue("@jobId", jobId);
+                cmd.Parameters.AddWithValue("@folderName", folderName);
+                cmd.ExecuteNonQuery();
+                Logger.LogActivity(Logger.INFO, $"Database: SetJobFolderName() OK - JobId: {jobId}");
+            }
+            catch (Exception ex)
+            {
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Set Job Folder";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: SetJobFolderName() FAIL\n\t{ex.Message}");
+                throw;
+            }
+            return Task.CompletedTask;
+        }
+        #endregion
+
+        #region Delete Functions
+        /// <summary>
+        /// Delete a client
         /// </summary>
         public static Task DeleteClient(int clientId)
         {
@@ -904,8 +1818,7 @@ namespace Traker.Database
 
                 using (var deleteRowCmd = conn.CreateCommand())
                 {
-                    deleteRowCmd.CommandText = @"
-    
+                    deleteRowCmd.CommandText = @"    
                         DELETE FROM Clients
                         WHERE ClientId = @clientId;
                         ";
@@ -919,12 +1832,22 @@ namespace Traker.Database
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"An error occurred while deleting the client and related jobs. Please try again.\n\t{ex.Message}",
-                    "Delete Client and Jobs",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: DeleteRow() FAIL - ClientId: {clientId}");
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Delete Client";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: DeleteClient() FAIL\n\t{ex.Message}");
+                throw;
             }
             return Task.CompletedTask;
         }
@@ -949,8 +1872,7 @@ namespace Traker.Database
 
                 using (var deleteRowCmd = conn.CreateCommand())
                 {
-                    deleteRowCmd.CommandText = @"
-    
+                    deleteRowCmd.CommandText = @"    
                         DELETE FROM Jobs
                         WHERE JobId = @jobId;
                         ";
@@ -964,570 +1886,29 @@ namespace Traker.Database
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"An error occurred while deleting the job. Please try again.\n\t{ex.Message}",
-                    "Delete Job",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: DeleteJob() FAIL - JobId: {jobId}");
-            }
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Add a new row to the Jobs table for an existing client. This is done by opening a connection to the database, executing a SQL command to insert a new row into the Jobs table with a foreign key reference to the specified client, and then closing the connection. The function takes four parameters: the client ID, job description, final price, and due date. If any errors occur during this process, an error message is displayed to the user. If the row is added successfully, a log entry is made indicating that the operation was successful along with the client ID and job ID.
-        /// </summary>
-        public static Task<int> AddNewJobToClient(int clientId, string JobTitle, decimal finalPrice, DateOnly dueDate)
-        {
-            try
-            {
-                long jobId = 0;
-
-                using var conn = new SqliteConnection(_connectionString);
-                conn.Open();
-
-                // insert into jobs table
-                using (var jobsCmd = conn.CreateCommand())
+                Execute.OnUIThreadAsync(() =>
                 {
-                    jobsCmd.CommandText = @"
-
-                    INSERT INTO Jobs
-                    (ClientId, Title, Status, FinalPrice, CreatedDate, DueDate)
-
-                    VALUES
-                    (@clientId, @title, @status, @finalPrice, @createdDate, @dueDate);
-
-                    ";
-
-                    jobsCmd.Parameters.AddWithValue("@clientId", clientId);
-                    jobsCmd.Parameters.AddWithValue("@title", JobTitle);
-                    jobsCmd.Parameters.AddWithValue("@status", "New");
-                    jobsCmd.Parameters.AddWithValue("@finalPrice", finalPrice);
-                    jobsCmd.Parameters.AddWithValue("@createdDate", DateTime.Now.Date);
-                    jobsCmd.Parameters.AddWithValue("@dueDate", dueDate.ToString("yyyy-MM-dd"));
-                    jobsCmd.ExecuteNonQuery();
-                }
-
-                //// get last inserted job id based on current clientId
-                using (var jobIdCmd = conn.CreateCommand())
-                {
-                    jobIdCmd.CommandText = "SELECT last_insert_rowid();";
-                    jobId = (long)jobIdCmd.ExecuteScalar()!;
-                }
-                Logger.LogActivity(Logger.INFO, $"Database: AddNewJobToClient() OK - ClientId: {clientId}, JobId: {jobId}");
-                return Task.FromResult(Convert.ToInt32(jobId));
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    $"An error occurred while adding a new job to the client. Please try again.\n\t{ex.Message}",
-                    "Add Job to Client",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: AddNewJobToClient() FAIL - ClientId: {clientId}");
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Delete Job";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: DeleteJob() FAIL\n\t{ex.Message}");
                 throw;
             }
+            return Task.CompletedTask;
         }
 
         /// <summary>
-        /// Create a new invoice for a job by adding a new row to the Invoices table. This is done by opening a connection to the database, starting a transaction, and then executing a SQL command to insert a new row into the Invoices table with the specified details. The function takes several parameters including the job ID, subtotal, tax amount, total amount, due date, billing name, billing address, billing city, billing postcode, and billing country. If any errors occur during this process, an error message is displayed to the user and the transaction is rolled back. If the invoice is created successfully, a log entry is made indicating that the operation was successful along with the job ID.
+        /// Delete invoice
         /// </summary>
-        public static Task CreateInvoice(int clientId, int jobId, decimal subtotal, int taxAmount, decimal totalAmount, DateOnly dueDate, string billingName, string billingAddress, string billingCity, string billingPostcode, string billingCountry, DateTime dateIssued)
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                conn.Open();
-
-                using (var pragma = conn.CreateCommand())
-                {
-                    pragma.CommandText = "PRAGMA foreign_keys = ON;";
-                    pragma.ExecuteNonQuery();
-                }
-
-                using var transaction = conn.BeginTransaction();
-
-                long nextNumber;
-
-                // find the highest invoice number and add +1 for current entry
-                using (var cmd = conn.CreateCommand())
-                {
-                    cmd.Transaction = transaction;
-                    cmd.CommandText = "SELECT IFNULL(MAX(InvoiceNumber), 0) FROM Invoices;";
-                    nextNumber = (long)cmd.ExecuteScalar()! + 1;
-                }
-
-                // insert into Invoices table
-                using (var invoicesCmd = conn.CreateCommand())
-                {
-                    invoicesCmd.CommandText = @"
-
-                    INSERT INTO Invoices
-                    (JobId, 
-                    InvoiceNumber, 
-                    Subtotal, 
-                    TaxAmount, 
-                    TotalAmount, 
-                    IssueDate, 
-                    DueDate,    
-                    BillingName, 
-                    BillingAddress,
-                    BillingCity,
-                    BillingPostcode,
-                    BillingCountry,
-                    Status)
-
-                    VALUES
-                    (@jobId, 
-                    @invoiceNumber, 
-                    @subtotal,
-                    @taxAmount,
-                    @totalAmount,
-                    @issueDate,
-                    @dueDate,
-                    @billingName,
-                    @billingAddress,
-                    @billingCity,
-                    @billingPostcode,
-                    @billingCountry,
-                    @status);
-
-                    ";
-                    invoicesCmd.Parameters.AddWithValue("@jobId", jobId);
-                    invoicesCmd.Parameters.AddWithValue("@invoiceNumber", nextNumber);
-                    invoicesCmd.Parameters.AddWithValue("@subtotal", subtotal);
-                    invoicesCmd.Parameters.AddWithValue("@taxAmount", taxAmount);
-                    invoicesCmd.Parameters.AddWithValue("@totalAmount", totalAmount);
-                    invoicesCmd.Parameters.AddWithValue("@issueDate", dateIssued);
-                    invoicesCmd.Parameters.AddWithValue("@dueDate", dueDate.ToString("dd-MM-yyyy"));
-                    invoicesCmd.Parameters.AddWithValue("@billingName", billingName);
-                    invoicesCmd.Parameters.AddWithValue("@billingAddress", billingAddress);
-                    invoicesCmd.Parameters.AddWithValue("@billingCity", billingCity);
-                    invoicesCmd.Parameters.AddWithValue("@billingPostcode", billingPostcode);
-                    invoicesCmd.Parameters.AddWithValue("@billingCountry", billingCountry);
-                    invoicesCmd.Parameters.AddWithValue("@status", "Invoiced");
-
-                    invoicesCmd.ExecuteNonQuery();
-                }
-
-                transaction.Commit();
-
-                // also update the status in Jobs table to "Invoiced"
-                SetStatus(Names.Invoiced, clientId, jobId);
-
-                Logger.LogActivity(Logger.INFO, $"Database: CreateInvoice() OK - JobId: {jobId}");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    $"An error occurred while creating the invoice. Please try again.\n\t{ex.Message}",
-                    "Create Invoice",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: CreateInvoice() FAIL - JobId: {jobId}");
-            }
-            return Task.CompletedTask;
-        }
-
-        public static Task EditClient(int clientId, string type, string fullName, string email, string companyName, string phoneNumber, string billingAddress, string city, string postcode, string country, bool isActive)
-        {
-            // in the future replace the long ass arguments with a variable list :)
-
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                conn.Open();
-
-                using var cmd = conn.CreateCommand();
-
-                cmd.CommandText = @"
-                    UPDATE Clients
-                    SET Type = @type,
-                        FullName = @fullname,
-                        Email = @email,
-                        CompanyName = @companyName,
-                        PhoneNumber = @phoneNumber,
-                        BillingAddress = @billingAddress,
-                        City = @city,
-                        Postcode = @postcode,
-                        Country = @country,
-                        IsActive = @isActive
-                    WHERE ClientId = @clientId;
-                ";
-
-                cmd.Parameters.AddWithValue("@clientId", clientId);
-                cmd.Parameters.AddWithValue("@type", type);
-                cmd.Parameters.AddWithValue("@fullname", fullName);
-                cmd.Parameters.AddWithValue("@email", email);
-                cmd.Parameters.AddWithValue("@companyName", companyName);
-                cmd.Parameters.AddWithValue("@phoneNumber", phoneNumber);
-                cmd.Parameters.AddWithValue("@billingAddress", billingAddress);
-                cmd.Parameters.AddWithValue("@city", city);
-                cmd.Parameters.AddWithValue("@postcode", postcode);
-                cmd.Parameters.AddWithValue("@country", country);
-                cmd.Parameters.AddWithValue("@isActive", isActive);
-
-                cmd.ExecuteNonQuery();
-
-                Logger.LogActivity(Logger.INFO, $"Database: AddNewJobToClient() OK - ClientId: {clientId}");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    $"An error occurred while editing the client. Please try again.\n\t{ex.Message}",
-                    "Edit Client",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: EditClient() FAIL - ClientId: {clientId}");
-            }
-            return Task.CompletedTask;
-        }
-        
-        public static Task EditJob(int jobId, string jobTitle, string jobDescription, string status, string price, string amountReceived, DateOnly startDate, DateOnly dueDate)
-        {
-            // in the future replace the long ass arguments with a variable list :)
-
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                conn.Open();
-
-                using var cmd = conn.CreateCommand();
-
-                cmd.CommandText = @"
-                    UPDATE Jobs
-                    SET Title = @title,
-                        Description = @description,
-                        Status = @status,
-                        FinalPrice = @finalPrice,
-                        AmountReceived = @amountReceived,
-                        StartDate = @startDate,
-                        DueDate = @dueDate
-                    WHERE JobId = @jobId;
-                ";
-
-                cmd.Parameters.AddWithValue("@jobId", jobId);
-                cmd.Parameters.AddWithValue("@title", jobTitle);
-                cmd.Parameters.AddWithValue("@description", jobDescription);
-                cmd.Parameters.AddWithValue("@status", status);
-                cmd.Parameters.AddWithValue("@finalPrice", price);
-                cmd.Parameters.AddWithValue("@amountReceived", amountReceived);
-                cmd.Parameters.AddWithValue("@startDate", startDate);
-                cmd.Parameters.AddWithValue("@dueDate", dueDate);
-
-                cmd.ExecuteNonQuery();
-
-                Logger.LogActivity(Logger.INFO, $"Database: EditJob() OK - : {jobId}");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    $"An error occurred while editing the job. Please try again.\n\t{ex.Message}",
-                    "Edit Job",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: EditJob() FAIL - JobId: {jobId}");
-            }
-            return Task.CompletedTask;
-        }
-        
-        public static Task CreateUser(string fullName, string email, string phone)
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                conn.Open();
-
-                using var cmd = conn.CreateCommand();
-
-                cmd.CommandText = @"
-                    INSERT INTO User
-                    (FullName, Email, Phone)
-                    VALUES (@fullName, @email, @phone)
-                ";
-
-                cmd.Parameters.AddWithValue("@fullName", fullName);
-                cmd.Parameters.AddWithValue("@email", email);
-                cmd.Parameters.AddWithValue("@phone", phone);
-
-                cmd.ExecuteNonQuery();
-
-                Logger.LogActivity(Logger.INFO, $"Database: Createuser() OK");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    $"An error occurred while creating user. Please try again.\n\t{ex.Message}",
-                    "Create User",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: Createuser() FAIL");
-            }
-            return Task.CompletedTask;
-        }
-
-        public static Task CreateBusiness(int userId, string businessName, string businessType, string country, string city, string address, string postcode, string vatNumber, string registrationNumber)
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                conn.Open();
-
-                using var cmd = conn.CreateCommand();
-
-                cmd.CommandText = @"
-                    INSERT INTO Business
-                    (UserId, BusinessName, BusinessType, Country, City, Address, Postcode, VatNumber, RegistrationNumber)
-                    VALUES (@userId, @businessName, @businessType, @country, @city, @address, @postcode, @vatNumber, @registrationNumber)
-                ";
-
-                cmd.Parameters.AddWithValue("@userId", userId);
-                cmd.Parameters.AddWithValue("@businessName", businessName);
-                cmd.Parameters.AddWithValue("@businessType", businessType);
-                cmd.Parameters.AddWithValue("@country", country);
-                cmd.Parameters.AddWithValue("@city", city);
-                cmd.Parameters.AddWithValue("@address", address);
-                cmd.Parameters.AddWithValue("@postcode", postcode);
-                cmd.Parameters.AddWithValue("@vatNumber", vatNumber);
-                cmd.Parameters.AddWithValue("@registrationNumber", registrationNumber);
-
-                cmd.ExecuteNonQuery();
-
-                Logger.LogActivity(Logger.INFO, $"Database: CreateBusiness() OK");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    $"An error occurred while creating business. Please try again.\n\t{ex.Message}",
-                    "Create Business",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: CreateBusiness() FAIL");
-            }
-            return Task.CompletedTask;
-        }
-
-        public static Task CreateBank(int userId, string bankName, string accountName, string accountNumber, string sortcode, string IBAN, string BIC)
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                conn.Open();
-
-                using var cmd = conn.CreateCommand();
-
-                cmd.CommandText = @"
-                    INSERT INTO Bank
-                    (UserId, BankName, AccountName, AccountNumber, SortCode, IBAN, BIC)
-                    VALUES (@userId, @bankName, @accountName, @accountNumber, @sortcode, @IBAN, @BIC)
-                ";
-
-                cmd.Parameters.AddWithValue("@userId", userId);
-                cmd.Parameters.AddWithValue("@bankName", bankName);
-                cmd.Parameters.AddWithValue("@accountName", accountName);
-                cmd.Parameters.AddWithValue("@accountNumber", accountNumber);
-                cmd.Parameters.AddWithValue("@sortcode", sortcode);
-                cmd.Parameters.AddWithValue("@IBAN", IBAN);
-                cmd.Parameters.AddWithValue("@BIC", BIC);
-                cmd.ExecuteNonQuery();
-
-                Logger.LogActivity(Logger.INFO, $"Database: CreateBank() OK");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    $"An error occurred while creating bank. Please try again.\n\t{ex.Message}",
-                    "Create Bank",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: CreateBank() FAIL");
-            }
-            return Task.CompletedTask;
-        }
-
-        public static Task EditUser(int userId, string fullName, string email, string phone, string businessType)
-        {
-            // in the future replace the long ass arguments with a variable list :)
-
-            try
-            {
-                using (var conn = new SqliteConnection(_connectionString))
-                {
-                    conn.Open();
-                    using var cmd = conn.CreateCommand();
-
-                    cmd.CommandText = @"
-                    UPDATE User
-                    SET FullName = @fullname,
-                        Email = @email,
-                        Phone = @phone
-                    WHERE UserId = @userId;
-                    ";
-
-                    cmd.Parameters.AddWithValue("@userId", userId);
-                    cmd.Parameters.AddWithValue("@fullname", fullName);
-                    cmd.Parameters.AddWithValue("@email", email);
-                    cmd.Parameters.AddWithValue("@phone", phone);
-
-                    cmd.ExecuteNonQuery();
-                }
-
-                using (var conn = new SqliteConnection(_connectionString))
-                {
-                    conn.Open();
-                    using var cmd = conn.CreateCommand();
-
-                    cmd.CommandText = @"
-                    UPDATE Business
-                    SET BusinessType = @businessType
-                    WHERE UserId = @userId;
-                    ";
-
-                    cmd.Parameters.AddWithValue("@businessType", businessType);
-                    cmd.Parameters.AddWithValue("@userId", userId);
-
-                    cmd.ExecuteNonQuery();
-                }
-
-
-                Logger.LogActivity(Logger.INFO, $"Database: EditUser() OK - UserId: {userId}");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    $"An error occurred while editing the user. Please try again.\n\t{ex.Message}",
-                    "Edit User",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: EditUser() FAIL - UserId: {userId}");
-            }
-            return Task.CompletedTask;
-        }
-
-        public static Task EditBusiness(int userId, string businessName, string country, string city, string address, string postcode, string vatNumber, string registrationNumber)
-        {
-            // in the future replace the long ass arguments with a variable list :)
-
-            try
-            {
-                using (var conn = new SqliteConnection(_connectionString))
-                {
-                    conn.Open();
-                    using var cmd = conn.CreateCommand();
-
-                    cmd.CommandText = @"
-                    UPDATE Business
-                    SET BusinessName = @businessName,
-                        Country = @country,
-                        City = @city,
-                        Address = @address,
-                        Postcode = @postcode,
-                        VatNumber = @vatNumber,
-                        RegistrationNumber = @registrationNumber
-                    WHERE UserId = @userId;
-                    ";
-
-                    cmd.Parameters.AddWithValue("@userId", userId);
-                    cmd.Parameters.AddWithValue("@businessName", businessName);
-                    cmd.Parameters.AddWithValue("@country", country);
-                    cmd.Parameters.AddWithValue("@city", city);
-                    cmd.Parameters.AddWithValue("@address", address);
-                    cmd.Parameters.AddWithValue("@postcode", postcode);
-                    cmd.Parameters.AddWithValue("@vatNumber", vatNumber);
-                    cmd.Parameters.AddWithValue("@registrationNumber", registrationNumber);
-
-                    cmd.ExecuteNonQuery();
-                }
-
-                Logger.LogActivity(Logger.INFO, $"Database: EditBusiness() OK - UserId: {userId}");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    $"An error occurred while editing the Business. Please try again.\n\t{ex.Message}",
-                    "Edit Business",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: EditBusiness() FAIL - UserId: {userId}");
-            }
-            return Task.CompletedTask;
-        }
-        
-        public static Task EditBank(int userId, string bankName, string accountName, string accountNumber, string sortcode, string IBAN, string BIC)
-        {
-            // in the future replace the long ass arguments with a variable list :)
-
-            try
-            {
-                using (var conn = new SqliteConnection(_connectionString))
-                {
-                    conn.Open();
-                    using var cmd = conn.CreateCommand();
-
-                    cmd.CommandText = @"
-                    UPDATE Bank
-                    SET BankName = @bankName,
-                        AccountName = @accountName,
-                        AccountNumber = @accountNumber,
-                        SortCode = @sortcode,
-                        IBAN = @IBAN,
-                        BIC = @BIC
-                    WHERE UserId = @userId;
-                    ";
-                    cmd.Parameters.AddWithValue("@userId", userId);
-                    cmd.Parameters.AddWithValue("@bankName", bankName);
-                    cmd.Parameters.AddWithValue("@accountName", accountName);
-                    cmd.Parameters.AddWithValue("@accountNumber", accountNumber);
-                    cmd.Parameters.AddWithValue("@sortcode", sortcode);
-                    cmd.Parameters.AddWithValue("@IBAN", IBAN);
-                    cmd.Parameters.AddWithValue("@BIC", BIC);
-
-                    cmd.ExecuteNonQuery();
-                }
-
-                Logger.LogActivity(Logger.INFO, $"Database: EditBank() OK - UserId: {userId}");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    $"An error occurred while editing the Bank. Please try again.\n\t{ex.Message}",
-                    "Edit Bank",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: EditBank() FAIL - UserId: {userId}");
-            }
-            return Task.CompletedTask;
-        }
-        
-        public static Task SetInvoiceName(int invoiceId, string invoiceName)
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                conn.Open();
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = @"
-                    UPDATE Invoices
-                    SET InvoiceName = @invoiceName
-                    WHERE InvoiceId = @invoiceId;
-                ";
-                cmd.Parameters.AddWithValue("@invoiceName", invoiceName);
-                cmd.Parameters.AddWithValue("@invoiceId", invoiceId);
-                cmd.ExecuteNonQuery();
-                Logger.LogActivity(Logger.INFO, $"Database: SetInvoiceName() OK - InvoiceId: {invoiceId}");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    $"An error occurred while setting the invoice name. Please try again.\n\t{ex.Message}",
-                    "Set Invoice Name",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: SetInvoiceName() FAIL - InvoiceId: {invoiceId}");
-            }
-            return Task.CompletedTask;
-        }
-        
         public static Task DeleteInvoice(int invoiceId, int jobId)
         {
             try
@@ -1542,8 +1923,7 @@ namespace Traker.Database
                 using var tx = conn.BeginTransaction();
                 using (var deleteInvoiceCmd = conn.CreateCommand())
                 {
-                    deleteInvoiceCmd.CommandText = @"
-    
+                    deleteInvoiceCmd.CommandText = @"    
                         DELETE FROM Invoices
                         WHERE InvoiceId = @invoiceId;
                         ";
@@ -1553,8 +1933,7 @@ namespace Traker.Database
 
                 using (var updateJobStatusCmd = conn.CreateCommand())
                 {
-                    updateJobStatusCmd.CommandText = @"
-    
+                    updateJobStatusCmd.CommandText = @"    
                         UPDATE Jobs
                         SET Status = @status
                         WHERE JobId = @jobId;
@@ -1568,104 +1947,27 @@ namespace Traker.Database
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"An error occurred while deleting the invoice. Please try again.\n\t{ex.Message}",
-                    "Delete Invoice",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: DeleteInvoice() FAIL - InvoiceId: {invoiceId}");
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Delete Invoice";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: DeleteInvoice() FAIL\n\t{ex.Message}");
+                throw;
             }
             return Task.CompletedTask;
         }
-        
-        public static Task SetInvoiceStatus(int invoiceId, string status, DateOnly? paidDate)
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                conn.Open();
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = @"
-                    UPDATE Invoices
-                    SET Status = @invoiceName,
-                        PaidDate = @paidDate
-                    WHERE InvoiceId = @invoiceId;
-                ";
-                cmd.Parameters.AddWithValue("@invoiceName", status);
-                cmd.Parameters.AddWithValue("@paidDate", (object)paidDate ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@invoiceId", invoiceId);
-                cmd.ExecuteNonQuery();
-                Logger.LogActivity(Logger.INFO, $"Database: InvoicePaid() OK - InvoiceId: {invoiceId}");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    $"An error occurred while updating the invoice status. Please try again.\n\t{ex.Message}",
-                    "Update Invoice Status",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: InvoicePaid() FAIL - InvoiceId: {invoiceId}");
-            }
-            return Task.CompletedTask;
-        }
-        
-        public static Task SetClientFolderName(int clientId, string folderName)
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                conn.Open();
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = @"
-                    UPDATE Clients
-                    SET FolderName = @folderName
-                    WHERE ClientId = @clientId;
-                ";
-                cmd.Parameters.AddWithValue("@clientId", clientId);
-                cmd.Parameters.AddWithValue("@folderName", folderName);
-                cmd.ExecuteNonQuery();
-                Logger.LogActivity(Logger.INFO, $"Database: SetClientFoldername() OK - ClientId: {clientId}");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    $"An error occurred while updating the invoice status. Please try again.\n\t{ex.Message}",
-                    "Update Clients Status",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: SetClientFoldername() FAIL - ClientId: {clientId}");
-            }
-            return Task.CompletedTask;
-        }
-        
-        public static Task SetJobFolderName(int jobId, string folderName)
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                conn.Open();
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = @"
-                    UPDATE Jobs
-                    SET FolderName = @folderName
-                    WHERE JobId = @jobId;
-                ";
-                cmd.Parameters.AddWithValue("@jobId", jobId);
-                cmd.Parameters.AddWithValue("@folderName", folderName);
-                cmd.ExecuteNonQuery();
-                Logger.LogActivity(Logger.INFO, $"Database: SetJobFolderName() OK - JobId: {jobId}");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    $"An error occurred while updating the invoice status. Please try again.\n\t{ex.Message}",
-                    "Update Jobs",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"Database: SetJobFolderName() FAIL - JobId: {jobId}");
-            }
-            return Task.CompletedTask;
-        }
+        #endregion
+
         #endregion
     }
 }

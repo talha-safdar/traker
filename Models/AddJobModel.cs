@@ -1,10 +1,9 @@
 ﻿namespace Traker.Models
 {
     /// <summary>
-    /// Represents the data required to add a new job for a client.
+    /// For the Jobs list ViewModel, hold only
+    /// potentially useful data, though it can expand
     /// </summary>
-    /// <remarks>This model is typically used to capture user input when creating a new job entry, such as in
-    /// a form submission scenario.</remarks>
     public class AddJobModel
     {
         public int ClientId { get; set; } = 0;

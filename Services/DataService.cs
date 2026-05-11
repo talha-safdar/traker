@@ -1,9 +1,4 @@
 ﻿using Caliburn.Micro;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Traker.Services
 {
@@ -29,15 +24,15 @@ namespace Traker.Services
 
         public async Task FetchDatabase()
         {
-                await Task.Run(() =>
-                {
-                    Clients = Database.FetchClientsTable(); // clients
-                    Jobs = Database.FetchJobsTable(); // jobs
-                    Invoices = Database.FetchInvoiceTable(); // invoices
-                    User = Database.FetchUserTable(); // user
-                    Business = Database.FetchBusinessTable(); // business
-                    Bank = Database.FetchBankTable(); // bank
-                });
+            await Task.Run(() =>
+            {
+                Clients = Database.FetchClientsTable(); // clients
+                Jobs = Database.FetchJobsTable(); // jobs
+                Invoices = Database.FetchInvoicesTable(); // invoices
+                User = Database.FetchUserTable(); // user
+                Business = Database.FetchBusinessTable(); // business
+                Bank = Database.FetchBankTable(); // bank
+            });
         }
 
         public async Task ClearDataVariables()
@@ -55,14 +50,6 @@ namespace Traker.Services
             await ClearDataVariables();
             await FetchDatabase();
         }
-
-        //public async Task DeleteJob(int clientId)
-        //{
-        //    await Task.Run(async() =>
-        //    {
-        //        await Database.DeleteRow(clientId);
-        //    });
-        //}
         #endregion
 
         #region Public Data Variables

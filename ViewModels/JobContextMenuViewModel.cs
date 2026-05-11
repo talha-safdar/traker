@@ -42,7 +42,7 @@ namespace Traker.ViewModels
 
         public async Task SetStatus(string status)
         {
-            await Database.SetStatus(status, SelectedJob.ClientId, SelectedJob.JobId);
+            await Database.SetJobStatus(status, SelectedJob.ClientId, SelectedJob.JobId);
             await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
             await Data.RefreshDatabase();
             await TryCloseAsync();

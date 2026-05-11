@@ -7,12 +7,8 @@ using System.Threading.Tasks;
 namespace Traker.Models.Database
 {
     /// <summary>
-    /// Represents a job record, including details such as client association, status, pricing, scheduling, and archival
-    /// state.
+    /// Jobs table model
     /// </summary>
-    /// <remarks>The <c>JobsModel</c> class encapsulates information about a job, including identifiers,
-    /// descriptive fields, pricing estimates, important dates, and status indicators. It is typically used to transfer
-    /// job-related data between application layers or to persist job information in storage.</remarks>
     public class JobsModel
     {
         public int JobId { get; set; } = 0;

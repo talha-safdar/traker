@@ -7,11 +7,8 @@ using System.Threading.Tasks;
 namespace Traker.Models.Database
 {
     /// <summary>
-    /// Represents an invoice, including billing details, amounts, status, and payment information.
+    /// Invocies table model
     /// </summary>
-    /// <remarks>The <see cref="InvoicesModel"/> class encapsulates all relevant data for a single invoice,
-    /// such as identifiers, billing information, monetary amounts, and payment status. This model is typically used for
-    /// transferring invoice data between application layers or for serialization.</remarks>
     public class InvoicesModel
     {
         public int InvoiceId { get; set; } = 0;

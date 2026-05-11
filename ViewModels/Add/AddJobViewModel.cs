@@ -14,6 +14,7 @@ namespace Traker.ViewModels.Add
     using System.Windows.Input;
     using Traker.Data;
     using Traker.Events;
+    using Traker.Events.DashboardVM;
     using Traker.Helper;
     using Traker.States;
 

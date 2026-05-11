@@ -3,16 +3,13 @@ using Traker.States;
 
 namespace Traker.ViewModels.Add
 {
-    using CommunityToolkit.Mvvm.Input;
     using Database;
-    using System.Diagnostics;
     using System.Globalization;
-    using System.Net;
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Input;
     using Traker.Data;
-    using Traker.Events;
+    using Traker.Events.DashboardVM;
     using Traker.Helper;
     using Traker.Services;
 
@@ -74,7 +71,7 @@ namespace Traker.ViewModels.Add
                 EnableSubmitBtn = false;
                 OpacitySubmitBtn = _halfOpacity;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(
                     $"An error occurred while initializing Add Client page. Please try again.\n\n{ex.Message}",
@@ -112,7 +109,7 @@ namespace Traker.ViewModels.Add
                 await TryCloseAsync();
                 Logger.LogActivity(Logger.ERROR, $"AddClientViewModel: Exit() OK");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(
                     $"An error occurred while exiting app. Please try again.\n\n{ex.Message}",
@@ -216,7 +213,7 @@ namespace Traker.ViewModels.Add
         {
             if (string.IsNullOrEmpty(ClientType) == false && string.IsNullOrEmpty(BusinessName) == false && string.IsNullOrEmpty(JobTitle) == false && string.IsNullOrEmpty(Price) == false && ValidateDate() == true)
             {
-                
+
                 EnableSubmitBtn = true;
                 OpacitySubmitBtn = _fullOpacity;
             }

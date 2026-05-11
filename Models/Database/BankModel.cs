@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Traker.Models.Database
 {
+    /// <summary>
+    /// Bank table model
+    /// </summary>
     public class BankModel
     {
         public int BankId { get; set; } = 0;

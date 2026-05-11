@@ -12,7 +12,6 @@ namespace Traker.ViewModels
     using System.Windows.Controls.Primitives;
     using System.Windows.Input;
     using System.Windows.Media;
-    using Traker.Events;
     using Traker.Events.DashboardVM;
     using Traker.Helper;
     using Traker.Models;
@@ -339,11 +338,6 @@ namespace Traker.ViewModels
 
         public async Task AddClient()
         {
-            //_events.PublishOnUIThreadAsync(new MessageBoxTrigger());
-            MessageBoxViewModel _messageBoxVM = new MessageBoxViewModel(1, "Curry Alert", "There is a toe nail in the curry", 0);
-            _windowManager.ShowDialogAsync(_messageBoxVM, null, CustomWindow.SettingsForDialog(790, 600, false));
-
-
             Debug.WriteLine("ADDING client..");
 
             //if (State.IsWindowOpen == false)

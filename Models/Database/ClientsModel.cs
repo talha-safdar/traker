@@ -8,11 +8,14 @@
     /// type.</remarks>
     public class ClientsModel
     {
+        /// <summary>
+        /// Business table model
+        /// </summary>
         public int ClientId { get; set; } = 0;
         public string Type { get; set; } = string.Empty;
         public string FullName { get; set; } = string.Empty;
-        public string CompanyName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        public string CompanyName { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
         public string BillingAddress { get; set; } = string.Empty;
         public string City { get; set; } = string.Empty;

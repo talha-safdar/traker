@@ -9,8 +9,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              Width="400" Height="250">
-             
-    <Border Background="#1A1A1A" CornerRadius="20" BorderThickness="1" SnapsToDevicePixels="True" Margin="5">
+
+    <Border Visibility="{Binding IsVisible}" Background="#1A1A1A" CornerRadius="20" BorderThickness="1" SnapsToDevicePixels="True" Margin="5">
         <Border.Effect>
             <DropShadowEffect
             BlurRadius="10"

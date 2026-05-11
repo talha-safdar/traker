@@ -39,7 +39,6 @@ namespace Traker.Helper
                     listItems[i] = false;
                 }
             }
-
             return Task.CompletedTask;
         }
 

@@ -74,7 +74,7 @@ namespace Traker.ViewModels.Edit
         {
             base.OnViewLoaded(view);
 
-            _invoicePath = await FileStore.GetInvoicePdfPath(
+            _invoicePath = await FileStore.GetInvoiceFilePath(
                 Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).JobId), 
                 SelectedJob.JobTitle, 
                 Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), 

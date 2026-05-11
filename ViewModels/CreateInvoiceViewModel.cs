@@ -163,7 +163,7 @@ namespace Traker.ViewModels
 
         private async Task GenerateInvoice(string invoiceName)
         {
-            string filePath = await FileStore.SaveInvoicePdf(SelectedJob.ClientId, SelectedJob.ClientName, invoiceName);
+            string filePath = await FileStore.SaveInvoiceFile(SelectedJob.ClientId, SelectedJob.ClientName, invoiceName);
 
             //FileStore.SaveInvoicePdf(SelectedJob.ClientId, SelectedJob.ClientName, Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), SelectedJob.JobId);
 

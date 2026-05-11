@@ -34,7 +34,6 @@ namespace Traker.ViewModels
         #region Public State Variable
         public AppState State { get; } // state binding variable accessible from other viewmodels
         #endregion
-        private List<bool> a;
 
         public ShellViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState, DataService dataService)
         {
@@ -86,8 +85,6 @@ namespace Traker.ViewModels
         {
             try
             {
-                a[0] = true;
-
                 base.OnViewReady(view);
 
                 await Database.SetUpDatabase();
@@ -111,8 +108,16 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBoxViewModel _messageBoxVM = new MessageBoxViewModel(2, "Shell OnViewReady", ex.Message, 0);
-                _windowManager.ShowDialogAsync(_messageBoxVM, null, CustomWindow.SettingsForDialog(790, 600, false));
+                // not already open?
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                {
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Shell OnViewReady";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = 0;
+                    State.messageBoxVM.Action = Names.Close;
+                    await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
                 Logger.LogActivity(Logger.ERROR, $"ShellViewModel: OnViewReady() FAIL\n\t{ex.Message}");
             }
         }

@@ -1,4 +1,4 @@
-﻿namespace Traker.Events
+﻿namespace Traker.Events.DashboardVM
 {
     /// <summary>
     /// Notifies subscribers to refresh the database, typically after a change has been made that affects the data displayed in the UI.

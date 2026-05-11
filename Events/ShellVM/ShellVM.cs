@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Traker.Events.ShellVM
 {
     /// <summary>
-    /// general event for ShellVM
+    /// General event for ShellVM
     /// </summary>
     public class ShellVM
     {

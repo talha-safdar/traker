@@ -1,8 +1,10 @@
-﻿using System.Dynamic;
+﻿using Caliburn.Micro;
+using System.Dynamic;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using Traker.Services;
+using Traker.States;
 
 namespace Traker.Helper
 {
@@ -12,7 +14,9 @@ namespace Traker.Helper
     public static class CustomWindow
     {
         /// <summary>
-        /// Sets the properties for a custom dialog window, such as title, startup location, style, transparency, background, resize mode, and minimum dimensions, and returns these settings as a dynamic object that can be applied to a Window instance when creating a dialog. This allows for consistent styling and behavior across all dialogs in the application by centralizing the configuration in one method.
+        /// Set the window in the centre of the parent window.
+        /// You can customise the positioning by setting the "isAnchored" parameter 
+        /// to true and providing the desired vertical and horizontal offsets.
         /// </summary>
         public static dynamic SettingsForDialog(int height, int width, bool isAnchored, double verticalOffset = 0, double horizontalOffset = 0)
         {
@@ -41,13 +45,22 @@ namespace Traker.Helper
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"An error occurred while opening window. Please try again.\n\n{ex.Message}",
-                    "Open Window",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"CustomWindow: SettingsForDialog() FAIL");
-                throw; // necessary otherwsie cries about no return value
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Open Window";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = 0;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"CustomWindow: SettingsForDialog() FAIL\n\t{ex.Message}");
+                throw;
             }
         }
     }

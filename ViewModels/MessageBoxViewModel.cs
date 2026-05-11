@@ -5,71 +5,54 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using Traker.Helper;
+using Traker.States;
 
 namespace Traker.ViewModels
 {
-    class MessageBoxViewModel : Screen
+    public class MessageBoxViewModel : Screen
     {
-        #region Private View Variables
-        private int _symbol; // 0=info, 1=warning, 2=error
-        private string _headMessage; 
-        private string _message;
-        private int _buttonStyle; // 0=OK, 1=CancelOK
+        #region Public View Variables
+        public int Symbol { get; set; } = 0; // 0=info, 1=warning, 2=error
+        public string HeadMessage { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+        public string Action { get; set; } = string.Empty; // Close=kill app, else just close message box
+        public int ButtonStyle { get; set; } = 0; // 0=OK, 1=CancelOK
         #endregion
 
-        public MessageBoxViewModel(int symbol, string headMessage, string message, int buttonStyle)
+        public AppState State { get; set; }
+
+        public Visibility IsVisible { get; set; } = Visibility.Collapsed; // for showing the window elements all at the same time
+
+        public MessageBoxViewModel(AppState appState) 
         {
-            _symbol = symbol;
-            _headMessage = headMessage;
-            _message = message;
-            _buttonStyle = buttonStyle;
+            State = appState;
+        }
+
+        protected override async Task OnActivatedAsync(CancellationToken cancellationToken)
+        {
+            await Task.Yield();
+
+            IsVisible = Visibility.Visible;
+            NotifyOfPropertyChange(() => IsVisible);
+
+            await base.OnActivatedAsync(cancellationToken);
         }
 
         #region Public Functions
         public async Task OK()
         {
-            await TryCloseAsync();
-        }
-        #endregion
-
-        #region Public View Variables
-        public int Symbol
-        {
-            get { return _symbol; }
-            set
+            if (Action == Names.Close) // close app
             {
-                _symbol = value;
-                NotifyOfPropertyChange(() => Symbol);
+                //Application.Current.Shutdown();
+                Environment.Exit(1); // kill process
             }
-        }
-
-        public string HeadMessage
-        {
-            get { return _headMessage; }
-            set
+            else if (Action == Names.ConfirmProceed) // confirmation
             {
-                _headMessage = value;
-                NotifyOfPropertyChange(() => HeadMessage);
-            }
-        }
-
-        public string Message
-        {
-            get { return _message; }
-            set
-            {
-                _message = value;
-                NotifyOfPropertyChange(() => Message);
-            }
-        }
-
-        public int ButtonStyle
-        {
-            get { return _buttonStyle; }
-            set
-            {
-                _buttonStyle = value;
-                NotifyOfPropertyChange(() => ButtonStyle);
+                State.allowProceed = false;
+                Action = string.Empty; // reset action
+                await TryCloseAsync();
             }
         }
         #endregion
