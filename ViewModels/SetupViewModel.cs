@@ -16,6 +16,7 @@ namespace Traker.ViewModels
     using System.Windows.Controls.Primitives;
     using System.Windows.Media;
     using Traker.Events;
+    using Traker.Events.ShellVM;
     using Traker.Helper;
 
     public class SetupViewModel : Screen

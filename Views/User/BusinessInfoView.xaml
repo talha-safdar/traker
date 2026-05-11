@@ -10,13 +10,14 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              Focusable="True"
+             Height="800" Width="1000"
              cal:Message.Attach="[Event PreviewKeyDown] = [Action HandleKeyPress($eventArgs)]">
 
     <UserControl.Resources>
         <conv:BoolToVisibilityCollapsed x:Key="BoolToVisCollapsed"/>
     </UserControl.Resources>
 
-    <Grid Height="800" Width="1000">
+    <Grid>
         <!--#region individual-->
         <Border Visibility="{Binding IndividualView, Converter={StaticResource BoolToVisCollapsed}}" Background="#1E1E1E" CornerRadius="20" BorderThickness="1" SnapsToDevicePixels="True">
             <Border.BorderBrush>

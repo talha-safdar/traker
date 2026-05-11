@@ -13,13 +13,16 @@ namespace Traker.ViewModels
     using System.Threading;
     using System.Windows.Controls;
     using Traker.Events;
+    using Traker.Events.ShellVM;
     using Traker.Helper;
     using Traker.Services;
     using Traker.States;
+    using Traker.ViewModels.Add;
 
     public class ShellViewModel : Conductor<IScreen>.Collection.OneActive,
     #region Interfaces
-        IHandle<ShellVM>
+        IHandle<ShellVM>,
+        IHandle<MessageBoxTrigger>
     #endregion
     {
         #region Caliburn Variables
@@ -32,12 +35,16 @@ namespace Traker.ViewModels
         public AppState State { get; } // state binding variable accessible from other viewmodels
         #endregion
 
+        private MessageBoxViewModel _messageBoxVM;
+
         public ShellViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState, DataService dataService)
         {
             _events = events;
             _windowManager = windowManager;
             State = appState;
             _dataService = dataService;
+
+            _messageBoxVM = new MessageBoxViewModel();
 
             _events.SubscribeOnPublishedThread(this);
         }
@@ -64,6 +71,7 @@ namespace Traker.ViewModels
         //        await ActivateItemAsync(dashboardViewModel, cancellationToken);
         //    }
         //}
+
 
         protected async override void OnViewReady(object view)
         {
@@ -105,6 +113,12 @@ namespace Traker.ViewModels
                     ActivateItemAsync(dashboardViewModel, cancellationToken);
                 }
             }
+            return Task.CompletedTask;
+        }
+
+        public Task HandleAsync(MessageBoxTrigger message, CancellationToken cancellationToken)
+        {
+            _windowManager.ShowDialogAsync(_messageBoxVM, null, CustomWindow.SettingsForDialog(790, 600, false));
             return Task.CompletedTask;
         }
         #endregion

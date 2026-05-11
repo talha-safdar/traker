@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Traker.Events
+namespace Traker.Events.ShellVM
 {
-    /// <summary>
-    /// general event for ShellVM
-    /// </summary>
-    public class ShellVM
+    public class MessageBoxTrigger
     {
         public string Command { get; set; } = string.Empty;
     }

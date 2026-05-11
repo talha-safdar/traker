@@ -22,6 +22,7 @@ namespace Traker.ViewModels
     using Traker.ViewModels.Edit;
     using Traker.ViewModels.User;
     using Database;
+    using Traker.Events.ShellVM;
 
     public class DashboardViewModel : Screen, IHandle<RefreshDatabase>, IHandle<DashboardVMEvents>
     {
@@ -338,6 +339,9 @@ namespace Traker.ViewModels
 
         public async Task AddClient()
         {
+            _events.PublishOnUIThreadAsync(new MessageBoxTrigger());
+
+
             Debug.WriteLine("ADDING client..");
 
             //if (State.IsWindowOpen == false)
@@ -357,7 +361,7 @@ namespace Traker.ViewModels
 
                 _addClientViewModel = new AddClientViewModel(_events, State, Data);
                 await _windowManager.ShowDialogAsync(_addClientViewModel, null, CustomWindow.SettingsForDialog(790, 600, false));
-                State.IsWindowOpen = true; // flag as open accross the project
+                //State.IsWindowOpen = true; // flag as open accross the project
             }
 
             // the state State.IsAddRowEntryOpen will be false again from addrowentryVM when user closes the window
@@ -388,7 +392,7 @@ namespace Traker.ViewModels
                 _addJobViewModel = new AddJobViewModel(_events, State);
                 _addJobViewModel.dashboardData = _dashboardData; // pass dashboard data to AddJob
                 await _windowManager.ShowDialogAsync(_addJobViewModel, null, CustomWindow.SettingsForDialog(700, 550, false));
-                State.IsWindowOpen = true; // flag as open accross the project
+                //State.IsWindowOpen = true; // flag as open accross the project
             }
 
             // the state State.IsAddRowEntryOpen will be false again from addrowentryVM when user closes the window

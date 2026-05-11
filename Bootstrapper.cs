@@ -56,6 +56,7 @@ namespace Traker
             _container.PerRequest<BusinessInfoViewModel>();
             _container.PerRequest<BankInfoViewModel>();
             _container.PerRequest<EditInvoiceViewModel>();
+            _container.PerRequest<MessageBoxViewModel>();
             ViewLocator.AddNamespaceMapping("Traker.ViewModels.*", "Traker.Views.*");
             // LogManager.GetLog = type => new DebugLog(type); // uncomment this line for Caliburn debug messages
         }

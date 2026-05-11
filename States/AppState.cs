@@ -18,20 +18,20 @@ namespace Traker.States
     public class AppState : PropertyChangedBase
     {
         #region Private View State Variables
-        private bool _isWindowOpen = false;
+        //private bool _isWindowOpen = false;
         #endregion
 
-
         #region Public View State Variables
-        public bool IsWindowOpen
-        {
-            get { return _isWindowOpen; }
-            set
-            {
-                _isWindowOpen = value;
-                NotifyOfPropertyChange(() => IsWindowOpen);
-            }
-        }
+
+        //public bool IsWindowOpen
+        //{
+        //    get { return _isWindowOpen; }
+        //    set
+        //    {
+        //        _isWindowOpen = value;
+        //        NotifyOfPropertyChange(() => IsWindowOpen);
+        //    }
+        //}
         #endregion
     }
 }

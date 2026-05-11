@@ -117,8 +117,4 @@
     <Resource Include="Resources\Media\Images\Icons\minimise-button.png" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Events\ShellVM\" />
-  </ItemGroup>
-
 </Project>

@@ -38,7 +38,7 @@ namespace Traker.ViewModels.User
             //Window window = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.DataContext is BusinessInfoViewModel)!;
             //window?.Close();
             //window?.Activate(); // bring to front
-
+            await TryCloseAsync();
 
             if (option == "user")
             {
@@ -85,7 +85,6 @@ namespace Traker.ViewModels.User
                 _bankInfoViewModel = new BankInfoViewModel(_events, _dataService);
                 await _windowManager.ShowDialogAsync(_bankInfoViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
             }
-            await TryCloseAsync();
         }
         #endregion
     }

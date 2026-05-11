@@ -135,7 +135,7 @@ namespace Traker.ViewModels.Add
 
         public async Task Exit()
         {
-            State.IsWindowOpen = false;
+            //State.IsWindowOpen = false;
             await TryCloseAsync();
         }
 

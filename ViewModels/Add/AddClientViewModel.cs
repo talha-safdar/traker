@@ -108,7 +108,7 @@ namespace Traker.ViewModels.Add
         {
             try
             {
-                State.IsWindowOpen = false;
+                //State.IsWindowOpen = false;
                 await TryCloseAsync();
                 Logger.LogActivity(Logger.ERROR, $"AddClientViewModel: Exit() OK");
             }
