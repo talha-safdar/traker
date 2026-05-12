@@ -15,15 +15,18 @@ namespace Traker.ViewModels.Edit
     using System.Diagnostics;
     using System.Globalization;
     using System.Text.RegularExpressions;
+    using System.Windows;
     using System.Windows.Input;
     using Traker.Data;
     using Traker.Events.DashboardVM;
     using Traker.Helper;
+    using Traker.States;
 
     public class EditJobViewModel : Screen
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
+        private readonly IWindowManager _windowManager;
         #endregion
 
         #region Private View Variables
@@ -53,11 +56,14 @@ namespace Traker.ViewModels.Edit
         private bool _isEditingReceived;
         #endregion
 
+        public AppState State { get; }
         public DashboardModel SelectedJob; // data passed by DashboardVM
 
-        public EditJobViewModel(IEventAggregator events)
+        public EditJobViewModel(IEventAggregator events, IWindowManager windowManager, AppState state)
         {
             _events = events;
+            _windowManager = windowManager;
+            State = state;
             SelectedJob = new DashboardModel();
         }
 
@@ -157,27 +163,39 @@ namespace Traker.ViewModels.Edit
             }
         }
 
-
         public async Task DeleteJob()
         {
-            // delete job folder (if only one job then delete whole client folder)
-            // it deletes the current job folder then it checks if it was the last one if true, then delete client folder
-            if (await FileStore.DeleteJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim(), SelectedJob.JobTitle.Trim()) == true)
+            if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
             {
-                // delete entire client folder too
-                await FileStore.DeleteClientFolder(SelectedJob.ClientId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim());
-
-                // delete client from database
-                await Database.DeleteClient(SelectedJob.ClientId);
-            }
-            else if (await FileStore.DeleteJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim(), SelectedJob.JobTitle.Trim()) == false)
-            {
-                // delete job from database
-                await Database.DeleteJob(SelectedJob.JobId);
+                State.messageBoxVM.Symbol = 0;
+                State.messageBoxVM.HeadMessage = "Delete Job";
+                State.messageBoxVM.Message = Names.DeleteJobConfirmation;
+                State.messageBoxVM.ButtonStyle = Names.NoYes;
+                await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
             }
 
-            await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
-            await TryCloseAsync();
+            // if clicked yes
+            if (State.messageBoxVM.Output == true)
+            {
+                // delete job folder (if only one job then delete whole client folder)
+                // it deletes the current job folder then it checks if it was the last one if true, then delete client folder
+                if (await FileStore.DeleteJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim(), SelectedJob.JobTitle.Trim()) == true)
+                {
+                    // delete entire client folder too
+                    await FileStore.DeleteClientFolder(SelectedJob.ClientId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim());
+
+                    // delete client from database
+                    await Database.DeleteClient(SelectedJob.ClientId);
+                }
+                else if (await FileStore.DeleteJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim(), SelectedJob.JobTitle.Trim()) == false)
+                {
+                    // delete job from database
+                    await Database.DeleteJob(SelectedJob.JobId);
+                }
+
+                await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
+                await TryCloseAsync();
+            }
         }
 
         public async Task Exit()

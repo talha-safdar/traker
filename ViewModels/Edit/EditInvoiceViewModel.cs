@@ -19,16 +19,19 @@ namespace Traker.ViewModels.Edit
     using Microsoft.Win32;
     using System.Globalization;
     using System.Threading;
+    using System.Windows;
     using System.Windows.Input;
     using System.Windows.Media;
     using Traker.Events;
     using Traker.Events.DashboardVM;
     using Traker.Helper;
+    using Traker.States;
 
     public class EditInvoiceViewModel : Screen
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
+        private readonly IWindowManager _windowManager;
         private readonly DataService _dataService;
         #endregion
 
@@ -42,12 +45,15 @@ namespace Traker.ViewModels.Edit
         private string _invoicePath;
         #endregion
 
+        private AppState State { get; }
         public DashboardModel SelectedJob; // data passed by DashboardVM
 
-        public EditInvoiceViewModel(DataService dataService, IEventAggregator events)
+        public EditInvoiceViewModel(DataService dataService, IEventAggregator events, IWindowManager windowManager, AppState state)
         {
             _dataService = dataService;
             _events = events;
+            _windowManager = windowManager;
+            State = state;
 
             _invoicePath = string.Empty;
         }
@@ -194,9 +200,22 @@ namespace Traker.ViewModels.Edit
 
         public async Task DeleteInvoice()
         {
-            await Database.DeleteInvoice(Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), SelectedJob.JobId);
-            await _events.PublishOnUIThreadAsync(new RefreshDatabase());
-            await TryCloseAsync();
+            if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+            {
+                State.messageBoxVM.Symbol = 0;
+                State.messageBoxVM.HeadMessage = "Delete Invoice";
+                State.messageBoxVM.Message = Names.DeleteInvoiceConfirmation;
+                State.messageBoxVM.ButtonStyle = Names.NoYes;
+                await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+            }
+
+            // if clicked yes
+            if (State.messageBoxVM.Output == true)
+            {
+                await Database.DeleteInvoice(Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), SelectedJob.JobId);
+                await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+                await TryCloseAsync();
+            }
         }
 
         public async Task Exit()

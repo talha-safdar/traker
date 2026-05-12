@@ -54,7 +54,7 @@ namespace Traker.Helper
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Open Window";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;

@@ -18,7 +18,8 @@ namespace Traker.ViewModels
         public string HeadMessage { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
         public string Action { get; set; } = string.Empty; // Close=kill app, else just close message box
-        public int ButtonStyle { get; set; } = 0; // 0=OK, 1=CancelOK
+        public string ButtonStyle { get; set; } = string.Empty; // OK, CancelOK, NoYes
+        public bool Output { get; set; } = false; // for Yes or No
         #endregion
 
         public AppState State { get; set; }
@@ -34,6 +35,9 @@ namespace Traker.ViewModels
         {
             await Task.Yield();
 
+            Output = false;
+            Action = string.Empty; // reset action
+
             IsVisible = Visibility.Visible;
             NotifyOfPropertyChange(() => IsVisible);
 
@@ -41,19 +45,24 @@ namespace Traker.ViewModels
         }
 
         #region Public Functions
-        public async Task OK()
+        public async Task RightButton()
         {
             if (Action == Names.Close) // close app
             {
                 //Application.Current.Shutdown();
                 Environment.Exit(1); // kill process
             }
-            else if (Action == Names.ConfirmProceed) // confirmation
+            else  if (ButtonStyle == Names.NoYes)
             {
-                State.allowProceed = false;
-                Action = string.Empty; // reset action
+                Output = true;
                 await TryCloseAsync();
             }
+        }
+
+
+        public async Task LeftButton()
+        {
+            await TryCloseAsync();            
         }
         #endregion
     }

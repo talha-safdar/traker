@@ -6,6 +6,7 @@
              xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
              xmlns:local="clr-namespace:Traker.Views"
              xmlns:cal="http://caliburnmicro.com"
+             xmlns:names="clr-namespace:Traker.Helper"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              Width="400" Height="250">
@@ -142,8 +143,8 @@
             <!-- buttons -->
             <Grid Grid.Row="4">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <!-- cancel -->
-                    <Border Margin="0,0,5,0" x:Name="CancelBorder" MouseLeave="CancelBorder_MouseLeave" MouseLeftButtonUp="CancelBorder_MouseLeftButtonUp" MouseLeftButtonDown="CancelBorder_MouseLeftButtonDown" SnapsToDevicePixels="True" BorderThickness="1" Background="Transparent" VerticalAlignment="Center" CornerRadius="10" Height="40" Width="175">
+                    <!-- LEFT -->
+                    <Border Margin="0,0,5,0" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action LeftButton()]" x:Name="LeftBorder" MouseLeave="LeftBorder_MouseLeave" MouseLeftButtonUp="LeftBorder_MouseLeftButtonUp" MouseLeftButtonDown="LeftBorder_MouseLeftButtonDown" SnapsToDevicePixels="True" BorderThickness="1" Background="Transparent" VerticalAlignment="Center" CornerRadius="10" Height="40" Width="175">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <!-- 1. Base Background (rgba 255,255,255, 0.05) -->
@@ -162,10 +163,13 @@
                                     </Setter.Value>
                                 </Setter>
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ButtonStyle}" Value="0">
+                                    <DataTrigger Binding="{Binding ButtonStyle}" Value="{x:Static names:Names.OK}">
                                         <Setter Property="Visibility" Value="Collapsed"/>
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding ButtonStyle}" Value="1">
+                                    <DataTrigger Binding="{Binding ButtonStyle}" Value="{x:Static names:Names.CancelOK}">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ButtonStyle}" Value="{x:Static names:Names.NoYes}">
                                         <Setter Property="Visibility" Value="Visible"/>
                                     </DataTrigger>
 
@@ -188,13 +192,29 @@
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
-                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" Text="Cancel" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Medium" FontSize="14">
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Medium" FontSize="14">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="Foreground" Value="#888888"/>
+                                    <Setter Property="Text" Value=""/>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsMouseOver, ElementName=CancelBorder}" Value="True">
+                                        <DataTrigger Binding="{Binding IsMouseOver, ElementName=LeftBorder}" Value="True">
                                             <Setter Property="Foreground" Value="White"/>
+                                        </DataTrigger>
+
+                                        <!-- 0=Left button not shown -->
+                                        <DataTrigger Binding="{Binding ButtonStyle}" Value="{x:Static names:Names.OK}">
+                                            <Setter Property="Text" Value=""/>
+                                        </DataTrigger>
+                                        
+                                        <!-- 1=Cancel -->
+                                        <DataTrigger Binding="{Binding ButtonStyle}" Value="{x:Static names:Names.CancelOK}">
+                                            <Setter Property="Text" Value="Cancel"/>
+                                        </DataTrigger>
+                                        
+                                        <!-- 2=No -->
+                                        <DataTrigger Binding="{Binding ButtonStyle}" Value="{x:Static names:Names.NoYes}">
+                                            <Setter Property="Text" Value="No"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -202,8 +222,8 @@
                         </TextBlock>
                     </Border>
                     
-                    <!-- OK -->
-                    <Border Margin="5,0,0,0" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OK()]" x:Name="OKBorder" MouseLeave="OKBorder_MouseLeave" MouseLeftButtonUp="OKBorder_MouseLeftButtonUp" MouseLeftButtonDown="OKBorder_MouseLeftButtonDown" SnapsToDevicePixels="True" BorderThickness="1" Background="#1E1E1E" VerticalAlignment="Center" CornerRadius="10" Height="40" Width="175">
+                    <!-- RIGHT -->
+                    <Border Margin="5,0,0,0" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action RightButton()]" x:Name="RightBorder" MouseLeave="RightBorder_MouseLeave" MouseLeftButtonUp="RightBorder_MouseLeftButtonUp" MouseLeftButtonDown="RightBorder_MouseLeftButtonDown" SnapsToDevicePixels="True" BorderThickness="1" Background="#1E1E1E" VerticalAlignment="Center" CornerRadius="10" Height="40" Width="175">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <!-- 1. Base Background (rgba 255,255,255, 0.05) -->
@@ -241,13 +261,29 @@
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
-                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" Text="Ok" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Medium" FontSize="14">
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Medium" FontSize="14">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="Foreground" Value="#888888"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsMouseOver, ElementName=OKBorder}" Value="True">
+                                    <Setter Property="Text" Value=""/>
+                                    <Style.Triggers>                                        
+                                        <DataTrigger Binding="{Binding IsMouseOver, ElementName=RightBorder}" Value="True">
                                             <Setter Property="Foreground" Value="White"/>
+                                        </DataTrigger>
+                                        
+                                        <!-- 0=OK -->
+                                        <DataTrigger Binding="{Binding ButtonStyle}" Value="{x:Static names:Names.OK}">
+                                            <Setter Property="Text" Value="Ok"/>
+                                        </DataTrigger>
+                                        
+                                        <!-- 1=OK -->
+                                        <DataTrigger Binding="{Binding ButtonStyle}" Value="{x:Static names:Names.CancelOK}">
+                                            <Setter Property="Text" Value="Ok"/>
+                                        </DataTrigger>
+                                        
+                                        <!-- 1=Yes -->
+                                        <DataTrigger Binding="{Binding ButtonStyle}" Value="{x:Static names:Names.NoYes}">
+                                            <Setter Property="Text" Value="Yes"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>

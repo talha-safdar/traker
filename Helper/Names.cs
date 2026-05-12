@@ -55,5 +55,11 @@ namespace Traker.Helper
         // message box
         public const string Close = "Close"; // cloe entire app
         public const string ConfirmProceed = "ConfirmProceed"; // cloe entire app
+        public const string DeleteClientConfirmation = "Are you sure you want to delete this client?";
+        public const string DeleteJobConfirmation = "Are you sure you want to delete this job?";
+        public const string DeleteInvoiceConfirmation = "Are you sure you want to delete this invoice?";
+        public const string OK = "OK";
+        public const string CancelOK = "CancelOK";
+        public const string NoYes = "NoYes";
     }
 }

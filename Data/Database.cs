@@ -71,7 +71,7 @@ namespace Traker.Database
                                 state.messageBoxVM.Symbol = 2;
                                 state.messageBoxVM.HeadMessage = "Database Setup";
                                 state.messageBoxVM.Message = "Could not locate the database";
-                                state.messageBoxVM.ButtonStyle = 0;
+                                state.messageBoxVM.ButtonStyle = Names.OK;
                                 state.messageBoxVM.Action = Names.Close;
                                 windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                             }
@@ -91,7 +91,7 @@ namespace Traker.Database
                             state.messageBoxVM.Symbol = 2;
                             state.messageBoxVM.HeadMessage = "Database Setup";
                             state.messageBoxVM.Message = ex.Message;
-                            state.messageBoxVM.ButtonStyle = 0;
+                            state.messageBoxVM.ButtonStyle = Names.OK;
                             state.messageBoxVM.Action = Names.Close;
                             windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                         }
@@ -188,7 +188,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Fetch Clients Tables";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         state.messageBoxVM.Action = Names.Close;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
@@ -289,7 +289,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Fetch Jobs Tables";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         state.messageBoxVM.Action = Names.Close;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
@@ -402,7 +402,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Fetch Invoices Tables";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         state.messageBoxVM.Action = Names.Close;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
@@ -471,7 +471,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Fetch User Table";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         state.messageBoxVM.Action = Names.Close;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
@@ -558,7 +558,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Fetch Business Table";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         state.messageBoxVM.Action = Names.Close;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
@@ -638,7 +638,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Fetch Bank Table";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         state.messageBoxVM.Action = Names.Close;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
@@ -748,7 +748,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Create Invoice";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -796,7 +796,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Create User";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         state.messageBoxVM.Action = Names.Close;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
@@ -851,7 +851,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Create Business";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         state.messageBoxVM.Action = Names.Close;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
@@ -903,7 +903,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Create Bank";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         state.messageBoxVM.Action = Names.Close;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
@@ -1019,7 +1019,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Add Client";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -1131,7 +1131,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Add Client";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -1193,7 +1193,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Add Job";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -1261,7 +1261,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Edit Client";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -1322,7 +1322,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Edit Job";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -1393,7 +1393,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Edit User";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -1455,7 +1455,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Edit Business";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -1514,7 +1514,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Edit Bank";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -1615,7 +1615,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Set Job Status";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -1657,7 +1657,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Set Invoice Name";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -1701,7 +1701,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Set Invoice Status";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -1743,7 +1743,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Set Client Folder";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -1785,7 +1785,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Set Job Folder";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -1841,7 +1841,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Delete Client";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -1895,7 +1895,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Delete Job";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -1956,7 +1956,7 @@ namespace Traker.Database
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Delete Invoice";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;

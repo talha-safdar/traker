@@ -65,7 +65,7 @@ namespace Traker.Data
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Create Client Folder";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -121,7 +121,7 @@ namespace Traker.Data
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Create Job Folder";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -195,7 +195,7 @@ namespace Traker.Data
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Save Invoice File";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -251,7 +251,7 @@ namespace Traker.Data
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Update Client Folder Name";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -314,7 +314,7 @@ namespace Traker.Data
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Update Job Folder Name";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -366,7 +366,7 @@ namespace Traker.Data
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Delete Client Directory";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -443,7 +443,7 @@ namespace Traker.Data
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Delete Job Directory";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -502,7 +502,7 @@ namespace Traker.Data
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Locate Job Folder";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -554,7 +554,7 @@ namespace Traker.Data
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Get invoice Directory";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;
@@ -590,7 +590,7 @@ namespace Traker.Data
                         state.messageBoxVM.Symbol = 2;
                         state.messageBoxVM.HeadMessage = "Sanitise Folder Name";
                         state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = 0;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
                         windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
                     return Task.CompletedTask;

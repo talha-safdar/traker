@@ -111,10 +111,10 @@ namespace Traker.ViewModels
             _dashboardDataBackup = new ObservableCollection<DashboardModel>();
             _selectedJob = new DashboardModel();
 
-            _contextMenuVM = new JobContextMenuViewModel(_events, _windowManager, Data);
+            _contextMenuVM = new JobContextMenuViewModel(_events, _windowManager, Data, State);
             _addClientViewModel = new AddClientViewModel(_events, State, Data);
             _addJobViewModel = new AddJobViewModel(_events, State);
-            _editClientViewModel = new EditClientViewModel(_events, _windowManager, Data);
+            _editClientViewModel = new EditClientViewModel(_events, _windowManager, Data, State);
             _userContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager, Data);
             _sortJobsViewModel = new SortJobsViewModel(_events);
             _filterJobsViewModel = new FilterJobsViewModel(_events);
@@ -294,7 +294,7 @@ namespace Traker.ViewModels
             {
                 if (SelectedJob.ClientId == selectedJob.ClientId)
                 {
-                    _contextMenuVM = new JobContextMenuViewModel(_events, _windowManager, Data);
+                    _contextMenuVM = new JobContextMenuViewModel(_events, _windowManager, Data, State);
                     _contextMenuVM.SelectedJob = selectedJob; // pass row selected
                     await _windowManager.ShowPopupAsync(_contextMenuVM, null, CustomWindow.SettingsForDialog(310, 335, false)); // vertical, horizontal
                 }
@@ -306,13 +306,13 @@ namespace Traker.ViewModels
 
             if (jobSelected != null &&  Data.Invoices.Any(i => i.JobId == jobSelected.JobId && i.IsDeleted == false) == true) // if already invoiced
             {
-                _editInvoiceViewModel = new EditInvoiceViewModel(Data, _events);
+                _editInvoiceViewModel = new EditInvoiceViewModel(Data, _events, _windowManager, State);
                 _editInvoiceViewModel.SelectedJob = jobSelected;
                 await _windowManager.ShowDialogAsync(_editInvoiceViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
             }
             else
             {
-                _editJobViewModel = new EditJobViewModel(_events);
+                _editJobViewModel = new EditJobViewModel(_events, _windowManager, State);
 
                 if (jobSelected != null)
                 {
@@ -331,8 +331,8 @@ namespace Traker.ViewModels
 
         public async Task EditClient()
         {
-            _editClientViewModel = new EditClientViewModel(_events, _windowManager, Data);
-            _editClientViewModel.SelectedRow = SelectedJob; // pass selected row to EditClientViewModel
+            _editClientViewModel = new EditClientViewModel(_events, _windowManager, Data, State);
+            _editClientViewModel.SelectedJob = SelectedJob; // pass selected row to EditClientViewModel
             await _windowManager.ShowDialogAsync(_editClientViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
         }
 
@@ -938,7 +938,7 @@ namespace Traker.ViewModels
                 }
                 else if (message.Command == Names.ShowInvoice)
                 {
-                    _editInvoiceViewModel = new EditInvoiceViewModel(Data, _events);
+                    _editInvoiceViewModel = new EditInvoiceViewModel(Data, _events, _windowManager, State);
                     _editInvoiceViewModel.SelectedJob = SelectedJob;
                     await _windowManager.ShowWindowAsync(_editInvoiceViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
                 }

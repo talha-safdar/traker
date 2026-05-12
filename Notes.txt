@@ -75,6 +75,7 @@ V1:
 #- add splash screen if necessary
 #- add on click animation to the rest of the buttons
 #- add loading bar
+#- if set to paid why still show as invoiced status? do something
 
 V2:
 #- on edit row add a spy signal "amber" for changes that have not been saved yet

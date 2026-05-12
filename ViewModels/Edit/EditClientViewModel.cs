@@ -14,6 +14,7 @@ using Traker.Models;
 namespace Traker.ViewModels.Edit
 {
     using Database;
+    using System.Windows;
     using System.Windows.Input;
     using Traker.Data;
     using Traker.Events.DashboardVM;
@@ -48,33 +49,35 @@ namespace Traker.ViewModels.Edit
 
         #region Public State Variable
         public DataService Data { get; } // data from the database
+        public AppState State { get; } // state binding variable accessible from other viewmodels
         #endregion
 
-        public DashboardModel SelectedRow; // data passed by DashboardVM
+        public DashboardModel SelectedJob; // data passed by DashboardVM
 
-        public EditClientViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService)
+        public EditClientViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
         {
             _events = events;
             _windowManager = windowManager;
             Data = dataService;
-            _jobsListViewModel = new JobsListViewModel(_events, _windowManager, Data);
-            SelectedRow = new DashboardModel();
+            State = state;
+            _jobsListViewModel = new JobsListViewModel(_events, _windowManager, State, Data);
+            SelectedJob = new DashboardModel();
         }
 
         protected override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
             // pre-fill form with available data
-            ClientType = SelectedRow.ClientType;
-            ClientName = SelectedRow.ClientName;
-            ClientEmail = SelectedRow.ClientEmail;
-            CompanyName = SelectedRow.CompanyName;
-            PhoneNumber = SelectedRow.ClientPhone;
-            BillingAddress = SelectedRow.Address;
-            City = SelectedRow.City;
-            Postcode = SelectedRow.Postcode;
-            Country = SelectedRow.Country;
-            CreatedDate = SelectedRow.CreatedDate.ToString();
-            IsActive = SelectedRow.IsActive;
+            ClientType = SelectedJob.ClientType;
+            ClientName = SelectedJob.ClientName;
+            ClientEmail = SelectedJob.ClientEmail;
+            CompanyName = SelectedJob.CompanyName;
+            PhoneNumber = SelectedJob.ClientPhone;
+            BillingAddress = SelectedJob.Address;
+            City = SelectedJob.City;
+            Postcode = SelectedJob.Postcode;
+            Country = SelectedJob.Country;
+            CreatedDate = SelectedJob.CreatedDate.ToString();
+            IsActive = SelectedJob.IsActive;
 
             return base.OnInitializedAsync(cancellationToken);
         }
@@ -97,12 +100,12 @@ namespace Traker.ViewModels.Edit
 
         public async Task ConfirmEditClient()
         {
-            await Database.EditClient(SelectedRow.ClientId, ClientType.Trim(), ClientName.Trim(), ClientEmail.Trim(), CompanyName.Trim(), PhoneNumber.Trim(), BillingAddress.Trim(), City.Trim(), Postcode.Trim(), Country.Trim(), IsActive);
+            await Database.EditClient(SelectedJob.ClientId, ClientType.Trim(), ClientName.Trim(), ClientEmail.Trim(), CompanyName.Trim(), PhoneNumber.Trim(), BillingAddress.Trim(), City.Trim(), Postcode.Trim(), Country.Trim(), IsActive);
 
             // check if name changes for folder naming purpose
-            if ((SelectedRow.ClientType == Names.Individual ? SelectedRow.ClientName : SelectedRow.CompanyName) != ClientName)
+            if ((SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName) != ClientName)
             {
-                await FileStore.UpdateClientFolderName(SelectedRow.ClientId, SelectedRow.ClientType == Names.Individual ? SelectedRow.ClientName.Trim() : SelectedRow.CompanyName.Trim(), SelectedRow.ClientType == Names.Individual ? ClientName.Trim() : CompanyName.Trim());
+                await FileStore.UpdateClientFolderName(SelectedJob.ClientId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim(), SelectedJob.ClientType == Names.Individual ? ClientName.Trim() : CompanyName.Trim());
             }
 
             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
@@ -111,13 +114,26 @@ namespace Traker.ViewModels.Edit
 
         public async Task DeleteClient()
         {
-            // delete client folder
-            await FileStore.DeleteClientFolder(SelectedRow.ClientId, SelectedRow.ClientName.Trim());
+            if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+            {
+                State.messageBoxVM.Symbol = 0;
+                State.messageBoxVM.HeadMessage = "Delete Client";
+                State.messageBoxVM.Message = Names.DeleteClientConfirmation;
+                State.messageBoxVM.ButtonStyle = Names.NoYes;
+                await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+            }
 
-            // delete client database row
-            await Database.DeleteClient(SelectedRow.ClientId);
-            await _events.PublishOnUIThreadAsync(new RefreshDatabase());
-            await TryCloseAsync();
+            // if clicked yes
+            if (State.messageBoxVM.Output == true)
+            {
+                // delete client folder
+                await FileStore.DeleteClientFolder(SelectedJob.ClientId, SelectedJob.ClientName.Trim());
+
+                // delete client database row
+                await Database.DeleteClient(SelectedJob.ClientId);
+                await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+                await TryCloseAsync();
+            }
         }
 
         public async Task Exit()
@@ -127,7 +143,7 @@ namespace Traker.ViewModels.Edit
 
         public async Task OpenJobsList()
         {
-            _jobsListViewModel.SelectedJob = SelectedRow;
+            _jobsListViewModel.SelectedJob = SelectedJob;
             await _windowManager.ShowDialogAsync(_jobsListViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
         }
         #endregion

@@ -35,11 +35,14 @@ namespace Traker.ViewModels
         private EditJobViewModel _editJobViewModel;
         #endregion
 
+        public AppState State { get; }
         public DashboardModel SelectedJob; // data passed by EdiClientVM
 
-        public JobsListViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService)
+        public JobsListViewModel(IEventAggregator events, IWindowManager windowManager, AppState state, DataService dataService)
         {
             _events = events;
+            _windowManager = windowManager;
+            State = state;
             _windowManager = windowManager;
             Data = dataService;
             _jobsList = new ObservableCollection<DashboardModel>();
@@ -98,7 +101,7 @@ namespace Traker.ViewModels
 
         public async Task EditJob(DashboardModel jobSelected)
         {
-            _editJobViewModel = new EditJobViewModel(_events);
+            _editJobViewModel = new EditJobViewModel(_events, _windowManager, State);
             _editJobViewModel.SelectedJob = jobSelected; // pass selected row to EditJobViewModel
             await _windowManager.ShowWindowAsync(_editJobViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
         }

@@ -114,7 +114,7 @@ namespace Traker.ViewModels
                     State.messageBoxVM.Symbol = 2;
                     State.messageBoxVM.HeadMessage = "Shell OnViewReady";
                     State.messageBoxVM.Message = ex.Message;
-                    State.messageBoxVM.ButtonStyle = 0;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
                     State.messageBoxVM.Action = Names.Close;
                     await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
