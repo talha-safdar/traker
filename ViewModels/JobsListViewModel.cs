@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using Traker.Helper;
 using Traker.Models;
@@ -95,7 +96,20 @@ namespace Traker.ViewModels
             // ESC button
             if (e.Key == Key.Escape)
             {
-                await TryCloseAsync();
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                {
+                    State.messageBoxVM.Symbol = 0;
+                    State.messageBoxVM.HeadMessage = "Discard changes?";
+                    State.messageBoxVM.Message = Names.DiscardEsc;
+                    State.messageBoxVM.ButtonStyle = Names.NoYes;
+                    await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+
+                // if clicked yes
+                if (State.messageBoxVM.Output == true)
+                {
+                    await TryCloseAsync();
+                }
             }
         }
 

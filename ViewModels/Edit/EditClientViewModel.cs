@@ -94,7 +94,35 @@ namespace Traker.ViewModels.Edit
             // ESC button
             if (e.Key == Key.Escape)
             {
-                await TryCloseAsync();
+                if (SelectedJob.ClientType != ClientType ||
+                    SelectedJob.CompanyName != CompanyName ||
+                    SelectedJob.ClientName != ClientName ||
+                    SelectedJob.ClientEmail != ClientEmail ||
+                    SelectedJob.ClientPhone != PhoneNumber ||
+                    SelectedJob.Address != BillingAddress ||
+                    SelectedJob.City != City ||
+                    SelectedJob.Postcode != Postcode ||
+                    SelectedJob.Country != Country)
+                {
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                    {
+                        State.messageBoxVM.Symbol = 0;
+                        State.messageBoxVM.HeadMessage = "Discard changes?";
+                        State.messageBoxVM.Message = Names.DiscardEsc;
+                        State.messageBoxVM.ButtonStyle = Names.NoYes;
+                        await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+
+                    // if clicked yes
+                    if (State.messageBoxVM.Output == true)
+                    {
+                        await TryCloseAsync();
+                    }
+                }
+                else
+                {
+                    await TryCloseAsync();
+                }
             }
         }
 
@@ -138,7 +166,35 @@ namespace Traker.ViewModels.Edit
 
         public async Task Exit()
         {
-            await TryCloseAsync();
+            if (SelectedJob.ClientType != ClientType ||
+                SelectedJob.CompanyName != CompanyName ||
+                SelectedJob.ClientName != ClientName ||
+                SelectedJob.ClientEmail != ClientEmail ||
+                SelectedJob.ClientPhone != PhoneNumber ||
+                SelectedJob.Address != BillingAddress ||
+                SelectedJob.City != City ||
+                SelectedJob.Postcode != Postcode ||
+                SelectedJob.Country != Country)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                {
+                    State.messageBoxVM.Symbol = 0;
+                    State.messageBoxVM.HeadMessage = "Discard changes?";
+                    State.messageBoxVM.Message = Names.DiscardEsc;
+                    State.messageBoxVM.ButtonStyle = Names.NoYes;
+                    await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+
+                // if clicked yes
+                if (State.messageBoxVM.Output == true)
+                {
+                    await TryCloseAsync();
+                }
+            }
+            else
+            {
+                await TryCloseAsync();
+            }
         }
 
         public async Task OpenJobsList()

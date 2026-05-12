@@ -16,17 +16,20 @@ namespace Traker.ViewModels
     using System.Diagnostics;
     using System.Globalization;
     using System.IO;
+    using System.Windows;
     using System.Windows.Input;
     using Traker.Data;
     using Traker.Events;
     using Traker.Events.DashboardVM;
     using Traker.Helper;
     using Traker.Services;
+    using Traker.States;
 
     public class CreateInvoiceViewModel : Screen
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
+        private readonly IWindowManager _windowManager;
         private readonly DataService _dataService;
         #endregion
 
@@ -49,6 +52,9 @@ namespace Traker.ViewModels
         #region Public Variables
         public List<string> InvoiceStatusEdit { get; set; } = new List<string> { "0%", "5%", "20%" };
 
+        public AppState State { get; }
+
+
         /*
          * create a new model containing all the important information to pre-fill
          * the invoice form could be using DashboardModel since it's under row selection
@@ -64,10 +70,11 @@ namespace Traker.ViewModels
         private decimal _totalAmountDb; // totAmount#1 used for database
         #endregion
 
-        public CreateInvoiceViewModel(IEventAggregator events, DataService dataService)
+        public CreateInvoiceViewModel(IEventAggregator events, DataService dataService, AppState state, IWindowManager windowManager)
         {
             _events = events;
             _dataService = dataService;
+            State = state;
 
             SelectedJob = new DashboardModel(); // to be improved to add useful properties
 
@@ -82,7 +89,7 @@ namespace Traker.ViewModels
             _totalAmount = "0";
             _subtotalAmountDb = 0.0m;
             _totalAmountDb = 0.0m;
-
+            _windowManager = windowManager;
         }
 
         protected override Task OnInitializedAsync(CancellationToken cancellationToken)
@@ -94,7 +101,7 @@ namespace Traker.ViewModels
             BillingCity = SelectedJob.City;
             BillingPostcode = SelectedJob.Postcode;
             BillingCountry = SelectedJob.Country;
-            DueDate = DateOnly.FromDateTime(DateTime.Now.Date.Add(TimeSpan.FromDays(7))).ToString();
+            DueDate = SelectedJob.DueDate.AddDays(7).ToString();
             _subtotalAmountDb = decimal.Parse(SelectedJob.Price.ToString(), NumberStyles.Currency, CultureInfo.CurrentCulture);
             Subtotal = (decimal.Parse(SelectedJob.Price.ToString(), NumberStyles.Currency, CultureInfo.CurrentCulture)).ToString("C");
             return base.OnInitializedAsync(cancellationToken);
@@ -111,13 +118,67 @@ namespace Traker.ViewModels
             // ESC button
             if (e.Key == Key.Escape)
             {
-                await TryCloseAsync();
+                if (
+                    (string.IsNullOrEmpty(BillingName) == false) && SelectedJob.ClientName != BillingName ||
+                    (string.IsNullOrEmpty(BillingAddress) == false) && SelectedJob.Address != BillingAddress ||
+                    (string.IsNullOrEmpty(BillingCity) == false) && SelectedJob.City != BillingCity ||
+                    (string.IsNullOrEmpty(BillingCountry) == false) && SelectedJob.Country != BillingCountry ||
+                    (string.IsNullOrEmpty(BillingPostcode) == false) && SelectedJob.Postcode != BillingPostcode ||
+                    (string.IsNullOrEmpty(DueDate) == false) && SelectedJob.DueDate.AddDays(7).ToString() != DueDate
+                    )
+                {
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                    {
+                        State.messageBoxVM.Symbol = 0;
+                        State.messageBoxVM.HeadMessage = "Discard changes?";
+                        State.messageBoxVM.Message = Names.DiscardEsc;
+                        State.messageBoxVM.ButtonStyle = Names.NoYes;
+                        await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+
+                    // if clicked yes
+                    if (State.messageBoxVM.Output == true)
+                    {
+                        await TryCloseAsync();
+                    }
+                }
+                else
+                {
+                    await TryCloseAsync();
+                }
             }
         }
 
         public async Task Exit()
         {
-            await TryCloseAsync();
+            if (
+                (string.IsNullOrEmpty(BillingName) == false) && SelectedJob.ClientName != BillingName ||
+                (string.IsNullOrEmpty(BillingAddress) == false) && SelectedJob.Address != BillingAddress ||
+                (string.IsNullOrEmpty(BillingCity) == false) && SelectedJob.City != BillingCity ||
+                (string.IsNullOrEmpty(BillingCountry) == false) && SelectedJob.Country != BillingCountry ||
+                (string.IsNullOrEmpty(BillingPostcode) == false) && SelectedJob.Postcode != BillingPostcode ||
+                (string.IsNullOrEmpty(DueDate) == false) && SelectedJob.DueDate.AddDays(7).ToString() != DueDate
+                )
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                {
+                    State.messageBoxVM.Symbol = 0;
+                    State.messageBoxVM.HeadMessage = "Discard changes?";
+                    State.messageBoxVM.Message = Names.DiscardEsc;
+                    State.messageBoxVM.ButtonStyle = Names.NoYes;
+                    await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+
+                // if clicked yes
+                if (State.messageBoxVM.Output == true)
+                {
+                    await TryCloseAsync();
+                }
+            }
+            else
+            {
+                await TryCloseAsync();
+            }
         }
 
         public async Task CreateInvoice()

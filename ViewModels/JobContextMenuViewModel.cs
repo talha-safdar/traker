@@ -42,7 +42,7 @@ namespace Traker.ViewModels
             Data = data;
             State = state;
 
-            _createInvoice = new CreateInvoiceViewModel(_events, Data);
+            _createInvoice = new CreateInvoiceViewModel(_events, Data, State, _windowManager);
         }
 
         public async Task SetStatus(string status)
@@ -66,7 +66,7 @@ namespace Traker.ViewModels
         public async Task CreateInvoice()
         {
             await TryCloseAsync();
-            _createInvoice = new CreateInvoiceViewModel(_events, Data);
+            _createInvoice = new CreateInvoiceViewModel(_events, Data, State, _windowManager);
             _createInvoice.SelectedJob = SelectedJob;
             _windowManager.ShowWindowAsync(_createInvoice, null, CustomWindow.SettingsForDialog(800, 1000, false));
         }

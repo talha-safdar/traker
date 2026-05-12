@@ -112,8 +112,8 @@ namespace Traker.ViewModels
             _selectedJob = new DashboardModel();
 
             _contextMenuVM = new JobContextMenuViewModel(_events, _windowManager, Data, State);
-            _addClientViewModel = new AddClientViewModel(_events, State, Data);
-            _addJobViewModel = new AddJobViewModel(_events, State);
+            _addClientViewModel = new AddClientViewModel(_events, State, Data, _windowManager);
+            _addJobViewModel = new AddJobViewModel(_events, State, _windowManager);
             _editClientViewModel = new EditClientViewModel(_events, _windowManager, Data, State);
             _userContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager, Data);
             _sortJobsViewModel = new SortJobsViewModel(_events);
@@ -355,7 +355,7 @@ namespace Traker.ViewModels
                     _addJobViewModel = null;
                 }
 
-                _addClientViewModel = new AddClientViewModel(_events, State, Data);
+                _addClientViewModel = new AddClientViewModel(_events, State, Data, _windowManager);
                 await _windowManager.ShowDialogAsync(_addClientViewModel, null, CustomWindow.SettingsForDialog(790, 600, false));
                 //State.IsWindowOpen = true; // flag as open accross the project
             }
@@ -385,7 +385,7 @@ namespace Traker.ViewModels
                     _addClientViewModel = null;
                 }
 
-                _addJobViewModel = new AddJobViewModel(_events, State);
+                _addJobViewModel = new AddJobViewModel(_events, State, _windowManager);
                 _addJobViewModel.dashboardData = _dashboardData; // pass dashboard data to AddJob
                 await _windowManager.ShowDialogAsync(_addJobViewModel, null, CustomWindow.SettingsForDialog(700, 550, false));
                 //State.IsWindowOpen = true; // flag as open accross the project

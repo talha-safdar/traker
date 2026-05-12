@@ -58,6 +58,7 @@ namespace Traker.Helper
         public const string DeleteClientConfirmation = "Are you sure you want to delete this client?";
         public const string DeleteJobConfirmation = "Are you sure you want to delete this job?";
         public const string DeleteInvoiceConfirmation = "Are you sure you want to delete this invoice?";
+        public const string DiscardEsc = "You have unsaved progress.\n\nAre you sure you want to exit?";
         public const string OK = "OK";
         public const string CancelOK = "CancelOK";
         public const string NoYes = "NoYes";

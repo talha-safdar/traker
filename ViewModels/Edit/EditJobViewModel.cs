@@ -21,6 +21,7 @@ namespace Traker.ViewModels.Edit
     using Traker.Events.DashboardVM;
     using Traker.Helper;
     using Traker.States;
+    using VerifyTests;
 
     public class EditJobViewModel : Screen
     {
@@ -159,7 +160,34 @@ namespace Traker.ViewModels.Edit
             // ESC button
             if (e.Key == Key.Escape)
             {
-                await TryCloseAsync();
+                string startDate = SelectedJob.StartDate.ToString() == "01/01/0001" ? string.Empty : SelectedJob.StartDate.ToString();
+                if (SelectedJob.JobTitle != JobTitle ||
+                    SelectedJob.JobDescription != JobDescription ||
+                    SelectedJob.JobStatus != Status ||
+                    SelectedJob.Price.ToString("C") != Price.ToString() ||
+                    SelectedJob.AmountReceived.ToString("C") != AmountReceived.ToString() ||
+                    (SelectedJob.StartDate.ToString() == "01/01/0001" ? string.Empty : SelectedJob.StartDate.ToString()) != StartDate.ToString() ||
+                    SelectedJob.DueDate.ToString() != DueDate.ToString())
+                {
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                    {
+                        State.messageBoxVM.Symbol = 0;
+                        State.messageBoxVM.HeadMessage = "Discard changes?";
+                        State.messageBoxVM.Message = Names.DiscardEsc;
+                        State.messageBoxVM.ButtonStyle = Names.NoYes;
+                        await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+
+                    // if clicked yes
+                    if (State.messageBoxVM.Output == true)
+                    {
+                        await TryCloseAsync();
+                    }
+                }
+                else
+                {
+                    await TryCloseAsync();
+                }
             }
         }
 
@@ -200,7 +228,34 @@ namespace Traker.ViewModels.Edit
 
         public async Task Exit()
         {
-            await TryCloseAsync();
+            string startDate = SelectedJob.StartDate.ToString() == "01/01/0001" ? string.Empty : SelectedJob.StartDate.ToString();
+            if (SelectedJob.JobTitle != JobTitle ||
+                SelectedJob.JobDescription != JobDescription ||
+                SelectedJob.JobStatus != Status ||
+                SelectedJob.Price.ToString("C") != Price.ToString() ||
+                SelectedJob.AmountReceived.ToString("C") != AmountReceived.ToString() ||
+                (SelectedJob.StartDate.ToString() == "01/01/0001" ? string.Empty : SelectedJob.StartDate.ToString()) != StartDate.ToString() ||
+                SelectedJob.DueDate.ToString() != DueDate.ToString())
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                {
+                    State.messageBoxVM.Symbol = 0;
+                    State.messageBoxVM.HeadMessage = "Discard changes?";
+                    State.messageBoxVM.Message = Names.DiscardEsc;
+                    State.messageBoxVM.ButtonStyle = Names.NoYes;
+                    await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+
+                // if clicked yes
+                if (State.messageBoxVM.Output == true)
+                {
+                    await TryCloseAsync();
+                }
+            }
+            else
+            {
+                await TryCloseAsync();
+            }
         }
         #endregion
 

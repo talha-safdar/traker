@@ -11,6 +11,7 @@ namespace Traker.ViewModels.Add
 {
     using Database;
     using System.Globalization;
+    using System.Windows;
     using System.Windows.Input;
     using Traker.Data;
     using Traker.Events;
@@ -24,6 +25,7 @@ namespace Traker.ViewModels.Add
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
+        private readonly IWindowManager _windowManager;
         #endregion
 
         #region Public Variables
@@ -53,7 +55,7 @@ namespace Traker.ViewModels.Add
 
         private ObservableCollection<AddJobModel> _addJob;
 
-        public AddJobViewModel(IEventAggregator events, AppState appState)
+        public AddJobViewModel(IEventAggregator events, AppState appState, IWindowManager windowManager)
         {
             _events = events;
             _addJob = new ObservableCollection<AddJobModel>();
@@ -64,6 +66,7 @@ namespace Traker.ViewModels.Add
             _dueDate = string.Empty;
 
             State = appState;
+            _windowManager = windowManager;
         }
 
         protected override Task OnInitializedAsync(CancellationToken cancellationToken)
@@ -97,7 +100,31 @@ namespace Traker.ViewModels.Add
             // ESC button
             if (e.Key == Key.Escape)
             {
-                await TryCloseAsync();
+                if (
+                    string.IsNullOrEmpty(JobTitle) == false ||
+                    string.IsNullOrEmpty(Price) == false ||
+                    string.IsNullOrEmpty(DueDate) == false
+                    )
+                {
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                    {
+                        State.messageBoxVM.Symbol = 0;
+                        State.messageBoxVM.HeadMessage = "Discard changes?";
+                        State.messageBoxVM.Message = Names.DiscardEsc;
+                        State.messageBoxVM.ButtonStyle = Names.NoYes;
+                        await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+
+                    // if clicked yes
+                    if (State.messageBoxVM.Output == true)
+                    {
+                        await TryCloseAsync();
+                    }
+                }
+                else
+                {
+                    await TryCloseAsync();
+                }
             }
         }
 
@@ -136,8 +163,31 @@ namespace Traker.ViewModels.Add
 
         public async Task Exit()
         {
-            //State.IsWindowOpen = false;
-            await TryCloseAsync();
+            if (
+                string.IsNullOrEmpty(JobTitle) == false ||
+                string.IsNullOrEmpty(Price) == false ||
+                string.IsNullOrEmpty(DueDate) == false
+                )
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                {
+                    State.messageBoxVM.Symbol = 0;
+                    State.messageBoxVM.HeadMessage = "Discard changes?";
+                    State.messageBoxVM.Message = Names.DiscardEsc;
+                    State.messageBoxVM.ButtonStyle = Names.NoYes;
+                    await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+
+                // if clicked yes
+                if (State.messageBoxVM.Output == true)
+                {
+                    await TryCloseAsync();
+                }
+            }
+            else
+            {
+                await TryCloseAsync();
+            }
         }
 
         #region View Variables
