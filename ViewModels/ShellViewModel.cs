@@ -127,6 +127,18 @@ namespace Traker.ViewModels
             
         }
 
+        public Task Exit()
+        {
+            Application.Current.Shutdown();
+            return Task.CompletedTask;
+        }
+
+        public Task Minimise()
+        {
+            Application.Current.MainWindow.WindowState = WindowState.Minimized;
+            return Task.CompletedTask;
+        }
+
         #region Event Handlers
         public Task HandleAsync(ShellVM message, CancellationToken cancellationToken)
         {

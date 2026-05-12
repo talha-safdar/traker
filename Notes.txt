@@ -22,62 +22,62 @@ add tooltip
 on edit client update folder names too
 tooltip change message for invocied "double-click to open invoice"
 user context if click on another window while preivous open close it
+- user table has timestamp
 
 V1:
 - check all windows have fix width and height
-#- add confirmation window and error
+- add confirmation window and error
 - Esc button: to exit popup window
-#- job context menu should hide or chage based on whether the invoice is created e.g. if invoice created disable status and create invoice button
+- job context menu should hide or chage based on whether the invoice is created e.g. if invoice created disable status and create invoice button
 #- add window shadow for cool effect
-#- on popup menu open and clicked one option close the menu
+- on popup menu open and clicked one option close the menu
 #- if datetime is less than today then show "to set"?
-#- Delete invoice row after confirmation.
-#- remove with spaces for the textbox text entry
-#- cancel makes no sense, I'd say if the user selected not invoiced after he sent it for some reason that he changed mind. 
-#- the selected not invoiced then confirmation box yes/no. that row with invoice details will be saved in a e.g. "rubbish" folder in txt. 
-#- on delete row delete folder too
-#- check use of override function and correct wether before or after the return thingg
-#- can create invoice only if job is done
-#- set default type to individual
+- Delete invoice row after confirmation.
+- remove with spaces for the textbox text entry
+- cancel makes no sense, I'd say if the user selected not invoiced after he sent it for some reason that he changed mind. 
+- on delete row delete folder too
+#- check use of override function and correct wether before or after the return thing
+- set default type to individual
 #- might add total number of clients and jobs
-#- only create invoice if status done?
-#- for currency use public string FormattedPrice => Price.ToString("C", new CultureInfo("en-GB")); dynamic change
-#- top right add icon for user's settings: company profile, invoice template, accoutn settings
+- for currency use public string FormattedPrice => Price.ToString("C", new CultureInfo("en-GB")); dynamic change
+- top right add icon for user's settings: company profile, invoice template, accoutn settings
     🏢 Company Profile: This is the Input Form. The user types their Company Name, Address, VAT number, and Bank Details. This is "static" data.
 
     📄 Invoice Templates: This is the Customizer. The user chooses if they want their invoice to say "Due in 14 days" or "Due in 30 days," and what their logo looks like.
 
     👤 Account Settings: This is just for Security. Change password, change login email, or manage their subscription to your app.
-#- on new launch ask user to set up profile to save time
-#- add duotone effect to cards and rest
-#- add 3 dots for set up phase to track progress
+- on new launch ask user to set up profile to save time
+- add duotone effect to cards and rest
+- add 3 dots for set up phase to track progress
 #- use viewbox for zoom in/out
-#- maybe remove textboxes for job statues? (new, active, done, invoiced) since is read only
-#- when deleting a job also delete its folders and all files
-#- ask for confirmation for deletion
+- maybe remove textboxes for job statues? (new, active, done, invoiced) since is read only
+- when deleting a job also delete its folders and all files
+- ask for confirmation for deletion
 #- use background and UI threads
 #- use try-catch
 #- if sort disabled resotre the original primary key based order
-#- rename folders if user name renamed
-#- fix date format to dd/mm/yyyy
+- rename folders if user name renamed
+- fix date format to dd/mm/yyyy
 #- use icons such as for paid use ✔ Paid
 #- add logging
-#- validation input
-#- for individual and company for edit client auto fill the damn company name
+- validation input
+- for individual and company for edit client auto fill the damn company name
 #- dont forget to re-design the filter/sort buttons
-#- addd are sure for deletion
+- addd are sure for deletion
 #- add delete/edit buttons inside cards
-#- add inner left border colours for status
+- add inner left border colours for status
 #- add tooltip info
-#- for text input only letters and for numeric only digits
+- for text input only letters and for numeric only digits
 #- disable filter / sort on add, edit client
 #- calculate the total price for job using (total - remaining)
 #- add splash screen if necessary
 #- add on click animation to the rest of the buttons
 #- add loading bar
-#- if set to paid why still show as invoiced status? do something
+#- if set to paid why still show as invoiced status on the left panel? do something
+#- try/catch
 
 V2:
+#- the selected not invoiced then confirmation box yes/no. that row with invoice details will be saved in a e.g. "rubbish" folder in txt. 
 #- on edit row add a spy signal "amber" for changes that have not been saved yet
 #- database export/import?
 #- allow multi database selection?

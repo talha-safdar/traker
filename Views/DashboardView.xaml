@@ -805,18 +805,26 @@
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0,0,0" Text="Add Client" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="28">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="Foreground" Value="#888888"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=AddNewClient}" Value="True">
-                                                <Setter Property="Foreground" Value="{StaticResource FontSecondaryBrush}"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <svg:SvgViewbox
+                                    HorizontalAlignment="Left"
+                                    Margin="0,0,0,0"
+                                    RenderOptions.BitmapScalingMode="HighQuality"
+                                    SnapsToDevicePixels="True"
+                                    Source="/Resources/Media/Images/Icons/Lucide/user-round-plus.svg" Width="25" Height="25"/>
+                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0,0,0" Text="Add Client" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="28">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="#888888"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsMouseOver, ElementName=AddNewClient}" Value="True">
+                                                    <Setter Property="Foreground" Value="{StaticResource FontSecondaryBrush}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
                         </Border>
                     </Grid>
                 </Border>
