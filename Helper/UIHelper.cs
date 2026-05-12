@@ -43,6 +43,31 @@ namespace Traker.Helper
         }
 
         /// <summary>
+        /// Radio Style:
+        /// Half opacity: in use
+        /// Full opacity: not in use
+        /// </summary>
+        public static void RadioOptionChanged(int option, ObservableCollection<bool> optionsIsEnabled, ObservableCollection<double> optionsOpacity)
+        {
+            double fullOpacity = 1.0;
+            double halfOpacity = 0.5;
+
+            for (int i = 0; i < optionsIsEnabled.Count; i++)
+            {
+                if (i == option) // if clicked option set it to half opacity
+                {
+                    optionsOpacity[i] = halfOpacity;
+                    optionsIsEnabled[i] = false;
+                }
+                else // if not clicked option set it to full opacity
+                {
+                    optionsOpacity[i] = fullOpacity;
+                    optionsIsEnabled[i] = true;
+                }
+            }
+        }
+
+        /// <summary>
         /// Inverse Radio Style:
         /// Full opacity: in use
         /// Half opacity: not in use

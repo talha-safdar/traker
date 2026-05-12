@@ -295,7 +295,7 @@ namespace Traker.ViewModels
                 if (SelectedJob.ClientId == selectedJob.ClientId)
                 {
                     _contextMenuVM = new JobContextMenuViewModel(_events, _windowManager, Data, State);
-                    _contextMenuVM.SelectedJob = selectedJob; // pass row selected
+                    _contextMenuVM.SelectedJob = selectedJob; // pass job selected data
                     await _windowManager.ShowPopupAsync(_contextMenuVM, null, CustomWindow.SettingsForDialog(310, 335, false)); // vertical, horizontal
                 }
             }

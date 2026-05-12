@@ -16,7 +16,7 @@
                 <RowDefinition Height="*" /> <!-- main buttons -->
                 <RowDefinition Height="0.4*" /> <!-- delete -->
             </Grid.RowDefinitions>
-
+            
             <!-- status -->
             <Grid Grid.Row="0" Margin="5,0" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
@@ -26,15 +26,21 @@
                 
                 <!-- active -->
                 <Grid Grid.Column="0">
-                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Active')]" Background="#332B1B" CornerRadius="10" Height="35" Margin="0,0,5,0" BorderThickness="1" BorderBrush="#FFAA00">
+                    <Border IsEnabled="{Binding ActiveDoneEnable[0]}" Opacity="{Binding ActiveDoneOpacity[0]}" SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Active')]" Background="#332B1B" CornerRadius="10" Height="35" Margin="0,0,5,0" BorderThickness="1" BorderBrush="#FFAA00">
                         <Border.Style>
-                            <Style TargetType="Border">
-                                <Setter Property="Opacity" Value="1.0"/>
+                            <Style TargetType="Border">           
+                                <Setter Property="Opacity" Value="1"/>
                                 <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedJob.JobStatus}" Value="Invoiced">
+                                        <Setter Property="Opacity" Value="0.3"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SelectedJob.JobStatus}" Value="Invoiced">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
                                     <Trigger Property="IsMouseOver" Value="True">
                                         <Setter Property="Opacity" Value="0.8"/>
                                     </Trigger>
-                                </Style.Triggers>
+                                </Style.Triggers>                                
                             </Style>
                         </Border.Style>
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="⏳ Active" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#FFAA00" FontSize="14" />
@@ -43,11 +49,17 @@
 
                 <!-- done -->
                 <Grid Grid.Column="1">
-                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Done')]" Background="#1B3320" CornerRadius="10" Height="35" Margin="5,0,0,0" BorderThickness="1" BorderBrush="#00FF00">
+                    <Border IsEnabled="{Binding ActiveDoneEnable[1]}" Opacity="{Binding ActiveDoneOpacity[1]}" SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Done')]" Background="#1B3320" CornerRadius="10" Height="35" Margin="5,0,0,0" BorderThickness="1" BorderBrush="#00FF00">
                         <Border.Style>
                             <Style TargetType="Border">
-                                <Setter Property="Opacity" Value="1.0"/>
+                                <Setter Property="Opacity" Value="1"/>
                                 <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedJob.JobStatus}" Value="Invoiced">
+                                        <Setter Property="Opacity" Value="0.3"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SelectedJob.JobStatus}" Value="Invoiced">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
                                     <Trigger Property="IsMouseOver" Value="True">
                                         <Setter Property="Opacity" Value="0.8"/>
                                     </Trigger>
@@ -66,10 +78,28 @@
                     <RowDefinition Height="*" /> <!-- invoice -->
                     <RowDefinition Height="*" /> <!-- client -->
                 </Grid.RowDefinitions>
-                
-                <!-- folder -->
+
                 <Grid Grid.Row="0">
-                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFolder()]" CornerRadius="20" Height="40" Background="#242424" BorderThickness="1">
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedJob.JobStatus}" Value="Invoiced">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding SelectedJob.JobStatus}" Value="Paid">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding SelectedJob.JobStatus}" Value="Invoiced">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding SelectedJob.JobStatus}" Value="Paid">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditInvoice()]" CornerRadius="20" Height="40" Background="#242424" BorderThickness="1">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="BorderBrush" Value="#242424"/>
@@ -81,12 +111,37 @@
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
-                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0" Text="📂 Open Folder" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0" Text="📋 Edit Invoice" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
                     </Border>
                 </Grid>
 
                 <!-- invoice -->
-                <Grid Grid.Row="1" VerticalAlignment="Center">
+                <Grid Grid.Row="0">
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedJob.JobStatus}" Value="Invoiced">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding SelectedJob.JobStatus}" Value="Invoiced">
+                                    <Setter Property="Opacity" Value="0"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding SelectedJob.JobStatus}" Value="Invoiced">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding SelectedJob.JobStatus}" Value="Paid">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding SelectedJob.JobStatus}" Value="Paid">
+                                    <Setter Property="Opacity" Value="0"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding SelectedJob.JobStatus}" Value="Paid">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
                     <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action CreateInvoice()]" CornerRadius="20" Height="40" Background="#242424" BorderThickness="1">
                         <Border.Style>
                             <Style TargetType="Border">
@@ -100,6 +155,24 @@
                             </Style>
                         </Border.Style>
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0" Text="📋 Create Invoice" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                    </Border>
+                </Grid>
+
+                <!-- folder -->
+                <Grid Grid.Row="1">
+                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFolder()]" CornerRadius="20" Height="40" Background="#242424" BorderThickness="1">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="BorderBrush" Value="#242424"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="BorderBrush" Value="#80D3D3D3"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0" Text="📂 Open Folder" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
                     </Border>
                 </Grid>
 
