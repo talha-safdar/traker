@@ -5,13 +5,9 @@ namespace Traker.ViewModels
 {
     using Database;
     using System.Diagnostics;
-    using System.Dynamic;
     using System.Globalization;
     using System.Windows;
     using System.Windows.Controls;
-    using System.Windows.Controls.Primitives;
-    using System.Windows.Input;
-    using System.Windows.Media;
     using Traker.Events.DashboardVM;
     using Traker.Helper;
     using Traker.Models;
@@ -20,20 +16,15 @@ namespace Traker.ViewModels
     using Traker.ViewModels.Add;
     using Traker.ViewModels.Edit;
     using Traker.ViewModels.User;
-    using Database;
-    using Traker.Events.ShellVM;
 
     public class DashboardViewModel : Screen, IHandle<RefreshDatabase>, IHandle<DashboardVMEvents>
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
         private readonly IWindowManager _windowManager;
+        private readonly AppState _state;
         #endregion
-
-        #region Public State Variable
-        public AppState State { get; } // state binding variable accessible from other viewmodels
-        public DataService Data { get; } // data from the database
-        #endregion
+        public DataService DataService { get; }
 
         #region Public View Variables
         public List<string> JobStatusEdit { get; set; } = new List<string> { "New", "Active", "Done" };
@@ -58,7 +49,7 @@ namespace Traker.ViewModels
          * for buttons:
          * edit client, edit job, add job, filter, sort
          */
-        private bool _enableBtns; 
+        private bool _enableBtns;
         private double _opacityBtns;
         #endregion
 
@@ -83,20 +74,20 @@ namespace Traker.ViewModels
         private bool _isFilterClientTypeCompany = false;
 
         private CancellationTokenSource _cts; // for checking overude
-        private ManualResetEventSlim _pauseEvent = new ManualResetEventSlim(true); // true = start open
+        private ManualResetEventSlim _pauseEvent; // true = start open
 
         private double _fullOpacity = 1.0;
         private double _halfOpacity = 0.5;
         #endregion
 
-        public DashboardViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState, DataService dataService)
+        public DashboardViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
         {
             _events = events;
             _windowManager = windowManager;
+            DataService = dataService;
+            _state = state;
 
-            State = appState;
-            Data = dataService;
-
+            // private view variable
             _receivedAmount = "0";
             _outstandingAmount = "0";
             _overdueAmount = "0";
@@ -106,18 +97,24 @@ namespace Traker.ViewModels
             _doneJobsCount = "0";
             _invoicedJobsCount = "0";
             _outstandingStatusBorder = string.Empty;
-
             _dashboardData = new ObservableCollection<DashboardModel>();
-            _dashboardDataBackup = new ObservableCollection<DashboardModel>();
             _selectedJob = new DashboardModel();
 
-            _contextMenuVM = new JobContextMenuViewModel(_events, _windowManager, Data, State);
-            _addClientViewModel = new AddClientViewModel(_events, State, Data, _windowManager);
-            _addJobViewModel = new AddJobViewModel(_events, State, _windowManager);
-            _editClientViewModel = new EditClientViewModel(_events, _windowManager, Data, State);
-            _userContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager, Data);
+            // private variables
             _sortJobsViewModel = new SortJobsViewModel(_events);
-            _filterJobsViewModel = new FilterJobsViewModel(_events);
+            _editJobViewModel = new EditJobViewModel(_events, _windowManager, _state);
+            _addJobViewModel = new AddJobViewModel(_events, _windowManager, _state);
+            _filterJobsViewModel = new FilterJobsViewModel(_events, _windowManager, DataService, _state);
+            _contextMenuVM = new JobContextMenuViewModel(_events, _windowManager, DataService, _state);
+            _addClientViewModel = new AddClientViewModel(_events, _windowManager, DataService, _state);
+            _editClientViewModel = new EditClientViewModel(_events, _windowManager, DataService, _state);
+            _userContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager, DataService, _state);
+            _editInvoiceViewModel = new EditInvoiceViewModel(_events, _windowManager, DataService, _state);
+            _dashboardDataBackup = new ObservableCollection<DashboardModel>();
+            _dashboardDataStatusFiltered = new ObservableCollection<DashboardModel>();
+            _dashboardDataTypeFiltered = new ObservableCollection<DashboardModel>();
+            _cts = new CancellationTokenSource();
+            _pauseEvent = new ManualResetEventSlim(true); // true = start open
 
             _events.SubscribeOnPublishedThread(this);
         }
@@ -136,13 +133,15 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"An error occurred while loading Dashboard. Please try again.\n\n{ex.Message}",
-                    "Dashboard",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error
-                );
-                System.Environment.Exit(1); // kill process
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Initialise Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: OnInitializedAsync() FAIL\n\t{ex.Message}");
             }
         }
 
@@ -158,276 +157,337 @@ namespace Traker.ViewModels
         #region Public View Functions
         public async Task OpenFilterContextMenu(FrameworkElement anchorElement)
         {
-            // if add menu open do nothing
-            //if (State.IsWindowOpen == true)
-            //{
-            //    return;
-            //}
-
-            if (_filterJobsViewModel != null)
+            try
             {
-                await _filterJobsViewModel.TryCloseAsync(false);
-            }
-
-            if (anchorElement != null)
-            {
-                var window = Window.GetWindow(anchorElement);
-
-                // 1. Get the absolute position of the button on the screen
-                Point locationFromScreen = anchorElement.PointToScreen(new Point(anchorElement.ActualWidth, 0));
-                Point windowScreenPos = window.PointToScreen(new Point(0, 0));
-
-                // 2. Adjust for DPI (High-res screens) - Very important for proper alignment
-                var source = PresentationSource.FromVisual(anchorElement);
-                if (source == null)
+                if (anchorElement != null)
                 {
-                    return; // Element isn't rendered yet, math will be 0,0
+                    var window = Window.GetWindow(anchorElement);
+
+                    // 1. Get the absolute position of the button on the screen
+                    Point locationFromScreen = anchorElement.PointToScreen(new Point(anchorElement.ActualWidth, 0));
+                    Point windowScreenPos = window.PointToScreen(new Point(0, 0));
+
+                    // 2. Adjust for DPI (High-res screens) - Very important for proper alignment
+                    var source = PresentationSource.FromVisual(anchorElement);
+                    if (source == null)
+                    {
+                        return; // Element isn't rendered yet, math will be 0,0
+                    }
+
+                    double dpiY = source.CompositionTarget.TransformToDevice.M22;
+                    double dpiX = source.CompositionTarget.TransformToDevice.M11;
+
+                    // 3. Calculate "Above": 
+                    double popupTop = (locationFromScreen.Y / dpiY) - 35; // positive=down, negative=up
+                    double popupLeft = (locationFromScreen.X / dpiX) - 315; // psotiive=right, negative=left
+
+                    await _windowManager.ShowPopupAsync(IoC.Get<FilterJobsViewModel>(), null, CustomWindow.SettingsForDialog(310, 335, true, popupTop, popupLeft)); // vertical, horizontal
                 }
-
-                double dpiY = source.CompositionTarget.TransformToDevice.M22;
-                double dpiX = source.CompositionTarget.TransformToDevice.M11;
-
-                // 3. Calculate "Above": 
-                double popupTop = (locationFromScreen.Y / dpiY) - 35; // positive=down, negative=up
-                double popupLeft = (locationFromScreen.X / dpiX) - 315; // psotiive=right, negative=left
-
-                await _windowManager.ShowPopupAsync(IoC.Get<FilterJobsViewModel>(), null, CustomWindow.SettingsForDialog(310, 335, true, popupTop, popupLeft)); // vertical, horizontal
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Open FIlter Menu";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: OpenFilterContextMenu() FAIL\n\t{ex.Message}");
             }
         }
 
         public async Task OpenSortContextMenu(FrameworkElement anchorElement)
         {
-            if (_sortJobsViewModel != null)
+            try
             {
-                await _sortJobsViewModel.TryCloseAsync(false);
-            }
-
-            if (anchorElement != null)
-            {
-                var window = Window.GetWindow(anchorElement);
-
-                // 1. Get the absolute position of the button on the screen
-                Point locationFromScreen = anchorElement.PointToScreen(new Point(anchorElement.ActualWidth, 0));
-                Point windowScreenPos = window.PointToScreen(new Point(0, 0));
-
-                // 2. Adjust for DPI (High-res screens) - Very important for proper alignment
-                var source = PresentationSource.FromVisual(anchorElement);
-                if (source == null)
+                if (anchorElement != null)
                 {
-                    return; // Element isn't rendered yet, math will be 0,0
+                    var window = Window.GetWindow(anchorElement);
+
+                    // 1. Get the absolute position of the button on the screen
+                    Point locationFromScreen = anchorElement.PointToScreen(new Point(anchorElement.ActualWidth, 0));
+                    Point windowScreenPos = window.PointToScreen(new Point(0, 0));
+
+                    // 2. Adjust for DPI (High-res screens) - Very important for proper alignment
+                    var source = PresentationSource.FromVisual(anchorElement);
+                    if (source == null)
+                    {
+                        return; // Element isn't rendered yet, math will be 0,0
+                    }
+
+                    double dpiY = source.CompositionTarget.TransformToDevice.M22;
+                    double dpiX = source.CompositionTarget.TransformToDevice.M11;
+
+                    // 3. Calculate "Above": 
+                    double popupTop = (locationFromScreen.Y / dpiY) - 5; // positive=down, negative=up
+                    double popupLeft = (locationFromScreen.X / dpiX) - 315; // psotiive=right, negative=left
+
+                    //_sortJobsViewModel = new SortJobsViewModel();
+                    // for singleton use use IoC
+                    await _windowManager.ShowPopupAsync(IoC.Get<SortJobsViewModel>(), null, CustomWindow.SettingsForDialog(310, 335, true, popupTop, popupLeft)); // vertical, horizontal
                 }
-
-                double dpiY = source.CompositionTarget.TransformToDevice.M22;
-                double dpiX = source.CompositionTarget.TransformToDevice.M11;
-
-                // 3. Calculate "Above": 
-                double popupTop = (locationFromScreen.Y / dpiY) - 5; // positive=down, negative=up
-                double popupLeft = (locationFromScreen.X / dpiX) - 315; // psotiive=right, negative=left
-
-                //_sortJobsViewModel = new SortJobsViewModel();
-                // for singleton use use IoC
-                await _windowManager.ShowPopupAsync(IoC.Get<SortJobsViewModel>(), null, CustomWindow.SettingsForDialog(310, 335, true, popupTop, popupLeft)); // vertical, horizontal
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Open Sort Menu";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: OpenSortContextMenu() FAIL\n\t{ex.Message}");
             }
         }
 
         public async Task OpenUserContenxtMenu(FrameworkElement anchorElement)
         {
-
-            if (_userContextMenuViewModel != null)
+            try
             {
-                await _userContextMenuViewModel.TryCloseAsync(false);
+                if (anchorElement != null)
+                {
+                    // 1. Get the absolute position of the button on the screen
+                    Point locationFromScreen = anchorElement.PointToScreen(new Point(0, 0));
+
+                    // 2. Adjust for DPI (High-res screens) - Very important for proper alignment
+                    var source = PresentationSource.FromVisual(anchorElement);
+                    double dpiY = source.CompositionTarget.TransformToDevice.M22;
+                    double dpiX = source.CompositionTarget.TransformToDevice.M11;
+
+                    // 3. Calculate "Above": 
+                    // Top = ButtonTop - PopupHeight
+                    // Left = ButtonLeft (aligned to the left of the button)
+                    double popupTop = (locationFromScreen.Y / dpiY) - 260;
+                    double popupLeft = (locationFromScreen.X / dpiX) - 20;
+
+                    _userContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager, DataService, _state);
+                    await _windowManager.ShowPopupAsync(_userContextMenuViewModel, null, CustomWindow.SettingsForDialog(310, 335, true, popupTop, popupLeft)); // vertical, horizontal
+                }
             }
-
-            if (anchorElement != null)
+            catch (Exception ex)
             {
-                // 1. Get the absolute position of the button on the screen
-                Point locationFromScreen = anchorElement.PointToScreen(new Point(0, 0));
-
-                // 2. Adjust for DPI (High-res screens) - Very important for proper alignment
-                var source = PresentationSource.FromVisual(anchorElement);
-                double dpiY = source.CompositionTarget.TransformToDevice.M22;
-                double dpiX = source.CompositionTarget.TransformToDevice.M11;
-
-                // 3. Calculate "Above": 
-                // Top = ButtonTop - PopupHeight
-                // Left = ButtonLeft (aligned to the left of the button)
-                double popupTop = (locationFromScreen.Y / dpiY) - 260;
-                double popupLeft = (locationFromScreen.X / dpiX) - 20;
-
-                _userContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager, Data);
-                await _windowManager.ShowPopupAsync(_userContextMenuViewModel, null, CustomWindow.SettingsForDialog(310, 335, true, popupTop, popupLeft)); // vertical, horizontal
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Open User Menu";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: OpenUserContenxtMenu() FAIL\n\t{ex.Message}");
             }
         }
 
         public Task SelectJob(DashboardModel selectedJob)
         {
-            if (selectedJob != null)
+            try
             {
-                SelectedJob = selectedJob;
+                if (selectedJob != null)
+                {
+                    SelectedJob = selectedJob;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                // do something and show error message
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Exit Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: SelectJob() FAIL\n\t{ex.Message}");
             }
             return Task.CompletedTask;
         }
 
         public async Task OpenContextMenu(DashboardModel selectedJob)
         {
-            if (_contextMenuVM != null)
+            try
             {
-                await _contextMenuVM.TryCloseAsync(false);
-            }
-
-            // if using client name then it must be required at all the time
-
-            /*
-             * there are two variables to get the data from the row
-             * 1 - on the right click (datagrid approach)
-             * 2 - on the left click (to pass row's current object 'selectedJob')
-             * to open the popup the datagrid selection object must match with the right-clicked onwe
-             * we use the clientName for matching for now, but might use unique id in the future.
-             * and the latter must become required hence Id seems perfect.
-             * In fact we just swapped to clientId :)
-             */
-            if (SelectedJob != null)
-            {
-                if (SelectedJob.ClientId == selectedJob.ClientId)
+                if (SelectedJob != null)
                 {
-                    _contextMenuVM = new JobContextMenuViewModel(_events, _windowManager, Data, State);
-                    _contextMenuVM.SelectedJob = selectedJob; // pass job selected data
-                    await _windowManager.ShowPopupAsync(_contextMenuVM, null, CustomWindow.SettingsForDialog(310, 335, false)); // vertical, horizontal
+                    if (SelectedJob.ClientId == selectedJob.ClientId)
+                    {
+                        _contextMenuVM = new JobContextMenuViewModel(_events, _windowManager, DataService, _state);
+                        _contextMenuVM.SelectedJob = selectedJob; // pass job selected data
+                        await _windowManager.ShowPopupAsync(_contextMenuVM, null, CustomWindow.SettingsForDialog(310, 335, false)); // vertical, horizontal
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Open Options Menu";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: OpenContextMenu() FAIL\n\t{ex.Message}");
             }
         }
 
         public async Task EditJob(DashboardModel jobSelected)
         {
-
-            if (jobSelected != null &&  Data.Invoices.Any(i => i.JobId == jobSelected.JobId && i.IsDeleted == false) == true) // if already invoiced
+            try
             {
-                _editInvoiceViewModel = new EditInvoiceViewModel(Data, _events, _windowManager, State);
-                _editInvoiceViewModel.SelectedJob = jobSelected;
-                await _windowManager.ShowDialogAsync(_editInvoiceViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
-            }
-            else
-            {
-                _editJobViewModel = new EditJobViewModel(_events, _windowManager, State);
-
-                if (jobSelected != null)
+                if (jobSelected != null && DataService.Invoices.Any(i => i.JobId == jobSelected.JobId && i.IsDeleted == false) == true) // if already invoiced
                 {
-                    _editJobViewModel.SelectedJob = jobSelected; // pass selected   row to EditJobViewModel
+                    _editInvoiceViewModel = new EditInvoiceViewModel(_events, _windowManager, DataService, _state);
+                    _editInvoiceViewModel.SelectedJob = jobSelected;
+                    await _windowManager.ShowDialogAsync(_editInvoiceViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
                 }
                 else
                 {
-                    _editJobViewModel.SelectedJob = SelectedJob;
+                    _editJobViewModel = new EditJobViewModel(_events, _windowManager, _state);
 
+                    if (jobSelected != null)
+                    {
+                        _editJobViewModel.SelectedJob = jobSelected; // pass selected   row to EditJobViewModel
+                    }
+                    else
+                    {
+                        _editJobViewModel.SelectedJob = SelectedJob!;
+
+                    }
+                    await _windowManager.ShowDialogAsync(_editJobViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
                 }
-                await _windowManager.ShowDialogAsync(_editJobViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
             }
-
-
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Exit Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: EditJob() FAIL\n\t{ex.Message}");
+            }
         }
 
         public async Task EditClient()
         {
-            _editClientViewModel = new EditClientViewModel(_events, _windowManager, Data, State);
-            _editClientViewModel.SelectedJob = SelectedJob; // pass selected row to EditClientViewModel
-            await _windowManager.ShowDialogAsync(_editClientViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
+            try
+            {
+                _editClientViewModel = new EditClientViewModel(_events, _windowManager, DataService, _state);
+                _editClientViewModel.SelectedJob = SelectedJob; // pass selected row to EditClientViewModel
+                await _windowManager.ShowDialogAsync(_editClientViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Edit Client";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: EditClient() FAIL\n\t{ex.Message}");
+            }
         }
 
         public async Task AddClient()
         {
-            Debug.WriteLine("ADDING client..");
-
-            //if (State.IsWindowOpen == false)
+            try
             {
-                // if is not free then report it with a message box
-                // move this to a private function later
-                if (_contextMenuVM != null)
-                {
-                    await _contextMenuVM.TryCloseAsync(false);
-                    _contextMenuVM = null;
-                }
-                if (_addJobViewModel != null)
-                {
-                    await _addJobViewModel.TryCloseAsync(false);
-                    _addJobViewModel = null;
-                }
-
-                _addClientViewModel = new AddClientViewModel(_events, State, Data, _windowManager);
+                _addClientViewModel = new AddClientViewModel(_events, _windowManager, DataService, _state);
                 await _windowManager.ShowDialogAsync(_addClientViewModel, null, CustomWindow.SettingsForDialog(790, 600, false));
-                //State.IsWindowOpen = true; // flag as open accross the project
             }
-
-            // the state State.IsAddRowEntryOpen will be false again from addrowentryVM when user closes the window
-            //else if (State.IsWindowOpen == true)
-            //{
-            //    return; // do nothing
-            //}
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Add Client";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: AddClient() FAIL\n\t{ex.Message}");
+            }
         }
 
         public async Task AddJob()
         {
-            //Debug.WriteLine("ADDING job..");
-
-            //if (State.IsWindowOpen == false)
+            try
             {
-                // if State.popup is not free then report it with a message box
+                _addJobViewModel = new AddJobViewModel(_events, _windowManager, _state);
+                _addJobViewModel.dashboardData = _dashboardData; // pass dashboard data to AddJob
+                await _windowManager.ShowDialogAsync(_addJobViewModel, null, CustomWindow.SettingsForDialog(700, 550, false));
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Add Job";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: AddJob() FAIL\n\t{ex.Message}");
+            }
+        }
+
+        public async Task OnMouseDownEvent(Grid gridSource)
+        {
+            await Task.Run(async () =>
+            {
+                // disable all context menus on click away
+
                 if (_contextMenuVM != null)
                 {
                     await _contextMenuVM.TryCloseAsync(false);
                     _contextMenuVM = null;
                 }
-                if (_addClientViewModel != null)
+                if (_userContextMenuViewModel != null)
                 {
-                    await _addClientViewModel.TryCloseAsync(false);
-                    _addClientViewModel = null;
+                    await _userContextMenuViewModel.TryCloseAsync(false);
+                    _userContextMenuViewModel = null;
                 }
-
-                _addJobViewModel = new AddJobViewModel(_events, State, _windowManager);
-                _addJobViewModel.dashboardData = _dashboardData; // pass dashboard data to AddJob
-                await _windowManager.ShowDialogAsync(_addJobViewModel, null, CustomWindow.SettingsForDialog(700, 550, false));
-                //State.IsWindowOpen = true; // flag as open accross the project
-            }
-
-            // the state State.IsAddRowEntryOpen will be false again from addrowentryVM when user closes the window
-            //else if (State.IsWindowOpen == true)
-            //{
-            //    return; // do nothing
-            //}
-        }
-
-        public async Task OnMouseDownEvent(Grid gridSource)
-        {
-            if (_contextMenuVM != null)
-            {
-                await _contextMenuVM.TryCloseAsync(false);
-                _contextMenuVM = null;
-            }
-            if (_userContextMenuViewModel != null)
-            {
-                await _userContextMenuViewModel.TryCloseAsync(false);
-                _userContextMenuViewModel = null;
-            }
-            if (IoC.Get<FilterJobsViewModel>().IsActive == true)
-            {
-                await IoC.Get<FilterJobsViewModel>().TryCloseAsync(false);
-            }
-            if (IoC.Get<SortJobsViewModel>().IsActive == true)
-            {
-                await IoC.Get<SortJobsViewModel>().TryCloseAsync(false);
-            }
+                if (IoC.Get<FilterJobsViewModel>().IsActive == true)
+                {
+                    await IoC.Get<FilterJobsViewModel>().TryCloseAsync(false);
+                }
+                if (IoC.Get<SortJobsViewModel>().IsActive == true)
+                {
+                    await IoC.Get<SortJobsViewModel>().TryCloseAsync(false);
+                }
+            });
         }
         #endregion
 
         #region Private Functions
         private void StartLoop()
         {
-            if (_cts != null) return; // Already running
-            _cts = new CancellationTokenSource();
-            _pauseEvent.Set(); // Ensure gate is open
-            _ = RunLoopAsync(_cts.Token);
+            try
+            {
+                if (_cts != null) return; // Already running
+                _cts = new CancellationTokenSource();
+                _pauseEvent.Set(); // Ensure gate is open
+                _ = RunLoopAsync(_cts.Token);
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Start Loop Check";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: StartLoop() FAIL\n\t{ex.Message}");
+            }
         }
 
         /// <summary>
@@ -435,9 +495,24 @@ namespace Traker.ViewModels
         /// </summary>
         private void PauseLoop()
         {
-            if (_pauseEvent != null)
+            try
             {
-                _pauseEvent.Reset(); // Close the gate
+                if (_pauseEvent != null)
+                {
+                    _pauseEvent.Reset(); // Close the gate
+                }
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Pause Loop Check";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: PauseLoop() FAIL\n\t{ex.Message}");
             }
         }
 
@@ -446,7 +521,25 @@ namespace Traker.ViewModels
         /// </summary>
         private void ResumeLoop()
         {
-            _pauseEvent.Set(); // Open the gate
+            try
+            {
+                if (_pauseEvent != null)
+                {
+                    _pauseEvent.Set(); // Open the gate
+                }
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Resume Loop Check";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: PauseLoop() FAIL\n\t{ex.Message}");
+            }
         }
 
         /// <summary>
@@ -454,9 +547,24 @@ namespace Traker.ViewModels
         /// </summary>
         private void StopLoop()
         {
-            _cts?.Cancel();
-            _cts = null;
-            _pauseEvent.Set(); // Release the gate so the loop can exit
+            try
+            {
+                _cts?.Cancel();
+                _cts = null;
+                _pauseEvent.Set(); // Release the gate so the loop can exit
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Stop Loop Check";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: PauseLoop() FAIL\n\t{ex.Message}");
+            }
         }
 
         /// <summary>
@@ -464,375 +572,448 @@ namespace Traker.ViewModels
         /// </summary>
         private async Task RunLoopAsync(CancellationToken token)
         {
-            while (!token.IsCancellationRequested)
+            try
             {
-                //await Task.Delay(1000, token); // every 1 second call the function
-                //await CheckAPIConnections();
+                while (!token.IsCancellationRequested)
+                {
+                    // 1. Wait here if paused (non-blocking for the UI)
+                    await Task.Run(() => _pauseEvent.Wait(token), token);
 
-                // 1. Wait here if paused (non-blocking for the UI)
-                await Task.Run(() => _pauseEvent.Wait(token), token);
+                    // 2. Perform work
+                    await CheckOverDuePay();
 
-                // 2. Perform work
-                await CheckOverDuePay();
-
-                // 3. Wait for the next interval
-                await Task.Delay(1000, token);
+                    // 3. Wait for the next interval
+                    await Task.Delay(1000, token);
+                }
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Run Loop Check";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: RunLoopAsync() FAIL\n\t{ex.Message}");
             }
         }
 
         private async Task CheckOverDuePay()
         {
-            await Task.Run(async () =>
+            try
             {
-                foreach (var job in DashboardData.ToList())
+                await Task.Run(async () =>
                 {
-                    if (job.JobStatus == Names.Invoiced && DateOnly.FromDateTime(DateTime.Now) > job.InvoiceDueDate)
+                    foreach (var job in DashboardData.ToList())
                     {
-                        await Database.SetInvoiceStatus(Data.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.InvoiceId).First(), Names.Overdue, null);
-                        await Data.RefreshDatabase();
-                        await Execute.OnUIThreadAsync(async () => { await SetupDashboardData(); });                        
+                        if (job.JobStatus == Names.Invoiced && DateOnly.FromDateTime(DateTime.Now) > job.InvoiceDueDate)
+                        {
+                            await Database.SetInvoiceStatus(DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.InvoiceId).First(), Names.Overdue, null);
+                            await DataService.RefreshDatabase();
+                            await Execute.OnUIThreadAsync(async () => { await SetupDashboardData(); });
+                        }
+                        else if (job.JobStatus == Names.Overdue && DateOnly.FromDateTime(DateTime.Now) < job.InvoiceDueDate)
+                        {
+                            await Database.SetInvoiceStatus(DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.InvoiceId).First(), Names.Invoiced, null);
+                            await DataService.RefreshDatabase();
+                            await Execute.OnUIThreadAsync(async () => { await SetupDashboardData(); });
+                        }
                     }
-                    else if (job.JobStatus == Names.Overdue && DateOnly.FromDateTime(DateTime.Now) < job.InvoiceDueDate)
-                    {
-                        await Database.SetInvoiceStatus(Data.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.InvoiceId).First(), Names.Invoiced, null);
-                        await Data.RefreshDatabase();
-                        await Execute.OnUIThreadAsync(async () => { await SetupDashboardData(); });
-                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Check Overdue";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
-            });
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: CheckOverDuePay() FAIL\n\t{ex.Message}");
+            }
         }
 
         private Task SortJobs(string command)
         {
-            if (command == Names.ClientNameAsc)
+            try
             {
-                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.ClientName));
-            }
-            else if (command == Names.ClientNameDesc)
-            {
-                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.ClientName));
-            }
-
-            else if (command == Names.JobTitleAsc)
-            {
-                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.JobTitle));
-            }
-            else if (command == Names.JobTitleDesc)
-            {
-                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.JobTitle));
-            }
-
-            else if (command == Names.JobStatusAsc)
-            {
-                DashboardData = new ObservableCollection<DashboardModel>(_dashboardData.OrderBy(j =>
+                if (command == Names.ClientNameAsc)
                 {
-                    switch (j.JobStatus.ToLower())
-                    {
-                        case "new": return 1;
-                        case "active": return 2;
-                        case "done": return 3;
-                        case "invoiced": return 4;
-                        default: return 5; // Anything else goes to the bottom
-                    }
-                }));
-            }
-            else if (command == Names.JobStatusDesc)
-            {
-                DashboardData = new ObservableCollection<DashboardModel>(_dashboardData.OrderByDescending(j =>
+                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.ClientName));
+                }
+                else if (command == Names.ClientNameDesc)
                 {
-                    switch (j.JobStatus.ToLower())
+                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.ClientName));
+                }
+
+                else if (command == Names.JobTitleAsc)
+                {
+                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.JobTitle));
+                }
+                else if (command == Names.JobTitleDesc)
+                {
+                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.JobTitle));
+                }
+
+                else if (command == Names.JobStatusAsc)
+                {
+                    DashboardData = new ObservableCollection<DashboardModel>(_dashboardData.OrderBy(j =>
                     {
-                        case "new": return 1;
-                        case "active": return 2;
-                        case "done": return 3;
-                        case "invoiced": return 4;
-                        default: return 5; // Anything else goes to the bottom
-                    }
-                }));
-            }
+                        switch (j.JobStatus.ToLower())
+                        {
+                            case "new": return 1;
+                            case "active": return 2;
+                            case "done": return 3;
+                            case "invoiced": return 4;
+                            default: return 5; // Anything else goes to the bottom
+                        }
+                    }));
+                }
+                else if (command == Names.JobStatusDesc)
+                {
+                    DashboardData = new ObservableCollection<DashboardModel>(_dashboardData.OrderByDescending(j =>
+                    {
+                        switch (j.JobStatus.ToLower())
+                        {
+                            case "new": return 1;
+                            case "active": return 2;
+                            case "done": return 3;
+                            case "invoiced": return 4;
+                            default: return 5; // Anything else goes to the bottom
+                        }
+                    }));
+                }
 
-            else if (command == Names.JobPriceAsc)
-            {
-                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => Decimal.Parse(j.Price.ToString(), NumberStyles.Currency)));
-            }
-            else if (command == Names.JobPriceDesc)
-            {
-                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => Decimal.Parse(j.Price.ToString(), NumberStyles.Currency)));
-            }
+                else if (command == Names.JobPriceAsc)
+                {
+                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => Decimal.Parse(j.Price.ToString(), NumberStyles.Currency)));
+                }
+                else if (command == Names.JobPriceDesc)
+                {
+                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => Decimal.Parse(j.Price.ToString(), NumberStyles.Currency)));
+                }
 
-            else if (command == Names.DueDateAsc)
-            {
-                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.DueDate));
-            }
-            else if (command == Names.DueDateDesc)
-            {
-                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.DueDate));
-            }
+                else if (command == Names.DueDateAsc)
+                {
+                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.DueDate));
+                }
+                else if (command == Names.DueDateDesc)
+                {
+                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.DueDate));
+                }
 
-            else if (command == Names.CreatedDateAsc)
-            {
-                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.CreatedDate));
-            }
-            else if (command == Names.CreatedDateDesc)
-            {
-                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.CreatedDate));
-            }
+                else if (command == Names.CreatedDateAsc)
+                {
+                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.CreatedDate));
+                }
+                else if (command == Names.CreatedDateDesc)
+                {
+                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.CreatedDate));
+                }
 
-            else if (command == Names.ClientTypeAsc)
-            {
-                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.ClientType));
+                else if (command == Names.ClientTypeAsc)
+                {
+                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.ClientType));
+                }
+                else if (command == Names.ClientTypeDesc)
+                {
+                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.ClientType));
+                }
             }
-            else if (command == Names.ClientTypeDesc)
+            catch (Exception ex)
             {
-                DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.ClientType));
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Sort Jobs";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: SortJobs() FAIL\n\t{ex.Message}");
             }
             return Task.CompletedTask;
         }
 
         private Task FilterJobs(string command)
         {
-            /*
-             * DashboardBackUp = supreme backup
-             * DashboardFiltered = backup of current filter
-             * Dashboard = Normal UI list
-             */
-
-            if (command != Names.FilterIndividual && command != Names.FilterComapny && command != Names.AllJobStatus && command != Names.UnfilterClientType) // status
+            try
             {
-                if (_isFilterClientTypeOn == true)
-                {
-                    if (_isFilterClientTypeIndividual == true)
-                    {
-                        _dashboardDataTypeFiltered = new ObservableCollection<DashboardModel>(_dashboardDataBackup.Where(j => j.ClientType == "Individual").ToList());
-                    }
-                    else if (_isFilterClientTypeCompany == true)
-                    {
-                        _dashboardDataTypeFiltered = new ObservableCollection<DashboardModel>(_dashboardDataBackup.Where(j => j.ClientType == "Company").ToList());
-                    }
-                    DashboardData = _dashboardDataTypeFiltered;
-                }
-                else
-                {
-                    DashboardData = _dashboardDataBackup;
-                }
+                /*
+                 * DashboardBackUp = supreme backup
+                 * DashboardFiltered = backup of current filter
+                 * Dashboard = Normal UI list
+                 */
 
-                if (command == Names.JobStatusNew)
+                if (command != Names.FilterIndividual && command != Names.FilterComapny && command != Names.AllJobStatus && command != Names.UnfilterClientType) // status
                 {
-                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "New").ToList());
-                    
-                    if (DashboardData.Count > 0)
-                    {
-                        _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
-                    }
-                }
-                else if (command == Names.JobStatusActive)
-                {
-                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Active").ToList());
-
-                    if (DashboardData.Count > 0)
-                    {
-                        _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
-                    }
-                }
-                else if (command == Names.JobStatusDone)
-                {
-                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Done").ToList());
-
-                    if (DashboardData.Count > 0)
-                    {
-                        _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
-                    }
-                }
-                else if (command == Names.JobStatusInvoiced)
-                {
-                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Invoiced").ToList());
-
-                    if (DashboardData.Count > 0)
-                    {
-                        _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
-                    }
-                }
-                _isFilterJobStatusOn = true;
-            }
-            else if (command == Names.FilterIndividual || command == Names.FilterComapny) // cllient type
-            {
-                if (_isFilterJobStatusOn == true)
-                {
-                    DashboardData = _dashboardDataStatusFiltered;
-                }
-                else
-                {
-                    DashboardData = _dashboardDataBackup;
-                }
-
-                if (command == Names.FilterIndividual)
-                {
-                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.ClientType == "Individual").ToList());
-
-                    if (DashboardData.Count > 0)
-                    {
-                        _dashboardDataTypeFiltered = DashboardData;
-                    }
-                    _isFilterClientTypeCompany = false;
-                    _isFilterClientTypeIndividual = true;
-                }
-                else if (command == Names.FilterComapny)
-                {
-                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.ClientType == "Company").ToList());
-
-                    if (DashboardData.Count > 0)
-                    {
-                        _dashboardDataTypeFiltered = DashboardData;
-                    }
-                    _isFilterClientTypeIndividual = false;
-                    _isFilterClientTypeCompany = true;
-                }
-                _isFilterClientTypeOn = true;
-            }
-            else if (command == Names.AllJobStatus)
-            {
-                if (_isFilterJobStatusOn == false)
-                {
-                    DashboardData = _dashboardDataBackup; // reset list
-                    _dashboardDataStatusFiltered = DashboardData;
-                }
-                else if (_isFilterJobStatusOn == true)
-                {
-                    DashboardData = _dashboardDataBackup;
                     if (_isFilterClientTypeOn == true)
                     {
+                        if (_isFilterClientTypeIndividual == true)
+                        {
+                            _dashboardDataTypeFiltered = new ObservableCollection<DashboardModel>(_dashboardDataBackup.Where(j => j.ClientType == "Individual").ToList());
+                        }
+                        else if (_isFilterClientTypeCompany == true)
+                        {
+                            _dashboardDataTypeFiltered = new ObservableCollection<DashboardModel>(_dashboardDataBackup.Where(j => j.ClientType == "Company").ToList());
+                        }
                         DashboardData = _dashboardDataTypeFiltered;
                     }
-                    _isFilterJobStatusOn = false;
+                    else
+                    {
+                        DashboardData = _dashboardDataBackup;
+                    }
+
+                    if (command == Names.JobStatusNew)
+                    {
+                        DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "New").ToList());
+
+                        if (DashboardData.Count > 0)
+                        {
+                            _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
+                        }
+                    }
+                    else if (command == Names.JobStatusActive)
+                    {
+                        DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Active").ToList());
+
+                        if (DashboardData.Count > 0)
+                        {
+                            _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
+                        }
+                    }
+                    else if (command == Names.JobStatusDone)
+                    {
+                        DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Done").ToList());
+
+                        if (DashboardData.Count > 0)
+                        {
+                            _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
+                        }
+                    }
+                    else if (command == Names.JobStatusInvoiced)
+                    {
+                        DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Invoiced").ToList());
+
+                        if (DashboardData.Count > 0)
+                        {
+                            _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
+                        }
+                    }
+                    _isFilterJobStatusOn = true;
                 }
-            }
-            else if (command == Names.UnfilterClientType)
-            {
-                if (_isFilterClientTypeOn == false)
+                else if (command == Names.FilterIndividual || command == Names.FilterComapny) // cllient type
                 {
-                    DashboardData = _dashboardDataBackup; // reset list
-                    _dashboardDataTypeFiltered = DashboardData;
-                }
-                else if (_isFilterClientTypeOn == true)
-                {
-                    DashboardData = _dashboardDataBackup;
                     if (_isFilterJobStatusOn == true)
                     {
                         DashboardData = _dashboardDataStatusFiltered;
                     }
-                    _isFilterClientTypeOn = false;
+                    else
+                    {
+                        DashboardData = _dashboardDataBackup;
+                    }
+
+                    if (command == Names.FilterIndividual)
+                    {
+                        DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.ClientType == "Individual").ToList());
+
+                        if (DashboardData.Count > 0)
+                        {
+                            _dashboardDataTypeFiltered = DashboardData;
+                        }
+                        _isFilterClientTypeCompany = false;
+                        _isFilterClientTypeIndividual = true;
+                    }
+                    else if (command == Names.FilterComapny)
+                    {
+                        DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.ClientType == "Company").ToList());
+
+                        if (DashboardData.Count > 0)
+                        {
+                            _dashboardDataTypeFiltered = DashboardData;
+                        }
+                        _isFilterClientTypeIndividual = false;
+                        _isFilterClientTypeCompany = true;
+                    }
+                    _isFilterClientTypeOn = true;
+                }
+                else if (command == Names.AllJobStatus)
+                {
+                    if (_isFilterJobStatusOn == false)
+                    {
+                        DashboardData = _dashboardDataBackup; // reset list
+                        _dashboardDataStatusFiltered = DashboardData;
+                    }
+                    else if (_isFilterJobStatusOn == true)
+                    {
+                        DashboardData = _dashboardDataBackup;
+                        if (_isFilterClientTypeOn == true)
+                        {
+                            DashboardData = _dashboardDataTypeFiltered;
+                        }
+                        _isFilterJobStatusOn = false;
+                    }
+                }
+                else if (command == Names.UnfilterClientType)
+                {
+                    if (_isFilterClientTypeOn == false)
+                    {
+                        DashboardData = _dashboardDataBackup; // reset list
+                        _dashboardDataTypeFiltered = DashboardData;
+                    }
+                    else if (_isFilterClientTypeOn == true)
+                    {
+                        DashboardData = _dashboardDataBackup;
+                        if (_isFilterJobStatusOn == true)
+                        {
+                            DashboardData = _dashboardDataStatusFiltered;
+                        }
+                        _isFilterClientTypeOn = false;
+                    }
                 }
             }
-
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Exit Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: HandleKeyPress() FAIL\n\t{ex.Message}");
+            }
             return Task.CompletedTask;
         }
 
         private Task SetupDashboardData()
         {
-            PauseLoop();
-
-            // row data
-            _dashboardData.Clear();
-            int index = 0;
-            foreach (var job in Data.Jobs)
+            try
             {
-                var client = Data.Clients.First(c => c.ClientId == job.ClientId);
+                PauseLoop();
 
-                DashboardModel dashboardEntry = new DashboardModel
+                // row data
+                _dashboardData.Clear();
+                int index = 0;
+                foreach (var job in DataService.Jobs)
                 {
-                    // client
-                    ClientId = client.ClientId,
-                    ClientType = client.Type,
-                    TypeIcon = (client.Type == "Individual") ? "/Resources/Media/Images/Icons/Lucide/user-round.svg" : "/Resources/Media/Images/Icons/Lucide/building.svg",
-                    ClientName = client.FullName,
-                    ClientEmail = client.Email,
-                    ClientPhone = client.PhoneNumber,
-                    CompanyName = client.CompanyName,
-                    Address = client.BillingAddress,
-                    City = client.City,
-                    Postcode = client.Postcode,
-                    Country = client.Country,
-                    CreatedDate = client.CreatedDate,
-                    IsActive = client.IsActive,
+                    var client = DataService.Clients.First(c => c.ClientId == job.ClientId);
 
-                    // job
-                    JobId = job.JobId,
-                    JobTitle = job.Title,
-                    JobDescription = job.Description,
-                    Price = job.FinalPrice, // use toString("C") only for ui side
-                    AmountReceived = job.AmountReceived,
-                    JobStatus = Data.Invoices.Where(i => i.JobId == job.JobId && string.IsNullOrEmpty(i.Status) == false).Select(i => i.Status).FirstOrDefault() ?? job.Status.ToString(),
-                    StartDate = job.StartDate,
-                    DueDate = job.DueDate,
+                    DashboardModel dashboardEntry = new DashboardModel
+                    {
+                        // client
+                        ClientId = client.ClientId,
+                        ClientType = client.Type,
+                        TypeIcon = (client.Type == "Individual") ? "/Resources/Media/Images/Icons/Lucide/user-round.svg" : "/Resources/Media/Images/Icons/Lucide/building.svg",
+                        ClientName = client.FullName,
+                        ClientEmail = client.Email,
+                        ClientPhone = client.PhoneNumber,
+                        CompanyName = client.CompanyName,
+                        Address = client.BillingAddress,
+                        City = client.City,
+                        Postcode = client.Postcode,
+                        Country = client.Country,
+                        CreatedDate = client.CreatedDate,
+                        IsActive = client.IsActive,
 
-                    // invoice
-                    HasInvoice = Data.Invoices.Any(i => i.JobId == job.JobId && i.IsDeleted == false),
-                    InvoiceStatus = Data.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? "Not invoiced", // if left side not null return that else right side
-                    InvoiceDueDate = Data.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.DueDate).FirstOrDefault(),
-                    PaidDate = Data.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.PaidDate).FirstOrDefault()
-                };
-                DashboardData.Add(dashboardEntry);
-                index++;
+                        // job
+                        JobId = job.JobId,
+                        JobTitle = job.Title,
+                        JobDescription = job.Description,
+                        Price = job.FinalPrice, // use toString("C") only for ui side
+                        AmountReceived = job.AmountReceived,
+                        JobStatus = DataService.Invoices.Where(i => i.JobId == job.JobId && string.IsNullOrEmpty(i.Status) == false).Select(i => i.Status).FirstOrDefault() ?? job.Status.ToString(),
+                        StartDate = job.StartDate,
+                        DueDate = job.DueDate,
+
+                        // invoice
+                        HasInvoice = DataService.Invoices.Any(i => i.JobId == job.JobId && i.IsDeleted == false),
+                        InvoiceStatus = DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? "Not invoiced", // if left side not null return that else right side
+                        InvoiceDueDate = DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.DueDate).FirstOrDefault(),
+                        PaidDate = DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.PaidDate).FirstOrDefault()
+                    };
+                    DashboardData.Add(dashboardEntry);
+                    index++;
+                }
+
+                Task.Run(() =>
+                {
+                    _dashboardDataBackup = DashboardData; // backup for filtering
+                    _dashboardDataStatusFiltered = DashboardData;
+                    _dashboardDataTypeFiltered = DashboardData;
+                });
+
+                NewJobsCount = DataService.Jobs.Where(j => j.Status == Names.New).Count().ToString(); // new jobs count
+                DoneJobsCount = DataService.Jobs.Where(j => j.Status == Names.Done).Count().ToString(); // done jobs count
+                ActiveJobsCount = DataService.Jobs.Where(j => j.Status == Names.Active).Count().ToString(); // active jobs count
+                InvoicedJobsCount = DataService.Jobs.Where(j => j.Status == Names.Invoiced).Count().ToString(); // invoiced jobs count
+                GrossAmount = DataService.Jobs.Sum(gross => gross.FinalPrice).ToString("C"); // gross amount
+                ReceivedAmount = DataService.Jobs
+                    .Join(DataService.Invoices,
+                    j => j.JobId,
+                    i => i.JobId,
+                    (j, i) => new { j, i }).Where(combined => combined.i.Status == Names.Paid)
+                    .Sum(combined => combined.j.FinalPrice).ToString("C");
+
+                OutstandingAmount = DataService.Jobs
+                    .Where(
+                        j => j.Status == Names.Done || // job = done
+                        (j.Status == Names.Invoiced && DataService.Invoices.Any(i => i.JobId == j.JobId && i.Status != Names.Paid)) || // job = invoiced
+                        DataService.Invoices.Any(i => i.JobId == j.JobId && i.DueDate < DateOnly.FromDateTime(DateTime.Now) && i.Status == Names.Overdue) // invoice = overdue
+                    ).Sum(j => j.FinalPrice).ToString("C");
+
+                OverdueAmount = DataService.Jobs
+                                    .Where(j => j.Status == Names.Invoiced)
+                                    .Join(DataService.Invoices,
+                                          job => job.JobId,
+                                          inv => inv.JobId, (job, inv) => new { job.FinalPrice, inv.DueDate, inv.Status })
+                                    .Where(x => x.DueDate < DateOnly.FromDateTime(DateTime.Now) && x.Status != Names.Paid)
+                                    .Sum(x => x.FinalPrice).ToString("C"); // overdue
+
+                TotalJobsCount = DataService.Jobs.Count();
+
+                // if job count is zero then disable edit buttons and add jobs
+                if (TotalJobsCount == 0)
+                {
+                    EnableBtns = false;
+                    OpacityBtns = _halfOpacity;
+                    SelectedJob = null;
+                }
+                else if (TotalJobsCount > 0)
+                {
+                    EnableBtns = true;
+                    OpacityBtns = _fullOpacity;
+                }
+
+                // if there is any overdue
+                if (decimal.Parse(OverdueAmount, NumberStyles.Currency, CultureInfo.CurrentCulture) > 0.0m)
+                {
+                    OutstandingStatusBorder = "Overdue";
+                }
+                else
+                {
+                    OutstandingStatusBorder = string.Empty;
+                }
+
+                StartLoop();
             }
-
-            _dashboardDataBackup = DashboardData; // backup for filtering
-            _dashboardDataStatusFiltered = DashboardData;
-            _dashboardDataTypeFiltered = DashboardData;
-
-            NewJobsCount = Data.Jobs.Where(j => j.Status == Names.New).Count().ToString(); // new jobs count
-            DoneJobsCount = Data.Jobs.Where(j => j.Status == Names.Done).Count().ToString(); // done jobs count
-            ActiveJobsCount = Data.Jobs.Where(j => j.Status == Names.Active).Count().ToString(); // active jobs count
-            InvoicedJobsCount = Data.Jobs.Where(j => j.Status == Names.Invoiced).Count().ToString(); // invoiced jobs count
-            GrossAmount = Data.Jobs.Sum(gross => gross.FinalPrice).ToString("C"); // gross amount
-            ReceivedAmount = Data.Jobs
-                .Join(Data.Invoices,
-                j => j.JobId,
-                i => i.JobId,
-                (j, i) => new { j, i }).Where(combined => combined.i.Status == Names.Paid)
-                .Sum(combined => combined.j.FinalPrice).ToString("C");
-
-            OutstandingAmount = Data.Jobs
-                .Where(
-                    j => j.Status == Names.Done || // job = done
-                    (j.Status == Names.Invoiced && Data.Invoices.Any(i => i.JobId == j.JobId && i.Status != Names.Paid)) || // job = invoiced
-                    Data.Invoices.Any(i => i.JobId == j.JobId && i.DueDate < DateOnly.FromDateTime(DateTime.Now) && i.Status == Names.Overdue) // invoice = overdue
-                ).Sum(j => j.FinalPrice).ToString("C");
-
-            OverdueAmount = Data.Jobs
-                                .Where(j => j.Status == Names.Invoiced)
-                                .Join(Data.Invoices, 
-                                      job => job.JobId, 
-                                      inv => inv.JobId, (job, inv) => new { job.FinalPrice, inv.DueDate, inv.Status })
-                                .Where(x => x.DueDate < DateOnly.FromDateTime(DateTime.Now) && x.Status != Names.Paid)
-                                .Sum(x => x.FinalPrice).ToString("C"); // overdue
-
-            TotalJobsCount = Data.Jobs.Count();
-
-            // if job count is zero then disable edit buttons and add jobs
-            if (TotalJobsCount == 0)
+            catch (Exception ex)
             {
-                EnableBtns = false;
-                OpacityBtns = _halfOpacity;
-                SelectedJob = null;
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Setup Dashboard";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: SetupDashboardData() FAIL\n\t{ex.Message}");
             }
-            else if (TotalJobsCount > 0)
-            {
-                EnableBtns = true;
-                OpacityBtns = _fullOpacity;
-            }
-
-            // if there is any overdue
-            if (decimal.Parse(OverdueAmount, NumberStyles.Currency, CultureInfo.CurrentCulture) > 0.0m)
-            {
-                OutstandingStatusBorder = "Overdue";
-            }
-            else
-            {
-                OutstandingStatusBorder = string.Empty;
-            }
-
-            StartLoop();
-
             return Task.CompletedTask;
         }
         #endregion
@@ -840,132 +1021,154 @@ namespace Traker.ViewModels
         #region Event Handlers
         public async Task HandleAsync(DashboardVMEvents message, CancellationToken cancellationToken)
         {
-            // to be simplified
-
-            if (message != null)
+            try
             {
-                if (message.Command == "EditClient")
+                if (message != null)
                 {
-                    await EditClient();
+                    if (message.Command == "EditClient")
+                    {
+                        await EditClient();
+                    }
+                    else if (message.Command == Names.ClientNameAsc)
+                    {
+                        await SortJobs(Names.ClientNameAsc);
+                    }
+                    else if (message.Command == Names.ClientNameDesc)
+                    {
+                        await SortJobs(Names.ClientNameDesc);
+                    }
+                    else if (message.Command == Names.JobTitleAsc)
+                    {
+                        await SortJobs(Names.JobTitleAsc);
+                    }
+                    else if (message.Command == Names.JobTitleDesc)
+                    {
+                        await SortJobs(Names.JobTitleDesc);
+                    }
+                    else if (message.Command == Names.JobStatusAsc)
+                    {
+                        await SortJobs(Names.JobStatusAsc);
+                    }
+                    else if (message.Command == Names.JobStatusDesc)
+                    {
+                        await SortJobs(Names.JobStatusDesc);
+                    }
+                    else if (message.Command == Names.JobPriceAsc)
+                    {
+                        await SortJobs(Names.JobPriceAsc);
+                    }
+                    else if (message.Command == Names.JobPriceDesc)
+                    {
+                        await SortJobs(Names.JobPriceDesc);
+                    }
+                    else if (message.Command == Names.DueDateAsc)
+                    {
+                        await SortJobs(Names.DueDateAsc);
+                    }
+                    else if (message.Command == Names.DueDateDesc)
+                    {
+                        await SortJobs(Names.DueDateDesc);
+                    }
+                    else if (message.Command == Names.CreatedDateAsc)
+                    {
+                        await SortJobs(Names.CreatedDateAsc);
+                    }
+                    else if (message.Command == Names.CreatedDateDesc)
+                    {
+                        await SortJobs(Names.CreatedDateDesc);
+                    }
+                    else if (message.Command == Names.ClientTypeAsc)
+                    {
+                        await SortJobs(Names.ClientTypeAsc);
+                    }
+                    else if (message.Command == Names.ClientTypeDesc)
+                    {
+                        await SortJobs(Names.ClientTypeDesc);
+                    }
+                    else if (message.Command == Names.JobStatusNew)
+                    {
+                        await FilterJobs(Names.JobStatusNew);
+                    }
+                    else if (message.Command == Names.JobStatusActive)
+                    {
+                        await FilterJobs(Names.JobStatusActive);
+                    }
+                    else if (message.Command == Names.JobStatusDone)
+                    {
+                        await FilterJobs(Names.JobStatusDone);
+                    }
+                    else if (message.Command == Names.JobStatusInvoiced)
+                    {
+                        await FilterJobs(Names.JobStatusInvoiced);
+                    }
+                    else if (message.Command == Names.FilterIndividual)
+                    {
+                        await FilterJobs(Names.FilterIndividual);
+                    }
+                    else if (message.Command == Names.FilterComapny)
+                    {
+                        await FilterJobs(Names.FilterComapny);
+                    }
+                    else if (message.Command == Names.AllJobStatus)
+                    {
+                        await FilterJobs(Names.AllJobStatus);
+                    }
+                    else if (message.Command == Names.UnfilterClientType)
+                    {
+                        await FilterJobs(Names.UnfilterClientType);
+                    }
+                    else if (message.Command == Names.ShowInvoice)
+                    {
+                        _editInvoiceViewModel = new EditInvoiceViewModel(_events, _windowManager, DataService, _state);
+                        _editInvoiceViewModel.SelectedJob = SelectedJob!;
+                        await _windowManager.ShowWindowAsync(_editInvoiceViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
+                    }
                 }
-                else if (message.Command == Names.ClientNameAsc)
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
                 {
-                    await SortJobs(Names.ClientNameAsc);
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Dashboard Events";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
-                else if (message.Command == Names.ClientNameDesc)
-                {
-                    await SortJobs(Names.ClientNameDesc);
-                }
-                else if (message.Command == Names.JobTitleAsc)
-                {
-                    await SortJobs(Names.JobTitleAsc);
-                }
-                else if (message.Command == Names.JobTitleDesc)
-                {
-                    await SortJobs(Names.JobTitleDesc);
-                }
-                else if (message.Command == Names.JobStatusAsc)
-                {
-                    await SortJobs(Names.JobStatusAsc);
-                }
-                else if (message.Command == Names.JobStatusDesc)
-                {
-                    await SortJobs(Names.JobStatusDesc);
-                }
-                else if (message.Command == Names.JobPriceAsc)
-                {
-                    await SortJobs(Names.JobPriceAsc);
-                }
-                else if (message.Command == Names.JobPriceDesc)
-                {
-                    await SortJobs(Names.JobPriceDesc);
-                }
-                else if (message.Command == Names.DueDateAsc)
-                {
-                    await SortJobs(Names.DueDateAsc);
-                }
-                else if (message.Command == Names.DueDateDesc)
-                {
-                    await SortJobs(Names.DueDateDesc);
-                }
-                else if (message.Command == Names.CreatedDateAsc)
-                {
-                    await SortJobs(Names.CreatedDateAsc);
-                }
-                else if (message.Command == Names.CreatedDateDesc)
-                {
-                    await SortJobs(Names.CreatedDateDesc);
-                }
-                else if (message.Command == Names.ClientTypeAsc)
-                {
-                    await SortJobs(Names.ClientTypeAsc);
-                }
-                else if (message.Command == Names.ClientTypeDesc)
-                {
-                    await SortJobs(Names.ClientTypeDesc);
-                }
-                else if (message.Command == Names.JobStatusNew)
-                {
-                    await FilterJobs(Names.JobStatusNew);
-                }
-                else if (message.Command == Names.JobStatusActive)
-                {
-                    await FilterJobs(Names.JobStatusActive);
-                }
-                else if (message.Command == Names.JobStatusDone)
-                {
-                    await FilterJobs(Names.JobStatusDone);
-                }
-                else if (message.Command == Names.JobStatusInvoiced)
-                {
-                    await FilterJobs(Names.JobStatusInvoiced);
-                }
-                else if (message.Command == Names.FilterIndividual)
-                {
-                    await FilterJobs(Names.FilterIndividual);
-                }
-                else if (message.Command == Names.FilterComapny)
-                {
-                    await FilterJobs(Names.FilterComapny);
-                }
-                else if (message.Command == Names.AllJobStatus)
-                {
-                    await FilterJobs(Names.AllJobStatus);
-                }
-                else if (message.Command == Names.UnfilterClientType)
-                {
-                    await FilterJobs(Names.UnfilterClientType);
-                }
-                else if (message.Command == Names.ShowInvoice)
-                {
-                    _editInvoiceViewModel = new EditInvoiceViewModel(Data, _events, _windowManager, State);
-                    _editInvoiceViewModel.SelectedJob = SelectedJob;
-                    await _windowManager.ShowWindowAsync(_editInvoiceViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
-                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: HandleAsync(DashboardVMEvents) FAIL\n\t{ex.Message}");
             }
         }
 
         public async Task HandleAsync(RefreshDatabase message, CancellationToken cancellationToken)
         {
-            await Data.RefreshDatabase();
-            await SetupDashboardData();
-
-            if (message != null)
+            try
             {
-                if (message.Command != "Invoice") // skip for invoice creation as no data has been amneded
+
+                await DataService.RefreshDatabase();
+                await SetupDashboardData();
+
+                if (message != null)
                 {
-                    SelectedJob = null;
+                    if (message.Command != Names.Invoice) // skip for invoice creation as no data has been amneded
+                    {
+                        SelectedJob = null;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Refresh Database";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: HandleAsync(RefreshDatabase) FAIL\n\t{ex.Message}");
             }
         }
         #endregion
-
-        // TO CHECK
-        public Task UpdateJobStatus(DashboardModel row)
-        {
-            // update DB here
-            return Task.CompletedTask;
-        }
 
         #region Public View Variables     
         public String ReceivedAmount

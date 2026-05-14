@@ -1,10 +1,5 @@
 ﻿using Caliburn.Micro;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Traker.Models;
 
 namespace Traker.ViewModels.Add
@@ -14,9 +9,9 @@ namespace Traker.ViewModels.Add
     using System.Windows;
     using System.Windows.Input;
     using Traker.Data;
-    using Traker.Events;
     using Traker.Events.DashboardVM;
     using Traker.Helper;
+    using Traker.Services;
     using Traker.States;
 
     // try use inheritance or a design pattern to avoid repetition
@@ -26,18 +21,14 @@ namespace Traker.ViewModels.Add
         #region Caliburn Variables
         private readonly IEventAggregator _events;
         private readonly IWindowManager _windowManager;
+        private readonly AppState _state;
         #endregion
 
         #region Public Variables
         public ObservableCollection<DashboardModel> dashboardData; // to obtain the current dashboard clients list
         #endregion
 
-        #region Public State Variable
-        public AppState State { get; } // state binding variable accessible from other viewmodels
-        #endregion
-
         #region Private View Variables
-        // dont need private as it only displays names with IDs
         private AddJobModel _selectedClient;
         private string _jobTitle;
         private string _price;
@@ -51,40 +42,56 @@ namespace Traker.ViewModels.Add
         #region Private Class Field Variables
         private double _fullOpacity = 1.0;
         private double _halfOpacity = 0.5;
+        private ObservableCollection<AddJobModel> _addJob;
         #endregion
 
-        private ObservableCollection<AddJobModel> _addJob;
-
-        public AddJobViewModel(IEventAggregator events, AppState appState, IWindowManager windowManager)
+        public AddJobViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState)
         {
             _events = events;
-            _addJob = new ObservableCollection<AddJobModel>();
+            _windowManager = windowManager;
+            _state = appState;
 
+            dashboardData = new ObservableCollection<DashboardModel>();
+
+            _addJob = new ObservableCollection<AddJobModel>();
             _selectedClient = new AddJobModel();
             _jobTitle = string.Empty;
             _price = string.Empty;
             _dueDate = string.Empty;
-
-            State = appState;
-            _windowManager = windowManager;
         }
 
+        #region Caliburn Functions
         protected override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
-            EnableSubmitBtn = false;
-            OpacitySubmitBtn = _halfOpacity;
-
-            foreach (var client in dashboardData.DistinctBy(x => x.ClientId))
+            try
             {
-                AddJob.Add(new AddJobModel
-                {
-                    ClientId = client.ClientId,
-                    CreatedDate = client.CreatedDate.ToString(),
-                    BusinessName = client.ClientType == Names.Individual ? client.ClientName : client.CompanyName,
-                });
-            }
+                EnableSubmitBtn = false;
+                OpacitySubmitBtn = _halfOpacity;
 
-            SelectedClient = AddJob.First(); // pre-select the first item in the list
+                foreach (var client in dashboardData.DistinctBy(x => x.ClientId))
+                {
+                    AddJob.Add(new AddJobModel
+                    {
+                        ClientId = client.ClientId,
+                        CreatedDate = client.CreatedDate.ToString(),
+                        BusinessName = client.ClientType == Names.Individual ? client.ClientName : client.CompanyName,
+                    });
+                }
+
+                SelectedClient = AddJob.First(); // pre-select the first item in the list
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Initialise Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"AddJobViewModel: OnInitializedAsync() FAIL\n\t{ex.Message}");
+            }
 
             return base.OnInitializedAsync(cancellationToken);
         }
@@ -94,11 +101,107 @@ namespace Traker.ViewModels.Add
             _events.Unsubscribe(this);
             return base.OnDeactivateAsync(close, cancellationToken);
         }
+        #endregion
 
+        #region Public View Functions
         public async Task HandleKeyPress(KeyEventArgs e)
         {
-            // ESC button
-            if (e.Key == Key.Escape)
+            try
+            {
+                if (e.Key == Key.Escape)
+                {
+                    if (
+                        string.IsNullOrEmpty(JobTitle) == false ||
+                        string.IsNullOrEmpty(Price) == false ||
+                        string.IsNullOrEmpty(DueDate) == false
+                        )
+                    {
+                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                        {
+                            _state.messageBoxVM.Symbol = 0;
+                            _state.messageBoxVM.HeadMessage = "Discard changes?";
+                            _state.messageBoxVM.Message = Names.DiscardEsc;
+                            _state.messageBoxVM.ButtonStyle = Names.NoYes;
+                            await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        }
+
+                        // if clicked yes
+                        if (_state.messageBoxVM.Output == true)
+                        {
+                            await TryCloseAsync();
+                        }
+                    }
+                    else
+                    {
+                        await TryCloseAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Exit Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"AddJobViewModel: HandleKeyPress() FAIL\n\t{ex.Message}");
+            }
+        }
+
+        public async Task AddJobToClient()
+        {
+            try
+            {
+                var dueDate = DateOnly.MinValue;
+                decimal amount = 0;
+
+                if (DueDate != string.Empty)
+                {
+                    dueDate = DateOnly.ParseExact(
+                    DueDate,
+                    "dd/MM/yyyy",
+                    CultureInfo.InvariantCulture
+                    );
+                }
+
+                if (Price != string.Empty)
+                {
+                    amount = decimal.Parse(
+                        Price,
+                        CultureInfo.InvariantCulture
+                    );
+                }
+
+                // add job under the client's id
+                int jobId = await Database.AddNewJobToClient(SelectedClient.ClientId, JobTitle.Trim(), amount, dueDate);
+
+                // add job folder
+                await FileStore.CreateJobFolder(SelectedClient.ClientId, jobId, SelectedClient.BusinessName.Trim(), JobTitle.Trim());
+
+                // refresh database
+                await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+                await TryCloseAsync();
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Add Job";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"AddJobViewModel: AddJobToClient() FAIL\n\t{ex.Message}");
+            }
+        }
+
+        public async Task Exit()
+        {
+            try
             {
                 if (
                     string.IsNullOrEmpty(JobTitle) == false ||
@@ -106,17 +209,17 @@ namespace Traker.ViewModels.Add
                     string.IsNullOrEmpty(DueDate) == false
                     )
                 {
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
                     {
-                        State.messageBoxVM.Symbol = 0;
-                        State.messageBoxVM.HeadMessage = "Discard changes?";
-                        State.messageBoxVM.Message = Names.DiscardEsc;
-                        State.messageBoxVM.ButtonStyle = Names.NoYes;
-                        await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        _state.messageBoxVM.Symbol = 0;
+                        _state.messageBoxVM.HeadMessage = "Discard changes?";
+                        _state.messageBoxVM.Message = Names.DiscardEsc;
+                        _state.messageBoxVM.ButtonStyle = Names.NoYes;
+                        await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
 
                     // if clicked yes
-                    if (State.messageBoxVM.Output == true)
+                    if (_state.messageBoxVM.Output == true)
                     {
                         await TryCloseAsync();
                     }
@@ -125,79 +228,19 @@ namespace Traker.ViewModels.Add
                 {
                     await TryCloseAsync();
                 }
+                Logger.LogActivity(Logger.INFO, $"AddJobViewModel: Exit() OK");
             }
-        }
-
-        public async Task AddJobToClient()
-        {
-            var dueDate = DateOnly.MinValue;
-            decimal amount = 0;
-
-            if (DueDate != string.Empty)
+            catch (Exception ex)
             {
-                dueDate = DateOnly.ParseExact(
-                DueDate,
-                "dd/MM/yyyy",
-                CultureInfo.InvariantCulture
-                );
-            }
-
-            if (Price != string.Empty)
-            {
-                amount = decimal.Parse(
-                    Price,
-                    CultureInfo.InvariantCulture
-                );
-            }
-
-            // add job under the client's id
-            int jobId = await Database.AddNewJobToClient(SelectedClient.ClientId, JobTitle.Trim(), amount, dueDate);
-
-            // add job folder
-            await FileStore.CreateJobFolder(SelectedClient.ClientId, jobId, SelectedClient.BusinessName.Trim(), JobTitle.Trim());
-
-            // refresh database
-            await _events.PublishOnUIThreadAsync(new RefreshDatabase());
-            await TryCloseAsync();
-        }
-
-        public async Task Exit()
-        {
-            if (
-                string.IsNullOrEmpty(JobTitle) == false ||
-                string.IsNullOrEmpty(Price) == false ||
-                string.IsNullOrEmpty(DueDate) == false
-                )
-            {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
                 {
-                    State.messageBoxVM.Symbol = 0;
-                    State.messageBoxVM.HeadMessage = "Discard changes?";
-                    State.messageBoxVM.Message = Names.DiscardEsc;
-                    State.messageBoxVM.ButtonStyle = Names.NoYes;
-                    await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Exit Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
-
-                // if clicked yes
-                if (State.messageBoxVM.Output == true)
-                {
-                    await TryCloseAsync();
-                }
-            }
-            else
-            {
-                await TryCloseAsync();
-            }
-        }
-
-        #region View Variables
-        public AddJobModel SelectedClient
-        {
-            get { return _selectedClient; }
-            set
-            {
-                _selectedClient = value;
-                NotifyOfPropertyChange(() => SelectedClient);
+                Logger.LogActivity(Logger.ERROR, $"AddJobViewModel: Exit() FAIL\n\t{ex.Message}");
             }
         }
         #endregion
@@ -216,22 +259,48 @@ namespace Traker.ViewModels.Add
 
         private Task CanSubmit()
         {
-            if (string.IsNullOrEmpty(SelectedClient.BusinessName) == false && string.IsNullOrEmpty(JobTitle) == false && string.IsNullOrEmpty(Price) == false && ValidateDate() == true)
+            try
             {
+                if (string.IsNullOrEmpty(SelectedClient.BusinessName) == false && string.IsNullOrEmpty(JobTitle) == false && string.IsNullOrEmpty(Price) == false && ValidateDate() == true)
+                {
 
-                EnableSubmitBtn = true;
-                OpacitySubmitBtn = _fullOpacity;
+                    EnableSubmitBtn = true;
+                    OpacitySubmitBtn = _fullOpacity;
+                }
+                else
+                {
+                    EnableSubmitBtn = false;
+                    OpacitySubmitBtn = _halfOpacity;
+                }
+                return Task.CompletedTask;
             }
-            else
+            catch (Exception ex)
             {
-                EnableSubmitBtn = false;
-                OpacitySubmitBtn = _halfOpacity;
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Add Client";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"AddJobViewModel: CanSubmit() FAIL\n\t{ex.Message}");
             }
             return Task.CompletedTask;
         }
         #endregion
 
         #region Public View Variables
+        public AddJobModel SelectedClient
+        {
+            get { return _selectedClient; }
+            set
+            {
+                _selectedClient = value;
+                NotifyOfPropertyChange(() => SelectedClient);
+            }
+        }
+
         public ObservableCollection<AddJobModel> AddJob
         {
             get { return _addJob; }

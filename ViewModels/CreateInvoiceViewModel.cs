@@ -31,6 +31,7 @@ namespace Traker.ViewModels
         private readonly IEventAggregator _events;
         private readonly IWindowManager _windowManager;
         private readonly DataService _dataService;
+        private readonly AppState _state;
         #endregion
 
         #region Private View Variables
@@ -43,6 +44,7 @@ namespace Traker.ViewModels
         private string _subtotal; // subTotAmount#2 used for UI with proper currency symbol and decimal
         private string _vatValue;
         private string _totalAmount; // totAmount#1 used for UI with proper currency symbol and decimal
+        private List<string> _invoiceStatusEdit = new List<string> { "0%", "5%", "20%" };
 
         // submit button
         private bool _enableSubmitBtn;
@@ -50,15 +52,6 @@ namespace Traker.ViewModels
         #endregion
 
         #region Public Variables
-        public List<string> InvoiceStatusEdit { get; set; } = new List<string> { "0%", "5%", "20%" };
-
-        public AppState State { get; }
-
-
-        /*
-         * create a new model containing all the important information to pre-fill
-         * the invoice form could be using DashboardModel since it's under row selection
-         */
         public DashboardModel SelectedJob; // data passed by DashboardVM
         #endregion
 
@@ -70,11 +63,12 @@ namespace Traker.ViewModels
         private decimal _totalAmountDb; // totAmount#1 used for database
         #endregion
 
-        public CreateInvoiceViewModel(IEventAggregator events, DataService dataService, AppState state, IWindowManager windowManager)
+        public CreateInvoiceViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
         {
             _events = events;
+            _windowManager = windowManager;
             _dataService = dataService;
-            State = state;
+            _state = state;
 
             SelectedJob = new DashboardModel(); // to be improved to add useful properties
 
@@ -90,20 +84,36 @@ namespace Traker.ViewModels
             _subtotalAmountDb = 0.0m;
             _totalAmountDb = 0.0m;
             _windowManager = windowManager;
+            _invoiceStatusEdit = new List<string> { "0%", "5%", "20%" };
         }
 
+        #region Caliburn Functions
         protected override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
-            CanSubmit(); // check wether to enable/disbale submit button
-
-            BillingName = SelectedJob.ClientName;
-            BillingAddress = SelectedJob.Address;
-            BillingCity = SelectedJob.City;
-            BillingPostcode = SelectedJob.Postcode;
-            BillingCountry = SelectedJob.Country;
-            DueDate = SelectedJob.DueDate.AddDays(7).ToString();
-            _subtotalAmountDb = decimal.Parse(SelectedJob.Price.ToString(), NumberStyles.Currency, CultureInfo.CurrentCulture);
-            Subtotal = (decimal.Parse(SelectedJob.Price.ToString(), NumberStyles.Currency, CultureInfo.CurrentCulture)).ToString("C");
+            try
+            {
+                CanSubmit(); // check wether to enable/disbale submit button
+                BillingName = SelectedJob.ClientName;
+                BillingAddress = SelectedJob.Address;
+                BillingCity = SelectedJob.City;
+                BillingPostcode = SelectedJob.Postcode;
+                BillingCountry = SelectedJob.Country;
+                DueDate = SelectedJob.DueDate.AddDays(7).ToString();
+                _subtotalAmountDb = decimal.Parse(SelectedJob.Price.ToString(), NumberStyles.Currency, CultureInfo.CurrentCulture);
+                Subtotal = (decimal.Parse(SelectedJob.Price.ToString(), NumberStyles.Currency, CultureInfo.CurrentCulture)).ToString("C");
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Initialise Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"CreateInvoiceViewModel: OnInitializedAsync() FAIL\n\t{ex.Message}");
+            }
             return base.OnInitializedAsync(cancellationToken);
         }
 
@@ -112,11 +122,62 @@ namespace Traker.ViewModels
             _events.Unsubscribe(this);
             return base.OnDeactivateAsync(close, cancellationToken);
         }
+        #endregion
 
+        #region Public View Functions
         public async Task HandleKeyPress(KeyEventArgs e)
         {
-            // ESC button
-            if (e.Key == Key.Escape)
+            try
+            {
+                if (e.Key == Key.Escape)
+                {
+                    if (
+                        (string.IsNullOrEmpty(BillingName) == false) && SelectedJob.ClientName != BillingName ||
+                        (string.IsNullOrEmpty(BillingAddress) == false) && SelectedJob.Address != BillingAddress ||
+                        (string.IsNullOrEmpty(BillingCity) == false) && SelectedJob.City != BillingCity ||
+                        (string.IsNullOrEmpty(BillingCountry) == false) && SelectedJob.Country != BillingCountry ||
+                        (string.IsNullOrEmpty(BillingPostcode) == false) && SelectedJob.Postcode != BillingPostcode ||
+                        (string.IsNullOrEmpty(DueDate) == false) && SelectedJob.DueDate.AddDays(7).ToString() != DueDate
+                        )
+                    {
+                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                        {
+                            _state.messageBoxVM.Symbol = 0;
+                            _state.messageBoxVM.HeadMessage = "Discard changes?";
+                            _state.messageBoxVM.Message = Names.DiscardEsc;
+                            _state.messageBoxVM.ButtonStyle = Names.NoYes;
+                            await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        }
+
+                        // if clicked yes
+                        if (_state.messageBoxVM.Output == true)
+                        {
+                            await TryCloseAsync();
+                        }
+                    }
+                    else
+                    {
+                        await TryCloseAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Exit Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"CreateInvoiceViewModel: HandleKeyPress() FAIL\n\t{ex.Message}");
+            }
+        }
+
+        public async Task Exit()
+        {
+            try
             {
                 if (
                     (string.IsNullOrEmpty(BillingName) == false) && SelectedJob.ClientName != BillingName ||
@@ -127,17 +188,17 @@ namespace Traker.ViewModels
                     (string.IsNullOrEmpty(DueDate) == false) && SelectedJob.DueDate.AddDays(7).ToString() != DueDate
                     )
                 {
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
                     {
-                        State.messageBoxVM.Symbol = 0;
-                        State.messageBoxVM.HeadMessage = "Discard changes?";
-                        State.messageBoxVM.Message = Names.DiscardEsc;
-                        State.messageBoxVM.ButtonStyle = Names.NoYes;
-                        await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        _state.messageBoxVM.Symbol = 0;
+                        _state.messageBoxVM.HeadMessage = "Discard changes?";
+                        _state.messageBoxVM.Message = Names.DiscardEsc;
+                        _state.messageBoxVM.ButtonStyle = Names.NoYes;
+                        await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
 
                     // if clicked yes
-                    if (State.messageBoxVM.Output == true)
+                    if (_state.messageBoxVM.Output == true)
                     {
                         await TryCloseAsync();
                     }
@@ -147,340 +208,325 @@ namespace Traker.ViewModels
                     await TryCloseAsync();
                 }
             }
-        }
-
-        public async Task Exit()
-        {
-            if (
-                (string.IsNullOrEmpty(BillingName) == false) && SelectedJob.ClientName != BillingName ||
-                (string.IsNullOrEmpty(BillingAddress) == false) && SelectedJob.Address != BillingAddress ||
-                (string.IsNullOrEmpty(BillingCity) == false) && SelectedJob.City != BillingCity ||
-                (string.IsNullOrEmpty(BillingCountry) == false) && SelectedJob.Country != BillingCountry ||
-                (string.IsNullOrEmpty(BillingPostcode) == false) && SelectedJob.Postcode != BillingPostcode ||
-                (string.IsNullOrEmpty(DueDate) == false) && SelectedJob.DueDate.AddDays(7).ToString() != DueDate
-                )
+            catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
                 {
-                    State.messageBoxVM.Symbol = 0;
-                    State.messageBoxVM.HeadMessage = "Discard changes?";
-                    State.messageBoxVM.Message = Names.DiscardEsc;
-                    State.messageBoxVM.ButtonStyle = Names.NoYes;
-                    await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Exit Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
-
-                // if clicked yes
-                if (State.messageBoxVM.Output == true)
-                {
-                    await TryCloseAsync();
-                }
-            }
-            else
-            {
-                await TryCloseAsync();
+                Logger.LogActivity(Logger.ERROR, $"CreateInvoiceViewModel: Exit() FAIL\n\t{ex.Message}");
             }
         }
 
         public async Task CreateInvoice()
         {
-            /*
-             * InvoiceNumber
-             * IssueDate
-             * Status
-             */
-
-            //public static Task CreateInvoice(int jobId, decimal subtotal, decimal taxAmount, decimal totalAmount, DateTime dueDate, string billingName, string billingAddress, string billingCity, string billingPostcode, string billingCountry)
-
-
-            var dueDate = DateOnly.MinValue;
-            if (DueDate != String.Empty)
+            try
             {
-                dueDate = DateOnly.ParseExact(DueDate,"dd/MM/yyyy", CultureInfo.InvariantCulture);
+                await Task.Run(async () =>
+                {
+                    var dueDate = DateOnly.MinValue;
+                    if (DueDate != String.Empty)
+                    {
+                        dueDate = DateOnly.ParseExact(DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                    }
+
+                    int result = int.Parse(VatValue.TrimEnd('%'));
+
+                    DateTime now = DateTime.Now;
+                    DateTime dateTimeIssued = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second);
+
+                    await Database.CreateInvoice(SelectedJob.ClientId, SelectedJob.JobId, _subtotalAmountDb, result, _totalAmountDb, dueDate, BillingName.Trim(), BillingAddress.Trim(), BillingCity.Trim(), BillingPostcode.Trim(), BillingCountry.Trim(), dateTimeIssued);
+                    await _dataService.RefreshDatabase();
+
+                    var invoiceId = Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId);
+                    var invoiceName = $"INV-{invoiceId}_{SelectedJob.JobId}_{SelectedJob.ClientId}_{FileStore.MakeSafeFolderName(SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName)}_{dateTimeIssued.ToString("dd-MM-yyyy")}_{dateTimeIssued.ToString("HHmmss")}.pdf";
+                    await Database.SetInvoiceName(invoiceId, invoiceName.Trim());
+
+                    await GenerateInvoice(invoiceName);
+
+                    await _events.PublishOnUIThreadAsync(new RefreshDatabase() { Command = "Invoice" });
+                    await TryCloseAsync();
+                    await _events.PublishOnUIThreadAsync(new DashboardVMEvents { Command = Names.ShowInvoice });
+                });
             }
-
-            int result = int.Parse(VatValue.TrimEnd('%'));
-
-            DateTime now = DateTime.Now;
-            DateTime dateTimeIssued = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second);
-
-
-
-            await Database.CreateInvoice(SelectedJob.ClientId, SelectedJob.JobId, _subtotalAmountDb, result, _totalAmountDb, dueDate, BillingName.Trim(), BillingAddress.Trim(), BillingCity.Trim(), BillingPostcode.Trim(), BillingCountry.Trim(), dateTimeIssued);
-            await _dataService.RefreshDatabase();
-
-            var invoiceId = Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId);
-            var invoiceName = $"INV-{invoiceId}_{SelectedJob.JobId}_{SelectedJob.ClientId}_{FileStore.MakeSafeFolderName(SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName)}_{dateTimeIssued.ToString("dd-MM-yyyy")}_{dateTimeIssued.ToString("HHmmss")}.pdf";
-            await Database.SetInvoiceName(invoiceId, invoiceName.Trim());
-
-            await GenerateInvoice(invoiceName);
-
-            await _events.PublishOnUIThreadAsync(new RefreshDatabase() { Command = "Invoice" });
-            await TryCloseAsync();
-            await _events.PublishOnUIThreadAsync(new DashboardVMEvents { Command = Names.ShowInvoice });
-
-
-            // on creation open the edit invoice view and not open the pdf in windows directly!!!
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Invoice Creation";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"CreateInvoiceViewModel: CreateInvoice() FAIL\n\t{ex.Message}");
+            }
         }
+        #endregion
 
+        #region Private Functions
         private async Task GenerateInvoice(string invoiceName)
         {
-            string filePath = await FileStore.SaveInvoiceFile(SelectedJob.ClientId, SelectedJob.ClientName, invoiceName);
-
-            //FileStore.SaveInvoicePdf(SelectedJob.ClientId, SelectedJob.ClientName, Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), SelectedJob.JobId);
-
-            Document.Create(container =>
+            try
             {
-                // container allows multiple page
-                container.Page(page =>
+                await Task.Run(async () =>
                 {
-                    page.Margin(40);
+                    string filePath = await FileStore.SaveInvoiceFile(SelectedJob.ClientId, SelectedJob.ClientName, invoiceName);
 
-                    // header
-                    // horizontal |---|---|
-                    page.Header().PaddingBottom(60).Row(row =>
+                    Document.Create(container =>
                     {
-                        // cell 1
-                        row.RelativeItem().Text(SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName).ExtraBold().FontSize(36).FontColor(Colors.Blue.Medium);
-
-                        // cell 2
-                        row.RelativeItem().AlignRight().Text("Invoice").SemiBold().FontSize(36).FontColor(Colors.Black);
-                        //row.RelativeItem().AlignRight().Text(DateTime.Now.ToString("d")).FontSize(12).FontColor(Colors.Grey.Medium);
-                    });
-
-                    // content
-                    /*
-                     * section 1:
-                     * - client billing info, invoice information
-                     * 
-                     * section 2:
-                     * - table with jobs
-                     * 
-                     * section 3:
-                     * - subtotal, tax, total
-                     * 
-                     * section 4:
-                     * - notes
-                     * 
-                     * section 5:
-                     * - payment info (client's details and pay date), my company ifo
-                     */
-                    page.Content().Column(mainContainer =>
-                    {
-                        //// vertical
-                        //col.Item().Text("Line 1");
-                        //col.Item().Text("Line 2");
-
-
-                        // billing info (client's) and invoice info
-                        mainContainer.Item().PaddingBottom(60).Row(section1 =>
+                        // container allows multiple page
+                        container.Page(page =>
                         {
-                            // billing info
-                            section1.RelativeItem().AlignLeft().Column(billingInfo =>
-                            {
-                                billingInfo.Item().Text("BILLED TO:").FontSize(14).Bold();
-                                billingInfo.Item().Text(text =>
-                                {
-                                    text.Span("Full Name: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                    text.Span(BillingName).FontSize(14);
-                                });
-                                billingInfo.Item().Text(text =>
-                                {
-                                    text.Span("Phone Number: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                    text.Span(_dataService.Clients.FirstOrDefault(c => c.ClientId == SelectedJob.ClientId)?.PhoneNumber).FontSize(14);
-                                });
-                                billingInfo.Item().Text(text =>
-                                {
-                                    text.Span("Email Address: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                    text.Span(_dataService.Clients.FirstOrDefault(c => c.ClientId == SelectedJob.ClientId)?.Email).FontSize(14);
-                                });
-                                billingInfo.Item().Text(text =>
-                                {
-                                    text.Span("Home Address: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                    text.Span(_dataService.Clients.FirstOrDefault(c => c.ClientId == SelectedJob.ClientId)?.BillingAddress).FontSize(14);
-                                });
-                            });
+                            page.Margin(40);
 
-                            // invoice info
-                            section1.RelativeItem().AlignRight().Column(invoiceInfo =>
-                            {
-                                invoiceInfo.Item().Text(text =>
-                                {
-                                    text.Span("Invoice No: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                    text.Span(_dataService.Invoices.Max(c => c.InvoiceNumber + 1).ToString()).FontSize(14);
-                                });
-                                invoiceInfo.Item().Text(text =>
-                                {
-                                    text.Span("Created Date: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                    text.Span(DateOnly.FromDateTime(Convert.ToDateTime(DateTime.Now)).ToString()).FontSize(14);
-                                });
-                            });
-                        });
-
-                        // section 2 (table jobs)
-                        mainContainer.Item().PaddingVertical(5).LineHorizontal(1);
-                        mainContainer.Item().AlignCenter().Table(section2 =>
-                        {
-                            section2.ColumnsDefinition(columns =>
-                            {
-                                columns.RelativeColumn(2); // item/description
-                                columns.RelativeColumn(1); // unit quantity
-                                columns.RelativeColumn(1); // unit price
-                                columns.RelativeColumn(1); // total
-                            });
-
-                            section2.Cell().AlignCenter().Text("Item").FontSize(14).Bold().FontColor(Colors.Grey.Darken2);
-                            section2.Cell().AlignCenter().Text("Quantity").FontSize(14).Bold().FontColor(Colors.Grey.Darken2);
-                            section2.Cell().AlignCenter().Text("Unit Price").FontSize(14).Bold().FontColor(Colors.Grey.Darken2);
-                            section2.Cell().AlignCenter().Text("Total").FontSize(14).Bold().FontColor(Colors.Grey.Darken2);
-                            //section2.Cell().Text("£100");
-
-                            //section2.Cell().Text("VAT");
-                            //section2.Cell().Text("£20");
-                        });
-                        mainContainer.Item().PaddingVertical(5).LineHorizontal(1);
-                        // add crap here
-                        mainContainer.Item().AlignCenter().Table(section2 =>
-                        {
-                            section2.ColumnsDefinition(columns =>
-                            {
-                                columns.RelativeColumn(2); // item/description
-                                columns.RelativeColumn(1); // unit quantity
-                                columns.RelativeColumn(1); // unit price
-                                columns.RelativeColumn(1); // total
-                            });
-
-                            section2.Cell().PaddingLeft(10).AlignLeft().Text(SelectedJob.JobTitle).FontSize(14);
-                            section2.Cell().AlignCenter().Text("1").FontSize(14);
-                            section2.Cell().AlignCenter().Text(SelectedJob.Price).FontSize(14);
-                            section2.Cell().AlignCenter().Text(SelectedJob.Price).FontSize(14);
-                        });
-                        mainContainer.Item().PaddingVertical(5).LineHorizontal(1);
-
-
-                        // section 3 (totals)
-                        mainContainer.Item().PaddingBottom(60).AlignRight().Width(150).Column(section3 =>
-                        {
-                            // subtotal
-                            section3.Item().PaddingBottom(10).Row(Subtotal =>
+                            // header
+                            // horizontal |---|---|
+                            page.Header().PaddingBottom(60).Row(row =>
                             {
                                 // cell 1
-                                Subtotal.RelativeItem().Text("subtotal").ExtraBold().FontSize(14);
+                                row.RelativeItem().Text(SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName).ExtraBold().FontSize(36).FontColor(Colors.Blue.Medium);
 
                                 // cell 2
-                                Subtotal.RelativeItem().Text(SelectedJob.Price).FontSize(14);
+                                row.RelativeItem().AlignRight().Text("Invoice").SemiBold().FontSize(36).FontColor(Colors.Black);
+                                //row.RelativeItem().AlignRight().Text(DateTime.Now.ToString("d")).FontSize(12).FontColor(Colors.Grey.Medium);
                             });
 
-                            // tax
-                            section3.Item().PaddingBottom(10).Row(Subtotal =>
+                            // content
+                            /*
+                             * section 1:
+                             * - client billing info, invoice information
+                             * 
+                             * section 2:
+                             * - table with jobs
+                             * 
+                             * section 3:
+                             * - subtotal, tax, total
+                             * 
+                             * section 4:
+                             * - notes
+                             * 
+                             * section 5:
+                             * - payment info (client's details and pay date), my company ifo
+                             */
+                            page.Content().Column(mainContainer =>
                             {
-                                // cell 1
-                                Subtotal.RelativeItem().Text($"Tax (%)").ExtraBold().FontSize(14);
-
-                                // cell 2
-                                Subtotal.RelativeItem().Text(VatValue).FontSize(14);
-                            });
-
-                            // line break
-                            section3.Item().PaddingVertical(5).PaddingBottom(10).LineHorizontal(2);
-
-                            // tax
-                            section3.Item().PaddingBottom(10).Row(Subtotal =>
-                            {
-                                // cell 1
-                                Subtotal.RelativeItem().Text("Total").ExtraBold().FontSize(14);
-
-                                // cell 2
-                                Subtotal.RelativeItem().Text(_totalAmountDb.ToString("C")).FontSize(14);
-                            });
-                        });
-
-                        // section 4 (notes)
-                        mainContainer.Item().AlignLeft().PaddingBottom(40).Column(section4 =>
-                        {
-                            section4.Item().Text("NOTES").Bold();
-                            section4.Item().Text("I need curry!");
-                        });
-
-                        //mainContainer.Item().Height(60);
-
-                        // section 5 (payment info, company info)
-                        mainContainer.Item().PaddingBottom(0).Row(section5 =>
-                        {
-                            // payment info
-                            section5.RelativeItem().AlignLeft().Column(paymentInfo =>
-                            {
-                                paymentInfo.Item().Text("PAYMENT INFORMATION").FontSize(14).Bold();
-                                paymentInfo.Item().Text(text =>
+                                // billing info (client's) and invoice info
+                                mainContainer.Item().PaddingBottom(60).Row(section1 =>
                                 {
-                                    text.Span("Name: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                    text.Span(_dataService.Bank[0]?.BankName).FontSize(14);
-                                });
-                                paymentInfo.Item().Text(text =>
-                                {
-                                    text.Span("Account Name: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                    text.Span(_dataService.Bank[0]?.AccountName).FontSize(14);
-                                });
-                                paymentInfo.Item().Text(text =>
-                                {
-                                    text.Span("Account Number: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                    text.Span(_dataService.Bank[0]?.AccountNumber).FontSize(14);
-                                });
-                                paymentInfo.Item().Text(text =>
-                                {
-                                    text.Span("Sort Code: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                    text.Span(_dataService.Bank[0]?.SortCode).FontSize(14);
-                                });
-                                if (string.IsNullOrEmpty(_dataService.Bank[0]?.IBAN) == false)
-                                {
-                                    paymentInfo.Item().Text(text =>
+                                    // billing info
+                                    section1.RelativeItem().AlignLeft().Column(billingInfo =>
                                     {
-                                        text.Span("IBAN: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                        text.Span(_dataService.Bank[0]?.IBAN).FontSize(14);
+                                        billingInfo.Item().Text("BILLED TO:").FontSize(14).Bold();
+                                        billingInfo.Item().Text(text =>
+                                        {
+                                            text.Span("Full Name: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                            text.Span(BillingName).FontSize(14);
+                                        });
+                                        billingInfo.Item().Text(text =>
+                                        {
+                                            text.Span("Phone Number: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                            text.Span(_dataService.Clients.FirstOrDefault(c => c.ClientId == SelectedJob.ClientId)?.PhoneNumber).FontSize(14);
+                                        });
+                                        billingInfo.Item().Text(text =>
+                                        {
+                                            text.Span("Email Address: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                            text.Span(_dataService.Clients.FirstOrDefault(c => c.ClientId == SelectedJob.ClientId)?.Email).FontSize(14);
+                                        });
+                                        billingInfo.Item().Text(text =>
+                                        {
+                                            text.Span("Home Address: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                            text.Span(_dataService.Clients.FirstOrDefault(c => c.ClientId == SelectedJob.ClientId)?.BillingAddress).FontSize(14);
+                                        });
                                     });
-                                }
-                                if (string.IsNullOrEmpty(_dataService.Bank[0]?.BIC) == false)
-                                {
-                                    paymentInfo.Item().Text(text =>
+
+                                    // invoice info
+                                    section1.RelativeItem().AlignRight().Column(invoiceInfo =>
                                     {
-                                        text.Span("BIC: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                        text.Span(_dataService.Bank[0]?.BIC).FontSize(14);
+                                        invoiceInfo.Item().Text(text =>
+                                        {
+                                            text.Span("Invoice No: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                            text.Span(_dataService.Invoices.Max(c => c.InvoiceNumber + 1).ToString()).FontSize(14);
+                                        });
+                                        invoiceInfo.Item().Text(text =>
+                                        {
+                                            text.Span("Created Date: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                            text.Span(DateOnly.FromDateTime(Convert.ToDateTime(DateTime.Now)).ToString()).FontSize(14);
+                                        });
                                     });
-                                }
-                                paymentInfo.Item().Text(text =>
-                                {
-                                    text.Span("Due Date: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                    text.Span(DueDate).FontSize(14);
                                 });
+
+                                // section 2 (table jobs)
+                                mainContainer.Item().PaddingVertical(5).LineHorizontal(1);
+                                mainContainer.Item().AlignCenter().Table(section2 =>
+                                {
+                                    section2.ColumnsDefinition(columns =>
+                                    {
+                                        columns.RelativeColumn(2); // item/description
+                                        columns.RelativeColumn(1); // unit quantity
+                                        columns.RelativeColumn(1); // unit price
+                                        columns.RelativeColumn(1); // total
+                                    });
+
+                                    section2.Cell().AlignCenter().Text("Item").FontSize(14).Bold().FontColor(Colors.Grey.Darken2);
+                                    section2.Cell().AlignCenter().Text("Quantity").FontSize(14).Bold().FontColor(Colors.Grey.Darken2);
+                                    section2.Cell().AlignCenter().Text("Unit Price").FontSize(14).Bold().FontColor(Colors.Grey.Darken2);
+                                    section2.Cell().AlignCenter().Text("Total").FontSize(14).Bold().FontColor(Colors.Grey.Darken2);
+                                });
+                                mainContainer.Item().PaddingVertical(5).LineHorizontal(1);
+                                // add crap here
+                                mainContainer.Item().AlignCenter().Table(section2 =>
+                                {
+                                    section2.ColumnsDefinition(columns =>
+                                    {
+                                        columns.RelativeColumn(2); // item/description
+                                        columns.RelativeColumn(1); // unit quantity
+                                        columns.RelativeColumn(1); // unit price
+                                        columns.RelativeColumn(1); // total
+                                    });
+
+                                    section2.Cell().PaddingLeft(10).AlignLeft().Text(SelectedJob.JobTitle).FontSize(14);
+                                    section2.Cell().AlignCenter().Text("1").FontSize(14);
+                                    section2.Cell().AlignCenter().Text(SelectedJob.Price.ToString()).FontSize(14);
+                                });
+                                mainContainer.Item().PaddingVertical(5).LineHorizontal(1);
+
+
+                                // section 3 (totals)
+                                mainContainer.Item().PaddingBottom(60).AlignRight().Width(150).Column(section3 =>
+                                {
+                                    // subtotal
+                                    section3.Item().PaddingBottom(10).Row(Subtotal =>
+                                    {
+                                        // cell 1
+                                        Subtotal.RelativeItem().Text("subtotal").ExtraBold().FontSize(14);
+
+                                        // cell 2
+                                        Subtotal.RelativeItem().Text(SelectedJob.Price.ToString("C")).FontSize(14);
+                                    });
+
+                                    // tax
+                                    section3.Item().PaddingBottom(10).Row(Subtotal =>
+                                    {
+                                        // cell 1
+                                        Subtotal.RelativeItem().Text($"Tax (%)").ExtraBold().FontSize(14);
+
+                                        // cell 2
+                                        Subtotal.RelativeItem().Text(VatValue).FontSize(14);
+                                    });
+
+                                    // line break
+                                    section3.Item().PaddingVertical(5).PaddingBottom(10).LineHorizontal(2);
+
+                                    // tax
+                                    section3.Item().PaddingBottom(10).Row(Subtotal =>
+                                    {
+                                        // cell 1
+                                        Subtotal.RelativeItem().Text("Total").ExtraBold().FontSize(14);
+
+                                        // cell 2
+                                        Subtotal.RelativeItem().Text(_totalAmountDb.ToString("C")).FontSize(14);
+                                    });
+                                });
+
+                                // section 4 (notes)
+                                mainContainer.Item().AlignLeft().PaddingBottom(40).Column(section4 =>
+                                {
+                                    section4.Item().Text("NOTES").Bold();
+                                    section4.Item().Text("I need curry!");
+                                });
+
+                                //mainContainer.Item().Height(60);
+
+                                // section 5 (payment info, company info)
+                                mainContainer.Item().PaddingBottom(0).Row(section5 =>
+                                {
+                                    // payment info
+                                    section5.RelativeItem().AlignLeft().Column(paymentInfo =>
+                                    {
+                                        paymentInfo.Item().Text("PAYMENT INFORMATION").FontSize(14).Bold();
+                                        paymentInfo.Item().Text(text =>
+                                        {
+                                            text.Span("Name: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                            text.Span(_dataService.Bank[0]?.BankName).FontSize(14);
+                                        });
+                                        paymentInfo.Item().Text(text =>
+                                        {
+                                            text.Span("Account Name: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                            text.Span(_dataService.Bank[0]?.AccountName).FontSize(14);
+                                        });
+                                        paymentInfo.Item().Text(text =>
+                                        {
+                                            text.Span("Account Number: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                            text.Span(_dataService.Bank[0]?.AccountNumber).FontSize(14);
+                                        });
+                                        paymentInfo.Item().Text(text =>
+                                        {
+                                            text.Span("Sort Code: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                            text.Span(_dataService.Bank[0]?.SortCode).FontSize(14);
+                                        });
+                                        if (string.IsNullOrEmpty(_dataService.Bank[0]?.IBAN) == false)
+                                        {
+                                            paymentInfo.Item().Text(text =>
+                                            {
+                                                text.Span("IBAN: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                                text.Span(_dataService.Bank[0]?.IBAN).FontSize(14);
+                                            });
+                                        }
+                                        if (string.IsNullOrEmpty(_dataService.Bank[0]?.BIC) == false)
+                                        {
+                                            paymentInfo.Item().Text(text =>
+                                            {
+                                                text.Span("BIC: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                                text.Span(_dataService.Bank[0]?.BIC).FontSize(14);
+                                            });
+                                        }
+                                        paymentInfo.Item().Text(text =>
+                                        {
+                                            text.Span("Due Date: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
+                                            text.Span(DueDate).FontSize(14);
+                                        });
+                                    });
+
+                                    section5.RelativeItem().AlignRight().Column(companyInfo =>
+                                    {
+                                        companyInfo.Item().Text(_dataService.Business[0]?.BusinessName).FontSize(14);
+                                        companyInfo.Item().Text(_dataService.Business[0]?.Address).FontSize(14);
+                                    });
+                                });
+
+                                // spacing
+                                mainContainer.Item().PaddingVertical(10);
                             });
 
-                            section5.RelativeItem().AlignRight().Column(companyInfo =>
+                            // footer
+                            page.Footer().Text(text =>
                             {
-                                companyInfo.Item().Text(_dataService.Business[0]?.BusinessName).FontSize(14);
-                                companyInfo.Item().Text(_dataService.Business[0]?.Address).FontSize(14);
+                                //text.Span("Page ");
+                                //text.CurrentPageNumber();
+                                //text.Span(" of ");
+                                //text.TotalPages();
                             });
                         });
-
-                        // spacing
-                        mainContainer.Item().PaddingVertical(10);
-                    });
-
-                    // footer
-                    page.Footer().Text(text =>
-                    {
-                        //text.Span("Page ");
-                        //text.CurrentPageNumber();
-                        //text.Span(" of ");
-                        //text.TotalPages();
-                    });
+                    }).GeneratePdf(filePath);
                 });
-            }).GeneratePdf(filePath);
-
-            // Open it
-            //Process.Start(new ProcessStartInfo
-            //{
-            //    FileName = filePath,
-            //    UseShellExecute = true
-            //});
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Generate Invoice";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"CreateInvoiceViewModel: GenerateInvoice() FAIL\n\t{ex.Message}");
+            }
         }
 
         private bool ValidateDate()
@@ -496,19 +542,35 @@ namespace Traker.ViewModels
 
         private Task CanSubmit()
         {
-            if (string.IsNullOrEmpty(BillingName) == false && string.IsNullOrEmpty(BillingAddress) == false && string.IsNullOrEmpty(BillingCity) == false && string.IsNullOrEmpty(BillingCountry) == false && string.IsNullOrEmpty(BillingPostcode) == false && ValidateDate() == true)
+            try
             {
+                if (string.IsNullOrEmpty(BillingName) == false && string.IsNullOrEmpty(BillingAddress) == false && string.IsNullOrEmpty(BillingCity) == false && string.IsNullOrEmpty(BillingCountry) == false && string.IsNullOrEmpty(BillingPostcode) == false && ValidateDate() == true)
+                {
 
-                EnableSubmitBtn = true;
-                OpacitySubmitBtn = _fullOpacity;
+                    EnableSubmitBtn = true;
+                    OpacitySubmitBtn = _fullOpacity;
+                }
+                else
+                {
+                    EnableSubmitBtn = false;
+                    OpacitySubmitBtn = _halfOpacity;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                EnableSubmitBtn = false;
-                OpacitySubmitBtn = _halfOpacity;
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Validation";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"CreateInvoiceViewModel: CanSubmit() FAIL\n\t{ex.Message}");
             }
             return Task.CompletedTask;
         }
+        #endregion
 
         #region Public View Variables
         public string BillingName
@@ -598,8 +660,6 @@ namespace Traker.ViewModels
                 _totalAmountDb = _subtotalAmountDb + (_subtotalAmountDb * (decimal.Parse(VatValue.TrimEnd('%')) / 100));
                 TotalAmount = _totalAmountDb.ToString("C");
                 NotifyOfPropertyChange(() => VatValue);
-
-                // update VAT calculation
             }
         }
 
@@ -630,6 +690,16 @@ namespace Traker.ViewModels
             {
                 _opacitySubmitBtn = value;
                 NotifyOfPropertyChange(() => OpacitySubmitBtn);
+            }
+        }
+
+        public List<string> InvoiceStatusEdit
+        {
+            get { return _invoiceStatusEdit; }
+            set
+            {
+                _invoiceStatusEdit = value;
+                NotifyOfPropertyChange(() => InvoiceStatusEdit);
             }
         }
         #endregion

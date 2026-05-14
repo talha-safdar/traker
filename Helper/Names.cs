@@ -19,6 +19,7 @@ namespace Traker.Helper
         public const string Invoiced = "Invoiced";
         public const string Overdue = "Overdue";
         public const string Paid = "Paid";
+        public const string NotInvoiced = "Not Invoiced";
 
         // business type
         public const string Individual = "Individual";
@@ -62,5 +63,8 @@ namespace Traker.Helper
         public const string OK = "OK";
         public const string CancelOK = "CancelOK";
         public const string NoYes = "NoYes";
+
+
+        public const string Invoice = "Invoice";
     }
 }

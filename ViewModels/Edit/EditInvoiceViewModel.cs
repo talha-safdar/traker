@@ -33,6 +33,11 @@ namespace Traker.ViewModels.Edit
         private readonly IEventAggregator _events;
         private readonly IWindowManager _windowManager;
         private readonly DataService _dataService;
+        private readonly AppState _state;
+        #endregion
+
+        #region Public Variables
+        public DashboardModel SelectedJob;
         #endregion
 
         #region Private View Variables
@@ -45,35 +50,53 @@ namespace Traker.ViewModels.Edit
         private string _invoicePath;
         #endregion
 
-        private AppState State { get; }
-        public DashboardModel SelectedJob; // data passed by DashboardVM
-
-        public EditInvoiceViewModel(DataService dataService, IEventAggregator events, IWindowManager windowManager, AppState state)
+        public EditInvoiceViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
         {
-            _dataService = dataService;
             _events = events;
             _windowManager = windowManager;
-            State = state;
+            _dataService = dataService;
+            _state = state;
+
+            SelectedJob = new DashboardModel();
+
+            _buttonText = string.Empty;
+            _buttonBackground = (Brush)new BrushConverter().ConvertFrom("#FFFFFF")!;
+            _buttonHover = (Brush)new BrushConverter().ConvertFrom("#FFFFFF")!;
 
             _invoicePath = string.Empty;
         }
 
+        #region Caliburn Functions
         protected override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
-            // set button text
-            if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Invoiced || _dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Overdue)
+            try
             {
-                ButtonText = "✔ Mark as Paid";
-                ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#16A34A")!;
-                ButtonHover = (Brush)new BrushConverter().ConvertFrom("#15803D")!;
+                // set button text
+                if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Invoiced || _dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Overdue)
+                {
+                    ButtonText = "✔ Mark as Paid";
+                    ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#16A34A")!;
+                    ButtonHover = (Brush)new BrushConverter().ConvertFrom("#15803D")!;
+                }
+                else if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Paid)
+                {
+                    ButtonText = "⏳ Mark as Not Paid";
+                    ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#F59E0B")!;
+                    ButtonHover = (Brush)new BrushConverter().ConvertFrom("#D97706")!;
+                }
             }
-            else if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Paid)
+            catch (Exception ex)
             {
-                ButtonText = "⏳ Mark as Not Paid";
-                ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#F59E0B")!;
-                ButtonHover = (Brush)new BrushConverter().ConvertFrom("#D97706")!;
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Initialise Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"EditInvoiceViewModel: OnInitializedAsync() FAIL\n\t{ex.Message}");
             }
-
             return base.OnInitializedAsync(cancellationToken);
         }
 
@@ -81,146 +104,248 @@ namespace Traker.ViewModels.Edit
         {
             base.OnViewLoaded(view);
 
-            _invoicePath = await FileStore.GetInvoiceFilePath(
-                Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).JobId), 
-                SelectedJob.JobTitle, 
-                Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), 
+            try
+            {
+                _invoicePath = await FileStore.GetInvoiceFilePath(
+                Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).JobId),
+                SelectedJob.JobTitle,
+                Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId),
                 SelectedJob.ClientId,
-                SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName, 
+                SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName,
                 _dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).IssueDate);
 
+                var v = (Traker.Views.Edit.EditInvoiceView)view;
+                var browser = v.PdfViewer;
 
-            var v = (Traker.Views.Edit.EditInvoiceView)view;
-            var browser = v.PdfViewer;
+                string exeDir = AppDomain.CurrentDomain.BaseDirectory;
+                string pdfPath = _invoicePath;
+                Debug.WriteLine(pdfPath);
+                await browser.EnsureCoreWebView2Async();
+                browser.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
+                browser.CoreWebView2.Settings.IsStatusBarEnabled = false;
+                browser.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
+                browser.CoreWebView2.Settings.HiddenPdfToolbarItems =
+                          CoreWebView2PdfToolbarItems.Bookmarks
+                        | CoreWebView2PdfToolbarItems.FitPage
+                        | CoreWebView2PdfToolbarItems.PageLayout
+                        | CoreWebView2PdfToolbarItems.PageSelector
+                        | CoreWebView2PdfToolbarItems.Print
+                        | CoreWebView2PdfToolbarItems.Rotate
+                        | CoreWebView2PdfToolbarItems.Save
+                        | CoreWebView2PdfToolbarItems.SaveAs
+                        | CoreWebView2PdfToolbarItems.Search
+                        | CoreWebView2PdfToolbarItems.ZoomIn
+                        | CoreWebView2PdfToolbarItems.FullScreen
+                        | CoreWebView2PdfToolbarItems.MoreSettings
+                        | CoreWebView2PdfToolbarItems.ZoomOut;
 
-            string exeDir = AppDomain.CurrentDomain.BaseDirectory;
-            string pdfPath = _invoicePath;
-            Debug.WriteLine(pdfPath);
-            await browser.EnsureCoreWebView2Async();
-            browser.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
-            browser.CoreWebView2.Settings.IsStatusBarEnabled = false;
-            browser.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
-            browser.CoreWebView2.Settings.HiddenPdfToolbarItems =
-                      CoreWebView2PdfToolbarItems.Bookmarks
-                    | CoreWebView2PdfToolbarItems.FitPage
-                    | CoreWebView2PdfToolbarItems.PageLayout
-                    | CoreWebView2PdfToolbarItems.PageSelector
-                    | CoreWebView2PdfToolbarItems.Print
-                    | CoreWebView2PdfToolbarItems.Rotate
-                    | CoreWebView2PdfToolbarItems.Save
-                    | CoreWebView2PdfToolbarItems.SaveAs
-                    | CoreWebView2PdfToolbarItems.Search
-                    | CoreWebView2PdfToolbarItems.ZoomIn
-                    | CoreWebView2PdfToolbarItems.FullScreen
-                    | CoreWebView2PdfToolbarItems.MoreSettings
-                    | CoreWebView2PdfToolbarItems.ZoomOut;
-
-            browser.Source = new Uri($"file:///{pdfPath.Replace("\\", "/")}");
+                browser.Source = new Uri($"file:///{pdfPath.Replace("\\", "/")}");
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "View Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"EditInvoiceViewModel: OnViewLoaded() FAIL\n\t{ex.Message}");
+            }
         }
+        #endregion
 
         #region Public View Functions
         public async Task HandleKeyPress(KeyEventArgs e)
         {
-            // ESC button
-            if (e.Key == Key.Escape)
+            try
             {
-                await TryCloseAsync();
+                if (e.Key == Key.Escape)
+                {
+                    await TryCloseAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Exit Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"EditInvoiceViewModel: HandleKeyPress() FAIL\n\t{ex.Message}");
             }
         }
 
         public async Task TogglePaid()
         {
-            /*
-             * Invoice status:
-             * - Created 
-             * - Paid
-             */
-
-            if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Invoiced || _dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Overdue)
+            try
             {
-                //DateOny today = DateOnly.FromDateTime(DateTime.Now);
-                //string formattedDate = today.ToString("dd/MM/yyyy");
+                // Invoice status: Created, Paid
+                if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Invoiced || _dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Overdue)
+                {
+                    ButtonText = "✔ Paid";
+                    ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#16A34A")!;
+                    ButtonHover = (Brush)new BrushConverter().ConvertFrom("#15803D")!;
 
-                ButtonText = "✔ Paid";
-                ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#16A34A")!;
-                ButtonHover = (Brush)new BrushConverter().ConvertFrom("#15803D")!;
+                    await Database.SetInvoiceStatus(Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), "Paid", DateOnly.FromDateTime(DateTime.Now));
+                    await _events.PublishOnUIThreadAsync(new RefreshDatabase());
 
-                await Database.SetInvoiceStatus(Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), "Paid", DateOnly.FromDateTime(DateTime.Now));
-                await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+                    ButtonText = "⏳ Marks as Not Paid";
+                    ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#F59E0B")!;
+                    ButtonHover = (Brush)new BrushConverter().ConvertFrom("#D97706")!;
+                }
+                else if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Paid)
+                {
+                    ButtonText = "⏳ Not Paid";
+                    ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#F59E0B")!;
+                    ButtonHover = (Brush)new BrushConverter().ConvertFrom("#D97706")!;
 
-                ButtonText = "⏳ Marks as Not Paid";
-                ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#F59E0B")!;
-                ButtonHover = (Brush)new BrushConverter().ConvertFrom("#D97706")!;
+                    await Database.SetInvoiceStatus(Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), "Invoiced", null);
+                    await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+
+                    ButtonText = "✔ Mark as Paid";
+                    ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#16A34A")!;
+                    ButtonHover = (Brush)new BrushConverter().ConvertFrom("#15803D")!;
+                }
+                // add animation?
             }
-            else if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Paid)
+            catch (Exception ex)
             {
-                ButtonText = "⏳ Not Paid";
-                ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#F59E0B")!;
-                ButtonHover = (Brush)new BrushConverter().ConvertFrom("#D97706")!;
-
-                await Database.SetInvoiceStatus(Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), "Invoiced", null);
-                await _events.PublishOnUIThreadAsync(new RefreshDatabase());
-
-                ButtonText = "✔ Mark as Paid";
-                ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#16A34A")!;
-                ButtonHover = (Brush)new BrushConverter().ConvertFrom("#15803D")!;
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Set Payment Status";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"EditClientViewModel: TogglePaid() FAIL\n\t{ex.Message}");
             }
-            // add animation?
         }
 
         public Task DownloadInvoice()
         {
-            // 1. Initialize the SaveFileDialog
-            SaveFileDialog saveFileDialog = new SaveFileDialog
+            try
             {
-                Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",
-                FileName = $"Invoice_{FileStore.MakeSafeFolderName(SelectedJob.ClientName)}_{_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).IssueDate.ToString("dd-MM-yyyy")}_{_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).IssueDate.ToString("HHmmss")}.pdf", // Default name
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-            };
-
-            // 2. Show the explorer dialog
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                try
+                // 1. Initialize the SaveFileDialog
+                SaveFileDialog saveFileDialog = new SaveFileDialog
                 {
-                    // 3. Copy the file from your known path to the user's chosen path
-                    File.Copy(_invoicePath, saveFileDialog.FileName, overwrite: true);
+                    Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",
+                    FileName = $"Invoice_{FileStore.MakeSafeFolderName(SelectedJob.ClientName)}_{_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).IssueDate.ToString("dd-MM-yyyy")}_{_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).IssueDate.ToString("HHmmss")}.pdf", // Default name
+                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                };
 
-                    // Optional: Notify user of success
-                    System.Windows.MessageBox.Show("File saved successfully!");
-                }
-                catch (System.Exception ex)
+
+                // 2. Show the explorer dialog
+                if (saveFileDialog.ShowDialog() == true)
                 {
-                    System.Windows.MessageBox.Show($"Error saving file: {ex.Message}");
+                    try
+                    {
+                        // 3. Copy the file from your known path to the user's chosen path
+                        File.Copy(_invoicePath, saveFileDialog.FileName, overwrite: true);
+
+                        // Notify user of success
+                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                        {
+                            _state.messageBoxVM.Symbol = 0;
+                            _state.messageBoxVM.HeadMessage = "File Saved";
+                            _state.messageBoxVM.Message = "File saved successfully!";
+                            _state.messageBoxVM.ButtonStyle = Names.OK;
+                            _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Execute.OnUIThreadAsync(async() =>
+                        {
+                            if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                            {
+                                _state.messageBoxVM.Symbol = 2;
+                                _state.messageBoxVM.HeadMessage = "Save File";
+                                _state.messageBoxVM.Message = ex.Message;
+                                _state.messageBoxVM.ButtonStyle = Names.OK;
+                                await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                            }
+                        });
+                        Logger.LogActivity(Logger.ERROR, $"EditInvoiceViewModel: DownloadInvoice() FAIL inner\n\t{ex.Message}");
+                    }
                 }
             }
-
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Save File";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"EditInvoiceViewModel: DownloadInvoice() FAIL\n\t{ex.Message}");
+            }
             return Task.CompletedTask;
         }
 
         public async Task DeleteInvoice()
         {
-            if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+            try
             {
-                State.messageBoxVM.Symbol = 0;
-                State.messageBoxVM.HeadMessage = "Delete Invoice";
-                State.messageBoxVM.Message = Names.DeleteInvoiceConfirmation;
-                State.messageBoxVM.ButtonStyle = Names.NoYes;
-                await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-            }
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 0;
+                    _state.messageBoxVM.HeadMessage = "Delete Invoice";
+                    _state.messageBoxVM.Message = Names.DeleteInvoiceConfirmation;
+                    _state.messageBoxVM.ButtonStyle = Names.NoYes;
+                    await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
 
-            // if clicked yes
-            if (State.messageBoxVM.Output == true)
+                // if clicked yes
+                if (_state.messageBoxVM.Output == true)
+                {
+                    await Task.Run(async() =>
+                    {
+                        await Database.DeleteInvoice(Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), SelectedJob.JobId);
+                        await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+                        await TryCloseAsync();
+                    });
+                }
+            }
+            catch (Exception ex)
             {
-                await Database.DeleteInvoice(Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), SelectedJob.JobId);
-                await _events.PublishOnUIThreadAsync(new RefreshDatabase());
-                await TryCloseAsync();
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Delete Invoice";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"EditInvoiceViewModel: DeleteInvoice() FAIL\n\t{ex.Message}");
             }
         }
 
         public async Task Exit()
         {
-            await TryCloseAsync();
+            try
+            {
+                await TryCloseAsync();
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Exit";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"EditInvoiceViewModel: Exit() FAIL\n\t{ex.Message}");
+            }
         }
         #endregion
 

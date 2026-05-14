@@ -25,8 +25,8 @@
                 </Grid.ColumnDefinitions>
                 
                 <!-- active -->
-                <Grid Grid.Column="0">
-                    <Border IsEnabled="{Binding ActiveDoneEnable[0]}" Opacity="{Binding ActiveDoneOpacity[0]}" SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Active')]" Background="#332B1B" CornerRadius="10" Height="35" Margin="0,0,5,0" BorderThickness="1" BorderBrush="#FFAA00">
+                <Grid Grid.Column="0" IsEnabled="{Binding ActiveDoneEnable[0]}" Opacity="{Binding ActiveDoneOpacity[0]}">
+                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Active')]" Background="#332B1B" CornerRadius="10" Height="35" Margin="0,0,5,0" BorderThickness="1" BorderBrush="#FFAA00">
                         <Border.Style>
                             <Style TargetType="Border">           
                                 <Setter Property="Opacity" Value="1"/>
@@ -48,8 +48,8 @@
                 </Grid>
 
                 <!-- done -->
-                <Grid Grid.Column="1">
-                    <Border IsEnabled="{Binding ActiveDoneEnable[1]}" Opacity="{Binding ActiveDoneOpacity[1]}" SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Done')]" Background="#1B3320" CornerRadius="10" Height="35" Margin="5,0,0,0" BorderThickness="1" BorderBrush="#00FF00">
+                <Grid Grid.Column="1"  IsEnabled="{Binding ActiveDoneEnable[1]}" Opacity="{Binding ActiveDoneOpacity[1]}">
+                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Done')]" Background="#1B3320" CornerRadius="10" Height="35" Margin="5,0,0,0" BorderThickness="1" BorderBrush="#00FF00">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="Opacity" Value="1"/>

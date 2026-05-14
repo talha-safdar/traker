@@ -258,7 +258,7 @@
                                 </Border>
                             </Grid>
                             
-                            <!-- active (in progress) -->
+                            <!-- active -->
                             <Grid Grid.Column="1" Grid.Row="0" Margin="10,0,10,20">
                                 <Border CornerRadius="10" BorderThickness="1" SnapsToDevicePixels="True">
                                     <Border.BorderBrush>
@@ -275,7 +275,7 @@
                                 </Border>
                             </Grid>
 
-                            <!-- Done (completed) -->
+                            <!-- Done -->
                             <Grid Grid.Column="0" Grid.Row="1" Margin="10,0,10,0">
                                 <Border CornerRadius="10" BorderThickness="1" SnapsToDevicePixels="True">
                                     <Border.BorderBrush>
@@ -415,7 +415,7 @@
                                         SnapsToDevicePixels="True"
                                         Source="/Resources/Media/Images/Icons/Lucide/user-round-cog.svg" Width="25" Height="25"/>
                                     </Border>
-                                    <TextBlock VerticalAlignment="Center" Margin="15,0,0,0" Text="{Binding Data.User[0].FullName}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
+                                    <TextBlock VerticalAlignment="Center" Margin="15,0,0,0" Text="{Binding DataService.User[0].FullName}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
                                 </StackPanel>                                
                             </Border>
                         </Grid>

@@ -1,19 +1,12 @@
 ﻿using Caliburn.Micro;
-using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.Metrics;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Traker.Events;
 using Traker.Models;
 
 namespace Traker.ViewModels.Edit
 {
     using Database;
+    using Microsoft.VisualBasic;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics;
     using System.Windows;
     using System.Windows.Input;
     using Traker.Data;
@@ -27,6 +20,12 @@ namespace Traker.ViewModels.Edit
         #region Caliburn Variables
         private readonly IEventAggregator _events;
         private readonly IWindowManager _windowManager;
+        private readonly DataService _dataService;
+        private readonly AppState _state; // state binding variable accessible from other viewmodels
+        #endregion
+
+        #region Public Variables
+        public DashboardModel SelectedJob;
         #endregion
 
         #region Private View Variables
@@ -47,37 +46,58 @@ namespace Traker.ViewModels.Edit
         private JobsListViewModel _jobsListViewModel;
         #endregion
 
-        #region Public State Variable
-        public DataService Data { get; } // data from the database
-        public AppState State { get; } // state binding variable accessible from other viewmodels
-        #endregion
-
-        public DashboardModel SelectedJob; // data passed by DashboardVM
-
         public EditClientViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
         {
             _events = events;
             _windowManager = windowManager;
-            Data = dataService;
-            State = state;
-            _jobsListViewModel = new JobsListViewModel(_events, _windowManager, State, Data);
+            _dataService = dataService;
+            _state = state;
+
             SelectedJob = new DashboardModel();
+
+            _clientName = string.Empty;
+            _clientType = string.Empty;
+            _companyName = string.Empty;
+            _clientEmail = string.Empty;
+            _phoneNumber = string.Empty;
+            _billingAddress = string.Empty;
+            _city = string.Empty;
+            _postcode = string.Empty;
+            _country = string.Empty;
+            _createdDate = string.Empty;
+
+            _jobsListViewModel = new JobsListViewModel(_events, _windowManager, _dataService, _state);
         }
 
+        #region Caliburn Functions
         protected override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
-            // pre-fill form with available data
-            ClientType = SelectedJob.ClientType;
-            ClientName = SelectedJob.ClientName;
-            ClientEmail = SelectedJob.ClientEmail;
-            CompanyName = SelectedJob.CompanyName;
-            PhoneNumber = SelectedJob.ClientPhone;
-            BillingAddress = SelectedJob.Address;
-            City = SelectedJob.City;
-            Postcode = SelectedJob.Postcode;
-            Country = SelectedJob.Country;
-            CreatedDate = SelectedJob.CreatedDate.ToString();
-            IsActive = SelectedJob.IsActive;
+            try
+            {
+                ClientType = SelectedJob.ClientType;
+                ClientName = SelectedJob.ClientName;
+                ClientEmail = SelectedJob.ClientEmail;
+                CompanyName = SelectedJob.CompanyName;
+                PhoneNumber = SelectedJob.ClientPhone;
+                BillingAddress = SelectedJob.Address;
+                City = SelectedJob.City;
+                Postcode = SelectedJob.Postcode;
+                Country = SelectedJob.Country;
+                CreatedDate = SelectedJob.CreatedDate.ToString();
+                IsActive = SelectedJob.IsActive;
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Initialise Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"EditClientViewModel: HandleKeyPress() FAIL\n\t{ex.Message}");
+            }
 
             return base.OnInitializedAsync(cancellationToken);
         }
@@ -87,12 +107,134 @@ namespace Traker.ViewModels.Edit
             _events.Unsubscribe(this);
             return base.OnDeactivateAsync(close, cancellationToken);
         }
+        #endregion
 
         #region Public View Functions
         public async Task HandleKeyPress(KeyEventArgs e)
         {
-            // ESC button
-            if (e.Key == Key.Escape)
+            try
+            {
+                if (e.Key == Key.Escape)
+                {
+                    if (SelectedJob.ClientType != ClientType ||
+                        SelectedJob.CompanyName != CompanyName ||
+                        SelectedJob.ClientName != ClientName ||
+                        SelectedJob.ClientEmail != ClientEmail ||
+                        SelectedJob.ClientPhone != PhoneNumber ||
+                        SelectedJob.Address != BillingAddress ||
+                        SelectedJob.City != City ||
+                        SelectedJob.Postcode != Postcode ||
+                        SelectedJob.Country != Country)
+                    {
+                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                        {
+                            _state.messageBoxVM.Symbol = 0;
+                            _state.messageBoxVM.HeadMessage = "Discard changes?";
+                            _state.messageBoxVM.Message = Names.DiscardEsc;
+                            _state.messageBoxVM.ButtonStyle = Names.NoYes;
+                            await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        }
+
+                        // if clicked yes
+                        if (_state.messageBoxVM.Output == true)
+                        {
+                            await TryCloseAsync();
+                        }
+                    }
+                    else
+                    {
+                        await TryCloseAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Exit Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"EditClientViewModel: HandleKeyPress() FAIL\n\t{ex.Message}");
+            }
+        }
+
+        public async Task ConfirmEditClient()
+        {
+            try
+            {
+                await Task.Run(async () => {
+                    await Database.EditClient(SelectedJob.ClientId, ClientType.Trim(), ClientName.Trim(), ClientEmail.Trim(), CompanyName.Trim(), PhoneNumber.Trim(), BillingAddress.Trim(), City.Trim(), Postcode.Trim(), Country.Trim(), IsActive);
+
+                    // check if name changes for folder naming purpose
+                    if ((SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName) != ClientName)
+                    {
+                        await FileStore.UpdateClientFolderName(SelectedJob.ClientId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim(), SelectedJob.ClientType == Names.Individual ? ClientName.Trim() : CompanyName.Trim());
+                    }
+                    await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+                    await TryCloseAsync();
+                });
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Confirm Edit";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"EditClientViewModel: ConfirmEditClient() FAIL\n\t{ex.Message}");
+            }
+        }
+
+        public async Task DeleteClient()
+        {
+            try
+            {
+                await Task.Run(async () => {
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                    {
+                        _state.messageBoxVM.Symbol = 0;
+                        _state.messageBoxVM.HeadMessage = "Delete Client";
+                        _state.messageBoxVM.Message = Names.DeleteClientConfirmation;
+                        _state.messageBoxVM.ButtonStyle = Names.NoYes;
+                        await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+
+                    // if clicked yes
+                    if (_state.messageBoxVM.Output == true)
+                    {
+                        // delete client folder
+                        await FileStore.DeleteClientFolder(SelectedJob.ClientId, SelectedJob.ClientName.Trim());
+
+                        // delete client database row
+                        await Database.DeleteClient(SelectedJob.ClientId);
+                        await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+                        await TryCloseAsync();
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Confirm Edit";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"EditClientViewModel: DeleteClient() FAIL\n\t{ex.Message}");
+            }
+        }
+
+        public async Task Exit()
+        {
+            try
             {
                 if (SelectedJob.ClientType != ClientType ||
                     SelectedJob.CompanyName != CompanyName ||
@@ -104,17 +246,17 @@ namespace Traker.ViewModels.Edit
                     SelectedJob.Postcode != Postcode ||
                     SelectedJob.Country != Country)
                 {
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
                     {
-                        State.messageBoxVM.Symbol = 0;
-                        State.messageBoxVM.HeadMessage = "Discard changes?";
-                        State.messageBoxVM.Message = Names.DiscardEsc;
-                        State.messageBoxVM.ButtonStyle = Names.NoYes;
-                        await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        _state.messageBoxVM.Symbol = 0;
+                        _state.messageBoxVM.HeadMessage = "Discard changes?";
+                        _state.messageBoxVM.Message = Names.DiscardEsc;
+                        _state.messageBoxVM.ButtonStyle = Names.NoYes;
+                        await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
 
                     // if clicked yes
-                    if (State.messageBoxVM.Output == true)
+                    if (_state.messageBoxVM.Output == true)
                     {
                         await TryCloseAsync();
                     }
@@ -124,83 +266,72 @@ namespace Traker.ViewModels.Edit
                     await TryCloseAsync();
                 }
             }
-        }
-
-        public async Task ConfirmEditClient()
-        {
-            await Database.EditClient(SelectedJob.ClientId, ClientType.Trim(), ClientName.Trim(), ClientEmail.Trim(), CompanyName.Trim(), PhoneNumber.Trim(), BillingAddress.Trim(), City.Trim(), Postcode.Trim(), Country.Trim(), IsActive);
-
-            // check if name changes for folder naming purpose
-            if ((SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName) != ClientName)
+            catch (Exception ex)
             {
-                await FileStore.UpdateClientFolderName(SelectedJob.ClientId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim(), SelectedJob.ClientType == Names.Individual ? ClientName.Trim() : CompanyName.Trim());
-            }
-
-            await _events.PublishOnUIThreadAsync(new RefreshDatabase());
-            await TryCloseAsync();
-        }
-
-        public async Task DeleteClient()
-        {
-            if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
-            {
-                State.messageBoxVM.Symbol = 0;
-                State.messageBoxVM.HeadMessage = "Delete Client";
-                State.messageBoxVM.Message = Names.DeleteClientConfirmation;
-                State.messageBoxVM.ButtonStyle = Names.NoYes;
-                await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-            }
-
-            // if clicked yes
-            if (State.messageBoxVM.Output == true)
-            {
-                // delete client folder
-                await FileStore.DeleteClientFolder(SelectedJob.ClientId, SelectedJob.ClientName.Trim());
-
-                // delete client database row
-                await Database.DeleteClient(SelectedJob.ClientId);
-                await _events.PublishOnUIThreadAsync(new RefreshDatabase());
-                await TryCloseAsync();
-            }
-        }
-
-        public async Task Exit()
-        {
-            if (SelectedJob.ClientType != ClientType ||
-                SelectedJob.CompanyName != CompanyName ||
-                SelectedJob.ClientName != ClientName ||
-                SelectedJob.ClientEmail != ClientEmail ||
-                SelectedJob.ClientPhone != PhoneNumber ||
-                SelectedJob.Address != BillingAddress ||
-                SelectedJob.City != City ||
-                SelectedJob.Postcode != Postcode ||
-                SelectedJob.Country != Country)
-            {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
                 {
-                    State.messageBoxVM.Symbol = 0;
-                    State.messageBoxVM.HeadMessage = "Discard changes?";
-                    State.messageBoxVM.Message = Names.DiscardEsc;
-                    State.messageBoxVM.ButtonStyle = Names.NoYes;
-                    await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Exit Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
+                Logger.LogActivity(Logger.ERROR, $"EditClientViewModel: HandleKeyPress() FAIL\n\t{ex.Message}");
+            }
 
-                // if clicked yes
-                if (State.messageBoxVM.Output == true)
-                {
-                    await TryCloseAsync();
-                }
-            }
-            else
-            {
-                await TryCloseAsync();
-            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
 
         public async Task OpenJobsList()
         {
-            _jobsListViewModel.SelectedJob = SelectedJob;
-            await _windowManager.ShowDialogAsync(_jobsListViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
+            try
+            {
+                _jobsListViewModel.SelectedJob = SelectedJob;
+                await _windowManager.ShowDialogAsync(_jobsListViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Open Jobs List";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"EditClientViewModel: OpenJobsList() FAIL\n\t{ex.Message}");
+            }
         }
         #endregion
 
@@ -210,11 +341,6 @@ namespace Traker.ViewModels.Edit
             if (ClientType == Names.Individual)
             {
                 CompanyName = string.Empty;
-            }
-            else if (ClientType == Names.Company)
-            {
-                //CompanyName = ClientName;
-                //ClientName = string.Empty;
             }
             return Task.CompletedTask;
         }

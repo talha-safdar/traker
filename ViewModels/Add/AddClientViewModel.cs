@@ -19,6 +19,7 @@ namespace Traker.ViewModels.Add
         private readonly IEventAggregator _events;
         private readonly IWindowManager _windowManager;
         private readonly DataService _dataService;
+        private readonly AppState _state;
         #endregion
 
         #region Private View Variables
@@ -34,10 +35,6 @@ namespace Traker.ViewModels.Add
         private double _opacitySubmitBtn;
         #endregion
 
-        #region Public State Variable
-        public AppState State { get; } // state binding variable accessible from other viewmodels
-        #endregion
-
         #region Private Class Field Variables
         private string _clientNameTxt = "Client Name";
         private string _companyNameTxt = "Company Name";
@@ -45,10 +42,12 @@ namespace Traker.ViewModels.Add
         private double _halfOpacity = 0.5;
         #endregion
 
-        public AddClientViewModel(IEventAggregator events, AppState appState, DataService dataService, IWindowManager windowManager)
+        public AddClientViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
         {
             _events = events;
+            _windowManager = windowManager;
             _dataService = dataService;
+            _state = state;
 
             _clientType = string.Empty;
             _businessName = string.Empty;
@@ -56,9 +55,6 @@ namespace Traker.ViewModels.Add
             _price = string.Empty;
             _dueDate = string.Empty;
             _businessNameText = string.Empty;
-
-            State = appState;
-            _windowManager = windowManager;
         }
 
         #region Caliburn Functions
@@ -72,17 +68,22 @@ namespace Traker.ViewModels.Add
                 // submit button
                 EnableSubmitBtn = false;
                 OpacitySubmitBtn = _halfOpacity;
+
+                Logger.LogActivity(Logger.INFO, $"AddClientViewModel: OnInitializedAsync() OK");
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"An error occurred while initializing Add Client page. Please try again.\n\n{ex.Message}",
-                    "Add Client",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                //Logger.LogActivity(Logger.ERROR, $"AddClientViewModel: OnInitializedAsync() FAIL");
+                // not already open?
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Initialise Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"AddClientViewModel: OnInitializedAsync() FAIL\n\t{ex.Message}");
             }
-
             return base.OnInitializedAsync(cancellationToken);
         }
 
@@ -94,40 +95,61 @@ namespace Traker.ViewModels.Add
         #endregion
 
         #region Public View Functions
+        /// <summary>
+        /// Esc button to exit the window
+        /// </summary>
         public async Task HandleKeyPress(KeyEventArgs e)
         {
-            // ESC button
-            if (e.Key == Key.Escape)
+            try
             {
-                if (
-                    string.IsNullOrEmpty(BusinessName) == false ||
-                    string.IsNullOrEmpty(JobTitle) == false ||
-                    string.IsNullOrEmpty(Price) == false ||
-                    string.IsNullOrEmpty(DueDate) == false
-                    )
+                if (e.Key == Key.Escape)
                 {
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                    if (
+                        string.IsNullOrEmpty(BusinessName) == false ||
+                        string.IsNullOrEmpty(JobTitle) == false ||
+                        string.IsNullOrEmpty(Price) == false ||
+                        string.IsNullOrEmpty(DueDate) == false
+                        )
                     {
-                        State.messageBoxVM.Symbol = 0;
-                        State.messageBoxVM.HeadMessage = "Discard changes?";
-                        State.messageBoxVM.Message = Names.DiscardEsc;
-                        State.messageBoxVM.ButtonStyle = Names.NoYes;
-                        await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
+                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                        {
+                            _state.messageBoxVM.Symbol = 0;
+                            _state.messageBoxVM.HeadMessage = "Discard changes?";
+                            _state.messageBoxVM.Message = Names.DiscardEsc;
+                            _state.messageBoxVM.ButtonStyle = Names.NoYes;
+                            await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        }
 
-                    // if clicked yes
-                    if (State.messageBoxVM.Output == true)
+                        // if clicked yes
+                        if (_state.messageBoxVM.Output == true)
+                        {
+                            await TryCloseAsync();
+                        }
+                    }
+                    else
                     {
                         await TryCloseAsync();
                     }
                 }
-                else
+                Logger.LogActivity(Logger.INFO, $"AddClientViewModel: HandleKeyPress() OK");
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
                 {
-                    await TryCloseAsync();
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Exit Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
+                Logger.LogActivity(Logger.ERROR, $"AddClientViewModel: HandleKeyPress() FAIL\n\t{ex.Message}");
             }
         }
 
+        /// <summary>
+        /// Exit button to exit the window
+        /// </summary>
         public async Task Exit()
         {
             try
@@ -139,17 +161,17 @@ namespace Traker.ViewModels.Add
                     string.IsNullOrEmpty(DueDate) == false
                     )
                 {
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
                     {
-                        State.messageBoxVM.Symbol = 0;
-                        State.messageBoxVM.HeadMessage = "Discard changes?";
-                        State.messageBoxVM.Message = Names.DiscardEsc;
-                        State.messageBoxVM.ButtonStyle = Names.NoYes;
-                        await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        _state.messageBoxVM.Symbol = 0;
+                        _state.messageBoxVM.HeadMessage = "Discard changes?";
+                        _state.messageBoxVM.Message = Names.DiscardEsc;
+                        _state.messageBoxVM.ButtonStyle = Names.NoYes;
+                        await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
 
                     // if clicked yes
-                    if (State.messageBoxVM.Output == true)
+                    if (_state.messageBoxVM.Output == true)
                     {
                         await TryCloseAsync();
                     }
@@ -158,97 +180,117 @@ namespace Traker.ViewModels.Add
                 {
                     await TryCloseAsync();
                 }
-                Logger.LogActivity(Logger.ERROR, $"AddClientViewModel: Exit() OK");
+                Logger.LogActivity(Logger.INFO, $"AddClientViewModel: Exit() OK");
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"An error occurred while exiting app. Please try again.\n\n{ex.Message}",
-                    "Exit App",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Logger.LogActivity(Logger.ERROR, $"AddClientViewModel: Exit() FAIL");
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Exit Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"AddClientViewModel: Exit() FAIL\n\t{ex.Message}");
             }
         }
 
+        /// <summary>
+        /// Add client confirmation
+        /// </summary>
         public async Task AddClient()
         {
-            // add checks
-            // remove white spaces 
-            // price textbox only number
-            // money format use commas and dots
-            // empty boxes on press add
-
-            var dueDate = DateOnly.MinValue;
-            decimal amount = 0;
-
-            // due date conversion
-            if (DueDate != string.Empty)
+            try
             {
-                dueDate = DateOnly.ParseExact(
-                DueDate,
-                "dd/MM/yyyy",
-                CultureInfo.InvariantCulture
-                );
-            }
+                await Task.Run(async() => {
+                    var dueDate = DateOnly.MinValue;
+                    decimal amount = 0;
 
-            // money conversion
-            if (Price != string.Empty)
+                    // due date conversion
+                    if (DueDate != string.Empty)
+                    {
+                        dueDate = DateOnly.ParseExact(DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                    }
+
+                    // money conversion
+                    if (Price != string.Empty)
+                    {
+                        amount = decimal.Parse(Price, CultureInfo.InvariantCulture);
+                    }
+
+                    /*
+                     * 0 = clientId
+                     * 1 = jobId
+                     */
+                    List<int> clientJobIds = new List<int>();
+
+                    if (ClientType == Names.Individual)
+                    {
+                        clientJobIds = await Database.AddIndividualClient(BusinessName.Trim(), ClientType.Trim(), JobTitle.Trim(), amount, dueDate);
+                    }
+                    else if (ClientType == Names.Company)
+                    {
+                        clientJobIds = await Database.AddCompanyClient(BusinessName.Trim(), ClientType.Trim(), JobTitle.Trim(), amount, dueDate);
+                    }
+
+                    // refresh database
+                    await _dataService.RefreshDatabase();
+
+                    // create Client folder in file store and get its name
+                    string clientFolderName = await FileStore.CreateClientFolder(_dataService.Clients.OrderByDescending(c => c.ClientId).First().ClientId, BusinessName.Trim());
+
+                    // create Job folder in file store and get its name
+                    string jobFolderName = await FileStore.CreateJobFolder(clientJobIds[0], clientJobIds[1], BusinessName.Trim(), JobTitle.Trim());
+
+                    // update client and job databases with their fodler names
+                    await Database.SetClientFolderName(clientJobIds[0], clientFolderName.Trim());
+                    await Database.SetJobFolderName(clientJobIds[1], jobFolderName.Trim());
+
+                    // refresh database
+                    await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+                    await TryCloseAsync();
+                    Logger.LogActivity(Logger.INFO, $"AddClientViewModel: AddClient() OK");
+                });
+            }
+            catch (Exception ex)
             {
-                amount = decimal.Parse(
-                    Price,
-                    CultureInfo.InvariantCulture
-                );
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Add Client";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"AddClientViewModel: AddClient() FAIL\n\t{ex.Message}");
             }
-
-            /*
-             * 0 = clientId
-             * 1 = jobId
-             */
-            List<int> clientJobIds = new List<int>();
-
-            if (ClientType == Names.Individual)
-            {
-                clientJobIds = await Database.AddIndividualClient(BusinessName.Trim(), ClientType.Trim(), JobTitle.Trim(), amount, dueDate);
-            }
-            else if (ClientType == Names.Company)
-            {
-                clientJobIds = await Database.AddCompanyClient(BusinessName.Trim(), ClientType.Trim(), JobTitle.Trim(), amount, dueDate);
-            }
-
-            // refresh database
-            await _dataService.RefreshDatabase();
-
-            // create Client folder in file store and get its name
-            string clientFolderName = await FileStore.CreateClientFolder(_dataService.Clients.OrderByDescending(c => c.ClientId).First().ClientId, BusinessName.Trim());
-
-            // create Job folder in file store and get its name
-            string jobFolderName = await FileStore.CreateJobFolder(clientJobIds[0], clientJobIds[1], BusinessName.Trim(), JobTitle.Trim());
-
-            // update client and job databases with their fodler names
-            await Database.SetClientFolderName(clientJobIds[0], clientFolderName.Trim());
-            await Database.SetJobFolderName(clientJobIds[1], jobFolderName.Trim());
-
-            // refresh database
-            await _events.PublishOnUIThreadAsync(new RefreshDatabase());
-            await TryCloseAsync();
         }
         #endregion
 
         #region Private Functions
+        /// <summary>
+        /// Based on client type change label text
+        /// </summary>
         private Task ToggleClientType()
         {
-            if (ClientType == Names.Individual)
+            Task.Run(() =>
             {
-                BusinessNameText = _clientNameTxt;
-            }
-            else if (ClientType == Names.Company)
-            {
-                BusinessNameText = _companyNameTxt;
-            }
+                if (ClientType == Names.Individual)
+                {
+                    BusinessNameText = _clientNameTxt;
+                }
+                else if (ClientType == Names.Company)
+                {
+                    BusinessNameText = _companyNameTxt;
+                }
+            });
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Check date
+        /// </summary>
         private bool ValidateDate()
         {
             return DateTime.TryParseExact(
@@ -260,18 +302,36 @@ namespace Traker.ViewModels.Add
                 && parsedDate.Date >= DateTime.Today;
         }
 
+        /// <summary>
+        /// Check if all textboxes are filled to enable submit button
+        /// </summary>
+        /// <returns></returns>
         private Task CanSubmit()
         {
-            if (string.IsNullOrEmpty(ClientType) == false && string.IsNullOrEmpty(BusinessName) == false && string.IsNullOrEmpty(JobTitle) == false && string.IsNullOrEmpty(Price) == false && ValidateDate() == true)
+            try
             {
-
-                EnableSubmitBtn = true;
-                OpacitySubmitBtn = _fullOpacity;
+                if (string.IsNullOrEmpty(ClientType) == false && string.IsNullOrEmpty(BusinessName) == false && string.IsNullOrEmpty(JobTitle) == false && string.IsNullOrEmpty(Price) == false && ValidateDate() == true)
+                {
+                    EnableSubmitBtn = true;
+                    OpacitySubmitBtn = _fullOpacity;
+                }
+                else
+                {
+                    EnableSubmitBtn = false;
+                    OpacitySubmitBtn = _halfOpacity;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                EnableSubmitBtn = false;
-                OpacitySubmitBtn = _halfOpacity;
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Add Client";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"AddClientViewModel: CanSubmit() FAIL\n\t{ex.Message}");
             }
             return Task.CompletedTask;
         }

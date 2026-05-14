@@ -6,8 +6,11 @@ using System.DirectoryServices;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Traker.Events.DashboardVM;
 using Traker.Helper;
+using Traker.Services;
+using Traker.States;
 
 namespace Traker.ViewModels
 {
@@ -15,6 +18,9 @@ namespace Traker.ViewModels
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
+        private readonly IWindowManager _windowManager;
+        private readonly DataService _dataService;
+        private readonly AppState _state;
         #endregion
 
         #region Private View Variables
@@ -27,85 +33,139 @@ namespace Traker.ViewModels
         private List<bool> _optionsStatus;
         private int _selectedOption = -1;
         private double _fullOpacity = 1.0;
-        private double _halfOpacity = 0.5;
 
         private bool _isInitialized; // This stays 'true' because the VM is a Singleton
         #endregion
 
-        public FilterJobsViewModel(IEventAggregator events)
+        public FilterJobsViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
         {
             _events = events;
+            _windowManager = windowManager;
+            _dataService = dataService;
+            _state = state;
+
+            _optionsStatus = new List<bool>();
+            _opacityStatus = new ObservableCollection<double>();
+            _clientType = new ObservableCollection<bool>();
+            _opacityClientType = new ObservableCollection<double>();
         }
 
+        #region Caliburn Functions
         protected override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
-            // If we've already done this once, stop here!
-            if (_isInitialized == true)
+            try
             {
-                return base.OnInitializedAsync(cancellationToken);
+                // If we've already done this once, stop here!
+                if (_isInitialized == true)
+                {
+                    return base.OnInitializedAsync(cancellationToken);
+                }
+
+                /*
+                 * 0 = new
+                 * 1 = active
+                 * 2 = done
+                 * 3 = invoiced
+                 * 4 = paid // to be added?
+                 */
+                _optionsStatus = new List<bool>() { false, false, false, false };
+                _opacityStatus = new ObservableCollection<double>() { _fullOpacity, _fullOpacity, _fullOpacity, _fullOpacity };
+
+                _clientType = new ObservableCollection<bool>() { false, false }; // 0=individual, 1=company
+                _opacityClientType = new ObservableCollection<double>() { _fullOpacity, _fullOpacity };
+                _isInitialized = true; // Mark as done
             }
-
-            /*
-             * 0 = new
-             * 1 = active
-             * 2 = done
-             * 3 = invoiced
-             * 4 = paid // to be added?
-             */
-            _optionsStatus = new List<bool>() { false, false, false, false };
-            _opacityStatus = new ObservableCollection<double>() { _fullOpacity, _fullOpacity, _fullOpacity, _fullOpacity };
-
-            _clientType = new ObservableCollection<bool>() { false, false }; // 0=individual, 1=company
-            _opacityClientType = new ObservableCollection<double>() { _fullOpacity, _fullOpacity };
-            _isInitialized = true; // Mark as done
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Initialise Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"FilterJobsViewModel: OnInitializedAsync() FAIL\n\t{ex.Message}");
+            }
             return base.OnInitializedAsync(cancellationToken);
         }
+        #endregion
 
         #region Public View Functions
         public async Task FilterStatusOption(int option)
         {
-            _selectedOption = option;
-            if (_optionsStatus[option] == true) // deselect
+            try
             {
-                for (int i = 0; i < _optionsStatus.Count; i++)
+                _selectedOption = option;
+                if (_optionsStatus[option] == true) // deselect
                 {
-                    _optionsStatus[i] = false;
+                    for (int i = 0; i < _optionsStatus.Count; i++)
+                    {
+                        _optionsStatus[i] = false;
+                    }
+                    UIHelper.SetOpacityFull(_opacityStatus);
+                    await _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.AllJobStatus });
                 }
-                UIHelper.SetOpacityFull(_opacityStatus);
-                await _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.AllJobStatus });
+                else // select
+                {
+                    UIHelper.SetOptionTrue(option, _optionsStatus);
+                    //_optionsStatus[option] = true;
+                    UIHelper.InverseRadioOptionChangedOpacity(option, _opacityStatus);
+                    await SelectedOption(option);
+                }
             }
-            else // select
+            catch (Exception ex)
             {
-                UIHelper.SetOptionTrue(option, _optionsStatus);
-                //_optionsStatus[option] = true;
-                UIHelper.InverseRadioOptionChangedOpacity(option, _opacityStatus);
-                await SelectedOption(option);
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Filter Status Option";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"FilterJobsViewModel: FilterStatusOption() FAIL\n\t{ex.Message}");
             }
         }
 
         public async Task FilterClientType(int option)
         {
-            if (_clientType[option] == true) // deselect
+            try
             {
-                for (int i = 0; i < _clientType.Count; i++)
+                if (_clientType[option] == true) // deselect
                 {
-                    _clientType[i] = false;
+                    for (int i = 0; i < _clientType.Count; i++)
+                    {
+                        _clientType[i] = false;
+                    }
+                    UIHelper.SetOpacityFull(_opacityClientType);
+                    await _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.UnfilterClientType });
                 }
-                UIHelper.SetOpacityFull(_opacityClientType);
-                await _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.UnfilterClientType });
+                else // select
+                {
+                    UIHelper.SetOptionTrue(option, _clientType);
+                    UIHelper.InverseRadioOptionChangedOpacity(option, _opacityClientType);
+                    if (option == 0) // individual
+                    {
+                        await _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.FilterIndividual });
+                    }
+                    else if (option == 1) // company
+                    {
+                        await _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.FilterComapny });
+                    }
+                }
             }
-            else // select
+            catch (Exception ex)
             {
-                UIHelper.SetOptionTrue(option, _clientType);
-                UIHelper.InverseRadioOptionChangedOpacity(option, _opacityClientType);
-                if (option == 0) // individual
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
                 {
-                    await _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.FilterIndividual });
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Filter Client Type";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
-                else if (option == 1) // company
-                {
-                    await _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.FilterComapny });
-                }
+                Logger.LogActivity(Logger.ERROR, $"FilterJobsViewModel: FilterClientType() FAIL\n\t{ex.Message}");
             }
         }
         #endregion
@@ -113,23 +173,37 @@ namespace Traker.ViewModels
         #region Private Functions
         private Task SelectedOption(int option)
         {
-            if (option == 0) // new jobs
+            try
             {
-                _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobStatusNew });
+                if (option == 0) // new jobs
+                {
+                    _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobStatusNew });
+                }
+                else if (option == 1) // active jobs
+                {
+                    _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobStatusActive });
+                }
+                else if (option == 2) // done jobs
+                {
+                    _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobStatusDone });
+                }
+                else if (option == 3) // invoiced jobs
+                {
+                    _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobStatusInvoiced });
+                }
             }
-            else if (option == 1) // active jobs
+            catch (Exception ex)
             {
-                _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobStatusActive });
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Filter Selected";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"FilterJobsViewModel: SelectedOption() FAIL\n\t{ex.Message}");
             }
-            else if (option == 2) // done jobs
-            {
-                _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobStatusDone });
-            }
-            else if (option == 3) // invoiced jobs
-            {
-                _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobStatusInvoiced });
-            }
-
             return Task.CompletedTask;
         }
         #endregion

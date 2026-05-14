@@ -20,6 +20,8 @@ namespace Traker.ViewModels
         #region Caliburn Variables
         private readonly IEventAggregator _events;
         private readonly IWindowManager _windowManager;
+        private readonly DataService _dataService;
+        private readonly AppState _state;
         #endregion
 
         #region Private View Variables
@@ -29,111 +31,174 @@ namespace Traker.ViewModels
         #endregion
 
         #region Public State Variable
-        public DataService Data { get; } // data from the database
+        public DashboardModel SelectedJob; // data passed by EdiClientVM
         #endregion
 
         #region Private Class Field Variables
         private EditJobViewModel _editJobViewModel;
         #endregion
 
-        public AppState State { get; }
-        public DashboardModel SelectedJob; // data passed by EdiClientVM
-
-        public JobsListViewModel(IEventAggregator events, IWindowManager windowManager, AppState state, DataService dataService)
+        public JobsListViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
         {
             _events = events;
             _windowManager = windowManager;
-            State = state;
-            _windowManager = windowManager;
-            Data = dataService;
+            _dataService = dataService;
+            _state = state;
+
             _jobsList = new ObservableCollection<DashboardModel>();
+            _businessName = string.Empty;
+            _clientType = string.Empty;
+
+            SelectedJob = new DashboardModel();
+
+            _editJobViewModel = new EditJobViewModel(_events, _windowManager, _state);
         }
 
+        #region Caliburn Functions
         protected override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
-            var jobsForClient = Data.Jobs.Where(j => j.ClientId == SelectedJob.ClientId).ToList();
-            _businessName = SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName;
-            _clientType = SelectedJob.TypeIcon;
-
-            foreach (var job in jobsForClient)
+            try
             {
-                DashboardModel currentJob = new DashboardModel
+                var jobsForClient = _dataService.Jobs.Where(j => j.ClientId == SelectedJob.ClientId).ToList();
+                _businessName = SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName;
+                _clientType = SelectedJob.TypeIcon;
+
+                foreach (var job in jobsForClient)
                 {
-                    ClientId = job.ClientId,
-                    TypeIcon = SelectedJob.TypeIcon,
-                    ClientName = SelectedJob.ClientName,
-                    ClientEmail = SelectedJob.ClientEmail,
-                    ClientPhone = SelectedJob.ClientPhone,
-                    CompanyName = SelectedJob.CompanyName,
-                    Address = SelectedJob.Address,
-                    City = SelectedJob.City,
-                    Postcode = SelectedJob.Postcode,
-                    Country = SelectedJob.Country,
-                    CreatedDate = SelectedJob.CreatedDate,
-                    IsActive = SelectedJob.IsActive,
+                    DashboardModel currentJob = new DashboardModel
+                    {
+                        ClientId = job.ClientId,
+                        TypeIcon = SelectedJob.TypeIcon,
+                        ClientName = SelectedJob.ClientName,
+                        ClientEmail = SelectedJob.ClientEmail,
+                        ClientPhone = SelectedJob.ClientPhone,
+                        CompanyName = SelectedJob.CompanyName,
+                        Address = SelectedJob.Address,
+                        City = SelectedJob.City,
+                        Postcode = SelectedJob.Postcode,
+                        Country = SelectedJob.Country,
+                        CreatedDate = SelectedJob.CreatedDate,
+                        IsActive = SelectedJob.IsActive,
 
-                    JobId = job.JobId,
-                    JobTitle = job.Title,
-                    JobDescription = job.Description,
-                    Price = job.FinalPrice,
-                    AmountReceived = job.AmountReceived,
-                    JobStatus = job.Status.ToString(),
-                    StartDate = job.StartDate,
-                    DueDate = job.DueDate,
+                        JobId = job.JobId,
+                        JobTitle = job.Title,
+                        JobDescription = job.Description,
+                        Price = job.FinalPrice,
+                        AmountReceived = job.AmountReceived,
+                        JobStatus = job.Status.ToString(),
+                        StartDate = job.StartDate,
+                        DueDate = job.DueDate,
 
-                    HasInvoice = Data.Invoices.Any(i => i.JobId == job.JobId && i.IsDeleted == false),
-                    InvoiceStatus = Data.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? "Not invoiced"
-                };
-                _jobsList.Add(currentJob);
+                        HasInvoice = _dataService.Invoices.Any(i => i.JobId == job.JobId && i.IsDeleted == false),
+                        InvoiceStatus = _dataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? Names.NotInvoiced
+                    };
+                    _jobsList.Add(currentJob);
+                }
             }
-
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Initialise Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"JobsListViewModel: OnInitializedAsync() FAIL\n\t{ex.Message}");
+            }
             return base.OnInitializedAsync(cancellationToken);
         }
+        #endregion
 
         #region Public View FUnctions
         public async Task HandleKeyPress(KeyEventArgs e)
         {
-            // ESC button
-            if (e.Key == Key.Escape)
+            try
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
-                {
-                    State.messageBoxVM.Symbol = 0;
-                    State.messageBoxVM.HeadMessage = "Discard changes?";
-                    State.messageBoxVM.Message = Names.DiscardEsc;
-                    State.messageBoxVM.ButtonStyle = Names.NoYes;
-                    await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                }
-
-                // if clicked yes
-                if (State.messageBoxVM.Output == true)
+                if (e.Key == Key.Escape)
                 {
                     await TryCloseAsync();
                 }
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Exit List";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"JobsListViewModel: HandleKeyPress() FAIL\n\t{ex.Message}");
             }
         }
 
         public async Task EditJob(DashboardModel jobSelected)
         {
-            _editJobViewModel = new EditJobViewModel(_events, _windowManager, State);
-            _editJobViewModel.SelectedJob = jobSelected; // pass selected row to EditJobViewModel
-            await _windowManager.ShowWindowAsync(_editJobViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
+            try
+            {
+                _editJobViewModel = new EditJobViewModel(_events, _windowManager, _state);
+                _editJobViewModel.SelectedJob = jobSelected; // pass selected row to EditJobViewModel
+                await _windowManager.ShowWindowAsync(_editJobViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Edit Job";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"JobsListViewModel: EditJob() FAIL\n\t{ex.Message}");
+            }
         }
 
         public void SelectJob(DashboardModel selectedJob)
         {
-            if (selectedJob == null)
+            try
             {
-                // error display
-                return;
+                if (selectedJob == null)
+                {
+                    return;
+                }
+                SelectedJob = selectedJob;
             }
-
-            SelectedJob = selectedJob;
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Select Job";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"JobsListViewModel: SelectJob() FAIL\n\t{ex.Message}");
+            }
         }
 
         public async Task Exit()
         {
-            await TryCloseAsync();
+            try
+            {
+                await TryCloseAsync();
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Exit";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"JobsListViewModel: Exit() FAIL\n\t{ex.Message}");
+            }
         }
         #endregion
 

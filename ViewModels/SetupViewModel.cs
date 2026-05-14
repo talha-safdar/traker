@@ -1,9 +1,4 @@
 ﻿using Caliburn.Micro;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Traker.Services;
 using Traker.States;
 
@@ -11,11 +6,9 @@ namespace Traker.ViewModels
 {
     using Database;
     using System.Collections.ObjectModel;
-    using System.Net;
     using System.Threading;
-    using System.Windows.Controls.Primitives;
+    using System.Windows;
     using System.Windows.Media;
-    using Traker.Events;
     using Traker.Events.ShellVM;
     using Traker.Helper;
 
@@ -24,8 +17,8 @@ namespace Traker.ViewModels
         #region Caliburn Variables
         private readonly IEventAggregator _events;
         private readonly IWindowManager _windowManager;
-        private readonly AppState _appState;
         private readonly DataService _dataService;
+        private readonly AppState _state;
         #endregion
 
         #region Private View Variables
@@ -75,34 +68,77 @@ namespace Traker.ViewModels
         private double _halfOpacity = 0.5;
         #endregion
 
-        public SetupViewModel(IEventAggregator events, IWindowManager windowManager, AppState appState, DataService dataService)
+        public SetupViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
         {
             // caliburn
             _events = events;
             _windowManager = windowManager;
-            _appState = appState;
             _dataService = dataService;
-        }
+            _state = state;
 
-        protected override Task OnInitializedAsync(CancellationToken cancellationToken)
-        {
-            ToggleButtons = new ObservableCollection<bool>() { true, true };
-            BackgroundButtons = new ObservableCollection<Brush>() { new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveButonColour)), new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveButonColour)) };
-            ForegroundText = new ObservableCollection<Brush>() { new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveTextColour)), new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveTextColour)) };
-
-            // pre-set business values for if is indiviudal
+            _fullName = string.Empty;
+            _email = string.Empty;
+            _phone = string.Empty;
+            _businessType = string.Empty;
+            _toggleButtons = new ObservableCollection<bool>();
+            _backgroundButtons = new ObservableCollection<Brush>();
+            _foregroundText = new ObservableCollection<Brush>();
+            _businessName = string.Empty;
+            _address = string.Empty;
+            _city = string.Empty;
+            _postcode = string.Empty;
+            _country = string.Empty;
             _vatNumber = string.Empty;
             _registrationNumber = string.Empty;
+            _isIndividual = false;
+            _businessNameOpacity = 0.0;
+            _bankName = string.Empty;
+            _accountName = string.Empty;
+            _accountNumber = string.Empty;
+            _postcode = string.Empty;
+            _sortcode = string.Empty;
+            _IBAN = string.Empty;
+            _BIC = string.Empty;
+            _setupWindows = new ObservableCollection<bool>();
+            _enableNextBtn = false;
+            _opacityBtn = 0.0;
+        }
 
-            //user next button
-            EnableNextBtn = false;
-            OpacityBtn = _halfOpacity;
+        #region Caliburn Functions
+        protected override Task OnInitializedAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                ToggleButtons = new ObservableCollection<bool>() { true, true };
+                BackgroundButtons = new ObservableCollection<Brush>() { new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveButonColour)), new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveButonColour)) };
+                ForegroundText = new ObservableCollection<Brush>() { new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveTextColour)), new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveTextColour)) };
 
-        // window management
-        SetupWindows = new ObservableCollection<bool>() { true, false, false, false }; // 0=user, (1=individual, 2=company), 3=bank
+                // pre-set business values for if is indiviudal
+                _vatNumber = string.Empty;
+                _registrationNumber = string.Empty;
 
+                //user next button
+                EnableNextBtn = false;
+                OpacityBtn = _halfOpacity;
+
+                // window management
+                SetupWindows = new ObservableCollection<bool>() { true, false, false, false }; // 0=user, (1=individual, 2=company), 3=bank
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Initialise Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"SetupViewModel: OnInitializedAsync() FAIL\n\t{ex.Message}");
+            }
             return base.OnInitializedAsync(cancellationToken);
         }
+        #endregion
 
         #region Public View Functions
         /// <summary>
@@ -110,35 +146,51 @@ namespace Traker.ViewModels
         /// </summary>
         public async Task ConfirmUserSetup()
         {
-            await Database.CreateUser(FullName.Trim(), Email.Trim(), Phone.Trim());
-
-            // refresh database
-            await _dataService.RefreshDatabase();
-
-            // check if company or not then deal with busienss name
-            // if user table is not empty
-            // only exepcted one row
-            if (_dataService.User?.Any() == true)
+            try
             {
-                // individual
-                if (BusinessType == Names.Individual)
+                await Task.Run(async () =>
                 {
-                    BusinessName = FullName;
-                    IsIndividual = true; // set businessName to readonly
-                    BusinessNameOpacity = 0.5; // set opacity to half
-                    await UIHelper.SwitchBetweenViews(SetupWindows, 1); // 1=individual
-                }
-                else if (BusinessType == Names.Company)
-                {
-                    IsIndividual = false;
-                    BusinessNameOpacity = 1.0; // set opacity to full
-                    await UIHelper.SwitchBetweenViews(SetupWindows, 2); // 2=company
-                }
-            }
+                    await Database.CreateUser(FullName.Trim(), Email.Trim(), Phone.Trim());
+                    await _dataService.RefreshDatabase();
+                });
 
-            // reset the next button
-            EnableNextBtn = false;
-            OpacityBtn = _halfOpacity;
+                // check if company or not then deal with busienss name
+                // if user table is not empty
+                // only exepcted one row
+                if (_dataService.User?.Any() == true)
+                {
+                    // individual
+                    if (BusinessType == Names.Individual)
+                    {
+                        BusinessName = FullName;
+                        IsIndividual = true; // set businessName to readonly
+                        BusinessNameOpacity = 0.5; // set opacity to half
+                        await UIHelper.SwitchBetweenViews(SetupWindows, 1); // 1=individual
+                    }
+                    else if (BusinessType == Names.Company)
+                    {
+                        IsIndividual = false;
+                        BusinessNameOpacity = 1.0; // set opacity to full
+                        await UIHelper.SwitchBetweenViews(SetupWindows, 2); // 2=company
+                    }
+                }
+
+                // reset the next button
+                EnableNextBtn = false;
+                OpacityBtn = _halfOpacity;
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Confirm User Setup";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"SetupViewModel: ConfirmUserSetup() FAIL\n\t{ex.Message}");
+            }
         }
 
         /// <summary>
@@ -146,15 +198,29 @@ namespace Traker.ViewModels
         /// </summary>
         public async Task ConfirmBusinessSetup()
         {
-            // use checks and try-catch
-
-            await Database.CreateBusiness(_dataService.User[0].UserId, BusinessName.Trim(), BusinessType.Trim(), Country.Trim(), City.Trim(), Address.Trim(), Postcode.Trim(), VatNumber.Trim(), RegistrationNumber.Trim());
-
-            await UIHelper.SwitchBetweenViews(SetupWindows, 3); // 3=bank
-
-            // reset the next button
-            EnableNextBtn = false;
-            OpacityBtn = _halfOpacity;
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    await Database.CreateBusiness(_dataService.User[0].UserId, BusinessName.Trim(), BusinessType.Trim(), Country.Trim(), City.Trim(), Address.Trim(), Postcode.Trim(), VatNumber.Trim(), RegistrationNumber.Trim());
+                    await UIHelper.SwitchBetweenViews(SetupWindows, 3); // 3=bank
+                });
+                // reset the next button
+                EnableNextBtn = false;
+                OpacityBtn = _halfOpacity;
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Confirm Business Setup";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"SetupViewModel: ConfirmBusinessSetup() FAIL\n\t{ex.Message}");
+            }
         }
 
         /// <summary>
@@ -162,26 +228,59 @@ namespace Traker.ViewModels
         /// </summary>
         public async Task ConfirmBankSetup()
         {
-            await Database.CreateBank(_dataService.User[0].UserId, BankName.Trim(), AccountName.Trim(), AccountNumber.Trim(), Sortcode.Trim(), IBAN.Trim(), BIC.Trim());
-            await TryCloseAsync();            
-            await _dataService.RefreshDatabase(); // refresh the data service
-            await _events.PublishOnUIThreadAsync(new ShellVM { Command = Names.SetupCompleted });
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    await Database.CreateBank(_dataService.User[0].UserId, BankName.Trim(), AccountName.Trim(), AccountNumber.Trim(), Sortcode.Trim(), IBAN.Trim(), BIC.Trim());
+                    await TryCloseAsync();
+                    await _dataService.RefreshDatabase(); // refresh the data service
+                    await _events.PublishOnUIThreadAsync(new ShellVM { Command = Names.SetupCompleted });
+                });
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Confirm Bank Setup";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"SetupViewModel: ConfirmBankSetup() FAIL\n\t{ex.Message}");
+            }
         }
 
         public Task SetBusinessType(string businessType)
         {
-            BusinessType = businessType;
-            if (BusinessType == Names.Individual)
+            try
             {
-                ToggleButtons = new ObservableCollection<bool>() { false, true };
-                BackgroundButtons = new ObservableCollection<Brush>() { new SolidColorBrush((Color)ColorConverter.ConvertFromString(_activeButonColour)), new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveButonColour)) };
-                ForegroundText = new ObservableCollection<Brush>() { new SolidColorBrush((Color)ColorConverter.ConvertFromString(_activeTextColour)), new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveTextColour)) };
+                BusinessType = businessType;
+                if (BusinessType == Names.Individual)
+                {
+                    ToggleButtons = new ObservableCollection<bool>() { false, true };
+                    BackgroundButtons = new ObservableCollection<Brush>() { new SolidColorBrush((Color)ColorConverter.ConvertFromString(_activeButonColour)), new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveButonColour)) };
+                    ForegroundText = new ObservableCollection<Brush>() { new SolidColorBrush((Color)ColorConverter.ConvertFromString(_activeTextColour)), new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveTextColour)) };
+                }
+                else if (BusinessType == Names.Company)
+                {
+                    ToggleButtons = new ObservableCollection<bool>() { true, false };
+                    BackgroundButtons = new ObservableCollection<Brush>() { new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveButonColour)), new SolidColorBrush((Color)ColorConverter.ConvertFromString(_activeButonColour)) };
+                    ForegroundText = new ObservableCollection<Brush>() { new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveTextColour)), new SolidColorBrush((Color)ColorConverter.ConvertFromString(_activeTextColour)) };
+                }
             }
-            else if (BusinessType == Names.Company)
+            catch (Exception ex)
             {
-                ToggleButtons = new ObservableCollection<bool>() { true, false };
-                BackgroundButtons = new ObservableCollection<Brush>() { new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveButonColour)), new SolidColorBrush((Color)ColorConverter.ConvertFromString(_activeButonColour)) };
-                ForegroundText = new ObservableCollection<Brush>() { new SolidColorBrush((Color)ColorConverter.ConvertFromString(_inactiveTextColour)), new SolidColorBrush((Color)ColorConverter.ConvertFromString(_activeTextColour)) };
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Set Business Type";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"SetupViewModel: SetBusinessType() FAIL\n\t{ex.Message}");
             }
             return Task.CompletedTask;
         }
@@ -190,64 +289,109 @@ namespace Traker.ViewModels
         #region Private Functions
         private Task CanMoveFromUserWindow()
         {
-            if (string.IsNullOrEmpty(FullName) == false && string.IsNullOrEmpty(Email) == false && string.IsNullOrEmpty(Phone) == false && string.IsNullOrEmpty(BusinessType) == false)
+            try
             {
-                EnableNextBtn = true;
-                OpacityBtn = _fullOpacity;
+                if (string.IsNullOrEmpty(FullName) == false && string.IsNullOrEmpty(Email) == false && string.IsNullOrEmpty(Phone) == false && string.IsNullOrEmpty(BusinessType) == false)
+                {
+                    EnableNextBtn = true;
+                    OpacityBtn = _fullOpacity;
+                }
+                else
+                {
+                    EnableNextBtn = false;
+                    OpacityBtn = _halfOpacity;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                EnableNextBtn = false;
-                OpacityBtn = _halfOpacity;
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Enable Next Button";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"SetupViewModel: CanMoveFromUserWindow() FAIL\n\t{ex.Message}");
             }
             return Task.CompletedTask;
         }
 
         private Task CanMoveFromBusinessWindow()
         {
-            if (BusinessType == Names.Individual)
+            try
             {
-                if (string.IsNullOrEmpty(BusinessName) == false && string.IsNullOrEmpty(Country) == false && string.IsNullOrEmpty(City) == false && string.IsNullOrEmpty(Address) == false && string.IsNullOrEmpty(Postcode) == false)
+                if (BusinessType == Names.Individual)
                 {
-                    EnableNextBtn = true;
-                    OpacityBtn = _fullOpacity;
+                    if (string.IsNullOrEmpty(BusinessName) == false && string.IsNullOrEmpty(Country) == false && string.IsNullOrEmpty(City) == false && string.IsNullOrEmpty(Address) == false && string.IsNullOrEmpty(Postcode) == false)
+                    {
+                        EnableNextBtn = true;
+                        OpacityBtn = _fullOpacity;
+                    }
+                    else
+                    {
+                        EnableNextBtn = false;
+                        OpacityBtn = _halfOpacity;
+                    }
                 }
-                else
+                else if (BusinessType == Names.Company)
                 {
-                    EnableNextBtn = false;
-                    OpacityBtn = _halfOpacity;
+                    if (string.IsNullOrEmpty(BusinessName) == false && string.IsNullOrEmpty(Country) == false && string.IsNullOrEmpty(City) == false && string.IsNullOrEmpty(Address) == false && string.IsNullOrEmpty(Postcode) == false && string.IsNullOrEmpty(VatNumber) == false && string.IsNullOrEmpty(RegistrationNumber) == false)
+                    {
+                        EnableNextBtn = true;
+                        OpacityBtn = _fullOpacity;
+                    }
+                    else
+                    {
+                        EnableNextBtn = false;
+                        OpacityBtn = _halfOpacity;
+                    }
                 }
             }
-            else if (BusinessType == Names.Company)
+            catch (Exception ex)
             {
-                if (string.IsNullOrEmpty(BusinessName) == false && string.IsNullOrEmpty(Country) == false && string.IsNullOrEmpty(City) == false && string.IsNullOrEmpty(Address) == false && string.IsNullOrEmpty(Postcode) == false && string.IsNullOrEmpty(VatNumber) == false && string.IsNullOrEmpty(RegistrationNumber) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
                 {
-                    EnableNextBtn = true;
-                    OpacityBtn = _fullOpacity;
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Enable Next Button";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
-                else
-                {
-                    EnableNextBtn = false;
-                    OpacityBtn = _halfOpacity;
-                }
+                Logger.LogActivity(Logger.ERROR, $"SetupViewModel: CanMoveFromBusinessWindow() FAIL\n\t{ex.Message}");
             }
             return Task.CompletedTask;
-        }        
+        }
 
         private Task CanMoveFromBankWindow()
         {
-            if (string.IsNullOrEmpty(BankName) == false && string.IsNullOrEmpty(AccountName) == false && string.IsNullOrEmpty(AccountNumber) == false && string.IsNullOrEmpty(Sortcode) == false && string.IsNullOrEmpty(IBAN) == false && string.IsNullOrEmpty(BIC) == false)
+            try
             {
-                EnableNextBtn = true;
-                OpacityBtn = _fullOpacity;
+                if (string.IsNullOrEmpty(BankName) == false && string.IsNullOrEmpty(AccountName) == false && string.IsNullOrEmpty(AccountNumber) == false && string.IsNullOrEmpty(Sortcode) == false && string.IsNullOrEmpty(IBAN) == false && string.IsNullOrEmpty(BIC) == false)
+                {
+                    EnableNextBtn = true;
+                    OpacityBtn = _fullOpacity;
+                }
+                else
+                {
+                    EnableNextBtn = false;
+                    OpacityBtn = _halfOpacity;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                EnableNextBtn = false;
-                OpacityBtn = _halfOpacity;
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Enable Next Button";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"SetupViewModel: CanMoveFromBankWindow() FAIL\n\t{ex.Message}");
             }
             return Task.CompletedTask;
-        }        
+        }
         #endregion
 
         #region Public View Variables
@@ -404,7 +548,6 @@ namespace Traker.ViewModels
                 CanMoveFromBusinessWindow();
             }
         }
-
 
         public bool IsIndividual
         {

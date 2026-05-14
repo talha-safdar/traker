@@ -75,6 +75,9 @@ V1:
 #- add loading bar
 #- if set to paid why still show as invoiced status on the left panel? do something
 #- try/catch
+#-add edit client button on cards and other edits delete?
+#- disable save button on edit form open and enable if something changed only
+#- add background thread
 
 V2:
 #- the selected not invoiced then confirmation box yes/no. that row with invoice details will be saved in a e.g. "rubbish" folder in txt. 
