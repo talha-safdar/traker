@@ -243,7 +243,7 @@ namespace Traker.ViewModels
                     await _dataService.RefreshDatabase();
 
                     var invoiceId = Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId);
-                    var invoiceName = $"INV-{invoiceId}_{SelectedJob.JobId}_{SelectedJob.ClientId}_{FileStore.MakeSafeFolderName(SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName)}_{dateTimeIssued.ToString("dd-MM-yyyy")}_{dateTimeIssued.ToString("HHmmss")}.pdf";
+                    var invoiceName = $"INV-{invoiceId}_{SelectedJob.ClientId}_{SelectedJob.JobId}_{dateTimeIssued.ToString("dd-MM-yyyy")}_{dateTimeIssued.ToString("HHmmss")}.pdf";
                     await Database.SetInvoiceName(invoiceId, invoiceName.Trim());
 
                     await GenerateInvoice(invoiceName);

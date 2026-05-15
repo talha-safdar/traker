@@ -72,6 +72,11 @@ namespace Traker.ViewModels
                     Output = true;
                     await TryCloseAsync();
                 }
+                else if (Action == Names.LeaveForm)
+                {
+                    Output = true;
+                    await TryCloseAsync();
+                }
                 else
                 {
                     await TryCloseAsync();

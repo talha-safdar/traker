@@ -107,12 +107,28 @@ namespace Traker.ViewModels.Edit
             try
             {
                 _invoicePath = await FileStore.GetInvoiceFilePath(
-                Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).JobId),
-                SelectedJob.JobTitle,
                 Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId),
                 SelectedJob.ClientId,
-                SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName,
-                _dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).IssueDate);
+                Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).JobId),
+                _dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).IssueDate,
+                SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName);
+
+                // if no file found
+                if (string.IsNullOrEmpty(_invoicePath))
+                {
+                    await TryCloseAsync();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                    {
+                        _state.messageBoxVM.Symbol = 1;
+                        _state.messageBoxVM.HeadMessage = "View Form";
+                        _state.messageBoxVM.Message = $"Could not locate the invoice file\n\n{_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceName}";
+                        _state.messageBoxVM.ButtonStyle = Names.OK;
+                        _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    Logger.LogActivity(Logger.WARNING, $"EditInvoiceViewModel: OnViewLoaded() FAIL file not found");
+                    return;
+                }
+
 
                 var v = (Traker.Views.Edit.EditInvoiceView)view;
                 var browser = v.PdfViewer;

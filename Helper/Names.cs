@@ -63,6 +63,7 @@ namespace Traker.Helper
         public const string OK = "OK";
         public const string CancelOK = "CancelOK";
         public const string NoYes = "NoYes";
+        public const string LeaveForm = "LeaveForm";
 
 
         public const string Invoice = "Invoice";

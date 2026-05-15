@@ -209,43 +209,44 @@ namespace Traker.Data
         #region Update Functions
         /// <summary>
         /// Update client folder name
+        /// returns true for all good
         /// </summary>
-        public static Task UpdateClientFolderName(int clientId, string fullName, string newName)
+        public static Task<bool> UpdateClientFolderName(int clientId, string fullName, string newName)
         {
-            Task.Run(() =>
+            bool isOkay = false; // true if file was renamed else false
+            try
             {
-                try
+                // Documents/
+                string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+                // Documents/Traker
+                string appRoot = Path.Combine(documents, "Traker");
+
+                // Documents/Traker/Clients
+                string clientsFolder = Path.Combine(appRoot, "Clients");
+
+                // Documents/Traker/Clients/ID_clientName
+                string safeName = MakeSafeFolderName(fullName);
+                string clientFolderName = $"{clientId}_{safeName}";
+                string clientFolder = Path.Combine(clientsFolder, clientFolderName);
+
+                // new folder name
+                string safeNewName = MakeSafeFolderName(newName);
+                string clientFolderNewName = $"{clientId}_{safeNewName}";
+                string clientNewFolder = Path.Combine(clientsFolder, clientFolderNewName);
+
+                // repalce names
+                if (clientFolder != clientNewFolder)
                 {
-                    // Documents/
-                    string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-                    // Documents/Traker
-                    string appRoot = Path.Combine(documents, "Traker");
-
-                    // Documents/Traker/Clients
-                    string clientsFolder = Path.Combine(appRoot, "Clients");
-
-                    // Documents/Traker/Clients/ID_clientName
-                    string safeName = MakeSafeFolderName(fullName);
-                    string clientFolderName = $"{clientId}_{safeName}";
-                    string clientFolder = Path.Combine(clientsFolder, clientFolderName);
-
-                    // new folder name
-                    string safeNewName = MakeSafeFolderName(newName);
-                    string clientFolderNewName = $"{clientId}_{safeNewName}";
-                    string clientNewFolder = Path.Combine(clientsFolder, clientFolderNewName);
-
-                    // repalce names
-                    if (clientFolder != clientNewFolder)
+                    try
                     {
                         Directory.Move(clientFolder, clientNewFolder);
+                        isOkay = true;
+                        Logger.LogActivity(Logger.INFO, $"FileStore: UpdateClientFolderName() OK");
                     }
-                    Logger.LogActivity(Logger.INFO, $"FileStore: UpdateClientFolderName() OK");
-                }
-                catch (Exception ex)
-                {
-                    Execute.OnUIThreadAsync(() =>
+                    catch(Exception ex)
                     {
+                        isOkay = false;
                         AppState state = IoC.Get<AppState>();
                         IWindowManager windowManager = IoC.Get<IWindowManager>();
                         if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
@@ -256,62 +257,75 @@ namespace Traker.Data
                             state.messageBoxVM.ButtonStyle = Names.OK;
                             windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                         }
-                        return Task.CompletedTask;
-                    });
-                    Logger.LogActivity(Logger.ERROR, $"FileStore: UpdateClientFolderName() FAIL\n\t{ex.Message}");
-                    throw;
+                        Logger.LogActivity(Logger.INFO, $"FileStore: UpdateClientFolderName() FAIL\n\t{ex.Message}");
+                    }
                 }
-            });
-            return Task.CompletedTask;
+                return Task.FromResult(isOkay);
+            }
+            catch (Exception ex)
+            {
+                AppState state = IoC.Get<AppState>();
+                IWindowManager windowManager = IoC.Get<IWindowManager>();
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                {
+                    state.messageBoxVM.Symbol = 2;
+                    state.messageBoxVM.HeadMessage = "Update Client Folder Name";
+                    state.messageBoxVM.Message = ex.Message;
+                    state.messageBoxVM.ButtonStyle = Names.OK;
+                    windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"FileStore: UpdateClientFolderName() FAIL\n\t{ex.Message}");
+                return Task.FromResult(false);
+            }
         }
 
         /// <summary>
         /// Update job folder name
         /// </summary>
-        public static Task UpdateJobFolderName(int clientId, int jobId, string fullName, string jobTitle, string newJobTitle)
+        public static Task<bool> UpdateJobFolderName(int clientId, int jobId, string fullName, string jobTitle, string newJobTitle)
         {
-            Task.Run(() =>
+            bool isOkay = false; // true if file was renamed else false
+            try
             {
-                try
+                // Documents/
+                string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+                // Documents/Traker
+                string appRoot = Path.Combine(documents, "Traker");
+
+                // Documents/Traker/Clients
+                string clientsFolder = Path.Combine(appRoot, "Clients");
+
+                // Documents/Traker/Clients/ID_clientName
+                string safeName = MakeSafeFolderName(fullName);
+                string clientFolderName = $"{clientId}_{safeName}";
+                string clientFolder = Path.Combine(clientsFolder, clientFolderName);
+
+                // Documents/Traker/Clients/ID_clientName/Jobs
+                string jobsFolder = Path.Combine(clientFolder, "Jobs");
+
+                // Documents/Traker/Clients/ID_clientName/Jobs/ID_jobTitle
+                string safeJobTitle = MakeSafeFolderName(jobTitle);
+                string jobFolderName = $"{jobId}_{safeJobTitle}";
+                string jobFolder = Path.Combine(jobsFolder, jobFolderName);
+
+                // new folder name
+                string safeNewName = MakeSafeFolderName(newJobTitle);
+                string newName = $"{jobId}_{safeNewName}";
+                string jobNewFolder = Path.Combine(jobsFolder, newName);
+
+                // repalce names
+                if (jobFolder != jobNewFolder)
                 {
-                    // Documents/
-                    string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-                    // Documents/Traker
-                    string appRoot = Path.Combine(documents, "Traker");
-
-                    // Documents/Traker/Clients
-                    string clientsFolder = Path.Combine(appRoot, "Clients");
-
-                    // Documents/Traker/Clients/ID_clientName
-                    string safeName = MakeSafeFolderName(fullName);
-                    string clientFolderName = $"{clientId}_{safeName}";
-                    string clientFolder = Path.Combine(clientsFolder, clientFolderName);
-
-                    // Documents/Traker/Clients/ID_clientName/Jobs
-                    string jobsFolder = Path.Combine(clientFolder, "Jobs");
-
-                    // Documents/Traker/Clients/ID_clientName/Jobs/ID_jobTitle
-                    string safeJobTitle = MakeSafeFolderName(jobTitle);
-                    string jobFolderName = $"{jobId}_{safeJobTitle}";
-                    string jobFolder = Path.Combine(jobsFolder, jobFolderName);
-
-                    // new folder name
-                    string safeNewName = MakeSafeFolderName(newJobTitle);
-                    string newName = $"{jobId}_{safeNewName}";
-                    string jobNewFolder = Path.Combine(jobsFolder, newName);
-
-                    // repalce names
-                    if (jobFolder != jobNewFolder)
+                    try 
                     {
                         Directory.Move(jobFolder, jobNewFolder);
+                        isOkay = true;
+                        Logger.LogActivity(Logger.INFO, $"FileStore: UpdateJobFolderName() OK");
                     }
-                    Logger.LogActivity(Logger.INFO, $"FileStore: UpdateJobFolderName() OK");
-                }
-                catch (Exception ex)
-                {
-                    Execute.OnUIThreadAsync(() =>
+                    catch(Exception ex)
                     {
+                        isOkay = false;
                         AppState state = IoC.Get<AppState>();
                         IWindowManager windowManager = IoC.Get<IWindowManager>();
                         if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
@@ -322,13 +336,26 @@ namespace Traker.Data
                             state.messageBoxVM.ButtonStyle = Names.OK;
                             windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                         }
-                        return Task.CompletedTask;
-                    });
-                    Logger.LogActivity(Logger.ERROR, $"FileStore: UpdateJobFolderName() FAIL\n\t{ex.Message}");
-                    throw;
+                        Logger.LogActivity(Logger.INFO, $"FileStore: UpdateClientFolderName() FAIL\n\t{ex.Message}");
+                    }
                 }
-            });
-            return Task.CompletedTask;
+                return Task.FromResult(isOkay);
+            }
+            catch (Exception ex)
+            {
+                AppState state = IoC.Get<AppState>();
+                IWindowManager windowManager = IoC.Get<IWindowManager>();
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                {
+                    state.messageBoxVM.Symbol = 2;
+                    state.messageBoxVM.HeadMessage = "Update Job Folder Name";
+                    state.messageBoxVM.Message = ex.Message;
+                    state.messageBoxVM.ButtonStyle = Names.OK;
+                    windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"FileStore: UpdateJobFolderName() FAIL\n\t{ex.Message}");
+                return Task.FromResult(false);
+            }
         }
         #endregion
 
@@ -527,27 +554,28 @@ namespace Traker.Data
         /// <summary>
         /// Get invoice file
         /// </summary>
-        public static Task<string> GetInvoiceFilePath(int jobId, string jobTitle, int invoiceId, int clientId, string clientName, DateTime date)
+        public static Task<string> GetInvoiceFilePath(int invoiceId, int clientId, int jobId, DateTime dateIssued, string clientName)
         {
             try
             {
                 // Base path
-                string basePath = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                    "Traker",
-                    "Clients");
+                string basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Traker", "Clients");
 
                 string clientFolder = Path.Combine(basePath, $"{clientId}_{MakeSafeFolderName(clientName)}");
                 if (!Directory.Exists(clientFolder))
+                {
                     return null;
+                }
 
 
                 string invoicesFolder = Path.Combine(clientFolder, "Invoices");
                 if (!Directory.Exists(invoicesFolder))
+                {
                     return null;
+                }
 
                 // 5️⃣ Build expected filename prefix
-                string expectedPrefix = $"INV-{invoiceId}_{jobId}_{clientId}_{MakeSafeFolderName(clientName)}_{date.ToString("dd-MM-yyyy")}_{date.ToString("HHmmss")}";
+                string expectedPrefix = $"INV-{invoiceId}_{clientId}_{jobId}_{dateIssued.ToString("dd-MM-yyyy")}_{dateIssued.ToString("HHmmss")}";
 
                 // 6️⃣ Find matching file
                 string file = Directory.GetFiles(invoicesFolder, "*.pdf").FirstOrDefault(f => Path.GetFileName(f).StartsWith(expectedPrefix, StringComparison.OrdinalIgnoreCase))!;

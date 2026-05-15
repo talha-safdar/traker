@@ -149,42 +149,67 @@ namespace Traker.ViewModels.Edit
         {
             try
             {
-                await Task.Run(async() => { 
-                    // price
-                    decimal.TryParse(Price,
-                    NumberStyles.Currency,
-                    CultureInfo.CurrentCulture,
-                    out var priceFormatted);
+                // price
+                decimal.TryParse(Price,
+                NumberStyles.Currency,
+                CultureInfo.CurrentCulture,
+                out var priceFormatted);
 
-                    // amount received
-                    decimal.TryParse(AmountReceived,
-                    NumberStyles.Currency,
-                    CultureInfo.CurrentCulture,
-                    out var AmountReceivedFormatted);
+                // amount received
+                decimal.TryParse(AmountReceived,
+                NumberStyles.Currency,
+                CultureInfo.CurrentCulture,
+                out var AmountReceivedFormatted);
 
-                    var startDate = DateOnly.MinValue;
-                    if (StartDate != String.Empty)
-                    {
-                        startDate = DateOnly.ParseExact(StartDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
-                    }
+                var startDate = DateOnly.MinValue;
+                if (StartDate != String.Empty)
+                {
+                    startDate = DateOnly.ParseExact(StartDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                }
 
-                    var dueDate = DateOnly.MinValue;
-                    if (DueDate != String.Empty)
-                    {
-                        dueDate = DateOnly.ParseExact(DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
-                    }
+                var dueDate = DateOnly.MinValue;
+                if (DueDate != String.Empty)
+                {
+                    dueDate = DateOnly.ParseExact(DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                }
 
-                    await Database.EditJob(SelectedJob.JobId, JobTitle.Trim(), JobDescription.Trim(), Status.Trim(), priceFormatted.ToString().Trim(), AmountReceivedFormatted.ToString().Trim(), startDate, dueDate);
-
+                // check if anything changed first
+                string startDateCheck = SelectedJob.StartDate.ToString() == "01/01/0001" ? string.Empty : SelectedJob.StartDate.ToString();
+                if (SelectedJob.JobTitle != JobTitle ||
+                    SelectedJob.JobDescription != JobDescription ||
+                    SelectedJob.JobStatus != Status ||
+                    SelectedJob.Price.ToString("C") != Price.ToString() ||
+                    SelectedJob.AmountReceived.ToString("C") != AmountReceived.ToString() ||
+                    (SelectedJob.StartDate.ToString() == "01/01/0001" ? string.Empty : SelectedJob.StartDate.ToString()) != startDateCheck.ToString() ||
+                    SelectedJob.DueDate.ToString() != DueDate.ToString())
+                {
                     // check if job title changed 
                     if (SelectedJob.JobTitle != JobTitle)
                     {
-                        await FileStore.UpdateJobFolderName(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim(), SelectedJob.JobTitle.Trim(), JobTitle.Trim());
+                        if (await FileStore.UpdateJobFolderName(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim(), SelectedJob.JobTitle.Trim(), JobTitle.Trim()) == true)
+                        {
+                            await Task.Run(async () =>
+                            {
+                                await Database.EditJob(SelectedJob.JobId, JobTitle.Trim(), JobDescription.Trim(), Status.Trim(), priceFormatted.ToString().Trim(), AmountReceivedFormatted.ToString().Trim(), startDate, dueDate);
+                                await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+                            });
+                            await TryCloseAsync();
+                        }
                     }
-
+                    else
+                    {
+                        await Task.Run(async () =>
+                        {
+                            await Database.EditJob(SelectedJob.JobId, JobTitle.Trim(), JobDescription.Trim(), Status.Trim(), priceFormatted.ToString().Trim(), AmountReceivedFormatted.ToString().Trim(), startDate, dueDate);
+                            await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+                        });
+                        await TryCloseAsync();
+                    }
+                }
+                else
+                {
                     await TryCloseAsync();
-                    await _events.PublishOnUIThreadAsync(new RefreshDatabase());
-                });
+                }
             }
             catch (Exception ex)
             {

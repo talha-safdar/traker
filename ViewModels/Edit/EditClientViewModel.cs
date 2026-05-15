@@ -40,6 +40,10 @@ namespace Traker.ViewModels.Edit
         private string _country;
         private string _createdDate;
         private bool _isActive;
+
+        // submit button
+        private bool _enableSubmitBtn;
+        private double _opacitySubmitBtn;
         #endregion
 
         #region Private Class Field Variables
@@ -74,6 +78,10 @@ namespace Traker.ViewModels.Edit
         {
             try
             {
+                // submit button
+                EnableSubmitBtn = false;
+                //OpacitySubmitBtn = _halfOpacity;
+
                 ClientType = SelectedJob.ClientType;
                 ClientName = SelectedJob.ClientName;
                 ClientEmail = SelectedJob.ClientEmail;
@@ -165,17 +173,46 @@ namespace Traker.ViewModels.Edit
         {
             try
             {
-                await Task.Run(async () => {
-                    await Database.EditClient(SelectedJob.ClientId, ClientType.Trim(), ClientName.Trim(), ClientEmail.Trim(), CompanyName.Trim(), PhoneNumber.Trim(), BillingAddress.Trim(), City.Trim(), Postcode.Trim(), Country.Trim(), IsActive);
-
+                if (SelectedJob.ClientType != ClientType ||
+                SelectedJob.CompanyName != CompanyName ||
+                SelectedJob.ClientName != ClientName ||
+                SelectedJob.ClientEmail != ClientEmail ||
+                SelectedJob.ClientPhone != PhoneNumber ||
+                SelectedJob.Address != BillingAddress ||
+                SelectedJob.City != City ||
+                SelectedJob.Postcode != Postcode ||
+                SelectedJob.Country != Country)
+                {
                     // check if name changes for folder naming purpose
                     if ((SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName) != ClientName)
                     {
-                        await FileStore.UpdateClientFolderName(SelectedJob.ClientId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim(), SelectedJob.ClientType == Names.Individual ? ClientName.Trim() : CompanyName.Trim());
+                        // if it returns true then the folder was successfully renamed
+                        if (await FileStore.UpdateClientFolderName(SelectedJob.ClientId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim(), SelectedJob.ClientType == Names.Individual ? ClientName.Trim() : CompanyName.Trim()) == true)
+                        {
+                            await Task.Run(async () =>
+                            {
+                                // only update database if file folder change name was successful
+                                await Database.EditClient(SelectedJob.ClientId, ClientType.Trim(), ClientName.Trim(), ClientEmail.Trim(), CompanyName.Trim(), PhoneNumber.Trim(), BillingAddress.Trim(), City.Trim(), Postcode.Trim(), Country.Trim(), IsActive);
+                                await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+                            });
+                            await TryCloseAsync();
+                        }
                     }
-                    await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+                    else // folder name not changed
+                    {
+                        await Task.Run(async () =>
+                        {
+                            // only update database if file folder change name was successful
+                            await Database.EditClient(SelectedJob.ClientId, ClientType.Trim(), ClientName.Trim(), ClientEmail.Trim(), CompanyName.Trim(), PhoneNumber.Trim(), BillingAddress.Trim(), City.Trim(), Postcode.Trim(), Country.Trim(), IsActive);
+                            await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+                        });
+                        await TryCloseAsync();
+                    }
+                }
+                else
+                {
                     await TryCloseAsync();
-                });
+                }   
             }
             catch (Exception ex)
             {
@@ -278,39 +315,6 @@ namespace Traker.ViewModels.Edit
                 }
                 Logger.LogActivity(Logger.ERROR, $"EditClientViewModel: HandleKeyPress() FAIL\n\t{ex.Message}");
             }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         }
 
         public async Task OpenJobsList()
@@ -455,6 +459,26 @@ namespace Traker.ViewModels.Edit
             {
                 _isActive = value;
                 NotifyOfPropertyChange(() => IsActive);
+            }
+        }
+
+        public bool EnableSubmitBtn
+        {
+            get { return _enableSubmitBtn; }
+            set
+            {
+                _enableSubmitBtn = value;
+                NotifyOfPropertyChange(() => EnableSubmitBtn);
+            }
+        }
+
+        public double OpacitySubmitBtn
+        {
+            get { return _opacitySubmitBtn; }
+            set
+            {
+                _opacitySubmitBtn = value;
+                NotifyOfPropertyChange(() => OpacitySubmitBtn);
             }
         }
         #endregion
