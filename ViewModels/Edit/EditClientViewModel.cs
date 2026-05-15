@@ -396,27 +396,6 @@ namespace Traker.ViewModels.Edit
                         OpacitySubmitBtn = _halfOpacity;
                     }
                 }
-
-
-
-
-                //if ((ClientType == Names.Individual && ClientType != SelectedJob.ClientType || ClientName != SelectedJob.ClientName) ||
-                //    (ClientType == Names.Company && ClientType != SelectedJob.CompanyName || ClientName != SelectedJob.CompanyName) ||
-                //    ClientEmail != SelectedJob.ClientEmail ||
-                //    PhoneNumber != SelectedJob.ClientPhone ||
-                //    BillingAddress != SelectedJob.Address ||
-                //    City != SelectedJob.City ||
-                //    Postcode != SelectedJob.Postcode ||
-                //    Country != SelectedJob.Country)
-                //{
-                //    EnableSubmitBtn = true;
-                //    OpacitySubmitBtn = _fullOpacity;
-                //}
-                //else
-                //{
-                //    EnableSubmitBtn = false;
-                //    OpacitySubmitBtn = _halfOpacity;
-                //}
             }
             catch (Exception ex)
             {

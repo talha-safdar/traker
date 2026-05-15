@@ -4,6 +4,7 @@ using Traker.Models;
 namespace Traker.ViewModels.Edit
 {
     using Database;
+    using System.Diagnostics;
     using System.Globalization;
     using System.Windows;
     using System.Windows.Input;
@@ -86,6 +87,10 @@ namespace Traker.ViewModels.Edit
         {
             try
             {
+                // submit button
+                EnableSubmitBtn = false;
+                OpacitySubmitBtn = _halfOpacity;
+
                 BusinessName = SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName;
                 CreatedDate = SelectedJob.CreatedDate;
                 JobTitle = SelectedJob.JobTitle;
@@ -473,6 +478,44 @@ namespace Traker.ViewModels.Edit
             }
             return Task.CompletedTask;
         }
+
+        private Task CanSubmit()
+        {
+            try
+            {
+                if (BusinessName != (SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName) ||
+                    CreatedDate != SelectedJob.CreatedDate ||
+                    JobTitle != SelectedJob.JobTitle ||
+                    JobDescription != SelectedJob.JobDescription ||
+                    Status != SelectedJob.JobStatus ||
+                    Price != SelectedJob.Price.ToString("C") ||
+                    AmountReceived != SelectedJob.AmountReceived.ToString("C") ||
+                    StartDate != (SelectedJob.StartDate == DateOnly.FromDateTime(DateTime.MinValue) ? string.Empty : SelectedJob.StartDate.ToString()) ||
+                    DueDate != SelectedJob.DueDate.ToString())
+                {
+                    EnableSubmitBtn = true;
+                    OpacitySubmitBtn = _fullOpacity;
+                }
+                else
+                {
+                    EnableSubmitBtn = false;
+                    OpacitySubmitBtn = _halfOpacity;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Edit Client";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"EditClientViewModel: CanSubmit() FAIL\n\t{ex.Message}");
+            }
+            return Task.CompletedTask;
+        }
         #endregion
 
         #region Public View Variables
@@ -483,6 +526,7 @@ namespace Traker.ViewModels.Edit
             {
                 _businessName = value;
                 NotifyOfPropertyChange(() => BusinessName);
+                CanSubmit();
             }
         }
 
@@ -493,6 +537,7 @@ namespace Traker.ViewModels.Edit
             {
                 _createdDate = value;
                 NotifyOfPropertyChange(() => CreatedDate);
+                CanSubmit();
             }
         }
 
@@ -503,6 +548,7 @@ namespace Traker.ViewModels.Edit
             {
                 _jobTitle = value;
                 NotifyOfPropertyChange(() => JobTitle);
+                CanSubmit();
             }
         }
 
@@ -513,6 +559,7 @@ namespace Traker.ViewModels.Edit
             {
                 _jobDescription = value;
                 NotifyOfPropertyChange(() => JobDescription);
+                CanSubmit();
             }
         }
 
@@ -523,6 +570,7 @@ namespace Traker.ViewModels.Edit
             {
                 _status = value;
                 NotifyOfPropertyChange(() => Status);
+                CanSubmit();
             }
         }
 
@@ -534,7 +582,6 @@ namespace Traker.ViewModels.Edit
                 {
                     return _priceText;
                 }
-
                 return _price.ToString("C", CultureInfo.CurrentCulture);
             }
             set
@@ -562,6 +609,7 @@ namespace Traker.ViewModels.Edit
 
                 NotifyOfPropertyChange(nameof(Price));
                 ValidateAmountDifference();
+                CanSubmit();
             }
         }
 
@@ -601,6 +649,7 @@ namespace Traker.ViewModels.Edit
                 NotifyOfPropertyChange(nameof(AmountReceived));
                 NotifyOfPropertyChange(nameof(RemainingAmount));
                 ValidateAmountDifference();
+                CanSubmit();
             }
         }
 
@@ -612,6 +661,7 @@ namespace Traker.ViewModels.Edit
                 _startDate = value;
                 NotifyOfPropertyChange(() => StartDate);
                 ValidateDate();
+                CanSubmit();
             }
         }
 
@@ -623,6 +673,7 @@ namespace Traker.ViewModels.Edit
                 _dueDate = value;
                 NotifyOfPropertyChange(() => DueDate);
                 ValidateDate();
+                CanSubmit();
             }
         }
 
@@ -636,6 +687,7 @@ namespace Traker.ViewModels.Edit
                     _remainingAmount = value;
                     NotifyOfPropertyChange(() => RemainingAmount);
                 }
+                CanSubmit();
             }
         }
 
