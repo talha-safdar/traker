@@ -48,6 +48,8 @@ namespace Traker.ViewModels.Edit
 
         #region Private Class Field Variables
         private JobsListViewModel _jobsListViewModel;
+        private double _fullOpacity = 1.0;
+        private double _halfOpacity = 0.5;
         #endregion
 
         public EditClientViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
@@ -80,7 +82,7 @@ namespace Traker.ViewModels.Edit
             {
                 // submit button
                 EnableSubmitBtn = false;
-                //OpacitySubmitBtn = _halfOpacity;
+                OpacitySubmitBtn = _halfOpacity;
 
                 ClientType = SelectedJob.ClientType;
                 ClientName = SelectedJob.ClientName;
@@ -184,10 +186,10 @@ namespace Traker.ViewModels.Edit
                 SelectedJob.Country != Country)
                 {
                     // check if name changes for folder naming purpose
-                    if ((SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName) != ClientName)
+                    if ((SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName) != ClientName || (SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName) != CompanyName)
                     {
                         // if it returns true then the folder was successfully renamed
-                        if (await FileStore.UpdateClientFolderName(SelectedJob.ClientId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim(), SelectedJob.ClientType == Names.Individual ? ClientName.Trim() : CompanyName.Trim()) == true)
+                        if (await FileStore.UpdateClientFolderName(SelectedJob.ClientId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim(), ClientType == Names.Individual ? ClientName.Trim() : CompanyName.Trim()) == true)
                         {
                             await Task.Run(async () =>
                             {
@@ -348,6 +350,88 @@ namespace Traker.ViewModels.Edit
             }
             return Task.CompletedTask;
         }
+
+        private Task CanSubmit()
+        {
+            try
+            {
+                if (ClientType == Names.Individual)
+                {
+                    if (ClientType != SelectedJob.ClientType ||
+                        ClientName != SelectedJob.ClientName ||
+                        ClientEmail != SelectedJob.ClientEmail ||
+                        PhoneNumber != SelectedJob.ClientPhone ||
+                        BillingAddress != SelectedJob.Address ||
+                        City != SelectedJob.City ||
+                        Postcode != SelectedJob.Postcode ||
+                        Country != SelectedJob.Country)
+                    {
+                        EnableSubmitBtn = true;
+                        OpacitySubmitBtn = _fullOpacity;
+                    }
+                    else
+                    {
+                        EnableSubmitBtn = false;
+                        OpacitySubmitBtn = _halfOpacity;
+                    }
+                }
+                else if (ClientType == Names.Company)
+                {
+                    if (ClientType != SelectedJob.ClientType ||
+                        CompanyName != SelectedJob.CompanyName ||
+                        ClientName != SelectedJob.ClientName ||
+                        ClientEmail != SelectedJob.ClientEmail ||
+                        PhoneNumber != SelectedJob.ClientPhone ||
+                        BillingAddress != SelectedJob.Address ||
+                        City != SelectedJob.City ||
+                        Postcode != SelectedJob.Postcode ||
+                        Country != SelectedJob.Country)
+                    {
+                        EnableSubmitBtn = true;
+                        OpacitySubmitBtn = _fullOpacity;
+                    }
+                    else
+                    {
+                        EnableSubmitBtn = false;
+                        OpacitySubmitBtn = _halfOpacity;
+                    }
+                }
+
+
+
+
+                //if ((ClientType == Names.Individual && ClientType != SelectedJob.ClientType || ClientName != SelectedJob.ClientName) ||
+                //    (ClientType == Names.Company && ClientType != SelectedJob.CompanyName || ClientName != SelectedJob.CompanyName) ||
+                //    ClientEmail != SelectedJob.ClientEmail ||
+                //    PhoneNumber != SelectedJob.ClientPhone ||
+                //    BillingAddress != SelectedJob.Address ||
+                //    City != SelectedJob.City ||
+                //    Postcode != SelectedJob.Postcode ||
+                //    Country != SelectedJob.Country)
+                //{
+                //    EnableSubmitBtn = true;
+                //    OpacitySubmitBtn = _fullOpacity;
+                //}
+                //else
+                //{
+                //    EnableSubmitBtn = false;
+                //    OpacitySubmitBtn = _halfOpacity;
+                //}
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Edit Client";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"EditClientViewModel: CanSubmit() FAIL\n\t{ex.Message}");
+            }
+            return Task.CompletedTask;
+        }
         #endregion
 
         #region Public View Variables
@@ -359,6 +443,7 @@ namespace Traker.ViewModels.Edit
                 _clientType = value;
                 NotifyOfPropertyChange(() => ClientType);
                 ToggleClientType();
+                CanSubmit();
             }
         }
 
@@ -369,6 +454,7 @@ namespace Traker.ViewModels.Edit
             {
                 _clientName = value;
                 NotifyOfPropertyChange(() => ClientName);
+                CanSubmit();
             }
         }
 
@@ -379,6 +465,7 @@ namespace Traker.ViewModels.Edit
             {
                 _companyName = value;
                 NotifyOfPropertyChange(() => CompanyName);
+                CanSubmit();
             }
         }
 
@@ -389,6 +476,7 @@ namespace Traker.ViewModels.Edit
             {
                 _clientEmail = value;
                 NotifyOfPropertyChange(() => ClientEmail);
+                CanSubmit();
             }
         }
 
@@ -399,6 +487,7 @@ namespace Traker.ViewModels.Edit
             {
                 _phoneNumber = value;
                 NotifyOfPropertyChange(() => PhoneNumber);
+                CanSubmit();
             }
         }
 
@@ -409,6 +498,7 @@ namespace Traker.ViewModels.Edit
             {
                 _billingAddress = value;
                 NotifyOfPropertyChange(() => BillingAddress);
+                CanSubmit();
             }
         }
 
@@ -419,6 +509,7 @@ namespace Traker.ViewModels.Edit
             {
                 _city = value;
                 NotifyOfPropertyChange(() => City);
+                CanSubmit();
             }
         }
 
@@ -429,6 +520,7 @@ namespace Traker.ViewModels.Edit
             {
                 _postcode = value;
                 NotifyOfPropertyChange(() => Postcode);
+                CanSubmit();
             }
         }
 
@@ -439,6 +531,7 @@ namespace Traker.ViewModels.Edit
             {
                 _country = value;
                 NotifyOfPropertyChange(() => Country);
+                CanSubmit();
             }
         }
 
@@ -449,6 +542,7 @@ namespace Traker.ViewModels.Edit
             {
                 _createdDate = value;
                 NotifyOfPropertyChange(() => CreatedDate);
+                CanSubmit();
             }
         }
 
@@ -459,6 +553,7 @@ namespace Traker.ViewModels.Edit
             {
                 _isActive = value;
                 NotifyOfPropertyChange(() => IsActive);
+                CanSubmit();
             }
         }
 

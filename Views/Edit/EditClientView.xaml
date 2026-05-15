@@ -305,7 +305,7 @@
 
                     <!-- save -->
                     <Grid Grid.Column="2">
-                        <Border Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmEditClient()]" Background="#333333" CornerRadius="25" Height="45" Width="200" BorderThickness="1">
+                        <Border Cursor="Hand" IsEnabled="{Binding EnableSubmitBtn}" Opacity="{Binding OpacitySubmitBtn}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmEditClient()]" Background="#333333" CornerRadius="25" Height="45" Width="200" BorderThickness="1">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <!-- DEFAULT STATE -->
