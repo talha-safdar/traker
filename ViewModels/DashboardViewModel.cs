@@ -8,6 +8,7 @@ namespace Traker.ViewModels
     using System.Globalization;
     using System.Windows;
     using System.Windows.Controls;
+    using Traker.Data;
     using Traker.Events.DashboardVM;
     using Traker.Helper;
     using Traker.Models;
@@ -281,6 +282,31 @@ namespace Traker.ViewModels
             }
         }
 
+        public Task CardHoverLeave()
+        {
+            try
+            {
+                if (SelectedJob != null)
+                {
+                    SelectedJob.CardButtons = false; // hide buttons on hover away
+                    NotifyOfPropertyChange(() => SelectedJob.CardButtons);
+                }
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Exit Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: SelectJob() FAIL\n\t{ex.Message}");
+            }
+            return Task.CompletedTask;
+        }
+
         public Task SelectJob(DashboardModel selectedJob)
         {
             try
@@ -288,6 +314,8 @@ namespace Traker.ViewModels
                 if (selectedJob != null)
                 {
                     SelectedJob = selectedJob;
+                    SelectedJob.CardButtons = true; // show buttons on hover
+                    NotifyOfPropertyChange(() => SelectedJob.CardButtons);
                 }
             }
             catch (Exception ex)
@@ -392,6 +420,57 @@ namespace Traker.ViewModels
                     _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: EditClient() FAIL\n\t{ex.Message}");
+            }
+        }
+
+        public async Task DeleteJob()
+        {
+            try
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 0;
+                    _state.messageBoxVM.HeadMessage = "Delete Job";
+                    _state.messageBoxVM.Message = Names.DeleteJobConfirmation;
+                    _state.messageBoxVM.ButtonStyle = Names.NoYes;
+                    await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+
+                // if clicked yes
+                if (_state.messageBoxVM.Output == true)
+                {
+                    await Task.Run(async () =>
+                    {
+                        // delete job folder (if only one job then delete whole client folder)
+                        // it deletes the current job folder then it checks if it was the last one if true, then delete client folder
+                        if (await FileStore.DeleteJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName, SelectedJob.JobTitle) == true)
+                        {
+                            // delete entire client folder too
+                            await FileStore.DeleteClientFolder(SelectedJob.ClientId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName);
+
+                            // delete client from database
+                            await Database.DeleteClient(SelectedJob.ClientId);
+                        }
+                        else if (await FileStore.DeleteJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName, SelectedJob.JobTitle) == false)
+                        {
+                            // delete job from database
+                            await Database.DeleteJob(SelectedJob.JobId);
+                        }
+                        await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Delete Job";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"JobContextMenuViewModel: DeleteJob() FAIL\n\t{ex.Message}");
             }
         }
 
@@ -935,7 +1014,10 @@ namespace Traker.ViewModels
                         HasInvoice = DataService.Invoices.Any(i => i.JobId == job.JobId && i.IsDeleted == false),
                         InvoiceStatus = DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? "Not invoiced", // if left side not null return that else right side
                         InvoiceDueDate = DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.DueDate).FirstOrDefault(),
-                        PaidDate = DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.PaidDate).FirstOrDefault()
+                        PaidDate = DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.PaidDate).FirstOrDefault(),
+
+                        // UI
+                        CardButtons = false
                     };
                     DashboardData.Add(dashboardEntry);
                     index++;

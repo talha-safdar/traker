@@ -8,7 +8,8 @@
         xmlns:local="clr-namespace:Traker.Views"
         xmlns:cal="http://caliburnmicro.com"
         mc:Ignorable="d"
-        Title="Traker" MinHeight="900" MinWidth="1400"
+        Title="Traker" 
+        MinHeight="900" MinWidth="1400"
 
         WindowStyle="None"
         ResizeMode="CanResize"
@@ -18,13 +19,13 @@
         MaxWidth="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}}"
         >
 
-    <WindowChrome.WindowChrome>
+    <!--<WindowChrome.WindowChrome>
         <shell:WindowChrome 
             CaptionHeight="0" 
             ResizeBorderThickness="0" 
             GlassFrameThickness="0" 
             CornerRadius="20" />
-    </WindowChrome.WindowChrome>
+    </WindowChrome.WindowChrome>-->
 
     <Border Background="{StaticResource MainBackgroundBrush}" cal:Message.Attach="[Event PreviewMouseDown] = [Action OnMouseDownEvent($source)]">
         <Grid>

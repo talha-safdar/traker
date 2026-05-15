@@ -50,5 +50,6 @@ namespace Traker.Models
 
         // UI
         public string TypeIcon { get; set; } = string.Empty;
+        public bool CardButtons { get; set; } = false;
     }
 }
