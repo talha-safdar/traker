@@ -33,35 +33,10 @@ namespace Traker.ViewModels
             _events.SubscribeOnPublishedThread(this);
         }
 
-        //protected override async Task OnInitializedAsync(CancellationToken cancellationToken)
-        //{
-        //    await Database.SetUpDatabase();
-        //    await _dataService.FetchDatabase();
-
-        //    // check if user table is empty
-        //    // if so, it means it's a fresh start
-        //    // else ignore
-        //    if (_dataService.Jobs?.Any() == false)
-        //    {
-        //        Debug.WriteLine("No jobs found in database. Assuming fresh start.");
-        //        // open the setup window
-        //        SetupViewModel setupViewModel = new SetupViewModel(_events, _windowManager, State, _dataService);
-        //        await _windowManager.ShowWindowAsync(setupViewModel, null, CustomWindow.SettingsForDialog(800, 1000));
-
-        //    }
-        //    else
-        //    {
-        //        DashboardViewModel dashboardViewModel = new DashboardViewModel(_events, _windowManager, State, _dataService);
-        //        await ActivateItemAsync(dashboardViewModel, cancellationToken);
-        //    }
-        //}
-
-        protected async override void OnViewReady(object view)
+        protected async override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
             try
             {
-                base.OnViewReady(view);
-
                 await Database.SetUpDatabase();
                 await _dataService.FetchDatabase();
 

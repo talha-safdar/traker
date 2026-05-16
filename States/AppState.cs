@@ -14,7 +14,11 @@ namespace Traker.States
     /// the project
     /// </summary>
     public class AppState : PropertyChangedBase
-    {
+    {        
+        public bool IsSortToClear = false; // set from dashboard to clear the sort on opening its menu
+        public bool IsFilterToClear = false; // set from dashboard to clear the filter on opening its menu
+
+        // messagebox
         public MessageBoxViewModel messageBoxVM = new MessageBoxViewModel();
         public bool allowProceed = false; // used for confirmation dialogs
     }

@@ -36,7 +36,7 @@ V1:
 - remove with spaces for the textbox text entry
 - cancel makes no sense, I'd say if the user selected not invoiced after he sent it for some reason that he changed mind. 
 - on delete row delete folder too
-#- check use of override function and correct wether before or after the return thing
+- check use of override function and correct wether before or after the return thing
 - set default type to individual
 - might add total number of clients and jobs
 - for currency use public string FormattedPrice => Price.ToString("C", new CultureInfo("en-GB")); dynamic change
@@ -49,7 +49,7 @@ V1:
 - on new launch ask user to set up profile to save time
 - add duotone effect to cards and rest
 - add 3 dots for set up phase to track progress
-#- use viewbox for zoom in/out
+- use viewbox for zoom in/out
 - maybe remove textboxes for job statues? (new, active, done, invoiced) since is read only
 - when deleting a job also delete its folders and all files
 - ask for confirmation for deletion
@@ -75,10 +75,11 @@ V1:
 #- add loading bar
 #- if set to paid why still show as invoiced status on the left panel? do something
 - try/catch
-#-add edit client button on cards and other edits delete? on hover only
-#- disable save button on edit form open and enable if something changed only
+-add edit client button on cards and other edits delete? on hover only
+- disable save button on edit form open and enable if something changed only
 - add background thread
-#- what if enter empty fields?
+- what if enter empty fields?
+#- on click anywhere disable all windows
 
 V2:
 #- the selected not invoiced then confirmation box yes/no. that row with invoice details will be saved in a e.g. "rubbish" folder in txt. 

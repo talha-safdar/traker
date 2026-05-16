@@ -7,7 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Traker.Events;
 using Traker.Events.DashboardVM;
+using Traker.Events.ShellVM;
 using Traker.Helper;
 using Traker.Services;
 using Traker.States;
@@ -55,7 +57,8 @@ namespace Traker.ViewModels
         {
             try
             {
-                // If we've already done this once, stop here!
+
+                // If already done this once, stop here!
                 if (_isInitialized == true)
                 {
                     return base.OnInitializedAsync(cancellationToken);
@@ -88,6 +91,17 @@ namespace Traker.ViewModels
                 Logger.LogActivity(Logger.ERROR, $"FilterJobsViewModel: OnInitializedAsync() FAIL\n\t{ex.Message}");
             }
             return base.OnInitializedAsync(cancellationToken);
+        }
+
+        protected override Task OnActivatedAsync(CancellationToken cancellationToken)
+        {
+            // if dashbaord refreshed and notified to reset
+            if (_state.IsFilterToClear == true)
+            {
+                DisbaleOptions();
+                _state.IsFilterToClear = false;
+            }
+            return base.OnActivatedAsync(cancellationToken);
         }
         #endregion
 
@@ -171,6 +185,37 @@ namespace Traker.ViewModels
         #endregion
 
         #region Private Functions
+        private Task DisbaleOptions()
+        {
+            try
+            {
+                for (int i = 0; i < _optionsStatus.Count; i++)
+                {
+                    _optionsStatus[i] = false;
+                }
+                UIHelper.SetOpacityFull(_opacityStatus);
+
+                for (int i = 0; i < _clientType.Count; i++)
+                {
+                    _clientType[i] = false;
+                }
+                UIHelper.SetOpacityFull(_opacityClientType);
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Disable Filter";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"FilterJobsViewModel: DisbaleOptions() FAIL\n\t{ex.Message}");
+            }
+            return Task.CompletedTask;
+        }
+
         private Task SelectedOption(int option)
         {
             try

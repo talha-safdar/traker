@@ -763,7 +763,7 @@
                                             <!-- buttons -->
                                                 <Grid Grid.Column="6">
                                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                        <Border Cursor="Hand" SnapsToDevicePixels="True" Margin="0,0,0,40" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditJob($source)]" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                                                        <Border Opacity="0.5" Cursor="Hand" SnapsToDevicePixels="True" Margin="0,0,0,40" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditJob($source)]" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
                                                             <Border.Style>
                                                                 <Style TargetType="Border">
                                                                     <Setter Property="Background" Value="Transparent"/>
@@ -780,7 +780,7 @@
                                                         SnapsToDevicePixels="True"
                                                         Source="/Resources/Media/Images/Icons/Lucide/pen.svg" Width="15" Height="15"/>
                                                     </Border>
-                                                        <Border Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteJob()]" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                                                        <Border Visibility="Hidden" Opacity="0.5" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteJob()]" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
                                                             <Border.Style>
                                                                 <Style TargetType="Border">
                                                                     <Setter Property="Background" Value="Transparent"/>
