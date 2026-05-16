@@ -39,6 +39,7 @@ namespace Traker.ViewModels
         private double _fullOpacity = 1.0;
         private double _halfOpacity = 0.5;
         private bool _isInitialized; // This stays 'true' because the VM is a Singleton
+        private int _currentOption = -1; // it tracks the last option selected e.g. if 1, then click again 1 to disable it it knows
         #endregion
 
         public SortJobsViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
@@ -132,6 +133,14 @@ namespace Traker.ViewModels
                 {
                     _sortOptions[option] = true;
                     UIHelper.InverseRadioOptionChangedOpacity(option, _opacityOptions);
+                    for(int i =0; i < _sortOptions.Count(); i++) // disable the rest of the buttons in the list
+                    {
+                        if (i != option)
+                        {
+                            _sortOptions[i] = false;
+                        }
+                    }
+
                     if (_orderStyle[0] == false && _orderStyle[1] == false) // if no order style is selected, default to ascending
                     {
                         _orderStyle[0] = true;
@@ -240,15 +249,24 @@ namespace Traker.ViewModels
             // _orderStyle: 0=ascending, 1=descedning
             try
             {
+                // if resetitng
+                if (_currentOption == option)
+                {
+                    _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.ResetSort });
+                    _state.currentSortOption = string.Empty;
+                }
+
                 if (option == 0)
                 {
                     if (_orderStyle[0] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.ClientNameAsc });
+                        _state.currentSortOption = Names.ClientNameAsc;
                     }
                     else if (_orderStyle[1] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.ClientNameDesc });
+                        _state.currentSortOption = Names.ClientNameDesc;
                     }
                 }
                 else if (option == 1)
@@ -256,10 +274,12 @@ namespace Traker.ViewModels
                     if (_orderStyle[0] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobTitleAsc });
+                        _state.currentSortOption = Names.JobTitleAsc;
                     }
                     else if (_orderStyle[1] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobTitleDesc });
+                        _state.currentSortOption = Names.JobTitleDesc;
                     }
                 }
                 else if (option == 2)
@@ -267,10 +287,12 @@ namespace Traker.ViewModels
                     if (_orderStyle[0] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobStatusAsc });
+                        _state.currentSortOption = Names.JobStatusAsc;
                     }
                     else if (_orderStyle[1] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobStatusDesc });
+                        _state.currentSortOption = Names.JobStatusDesc;
                     }
                 }
                 else if (option == 3)
@@ -278,10 +300,12 @@ namespace Traker.ViewModels
                     if (_orderStyle[0] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobPriceAsc });
+                        _state.currentSortOption = Names.JobPriceAsc;
                     }
                     else if (_orderStyle[1] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobPriceDesc });
+                        _state.currentSortOption = Names.JobPriceDesc;
                     }
                 }
                 else if (option == 4)
@@ -289,10 +313,12 @@ namespace Traker.ViewModels
                     if (_orderStyle[0] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.DueDateAsc });
+                        _state.currentSortOption = Names.DueDateAsc;
                     }
                     else if (_orderStyle[1] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.DueDateDesc });
+                        _state.currentSortOption = Names.DueDateDesc;
                     }
                 }
                 else if (option == 5)
@@ -300,10 +326,12 @@ namespace Traker.ViewModels
                     if (_orderStyle[0] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.CreatedDateAsc });
+                        _state.currentSortOption = Names.CreatedDateAsc;
                     }
                     else if (_orderStyle[1] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.CreatedDateDesc });
+                        _state.currentSortOption = Names.CreatedDateDesc;
                     }
                 }
                 else if (option == 6)
@@ -311,12 +339,15 @@ namespace Traker.ViewModels
                     if (_orderStyle[0] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.ClientTypeAsc });
+                        _state.currentSortOption = Names.ClientTypeAsc;
                     }
                     else if (_orderStyle[1] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.ClientTypeDesc });
+                        _state.currentSortOption = Names.ClientTypeDesc;
                     }
                 }
+                _currentOption = option; // track th last selection
             }
             catch (Exception ex)
             {

@@ -841,7 +841,6 @@ namespace Traker.ViewModels
                 {
                     DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.JobTitle));
                 }
-
                 else if (command == Names.JobStatusAsc)
                 {
                     DashboardData = new ObservableCollection<DashboardModel>(_dashboardData.OrderBy(j =>
@@ -870,7 +869,6 @@ namespace Traker.ViewModels
                         }
                     }));
                 }
-
                 else if (command == Names.JobPriceAsc)
                 {
                     DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => Decimal.Parse(j.Price.ToString(), NumberStyles.Currency)));
@@ -905,6 +903,10 @@ namespace Traker.ViewModels
                 else if (command == Names.ClientTypeDesc)
                 {
                     DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.ClientType));
+                }
+                else if (command == Names.ResetSort)
+                {
+                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.ClientId));
                 }
             }
             catch (Exception ex)
@@ -1031,7 +1033,7 @@ namespace Traker.ViewModels
                         DashboardData = _dashboardDataBackup; // reset list
                         _dashboardDataStatusFiltered = DashboardData;
                     }
-                    else if (_isFilterJobStatusOn == true)
+                    else if (_isFilterJobStatusOn == true) // deselect status (new, active, done, invoiced)
                     {
                         DashboardData = _dashboardDataBackup;
                         if (_isFilterClientTypeOn == true)
@@ -1039,16 +1041,22 @@ namespace Traker.ViewModels
                             DashboardData = _dashboardDataTypeFiltered;
                         }
                         _isFilterJobStatusOn = false;
+
+                        // check if sort was enabled
+                        if (string.IsNullOrEmpty(_state.currentSortOption) == false)
+                        {
+                            SortJobs(_state.currentSortOption);
+                        }
                     }
                 }
-                else if (command == Names.UnfilterClientType)
+                else if (command == Names.UnfilterClientType) // reset client type
                 {
                     if (_isFilterClientTypeOn == false)
                     {
                         DashboardData = _dashboardDataBackup; // reset list
                         _dashboardDataTypeFiltered = DashboardData;
                     }
-                    else if (_isFilterClientTypeOn == true)
+                    else if (_isFilterClientTypeOn == true) // deselect type (individual, company)
                     {
                         DashboardData = _dashboardDataBackup;
                         if (_isFilterJobStatusOn == true)
@@ -1056,6 +1064,12 @@ namespace Traker.ViewModels
                             DashboardData = _dashboardDataStatusFiltered;
                         }
                         _isFilterClientTypeOn = false;
+
+                        // check if sort was enabled
+                        if (string.IsNullOrEmpty(_state.currentSortOption) == false)
+                        {
+                            SortJobs(_state.currentSortOption);
+                        }
                     }
                 }
             }
@@ -1086,6 +1100,10 @@ namespace Traker.ViewModels
                     if (message.Command == "EditClient")
                     {
                         await EditClient();
+                    }
+                    else if (message.Command == Names.ResetSort)
+                    {
+                        await SortJobs(Names.ResetSort);
                     }
                     else if (message.Command == Names.ClientNameAsc)
                     {

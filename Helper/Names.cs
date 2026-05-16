@@ -52,6 +52,7 @@ namespace Traker.Helper
         public const string FilterComapny = "FilterComapny";
         public const string AllJobStatus = "AllJobStatus";
         public const string UnfilterClientType = "UnfilterClientType";
+        public const string ResetSort = "ResetSort";
 
         // message box
         public const string Close = "Close"; // cloe entire app

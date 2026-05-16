@@ -15,8 +15,11 @@ namespace Traker.States
     /// </summary>
     public class AppState : PropertyChangedBase
     {        
+        // filter sort
         public bool IsSortToClear = false; // set from dashboard to clear the sort on opening its menu
         public bool IsFilterToClear = false; // set from dashboard to clear the filter on opening its menu
+        public string currentSortOption = string.Empty; // useful when resetting filter but sort was on to restore it on filter reset
+        public string currentFilterOption = string.Empty;
 
         // messagebox
         public MessageBoxViewModel messageBoxVM = new MessageBoxViewModel();
