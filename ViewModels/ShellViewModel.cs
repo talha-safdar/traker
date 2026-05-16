@@ -74,7 +74,19 @@ namespace Traker.ViewModels
 
         public async Task OnMouseDownEvent(Grid gridSource)
         {
-
+            if (_state.UserContextMenuViewModel != null)
+            {
+                await _state.UserContextMenuViewModel.TryCloseAsync(false);
+                _state.UserContextMenuViewModel = null;
+            }
+            if (IoC.Get<FilterJobsViewModel>().IsActive == true)
+            {
+                await IoC.Get<FilterJobsViewModel>().TryCloseAsync(false);
+            }
+            if (IoC.Get<SortJobsViewModel>().IsActive == true)
+            {
+                await IoC.Get<SortJobsViewModel>().TryCloseAsync(false);
+            }
         }
 
         public Task Exit()

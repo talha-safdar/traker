@@ -44,7 +44,7 @@
 
                             <!-- new -->
                             <Grid Grid.Column="0" Grid.Row="0">
-                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[0]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(0)]" Background="#3F3F46" CornerRadius="17" Height="30" Margin="0,0,0,5">
+                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[0]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(0)]" Background="#3F3F46" CornerRadius="15" Height="30" Margin="0,0,0,5">
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
                                     </Border.Effect>
@@ -60,7 +60,7 @@
 
                             <!-- active -->
                             <Grid Grid.Column="2" Grid.Row="0">
-                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[1]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(1)]" Background="#3F3F46" CornerRadius="17" Height="30"  Margin="0,0,0,5">
+                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[1]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(1)]" Background="#3F3F46" CornerRadius="15" Height="30"  Margin="0,0,0,5">
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
                                     </Border.Effect>
@@ -76,7 +76,7 @@
 
                             <!-- done -->
                             <Grid Grid.Column="0" Grid.Row="2">
-                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[2]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(2)]" Background="#3F3F46" CornerRadius="17" Height="30">
+                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[2]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(2)]" Background="#3F3F46" CornerRadius="15" Height="30">
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
                                     </Border.Effect>
@@ -92,7 +92,7 @@
 
                             <!-- invoiced -->
                             <Grid Grid.Column="2" Grid.Row="2">
-                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[3]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(3)]" Background="#3F3F46" CornerRadius="17" Height="30">
+                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[3]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(3)]" Background="#3F3F46" CornerRadius="15" Height="30">
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
                                     </Border.Effect>

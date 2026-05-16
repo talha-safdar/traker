@@ -6,6 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Traker.ViewModels;
+using Traker.ViewModels.Add;
+using Traker.ViewModels.Edit;
+using Traker.ViewModels.User;
 
 namespace Traker.States
 {
@@ -24,5 +27,16 @@ namespace Traker.States
         // messagebox
         public MessageBoxViewModel messageBoxVM = new MessageBoxViewModel();
         public bool allowProceed = false; // used for confirmation dialogs
+
+        // VMs allow access from shell view model
+        public JobContextMenuViewModel? JobContextMenuViewModel;
+        public AddClientViewModel? AddClientViewModel;
+        public AddJobViewModel? AddJobViewModel;
+        public EditClientViewModel? EditClientViewModel;
+        public EditJobViewModel? EditJobViewModel;
+        public UserContextMenuViewModel? UserContextMenuViewModel;
+        public SortJobsViewModel? SortJobsViewModel;
+        public FilterJobsViewModel? FilterJobsViewModel;
+        public EditInvoiceViewModel? EditInvoiceViewModel;
     }
 }

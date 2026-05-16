@@ -15,7 +15,7 @@ namespace Traker.ViewModels.Edit
     using Traker.Services;
     using Traker.States;
 
-    class EditClientViewModel : Screen
+    public class EditClientViewModel : Screen
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
