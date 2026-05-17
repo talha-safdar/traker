@@ -39,8 +39,6 @@ namespace Traker.Helper
                     settings.VerticalOffset = verticalOffset; // negative=up, positive=down
                     settings.HorizontalOffset = horizontalOffset; // negative=left, positive=right
                 }
-
-                Logger.LogActivity(Logger.INFO, $"CustomWindow: SettingsForDialog() OK");
                 return settings;
             }
             catch (Exception ex)

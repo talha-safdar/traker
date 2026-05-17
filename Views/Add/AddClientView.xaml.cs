@@ -23,12 +23,23 @@ namespace Traker.Views.Add
         public AddClientView()
         {
             InitializeComponent();
-
-            //this.Loaded += (s, e) => {
-            //    this.Focus();
-            //    // Or better yet, focus a specific child like a button or textbox
-            //    //Keyboard.Focus(this);
-            //};
         }
+
+        #region submit button animation
+        private void SubmitBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            SubmitBorder.Opacity = 0.7;
+        }
+
+        private void SubmitBorder_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            SubmitBorder.Opacity = 1.0;
+        }
+
+        private void SubmitBorder_MouseLeave(object sender, MouseEventArgs e)
+        {
+            SubmitBorder.Opacity = 1.0;
+        }
+        #endregion
     }
 }

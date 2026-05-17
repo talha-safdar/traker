@@ -24,5 +24,22 @@ namespace Traker.Views.User
         {
             InitializeComponent();
         }
+
+        #region submit button animation
+        private void SubmitBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            SubmitBorder.Opacity = 0.7;
+        }
+
+        private void SubmitBorder_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            SubmitBorder.Opacity = 1.0;
+        }
+
+        private void SubmitBorder_MouseLeave(object sender, MouseEventArgs e)
+        {
+            SubmitBorder.Opacity = 1.0;
+        }
+        #endregion
     }
 }

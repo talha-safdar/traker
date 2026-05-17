@@ -17,7 +17,10 @@ namespace Traker.States
     /// the project
     /// </summary>
     public class AppState : PropertyChangedBase
-    {        
+    {
+        // splash screen
+        public string _splashText = string.Empty;
+
         // filter sort
         public bool IsSortToClear = false; // set from dashboard to clear the sort on opening its menu
         public bool IsFilterToClear = false; // set from dashboard to clear the filter on opening its menu
@@ -38,5 +41,15 @@ namespace Traker.States
         public SortJobsViewModel? SortJobsViewModel;
         public FilterJobsViewModel? FilterJobsViewModel;
         public EditInvoiceViewModel? EditInvoiceViewModel;
+
+        public string SplashText
+        {
+            get => _splashText;
+            set
+            {
+                _splashText = value;
+                NotifyOfPropertyChange(() => SplashText);
+            }
+        }
     }
 }

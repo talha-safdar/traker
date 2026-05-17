@@ -21,11 +21,7 @@ namespace Traker
                 base.OnStartup(e);
 
                 // This forces WPF to use the local Windows culture for all Bindings
-                FrameworkElement.LanguageProperty.OverrideMetadata(
-                    typeof(FrameworkElement),
-                    new FrameworkPropertyMetadata(
-                        XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
-
+                FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
                 Logger.LogActivity(Logger.INFO, "####################################### NEW EXECUTION #######################################");
             }
             catch (Exception ex)
@@ -35,6 +31,29 @@ namespace Traker
                 Logger.LogActivity(Logger.ERROR, "FAIL");
             }
         }
-    }
 
+        public App()
+        {
+            // Global exception handling
+            DispatcherUnhandledException += App_DispatcherUnhandledException;
+
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        }
+
+        private void App_DispatcherUnhandledException(object sender,
+        System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            MessageBox.Show(e.Exception.Message);
+
+            e.Handled = true;
+        }
+
+        private void CurrentDomain_UnhandledException(object sender,
+            UnhandledExceptionEventArgs e)
+        {
+            Exception ex = (Exception)e.ExceptionObject;
+
+            MessageBox.Show(ex.Message);
+        }
+    }
 }

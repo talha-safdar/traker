@@ -38,7 +38,7 @@
 
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*" />
-                                <RowDefinition Height="0.1*" />
+                                <RowDefinition Height="*" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
 
@@ -55,12 +55,9 @@
                                 </Border>
                             </Grid>
 
-                            <!-- spacer -->
-                            <Grid Grid.Column="1" Grid.Row="0" />
-
                             <!-- active -->
                             <Grid Grid.Column="2" Grid.Row="0">
-                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[1]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(1)]" Background="#3F3F46" CornerRadius="15" Height="30"  Margin="0,0,0,5">
+                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[1]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(1)]" Background="#3F3F46" CornerRadius="15" Height="30" Margin="0,0,0,5">
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
                                     </Border.Effect>
@@ -71,12 +68,9 @@
                                 </Border>
                             </Grid>
 
-                            <!-- spacer -->
-                            <Grid Grid.ColumnSpan="3" Grid.Row="1" />
-
                             <!-- done -->
-                            <Grid Grid.Column="0" Grid.Row="2">
-                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[2]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(2)]" Background="#3F3F46" CornerRadius="15" Height="30">
+                            <Grid Grid.Column="0" Grid.Row="1">
+                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[2]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(2)]" Background="#3F3F46" CornerRadius="15" Height="30" Margin="0,0,0,5">
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
                                     </Border.Effect>
@@ -87,18 +81,41 @@
                                 </Border>
                             </Grid>
 
-                            <!-- spacer -->
-                            <Grid Grid.Column="1" Grid.Row="2" />
-
                             <!-- invoiced -->
-                            <Grid Grid.Column="2" Grid.Row="2">
-                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[3]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(3)]" Background="#3F3F46" CornerRadius="15" Height="30">
+                            <Grid Grid.Column="2" Grid.Row="1">
+                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[3]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(3)]" Background="#3F3F46" CornerRadius="15" Height="30" Margin="0,0,0,5">
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
                                     </Border.Effect>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
                                         <Border Background="{StaticResource JobStatusInvoiced}" Height="10" Width="10" CornerRadius="20" />
                                         <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Invoiced" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <!-- overdue -->
+                            <Grid Grid.Column="0" Grid.Row="2">
+                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[3]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(3)]" Background="#3F3F46" CornerRadius="15" Height="30">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
+                                    </Border.Effect>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
+                                        <Border Background="{StaticResource JobStatusOverdue}" Height="10" Width="10" CornerRadius="20" />
+                                        <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Overdue" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <!-- paid -->
+                            <Grid Grid.Column="2" Grid.Row="2">
+                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[3]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(3)]" Background="#3F3F46" CornerRadius="15" Height="30">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
+                                    </Border.Effect>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
+                                        <Border Background="{StaticResource JobStatusPaid}" Height="10" Width="10" CornerRadius="20" />
+                                        <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Paid" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
                                     </StackPanel>
                                 </Border>
                             </Grid>

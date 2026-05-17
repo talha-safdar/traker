@@ -127,26 +127,86 @@ namespace Traker.ViewModels.Edit
         // focus/unfocus behaviours for price edit
         public void PriceFocused()
         {
-            _isEditingPrice = true;
-            NotifyOfPropertyChange(nameof(Price));
+            try
+            {
+                _isEditingPrice = true;
+                NotifyOfPropertyChange(nameof(Price));
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Price Edit";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"EditJobViewModel: PriceFocused() FAIL\n\t{ex.Message}");
+            }
         }
 
         public void PriceUnfocused()
         {
-            _isEditingPrice = false;
-            NotifyOfPropertyChange(nameof(Price));
+            try
+            {
+                _isEditingPrice = false;
+                NotifyOfPropertyChange(nameof(Price));
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Price Edit";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"EditJobViewModel: PriceUnfocused() FAIL\n\t{ex.Message}");
+            }
         }
 
         public void ReceivedFocused()
         {
-            _isEditingReceived = true;
-            NotifyOfPropertyChange(nameof(AmountReceived));
+            try
+            {
+                _isEditingReceived = true;
+                NotifyOfPropertyChange(nameof(AmountReceived));
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Price Edit";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"EditJobViewModel: ReceivedFocused() FAIL\n\t{ex.Message}");
+            }
         }
 
         public void ReceivedUnfocused()
         {
-            _isEditingReceived = false;
-            NotifyOfPropertyChange(nameof(AmountReceived));
+            try
+            {
+                _isEditingReceived = false;
+                NotifyOfPropertyChange(nameof(AmountReceived));
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Price Edit";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"EditJobViewModel: ReceivedUnfocused() FAIL\n\t{ex.Message}");
+            }
         }
         // focus/unfocus behaviours for price edit
 

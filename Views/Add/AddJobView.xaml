@@ -136,7 +136,7 @@
 
             <!-- butons -->
             <Grid Grid.Row="2">
-                <Border Cursor="Hand" IsEnabled="{Binding EnableSubmitBtn}" Opacity="{Binding OpacitySubmitBtn}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddJobToClient()]" Background="#333333" CornerRadius="25" Height="45" Margin="150,0" BorderThickness="1">
+                <Border Cursor="Hand" x:Name="SubmitBorder" MouseLeave="SubmitBorder_MouseLeave" MouseLeftButtonUp="SubmitBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder_MouseLeftButtonDown" IsEnabled="{Binding EnableSubmitBtn}" Opacity="{Binding OpacitySubmitBtn}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddJobToClient()]" Background="#333333" CornerRadius="25" Height="45" Margin="150,0" BorderThickness="1">
                     <Border.Style>
                         <Style TargetType="Border">
                             <!-- DEFAULT STATE -->

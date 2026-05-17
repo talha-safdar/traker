@@ -68,8 +68,6 @@ namespace Traker.ViewModels.Add
                 // submit button
                 EnableSubmitBtn = false;
                 OpacitySubmitBtn = _halfOpacity;
-
-                Logger.LogActivity(Logger.INFO, $"AddClientViewModel: OnInitializedAsync() OK");
             }
             catch (Exception ex)
             {
@@ -131,7 +129,6 @@ namespace Traker.ViewModels.Add
                         await TryCloseAsync();
                     }
                 }
-                Logger.LogActivity(Logger.INFO, $"AddClientViewModel: HandleKeyPress() OK");
             }
             catch (Exception ex)
             {
@@ -180,7 +177,6 @@ namespace Traker.ViewModels.Add
                 {
                     await TryCloseAsync();
                 }
-                Logger.LogActivity(Logger.INFO, $"AddClientViewModel: Exit() OK");
             }
             catch (Exception ex)
             {
@@ -250,7 +246,6 @@ namespace Traker.ViewModels.Add
                     // refresh database
                     await _events.PublishOnUIThreadAsync(new RefreshDatabase());
                     await TryCloseAsync();
-                    Logger.LogActivity(Logger.INFO, $"AddClientViewModel: AddClient() OK");
                 });
             }
             catch (Exception ex)

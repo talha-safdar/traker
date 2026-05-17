@@ -56,16 +56,6 @@ namespace Traker.ViewModels
         #endregion
 
         #region Private Field Variables
-        //private JobContextMenuViewModel? _contextMenuVM;
-        //private AddClientViewModel _addClientViewModel;
-        //private AddJobViewModel _addJobViewModel;
-        //private EditClientViewModel _editClientViewModel;
-        //private EditJobViewModel _editJobViewModel;
-        //private UserContextMenuViewModel _userContextMenuViewModel;
-        //private SortJobsViewModel _sortJobsViewModel;
-        //private FilterJobsViewModel _filterJobsViewModel;
-        //private EditInvoiceViewModel _editInvoiceViewModel;
-
         // for filter purpose
         private ObservableCollection<DashboardModel> _dashboardDataBackup; // backup when using filter mode
         private ObservableCollection<DashboardModel> _dashboardDataStatusFiltered; // current status filtered list status
@@ -425,7 +415,7 @@ namespace Traker.ViewModels
                     {
                         // delete job folder (if only one job then delete whole client folder)
                         // it deletes the current job folder then it checks if it was the last one if true, then delete client folder
-                        if (await FileStore.DeleteJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName, SelectedJob.JobTitle) == true)
+                        if (await FileStore.DeleteJobFolder(SelectedJob!.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName, SelectedJob.JobTitle) == true)
                         {
                             // delete entire client folder too
                             await FileStore.DeleteClientFolder(SelectedJob.ClientId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName);
@@ -503,25 +493,42 @@ namespace Traker.ViewModels
         {
             await Task.Run(async () =>
             {
-                // disable all context menus on click away
-
-                if (_state.JobContextMenuViewModel != null)
+                try
                 {
-                    await _state.JobContextMenuViewModel.TryCloseAsync(false);
-                    _state.JobContextMenuViewModel = null;
+                    // disable all context menus on click away
+                    if (_state.JobContextMenuViewModel != null)
+                    {
+                        await _state.JobContextMenuViewModel.TryCloseAsync(false);
+                        _state.JobContextMenuViewModel = null;
+                    }
+                    if (_state.UserContextMenuViewModel != null)
+                    {
+                        await _state.UserContextMenuViewModel.TryCloseAsync(false);
+                        _state.UserContextMenuViewModel = null;
+                    }
+                    if (IoC.Get<FilterJobsViewModel>().IsActive == true)
+                    {
+                        await IoC.Get<FilterJobsViewModel>().TryCloseAsync(false);
+                    }
+                    if (IoC.Get<SortJobsViewModel>().IsActive == true)
+                    {
+                        await IoC.Get<SortJobsViewModel>().TryCloseAsync(false);
+                    }
                 }
-                if (_state.UserContextMenuViewModel != null)
+                catch (Exception ex)
                 {
-                    await _state.UserContextMenuViewModel.TryCloseAsync(false);
-                    _state.UserContextMenuViewModel = null;
-                }
-                if (IoC.Get<FilterJobsViewModel>().IsActive == true)
-                {
-                    await IoC.Get<FilterJobsViewModel>().TryCloseAsync(false);
-                }
-                if (IoC.Get<SortJobsViewModel>().IsActive == true)
-                {
-                    await IoC.Get<SortJobsViewModel>().TryCloseAsync(false);
+                    await Execute.OnUIThreadAsync(async() =>
+                    {
+                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                        {
+                            _state.messageBoxVM.Symbol = 2;
+                            _state.messageBoxVM.HeadMessage = "Close Window";
+                            _state.messageBoxVM.Message = ex.Message;
+                            _state.messageBoxVM.ButtonStyle = Names.OK;
+                            await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        }
+                    });
+                    Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: OnMouseDownEvent() FAIL\n\t{ex.Message}");
                 }
             });
         }
@@ -729,7 +736,7 @@ namespace Traker.ViewModels
                     _state.messageBoxVM.ButtonStyle = Names.OK;
                     _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
-                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: PauseLoop() FAIL\n\t{ex.Message}");
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: ResumeLoop() FAIL\n\t{ex.Message}");
             }
         }
 
@@ -754,7 +761,7 @@ namespace Traker.ViewModels
                     _state.messageBoxVM.ButtonStyle = Names.OK;
                     _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
-                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: PauseLoop() FAIL\n\t{ex.Message}");
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: StopLoop() FAIL\n\t{ex.Message}");
             }
         }
 

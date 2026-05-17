@@ -100,11 +100,26 @@ namespace Traker.ViewModels
 
         protected override Task OnActivatedAsync(CancellationToken cancellationToken)
         {
-            // if dashbaord refreshed and notified to reset
-            if (_state.IsSortToClear == true)
+            try
             {
-                DisbaleOptions();
-                _state.IsSortToClear = false;
+                // if dashbaord refreshed and notified to reset
+                if (_state.IsSortToClear == true)
+                {
+                    DisbaleOptions();
+                    _state.IsSortToClear = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "OnActivatedAsync";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"SortJobsViewModel: OnActivatedAsync() FAIL\n\t{ex.Message}");
             }
             return base.OnActivatedAsync(cancellationToken);
         }

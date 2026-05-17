@@ -26,9 +26,9 @@ namespace Traker.Services
             try
             {
                 string fileName = $"Log {DateTime.Now:yyyy-MM-dd}.txt"; // file name "Log YYYY-MM-dd.txt"
-                string LogDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Log");
+                string AppDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Traker");
+                string LogDirectory = Path.Combine(AppDirectory, "Log");
                 Directory.CreateDirectory(LogDirectory);
-
                 string filePath = Path.Combine(LogDirectory, fileName); // Set file path directory
 
                 lock (_logLock)

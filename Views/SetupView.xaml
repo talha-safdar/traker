@@ -34,7 +34,33 @@
 
                 <!-- top bar -->
                 <Grid Grid.Row="0">
-                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Welcome to TRAKER" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="58" />
+                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Welcome to TRAKER" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" FontSize="58">
+                        <TextBlock.Foreground>
+                            <!--<LinearGradientBrush StartPoint="0.5,1"
+                             EndPoint="0.5,0">
+
+                                <GradientStop Color="#666666" Offset="0"/>
+                                <GradientStop Color="#FFFFFF" Offset="1"/>
+
+                            </LinearGradientBrush>-->
+                            <LinearGradientBrush x:Name="TextBrush" StartPoint="0,1" EndPoint="0,0">
+                                <GradientStop Color="#666666" Offset="0"/>
+                                <GradientStop Color="#FFFFFF" Offset="0.6"/>
+                                <LinearGradientBrush.RelativeTransform>
+                                    <TranslateTransform x:Name="GradientTransform"/>
+                                </LinearGradientBrush.RelativeTransform>
+                            </LinearGradientBrush>
+                        </TextBlock.Foreground>
+                        <TextBlock.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                        <DoubleAnimation Storyboard.TargetName="GradientTransform" Storyboard.TargetProperty="Y" From="-0.2" To="0.2" Duration="0:0:2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </TextBlock.Triggers>
+                    </TextBlock>
                 </Grid>
 
                 <!-- main contents -->
@@ -213,7 +239,7 @@
                     <!-- next -->
                     <Grid Grid.Column="2">
                         <!-- next -->
-                        <Border IsEnabled="{Binding EnableNextBtn}" Opacity="{Binding OpacityBtn}" HorizontalAlignment="Right" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmUserSetup()]" Background="#333333" CornerRadius="25" Height="50" Width="50" BorderThickness="1">
+                        <Border x:Name="SubmitBorder1" MouseLeave="SubmitBorder1_MouseLeave" MouseLeftButtonUp="SubmitBorder1_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder1_MouseLeftButtonDown" IsEnabled="{Binding EnableNextBtn}" Opacity="{Binding OpacityBtn}" HorizontalAlignment="Right" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmUserSetup()]" Background="#333333" CornerRadius="25" Height="50" Width="50" BorderThickness="1">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <!-- DEFAULT STATE -->
@@ -262,9 +288,26 @@
 
                 <!-- top bar -->
                 <Grid Grid.Row="0">
-                    <!--<TextBlock HorizontalAlignment="Center" Text="Business Info" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>-->
-                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Welcome to TRAKER" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="58" />
-
+                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Welcome to TRAKER" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" FontSize="58">
+                        <TextBlock.Foreground>
+                            <LinearGradientBrush x:Name="TextBrush1" StartPoint="0,1" EndPoint="0,0">
+                                <GradientStop Color="#666666" Offset="0"/>
+                                <GradientStop Color="#FFFFFF" Offset="0.6"/>
+                                <LinearGradientBrush.RelativeTransform>
+                                    <TranslateTransform x:Name="GradientTransform1"/>
+                                </LinearGradientBrush.RelativeTransform>
+                            </LinearGradientBrush>
+                        </TextBlock.Foreground>
+                        <TextBlock.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                        <DoubleAnimation Storyboard.TargetName="GradientTransform1" Storyboard.TargetProperty="Y" From="-0.2" To="0.2" Duration="0:0:2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </TextBlock.Triggers>
+                    </TextBlock>
                 </Grid>
 
                 <!-- main contents -->
@@ -363,7 +406,7 @@
 
                     <!-- next -->
                     <Grid Grid.Column="2">
-                        <Border IsEnabled="{Binding EnableNextBtn}" Opacity="{Binding OpacityBtn}" HorizontalAlignment="Right" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBusinessSetup()]" Background="#333333" CornerRadius="25" Height="50" Width="50" BorderThickness="1">
+                        <Border x:Name="SubmitBorder2" MouseLeave="SubmitBorder2_MouseLeave" MouseLeftButtonUp="SubmitBorder2_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder2_MouseLeftButtonDown" IsEnabled="{Binding EnableNextBtn}" Opacity="{Binding OpacityBtn}" HorizontalAlignment="Right" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBusinessSetup()]" Background="#333333" CornerRadius="25" Height="50" Width="50" BorderThickness="1">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <!-- DEFAULT STATE -->
@@ -411,7 +454,26 @@
 
                 <!-- top bar -->
                 <Grid Grid.Row="0">
-                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Welcome to TRAKER" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="58" />
+                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Welcome to TRAKER" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" FontSize="58">
+                        <TextBlock.Foreground>
+                            <LinearGradientBrush x:Name="TextBrush2" StartPoint="0,1" EndPoint="0,0">
+                                <GradientStop Color="#666666" Offset="0"/>
+                                <GradientStop Color="#FFFFFF" Offset="0.6"/>
+                                <LinearGradientBrush.RelativeTransform>
+                                    <TranslateTransform x:Name="GradientTransform2"/>
+                                </LinearGradientBrush.RelativeTransform>
+                            </LinearGradientBrush>
+                        </TextBlock.Foreground>
+                        <TextBlock.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                        <DoubleAnimation Storyboard.TargetName="GradientTransform1" Storyboard.TargetProperty="Y" From="-0.2" To="0.2" Duration="0:0:2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </TextBlock.Triggers>
+                    </TextBlock>
                 </Grid>
 
                 <!-- main contents -->
@@ -547,7 +609,7 @@
                     <!-- next -->
                     <Grid Grid.Column="2">
                         <!-- next -->
-                        <Border IsEnabled="{Binding EnableNextBtn}" Opacity="{Binding OpacityBtn}" HorizontalAlignment="Right" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBusinessSetup()]" Background="#333333" CornerRadius="25" Height="50" Width="50" BorderThickness="1">
+                        <Border x:Name="SubmitBorder22" MouseLeave="SubmitBorder22_MouseLeave" MouseLeftButtonUp="SubmitBorder22_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder22_MouseLeftButtonDown" IsEnabled="{Binding EnableNextBtn}" Opacity="{Binding OpacityBtn}" HorizontalAlignment="Right" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBusinessSetup()]" Background="#333333" CornerRadius="25" Height="50" Width="50" BorderThickness="1">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <!-- DEFAULT STATE -->
@@ -597,7 +659,26 @@
 
                 <!-- top bar -->
                 <Grid Grid.Row="0">
-                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Welcome to TRAKER" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="58" />
+                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Welcome to TRAKER" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" FontSize="58">
+                        <TextBlock.Foreground>
+                            <LinearGradientBrush x:Name="TextBrush3" StartPoint="0,1" EndPoint="0,0">
+                                <GradientStop Color="#666666" Offset="0"/>
+                                <GradientStop Color="#FFFFFF" Offset="0.6"/>
+                                <LinearGradientBrush.RelativeTransform>
+                                    <TranslateTransform x:Name="GradientTransform3"/>
+                                </LinearGradientBrush.RelativeTransform>
+                            </LinearGradientBrush>
+                        </TextBlock.Foreground>
+                        <TextBlock.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                        <DoubleAnimation Storyboard.TargetName="GradientTransform1" Storyboard.TargetProperty="Y" From="-0.2" To="0.2" Duration="0:0:2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </TextBlock.Triggers>
+                    </TextBlock>
                 </Grid>
 
                 <!-- main contents -->
@@ -712,7 +793,7 @@
                     <!-- next -->
                     <Grid Grid.Column="2">
                         <!-- next -->
-                        <Border IsEnabled="{Binding EnableNextBtn}" Opacity="{Binding OpacityBtn}" HorizontalAlignment="Right" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBankSetup()]" Background="#333333" CornerRadius="25" Height="50" Width="50" BorderThickness="1">
+                        <Border x:Name="SubmitBorder3" MouseLeave="SubmitBorder3_MouseLeave" MouseLeftButtonUp="SubmitBorder3_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder3_MouseLeftButtonDown" IsEnabled="{Binding EnableNextBtn}" Opacity="{Binding OpacityBtn}" HorizontalAlignment="Right" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBankSetup()]" Background="#333333" CornerRadius="25" Height="50" Width="50" BorderThickness="1">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <!-- DEFAULT STATE -->

@@ -228,7 +228,6 @@ namespace Traker.ViewModels.Add
                 {
                     await TryCloseAsync();
                 }
-                Logger.LogActivity(Logger.INFO, $"AddJobViewModel: Exit() OK");
             }
             catch (Exception ex)
             {

@@ -6,6 +6,7 @@ namespace Traker.ViewModels
     using System.Threading;
     using System.Windows;
     using System.Windows.Controls;
+    using Traker.Data;
     using Traker.Events.ShellVM;
     using Traker.Helper;
     using Traker.Services;
@@ -39,8 +40,65 @@ namespace Traker.ViewModels
         {
             try
             {
+                // check if all user data is present, if not open the setup window
+                if (await Database.CheckUserDatabase() == false) // if false it means ds exists but check failed
+                {
+                    // No database found
+                    _state.SplashText = "Database is corrupted";
+
+                    await Task.Delay(1000);
+
+                    // Delete current db
+                    _state.SplashText = "Deleting current database...";
+
+                    await Task.Delay(1000);
+
+                    if (await FileStore.DeleteDatabase() == true)
+                    {
+                        _state.SplashText = "Current Database Deleted";
+                        Logger.LogActivity(Logger.INFO, "ShellViewModel: Deleted Corrupted Database");
+                    }
+                    else
+                    {
+                        _state.SplashText = "Cannot access the database";
+                        await Task.Delay(1000);
+                        Environment.Exit(1); // close app
+                        Logger.LogActivity(Logger.WARNING, "ShellViewModel: Failed to Delete Corrupted Database");
+                    }
+
+                    // Creating database
+                    await Task.Delay(1000);
+                    _state.SplashText = "Creating a new database...";
+                    await Task.Delay(1000);
+                }
+
+                // setting up database
+                _state.SplashText = "Initialising database...";
+                await Task.Delay(1000);
                 await Database.SetUpDatabase();
                 await _dataService.FetchDatabase();
+
+                await base.OnInitializedAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Initialise";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"ShellViewModel: OnInitializedAsync() FAIL\n\t{ex.Message}");
+            }
+        }
+
+        protected override async void OnViewReady(object view)
+        {
+            try
+            {
+                base.OnViewReady(view);
 
                 // check if user table is empty
                 // if so, it means it's a fresh start

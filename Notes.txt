@@ -80,6 +80,8 @@ V1:
 - add background thread
 - what if enter empty fields?
 - on click anywhere disable all windows
+#- dont forget button animations for edit invoice
+#- ask chatgpt if log file is necessary if being released on microsfot store
 
 V2:
 #- the selected not invoiced then confirmation box yes/no. that row with invoice details will be saved in a e.g. "rubbish" folder in txt. 

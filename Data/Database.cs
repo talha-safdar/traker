@@ -1,13 +1,7 @@
 ﻿using Caliburn.Micro;
-using Dapper;
 using Microsoft.Data.Sqlite;
-using Microsoft.VisualBasic;
-using System.Data;
-using System.Diagnostics;
 using System.IO;
-using System.Net;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows;
 using Traker.Helper;
 using Traker.Models.Database;
@@ -16,6 +10,8 @@ using Traker.States;
 
 namespace Traker.Database
 {
+    using Dapper;
+
     /// <summary>
     /// Handle relationships between the UI and the database.
     /// </summary>
@@ -33,13 +29,12 @@ namespace Traker.Database
         /// </summary>
         public static async Task SetUpDatabase()
         {
-            await Task.Run(async() =>
+            await Task.Run(async () =>
             {
                 try
                 {
                     // set directory and database name
-                    var folder = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Traker");
+                    var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Traker");
                     Directory.CreateDirectory(folder);
                     var dbPath = Path.Combine(folder, "traker.db");
 
@@ -102,8 +97,86 @@ namespace Traker.Database
             });
         }
         #endregion
-        
+
         #region Fetch Functions
+        /// <summary>
+        /// Checks user database on startup if empty then
+        /// prompt setup window (after deleting the databse file)
+        /// </summary>
+        public async static Task<bool> CheckUserDatabase()
+        {
+            bool isSuccessful = false;
+
+            try
+            {
+                await Task.Run(async() =>
+                {
+                    // set directory and database name
+                    var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Traker");
+                    if (Directory.Exists(folder) == false)
+                    {
+                        // to test
+                        isSuccessful = false;
+                        return;
+                    }
+
+                    var dbPath = Path.Combine(folder, "traker.db");
+                     _connectionString = $"Data Source={dbPath}";
+
+
+                    using (var conn = new SqliteConnection(_connectionString))
+                    {
+                        // query database
+                        int countUser = await conn.ExecuteScalarAsync<int>(
+                        @"SELECT COUNT(*) FROM 'User'"
+                        );
+
+                        int countBusiness = await conn.ExecuteScalarAsync<int>(
+                        @"SELECT COUNT(*) FROM 'Business'"
+                        );
+
+                        int countBank = await conn.ExecuteScalarAsync<int>(
+                        @"SELECT COUNT(*) FROM 'bank'"
+                        );
+
+                        // if any table is empty delete database file to trigger setup window
+                        if (countUser == 0 || countBusiness == 0 || countBank == 0)
+                        {
+                            SqliteConnection.ClearAllPools();
+
+                            GC.Collect();
+                            GC.WaitForPendingFinalizers();
+
+                            //File.Delete(dbPath);
+
+                            isSuccessful = false;
+                        }
+                        else
+                        {
+                            isSuccessful = true;
+                        }
+                    }
+                });                
+            }
+            catch (Exception ex)
+            {
+                AppState state = IoC.Get<AppState>();
+                IWindowManager windowManager = IoC.Get<IWindowManager>();
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                {
+                    state.messageBoxVM.Symbol = 2;
+                    state.messageBoxVM.HeadMessage = "Fetch Clients Tables";
+                    state.messageBoxVM.Message = ex.Message;
+                    state.messageBoxVM.ButtonStyle = Names.OK;
+                    state.messageBoxVM.Action = Names.Close;
+                    await windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                isSuccessful = false;
+                Logger.LogActivity(Logger.ERROR, $"Database: CheckUserDatabase() FAIL\n\t{ex.Message}");
+            }
+            return isSuccessful;
+        }
+
         /// <summary>
         /// Fetch Clients table
         /// </summary>
@@ -174,26 +247,21 @@ namespace Traker.Database
                         }
                     }
                 }
-                Logger.LogActivity(Logger.INFO, "Database: FetchClientsTable() OK");
                 return clientsList;
             }
             catch (Exception ex)
             {
-                Execute.OnUIThreadAsync(() =>
+                AppState state = IoC.Get<AppState>();
+                IWindowManager windowManager = IoC.Get<IWindowManager>();
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
                 {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Fetch Clients Tables";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
+                    state.messageBoxVM.Symbol = 2;
+                    state.messageBoxVM.HeadMessage = "Fetch Clients Tables";
+                    state.messageBoxVM.Message = ex.Message;
+                    state.messageBoxVM.ButtonStyle = Names.OK;
+                    state.messageBoxVM.Action = Names.Close;
+                    windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
                 Logger.LogActivity(Logger.ERROR, $"Database: FetchClientsTable() FAIL\n\t{ex.Message}");
                 throw;
             }
@@ -275,7 +343,6 @@ namespace Traker.Database
                         }
                     }
                 }
-                Logger.LogActivity(Logger.INFO, "Database: FetchJobsTable() OK");
                 return jobsList;
             }
             catch (Exception ex)
@@ -299,7 +366,7 @@ namespace Traker.Database
                 throw;
             }
         }
-              
+
         /// <summary>
         /// Fetch Invoices table
         /// </summary>
@@ -388,7 +455,6 @@ namespace Traker.Database
                         }
                     }
                 }
-                Logger.LogActivity(Logger.INFO, "Database: FetchInvoiceTable() OK");
                 return invoicesList;
             }
             catch (Exception ex)
@@ -438,7 +504,7 @@ namespace Traker.Database
                                 var FullName = reader["FullName"] == DBNull.Value ? string.Empty : reader["FullName"];
                                 var Email = reader["Email"] == DBNull.Value ? string.Empty : reader["Email"];
                                 var Phone = reader["Phone"] == DBNull.Value ? string.Empty : reader["Phone"];
-                                
+
 
                                 if (string.IsNullOrEmpty(UserId.ToString()) == false ||
                                     string.IsNullOrEmpty(FullName.ToString()) == false ||
@@ -457,7 +523,6 @@ namespace Traker.Database
                         }
                     }
                 }
-                Logger.LogActivity(Logger.INFO, "Database: FetchUserTable() OK");
                 return userList;
             }
             catch (Exception ex)
@@ -544,7 +609,6 @@ namespace Traker.Database
                         }
                     }
                 }
-                Logger.LogActivity(Logger.INFO, "Database: FetchBusinessTable() OK");
                 return businessList;
             }
             catch (Exception ex)
@@ -568,7 +632,7 @@ namespace Traker.Database
                 throw;
             }
         }
-        
+
         /// <summary>
         /// Fetch Bank table
         /// </summary>
@@ -624,7 +688,6 @@ namespace Traker.Database
                         }
                     }
                 }
-                Logger.LogActivity(Logger.INFO, "Database: FetchBankTable() OK");
                 return bankList;
             }
             catch (Exception ex)
@@ -734,8 +797,6 @@ namespace Traker.Database
 
                 // also update the status in Jobs table to "Invoiced"
                 SetJobStatus(Names.Invoiced, clientId, jobId);
-
-                Logger.LogActivity(Logger.INFO, $"Database: CreateInvoice() OK - JobId: {jobId}");
             }
             catch (Exception ex)
             {
@@ -782,8 +843,6 @@ namespace Traker.Database
                 cmd.Parameters.AddWithValue("@phone", phone);
 
                 cmd.ExecuteNonQuery();
-
-                Logger.LogActivity(Logger.INFO, $"Database: Createuser() OK");
             }
             catch (Exception ex)
             {
@@ -837,8 +896,6 @@ namespace Traker.Database
                 cmd.Parameters.AddWithValue("@registrationNumber", registrationNumber);
 
                 cmd.ExecuteNonQuery();
-
-                Logger.LogActivity(Logger.INFO, $"Database: CreateBusiness() OK");
             }
             catch (Exception ex)
             {
@@ -889,8 +946,6 @@ namespace Traker.Database
                 cmd.Parameters.AddWithValue("@IBAN", IBAN);
                 cmd.Parameters.AddWithValue("@BIC", BIC);
                 cmd.ExecuteNonQuery();
-
-                Logger.LogActivity(Logger.INFO, $"Database: CreateBank() OK");
             }
             catch (Exception ex)
             {
@@ -1005,7 +1060,6 @@ namespace Traker.Database
 
                 // Commit both together
                 tx.Commit();
-                Logger.LogActivity(Logger.INFO, $"Database: AddRow() OK - ClientId: {clientId}, JobId: {jobId}");
                 return Task.FromResult(clientJobIds);
             }
             catch (Exception ex)
@@ -1117,7 +1171,6 @@ namespace Traker.Database
 
                 // Commit both together
                 tx.Commit();
-                Logger.LogActivity(Logger.INFO, $"Database: AddRow() OK - ClientId: {clientId}, JobId: {jobId}");
                 return Task.FromResult(clientJobIds);
             }
             catch (Exception ex)
@@ -1179,7 +1232,6 @@ namespace Traker.Database
                     jobIdCmd.CommandText = "SELECT last_insert_rowid();";
                     jobId = (long)jobIdCmd.ExecuteScalar()!;
                 }
-                Logger.LogActivity(Logger.INFO, $"Database: AddNewJobToClient() OK - ClientId: {clientId}, JobId: {jobId}");
                 return Task.FromResult(Convert.ToInt32(jobId));
             }
             catch (Exception ex)
@@ -1247,8 +1299,6 @@ namespace Traker.Database
                 cmd.Parameters.AddWithValue("@isActive", isActive);
 
                 cmd.ExecuteNonQuery();
-
-                Logger.LogActivity(Logger.INFO, $"Database: AddNewJobToClient() OK - ClientId: {clientId}");
             }
             catch (Exception ex)
             {
@@ -1271,7 +1321,7 @@ namespace Traker.Database
             }
             return Task.CompletedTask;
         }
-        
+
         /// <summary>
         /// Edit job
         /// </summary>
@@ -1308,8 +1358,6 @@ namespace Traker.Database
                 cmd.Parameters.AddWithValue("@dueDate", dueDate);
 
                 cmd.ExecuteNonQuery();
-
-                Logger.LogActivity(Logger.INFO, $"Database: EditJob() OK - : {jobId}");
             }
             catch (Exception ex)
             {
@@ -1378,9 +1426,6 @@ namespace Traker.Database
 
                     cmd.ExecuteNonQuery();
                 }
-
-
-                Logger.LogActivity(Logger.INFO, $"Database: EditUser() OK - UserId: {userId}");
             }
             catch (Exception ex)
             {
@@ -1441,8 +1486,6 @@ namespace Traker.Database
 
                     cmd.ExecuteNonQuery();
                 }
-
-                Logger.LogActivity(Logger.INFO, $"Database: EditBusiness() OK - UserId: {userId}");
             }
             catch (Exception ex)
             {
@@ -1500,8 +1543,6 @@ namespace Traker.Database
 
                     cmd.ExecuteNonQuery();
                 }
-
-                Logger.LogActivity(Logger.INFO, $"Database: EditBank() OK - UserId: {userId}");
             }
             catch (Exception ex)
             {
@@ -1602,7 +1643,6 @@ namespace Traker.Database
                         }
                     }
                 }
-                Logger.LogActivity(Logger.INFO, $"Database: SetStatus() OK - ClientId: {clientId}, JobId: {jobId}, Status: {status}");
             }
             catch (Exception ex)
             {
@@ -1667,7 +1707,7 @@ namespace Traker.Database
             }
             return Task.CompletedTask;
         }
-                    
+
         /// <summary>
         /// set invoice status
         /// </summary>
@@ -1688,7 +1728,6 @@ namespace Traker.Database
                 cmd.Parameters.AddWithValue("@paidDate", (object)paidDate ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@invoiceId", invoiceId);
                 cmd.ExecuteNonQuery();
-                Logger.LogActivity(Logger.INFO, $"Database: InvoicePaid() OK - InvoiceId: {invoiceId}");
             }
             catch (Exception ex)
             {
@@ -1730,7 +1769,6 @@ namespace Traker.Database
                 cmd.Parameters.AddWithValue("@clientId", clientId);
                 cmd.Parameters.AddWithValue("@folderName", folderName);
                 cmd.ExecuteNonQuery();
-                Logger.LogActivity(Logger.INFO, $"Database: SetClientFoldername() OK - ClientId: {clientId}");
             }
             catch (Exception ex)
             {
@@ -1772,7 +1810,6 @@ namespace Traker.Database
                 cmd.Parameters.AddWithValue("@jobId", jobId);
                 cmd.Parameters.AddWithValue("@folderName", folderName);
                 cmd.ExecuteNonQuery();
-                Logger.LogActivity(Logger.INFO, $"Database: SetJobFolderName() OK - JobId: {jobId}");
             }
             catch (Exception ex)
             {
@@ -1828,7 +1865,6 @@ namespace Traker.Database
                 }
 
                 tx.Commit();
-                Logger.LogActivity(Logger.INFO, $"Database: DeleteRow() OK - ClientId: {clientId}");
             }
             catch (Exception ex)
             {
@@ -1882,7 +1918,6 @@ namespace Traker.Database
                 }
 
                 tx.Commit();
-                Logger.LogActivity(Logger.INFO, $"Database: DeleteJob() OK - JobId: {jobId}");
             }
             catch (Exception ex)
             {
@@ -1943,7 +1978,6 @@ namespace Traker.Database
                     updateJobStatusCmd.ExecuteNonQuery();
                 }
                 tx.Commit();
-                Logger.LogActivity(Logger.INFO, $"Database: DeleteInvoice() OK - InvoiceId: {invoiceId}");
             }
             catch (Exception ex)
             {

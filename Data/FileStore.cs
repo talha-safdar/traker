@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using Microsoft.Data.Sqlite;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -51,7 +52,6 @@ namespace Traker.Data
                 string notesFolder = Path.Combine(clientFolder, "Notes");
                 Directory.CreateDirectory(notesFolder);
 
-                Logger.LogActivity(Logger.INFO, $"FileStore: CreateClientFolder() OK");
                 return Task.FromResult(clientFolderName);
             }
             catch (Exception ex)
@@ -107,7 +107,6 @@ namespace Traker.Data
                 // create job folder if it doesn't exist
                 Directory.CreateDirectory(jobFolder);
 
-                Logger.LogActivity(Logger.INFO, $"FileStore: CreateJobFolder() OK");
                 return Task.FromResult(jobFolderName);
             }
             catch (Exception ex)
@@ -181,7 +180,7 @@ namespace Traker.Data
                 Debug.WriteLine("Full name:" + invoiceName);
                 Debug.WriteLine("Full path:" + fullPath);
                 Debug.WriteLine("invoice path:" + invoicesFolder);
-                Logger.LogActivity(Logger.INFO, $"FileStore: SaveInvoiceFile() OK");
+
                 return Task.FromResult(fullPath);
             }
             catch (Exception ex)
@@ -242,7 +241,6 @@ namespace Traker.Data
                     {
                         Directory.Move(clientFolder, clientNewFolder);
                         isOkay = true;
-                        Logger.LogActivity(Logger.INFO, $"FileStore: UpdateClientFolderName() OK");
                     }
                     catch(Exception ex)
                     {
@@ -321,7 +319,6 @@ namespace Traker.Data
                     {
                         Directory.Move(jobFolder, jobNewFolder);
                         isOkay = true;
-                        Logger.LogActivity(Logger.INFO, $"FileStore: UpdateJobFolderName() OK");
                     }
                     catch(Exception ex)
                     {
@@ -361,6 +358,54 @@ namespace Traker.Data
 
         #region Delete Functions
         /// <summary>
+        /// Deletes entire database
+        /// </summary>
+        public async static Task <bool> DeleteDatabase()
+        {
+            bool isSuccessful = false;
+            await Task.Run(async() =>
+            {
+                try
+                {
+                    // delete database file
+                    var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Traker");
+                    var dbPath = Path.Combine(folder, "traker.db");
+                    if (File.Exists(dbPath))
+                    {
+                        // database in use problem happens here
+                        File.Delete(dbPath);
+                        isSuccessful = true;
+                    }
+                    else
+                    {
+                        isSuccessful = false;
+                        Logger.LogActivity(Logger.WARNING, "Database: CheckUserDatabase() DATABASE FILE NOT FOUND FOR DELETION");
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    await Execute.OnUIThreadAsync(async() =>
+                    {
+                        AppState state = IoC.Get<AppState>();
+                        IWindowManager windowManager = IoC.Get<IWindowManager>();
+                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                        {
+                            state.messageBoxVM.Symbol = 2;
+                            state.messageBoxVM.HeadMessage = "Delete Database";
+                            state.messageBoxVM.Message = ex.Message;
+                            state.messageBoxVM.ButtonStyle = Names.OK;
+                            await windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        }
+                    });
+                    isSuccessful = false;
+                    Logger.LogActivity(Logger.ERROR, $"FileStore: DeleteDatabase() FAIL\n\t{ex.Message}");
+                }
+            });
+            return isSuccessful;
+        }
+
+        /// <summary>
         /// Delete client folder
         /// </summary>
         public static Task DeleteClientFolder(int clientId, string clientName)
@@ -388,7 +433,6 @@ namespace Traker.Data
                     {
                         Directory.Delete(clientFolder, true); // true means delete everything inside too
                     }
-                    Logger.LogActivity(Logger.INFO, $"FileStore: DeleteClientFolder() OK");
                 }
                 catch (Exception ex)
                 {
@@ -464,7 +508,6 @@ namespace Traker.Data
                         isLastJob = false;
                     }
                 }
-                Logger.LogActivity(Logger.INFO, $"FileStore: DeleteJobFolder() OK");
                 return Task.FromResult(isLastJob);
             }
             catch(Exception ex)
@@ -526,7 +569,6 @@ namespace Traker.Data
                         FileName = jobFolder,
                         UseShellExecute = true
                     });
-                    Logger.LogActivity(Logger.INFO, $"FileStore: LocateJobFolder() OK");
                 }
                 catch (Exception ex)
                 {
@@ -579,7 +621,7 @@ namespace Traker.Data
 
                 // 6️⃣ Find matching file
                 string file = Directory.GetFiles(invoicesFolder, "*.pdf").FirstOrDefault(f => Path.GetFileName(f).StartsWith(expectedPrefix, StringComparison.OrdinalIgnoreCase))!;
-                Logger.LogActivity(Logger.INFO, $"FileStore: GetInvoiceFilePath() OK");
+
                 return Task.FromResult(file);
             }
             catch (Exception ex)

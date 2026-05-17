@@ -12,24 +12,50 @@
         WindowStartupLocation="CenterScreen"
         ShowInTaskbar="False"
         Topmost="True"
-        Background="Transparent" Width="400" Height="250">
-    <Border Margin="5" Background="#1A1A1A" CornerRadius="25">
-        <Border.Effect>
+        Background="Transparent" Width="450" Height="300">
+    <Border Margin="10" CornerRadius="25">
+        <Border.Background>
+            <LinearGradientBrush x:Name="AnimatedGradient" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#1A1A1A" Offset="0"/>
+                <GradientStop Color="#1E1E1E" Offset="1"/>
+                <LinearGradientBrush.RelativeTransform>
+                    <TranslateTransform x:Name="GradientMove"/>
+                </LinearGradientBrush.RelativeTransform>
+            </LinearGradientBrush>
+            </Border.Background>
+            <Border.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                            <DoubleAnimation
+                        Storyboard.TargetName="GradientMove"
+                        Storyboard.TargetProperty="X"
+                        From="-0.2"
+                        To="0.2"
+                        Duration="0:0:4"/>
+
+                            <DoubleAnimation
+                        Storyboard.TargetName="GradientMove"
+                        Storyboard.TargetProperty="Y"
+                        From="-0.2"
+                        To="0.2"
+                        Duration="0:0:4"/>
+
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Border.Triggers>
+            <Border.Effect>
             <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.12" Color="white" />
         </Border.Effect>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" /> <!-- logo image -->
                 <RowDefinition Height="*" /> <!-- logo name -->
-                <RowDefinition Height="*" /> <!-- version -->
+                <RowDefinition Height="*" /> <!-- text -->
             </Grid.RowDefinitions>
             
-            <!-- logo image -->
-            <Grid Grid.Row="0">
-            </Grid>
-
             <!-- logo name -->
-            <Grid Grid.Row="1">
+            <Grid Grid.RowSpan="3">
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="TRAKER" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="ExtraBlack" Foreground="#E0E0E0" FontSize="36">
                     <TextBlock.Effect>
                         <DropShadowEffect
@@ -55,12 +81,11 @@
                         </EventTrigger>
                     </TextBlock.Triggers>
                 </TextBlock>
-
             </Grid>
 
-            <!-- version -->
-            <Grid Grid.Row="2">
-                
+            <!-- text -->
+            <Grid Grid.Row="1">
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding State.SplashText}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#888888" FontSize="18"/>
             </Grid>
         </Grid>
     </Border>

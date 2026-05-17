@@ -8,6 +8,9 @@
     <UseWPF>true</UseWPF>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Resources\Media\Images\Icons\Logo\traker-logo.ico</ApplicationIcon>
+    <Platforms>AnyCPU;x64</Platforms>
+    <Company>$(Authors)</Company>
+    <Authors>$(AssemblyName)</Authors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -80,11 +83,11 @@
   <ItemGroup>
     <PackageReference Include="Caliburn.Micro" Version="5.0.258" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-    <PackageReference Include="Dapper" Version="2.1.72" />
+    <PackageReference Include="Dapper" Version="2.1.79" />
     <PackageReference Include="Dapper.SqlBuilder" Version="2.1.66" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.2" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3912.50" />
-    <PackageReference Include="QuestPDF" Version="2026.2.3" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3967.48" />
+    <PackageReference Include="QuestPDF" Version="2026.5.0" />
     <PackageReference Include="SharpVectors.Wpf" Version="1.8.5" />
     <PackageReference Include="Verify.CommunityToolkit.Mvvm" Version="1.1.0" />
   </ItemGroup>

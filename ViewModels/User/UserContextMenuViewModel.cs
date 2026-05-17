@@ -105,6 +105,21 @@ namespace Traker.ViewModels.User
                     _state.messageBoxVM.ButtonStyle = Names.OK;
                     _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
+
+                // close other windows
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext is UserInfoViewModel) == true)
+                {
+                    Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.DataContext is UserInfoViewModel)!.Close();
+                }
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext is BusinessInfoViewModel) == true)
+                {
+                    Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.DataContext is BusinessInfoViewModel)!.Close();
+                }
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext is BankInfoViewModel) == true)
+                {
+                    Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.DataContext is BankInfoViewModel)!.Close();
+                }
+
                 Logger.LogActivity(Logger.ERROR, $"UserContextMenuViewModel: OpenOption() FAIL\n\t{ex.Message}");
             }
         }

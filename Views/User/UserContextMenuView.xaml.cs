@@ -24,5 +24,56 @@ namespace Traker.Views.User
         {
             InitializeComponent();
         }
+
+        #region user button animation
+        private void UserBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            UserBorder.Opacity = 0.7;
+        }
+
+        private void UserBorder_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            UserBorder.Opacity = 1.0;
+        }
+
+        private void UserBorder_MouseLeave(object sender, MouseEventArgs e)
+        {
+            UserBorder.Opacity = 1.0;
+        }
+        #endregion
+
+        #region business button animation
+        private void BusinessBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            BusinessBorder.Opacity = 0.7;
+        }
+
+        private void BusinessBorder_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            BusinessBorder.Opacity = 1.0;
+        }
+
+        private void BusinessBorder_MouseLeave(object sender, MouseEventArgs e)
+        {
+            BusinessBorder.Opacity = 1.0;
+        }
+        #endregion
+
+        #region bank button animation
+        private void BankBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            BankBorder.Opacity = 0.7;
+        }
+
+        private void BankBorder_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            BankBorder.Opacity = 1.0;
+        }
+
+        private void BankBorder_MouseLeave(object sender, MouseEventArgs e)
+        {
+            BankBorder.Opacity = 1.0;
+        }
+        #endregion
     }
 }

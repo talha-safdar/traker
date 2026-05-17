@@ -59,7 +59,7 @@
                         
                             <!-- add client -->
                             <Grid Grid.Column="0" Margin="10,0,0,0">
-                                <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="2000" x:Name="AddClientBorder" SnapsToDevicePixels="True" BorderThickness="1" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" Background="#1E1E1E" VerticalAlignment="Center" CornerRadius="25" Height="50">
+                                <Border x:Name="SubmitAddClientBorder" MouseLeave="SubmitAddClientBorder_MouseLeave" MouseLeftButtonUp="SubmitAddClientBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitAddClientBorder_MouseLeftButtonDown" ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="2000" SnapsToDevicePixels="True" BorderThickness="1" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" Background="#1E1E1E" VerticalAlignment="Center" CornerRadius="25" Height="50">
                                     <Border.ToolTip>
                                         <ToolTip Style="{StaticResource DarkToolTip}">
                                             <TextBlock Text="Add a new client with job" />
@@ -115,7 +115,7 @@
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="Foreground" Value="#888888"/>
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsMouseOver, ElementName=AddClientBorder}" Value="True">
+                                                        <DataTrigger Binding="{Binding IsMouseOver, ElementName=SubmitAddClientBorder}" Value="True">
                                                             <Setter Property="Foreground" Value="White"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -147,7 +147,7 @@
                         
                             <!-- add job -->
                             <Grid Grid.Column="2" Margin="0,0,10,0">
-                                <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="2000" x:Name="AddJobBorder" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" BorderThickness="1" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddJob()]" Background="#1E1E1E" VerticalAlignment="Center" CornerRadius="25" Height="50">
+                                <Border x:Name="SubmitAddJobBorder" MouseLeave="SubmitAddJobBorder_MouseLeave" MouseLeftButtonUp="SubmitAddJobBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitAddJobBorder_MouseLeftButtonDown" ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="2000" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" BorderThickness="1" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddJob()]" Background="#1E1E1E" VerticalAlignment="Center" CornerRadius="25" Height="50">
                                     <Border.ToolTip>
                                         <ToolTip Style="{StaticResource DarkToolTip}">
                                             <TextBlock Text="Add job to an existing client" />
@@ -204,7 +204,7 @@
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="Foreground" Value="#888888"/>
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=AddJobBorder}" Value="True">
+                                                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=SubmitAddJobBorder}" Value="True">
                                                                 <Setter Property="Foreground" Value="White"/>
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -404,7 +404,7 @@
 
                             <!-- profile / account -->
                             <Grid Grid.Row="4">
-                                <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenUserContenxtMenu($source)]" CornerRadius="30" Height="65" Padding="5,0" BorderThickness="1">
+                                <Border x:Name="SubmitUserBorder" MouseLeave="SubmitUserBorder_MouseLeave" MouseLeftButtonUp="SubmitUserBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitUserBorder_MouseLeftButtonDown" ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenUserContenxtMenu($source)]" CornerRadius="30" Height="65" Padding="5,0" BorderThickness="1">
                                     <Border.BorderBrush>
                                         <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
                                             <GradientStop Color="LightGray" Offset="0" />
@@ -476,9 +476,9 @@
             <Grid Grid.Row="0">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto" /> <!-- total jobs (to become search bar) -->
-                        <ColumnDefinition Width="*" /> <!-- line spacer -->
-                        <ColumnDefinition Width="auto" /> <!-- filter/sort -->
+                        <ColumnDefinition Width="auto" />                        <!-- total jobs (to become search bar) -->
+                        <ColumnDefinition Width="*" />                       <!-- line spacer -->
+                        <ColumnDefinition Width="auto" />                        <!-- filter/sort -->
                     </Grid.ColumnDefinitions>
 
                     <!-- total jobs (to become search bar) -->
@@ -493,9 +493,12 @@
                     <Grid Grid.Column="1" VerticalAlignment="Center">
                         <Border Margin="30,0" Height="1" SnapsToDevicePixels="True">
                             <Border.Background>
-                                <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5" Opacity="1">                                    <!-- Left: Transparent -->
-                                    <GradientStop Color="#00555555" Offset="0" />                                    <!-- Middle: Your #555555 color -->
-                                    <GradientStop Color="#FF555555" Offset="0.5" />                                    <!-- Right: Transparent -->
+                                <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5" Opacity="1">
+                                    <!-- Left: Transparent -->
+                                    <GradientStop Color="#00555555" Offset="0" />
+                                    <!-- Middle: Your #555555 color -->
+                                    <GradientStop Color="#FF555555" Offset="0.5" />
+                                    <!-- Right: Transparent -->
                                     <GradientStop Color="#00555555" Offset="1" />
                                 </LinearGradientBrush>
                             </Border.Background>
@@ -505,13 +508,13 @@
                     <!-- filter/sort -->
                     <Grid Grid.Column="2" VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,0">
-                            <Border Cursor="Hand" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" Margin="0,0,10,0" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFilterContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                            <Border x:Name="SubmitFilterBorder" MouseLeave="SubmitFilterBorder_MouseLeave" MouseLeftButtonUp="SubmitFilterBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitFilterBorder_MouseLeftButtonDown" Cursor="Hand" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" Margin="0,0,10,0" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFilterContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
                                 <svg:SvgViewbox                         
                                     RenderOptions.BitmapScalingMode="HighQuality"
                                     SnapsToDevicePixels="True"
                                     Source="/Resources/Media/Images/Icons/Lucide/list-filter.svg" Width="15" Height="15"/>
                             </Border>
-                            <Border Cursor="Hand" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenSortContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                            <Border x:Name="SubmitSortBorder" MouseLeave="SubmitSortBorder_MouseLeave" MouseLeftButtonUp="SubmitSortBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitSortBorder_MouseLeftButtonDown" Cursor="Hand" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenSortContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
                                 <svg:SvgViewbox                         
                                     RenderOptions.BitmapScalingMode="HighQuality"
                                     SnapsToDevicePixels="True"
@@ -520,8 +523,6 @@
                         </StackPanel>
                     </Grid>
                 </Grid>
-                
-
             </Grid>
 
             <!-- job cards -->

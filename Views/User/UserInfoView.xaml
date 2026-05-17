@@ -186,7 +186,7 @@
             <Grid Grid.Row="2">
                 <!-- save -->
                 <Grid Grid.Column="2">
-                    <Border Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmUserInfoChanges()]" Background="#333333" CornerRadius="23" Height="45" Width="200" BorderThickness="1">
+                    <Border x:Name="SubmitBorder" MouseLeave="SubmitBorder_MouseLeave" MouseLeftButtonUp="SubmitBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder_MouseLeftButtonDown" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmUserInfoChanges()]" Background="#333333" CornerRadius="23" Height="45" Width="200" BorderThickness="1">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <!-- DEFAULT STATE -->

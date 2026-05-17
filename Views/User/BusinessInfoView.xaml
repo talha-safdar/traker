@@ -117,7 +117,7 @@
                 <Grid Grid.Row="2">
                     <!-- save -->
                     <Grid Grid.Column="2">
-                        <Border Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBusinessInfoChanges()]" Background="#333333" CornerRadius="23" Height="45" Width="200" BorderThickness="1">
+                        <Border Cursor="Hand" x:Name="SubmitBorder1" MouseLeave="SubmitBorder1_MouseLeave" MouseLeftButtonUp="SubmitBorder1_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder1_MouseLeftButtonDown" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBusinessInfoChanges()]" Background="#333333" CornerRadius="23" Height="45" Width="200" BorderThickness="1">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <!-- DEFAULT STATE -->
@@ -279,7 +279,7 @@
                 <Grid Grid.Row="2">
                     <!-- save -->
                     <Grid Grid.Column="2">
-                        <Border Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBusinessInfoChanges()]" Background="#333333" CornerRadius="23" Height="45" Width="200" BorderThickness="1">
+                        <Border Cursor="Hand" x:Name="SubmitBorder" MouseLeave="SubmitBorder_MouseLeave" MouseLeftButtonUp="SubmitBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder_MouseLeftButtonDown" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBusinessInfoChanges()]" Background="#333333" CornerRadius="23" Height="45" Width="200" BorderThickness="1">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <!-- DEFAULT STATE -->
@@ -301,6 +301,7 @@
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>
+
                             <TextBlock conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Save Changes" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="18" />
                         </Border>
                     </Grid>

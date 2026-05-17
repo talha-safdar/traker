@@ -3,7 +3,10 @@
 namespace Traker.Services
 {
     using Database;
+    using System.Windows;
+    using Traker.Helper;
     using Traker.Models.Database;
+    using Traker.States;
 
     public class DataService : PropertyChangedBase
     {
@@ -24,31 +27,91 @@ namespace Traker.Services
 
         public async Task FetchDatabase()
         {
-            await Task.Run(() =>
+            await Task.Run(async() =>
             {
-                Clients = Database.FetchClientsTable(); // clients
-                Jobs = Database.FetchJobsTable(); // jobs
-                Invoices = Database.FetchInvoicesTable(); // invoices
-                User = Database.FetchUserTable(); // user
-                Business = Database.FetchBusinessTable(); // business
-                Bank = Database.FetchBankTable(); // bank
+                try
+                {
+                    Clients = Database.FetchClientsTable(); // clients
+                    Jobs = Database.FetchJobsTable(); // jobs
+                    Invoices = Database.FetchInvoicesTable(); // invoices
+                    User = Database.FetchUserTable(); // user
+                    Business = Database.FetchBusinessTable(); // business
+                    Bank = Database.FetchBankTable(); // bank
+                }
+                catch (Exception ex)
+                {
+                    await Execute.OnUIThreadAsync(async() =>
+                    {
+                        AppState state = IoC.Get<AppState>();
+                        IWindowManager windowManager = IoC.Get<IWindowManager>();
+                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                        {
+                            state.messageBoxVM.Symbol = 2;
+                            state.messageBoxVM.HeadMessage = "Fetch Database Error";
+                            state.messageBoxVM.Message = $"DataService\n\n{ex.Message}";
+                            state.messageBoxVM.ButtonStyle = Names.OK;
+                            await windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        }
+                    });
+                    Logger.LogActivity(Logger.ERROR, $"DataService: FetchDatabase() FAIL\n\t{ex.Message}");
+                }
             });
         }
 
         public async Task ClearDataVariables()
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
-                Clients.Clear();
-                Jobs.Clear();
-                Invoices.Clear();
+                try
+                {
+                    Clients.Clear();
+                    Jobs.Clear();
+                    Invoices.Clear();
+                }
+                catch (Exception ex)
+                {
+                    await Execute.OnUIThreadAsync(async () =>
+                    {
+                        AppState state = IoC.Get<AppState>();
+                        IWindowManager windowManager = IoC.Get<IWindowManager>();
+                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                        {
+                            state.messageBoxVM.Symbol = 2;
+                            state.messageBoxVM.HeadMessage = "Clear Data Variables Error";
+                            state.messageBoxVM.Message = $"DataService\n\n{ex.Message}";
+                            state.messageBoxVM.ButtonStyle = Names.OK;
+                            await windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        }
+                    });
+                    Logger.LogActivity(Logger.ERROR, $"DataService: ClearDataVariables() FAIL\n\t{ex.Message}");
+                }
             });
         }
 
         public async Task RefreshDatabase()
         {
-            await ClearDataVariables();
-            await FetchDatabase();
+            try
+            {
+                await ClearDataVariables();
+                await FetchDatabase();
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(async () =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Refresh Database Error";
+                        state.messageBoxVM.Message = $"DataService\n\n{ex.Message}";
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        await windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                });
+                Logger.LogActivity(Logger.ERROR, $"DataService: RefreshDatabase() FAIL\n\t{ex.Message}");
+            }
         }
         #endregion
 

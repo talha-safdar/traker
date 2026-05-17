@@ -293,7 +293,6 @@ namespace Traker.ViewModels
 
                                 // cell 2
                                 row.RelativeItem().AlignRight().Text("Invoice").SemiBold().FontSize(36).FontColor(Colors.Black);
-                                //row.RelativeItem().AlignRight().Text(DateTime.Now.ToString("d")).FontSize(12).FontColor(Colors.Grey.Medium);
                             });
 
                             // content
