@@ -592,7 +592,7 @@ namespace Traker.ViewModels
                 NewJobsCount = DataService.Jobs.Where(j => j.Status == Names.New).Count().ToString(); // new jobs count
                 DoneJobsCount = DataService.Jobs.Where(j => j.Status == Names.Done).Count().ToString(); // done jobs count
                 ActiveJobsCount = DataService.Jobs.Where(j => j.Status == Names.Active).Count().ToString(); // active jobs count
-                InvoicedJobsCount = DataService.Jobs.Where(j => j.Status == Names.Invoiced).Count().ToString(); // invoiced jobs count
+                InvoicedJobsCount = DataService.Jobs.Where(j => j.Status == Names.Invoiced && DataService.Invoices.Any(i => i.JobId == j.JobId && i.Status != Names.Paid)).Count().ToString(); // invoiced jobs count
                 GrossAmount = DataService.Jobs.Sum(gross => gross.FinalPrice).ToString("C"); // gross amount
                 ReceivedAmount = DataService.Jobs
                     .Join(DataService.Invoices,
