@@ -24,6 +24,27 @@ namespace Traker.Views
         public ShellView()
         {
             InitializeComponent();
+
+            ApplyWindowStateFix();
+        }
+
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            ApplyWindowStateFix();
+        }
+
+        private void ApplyWindowStateFix()
+        {
+            if (WindowState == WindowState.Maximized)
+            {
+                BorderThickness = new Thickness(8);
+                MaxHeight = SystemParameters.WorkArea.Height + 16;
+            }
+            else
+            {
+                BorderThickness = new Thickness(0);
+                MaxHeight = double.PositiveInfinity;
+            }
         }
 
         [DllImport("user32.dll")]

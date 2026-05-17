@@ -28,6 +28,12 @@ namespace Traker
 
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
+            //var splash = new SplashView();
+            //splash.Show();
+            var windowManager = IoC.Get<IWindowManager>();
+            var splash = IoC.Get<SplashScreenViewModel>();
+            windowManager.ShowWindowAsync(splash);
+            //Task.Delay(2000); // simulate (replace with real init)
             DisplayRootViewForAsync<ShellViewModel>();
         }
 
@@ -44,19 +50,15 @@ namespace Traker
             _container.Singleton<SortJobsViewModel>();
             _container.Singleton<FilterJobsViewModel>();
 
-            _container.PerRequest<DashboardViewModel>();
-            _container.PerRequest<AddClientViewModel>();
-            _container.PerRequest<JobContextMenuViewModel>();
-            _container.PerRequest<JobsListViewModel>();
-            _container.PerRequest<CreateInvoiceViewModel>();
-            _container.PerRequest<EditClientViewModel>();
-            _container.PerRequest<EditJobViewModel>();
-            _container.PerRequest<UserContextMenuViewModel>();
-            _container.PerRequest<UserInfoViewModel>();
-            _container.PerRequest<BusinessInfoViewModel>();
-            _container.PerRequest<BankInfoViewModel>();
-            _container.PerRequest<EditInvoiceViewModel>();
-            _container.PerRequest<MessageBoxViewModel>();
+            /// handling how ViewModels will connect to the Views
+            // this is run Once at the beginning of the application
+            GetType().Assembly.GetTypes()
+                .Where(type => type.IsClass)
+                .Where(type => type.Name.EndsWith("ViewModel"))
+                .ToList()
+                .ForEach(viewModelType => _container.RegisterPerRequest(
+                    viewModelType, viewModelType.ToString(), viewModelType));
+
             ViewLocator.AddNamespaceMapping("Traker.ViewModels.*", "Traker.Views.*");
             // LogManager.GetLog = type => new DebugLog(type); // uncomment this line for Caliburn debug messages
         }

@@ -10,6 +10,7 @@ namespace Traker.ViewModels
     using Traker.Helper;
     using Traker.Services;
     using Traker.States;
+    using Traker.Views;
 
     public class ShellViewModel : Conductor<IScreen>.Collection.OneActive,
     #region Interfaces
@@ -33,6 +34,7 @@ namespace Traker.ViewModels
             _events.SubscribeOnPublishedThread(this);
         }
 
+        #region Caliburn Functions
         protected async override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
             try
@@ -72,32 +74,125 @@ namespace Traker.ViewModels
             }
         }
 
+        protected override void OnViewLoaded(object view)
+        {
+            try
+            {
+                base.OnViewLoaded(view);
+
+                // Find the splash window by its type and close it
+                var splash = Application.Current.Windows.Cast<Window>().FirstOrDefault(w => w is SplashScreenView);
+                splash?.Close(); // if not null close it
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "On View Loaded";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"ShellViewModel: OnViewLoaded() FAIL\n\t{ex.Message}");
+            }
+        }
+
+        protected override void OnViewAttached(object view, object context)
+        {
+            try
+            {
+                // Re-assign the "New Boss" so Application.Current.MainWindow works everywhere
+                Application.Current.MainWindow = Window.GetWindow(view as DependencyObject);
+                base.OnViewAttached(view, context);
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "On View Attached";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"ShellViewModel: OnViewAttached() FAIL\n\t{ex.Message}");
+            }
+        }
+        #endregion
+
         public async Task OnMouseDownEvent(Grid gridSource)
         {
-            if (_state.UserContextMenuViewModel != null)
+            try
             {
-                await _state.UserContextMenuViewModel.TryCloseAsync(false);
-                _state.UserContextMenuViewModel = null;
+                if (_state.UserContextMenuViewModel != null)
+                {
+                    await _state.UserContextMenuViewModel.TryCloseAsync(false);
+                    _state.UserContextMenuViewModel = null;
+                }
+                if (IoC.Get<FilterJobsViewModel>().IsActive == true)
+                {
+                    await IoC.Get<FilterJobsViewModel>().TryCloseAsync(false);
+                }
+                if (IoC.Get<SortJobsViewModel>().IsActive == true)
+                {
+                    await IoC.Get<SortJobsViewModel>().TryCloseAsync(false);
+                }
             }
-            if (IoC.Get<FilterJobsViewModel>().IsActive == true)
+            catch (Exception ex)
             {
-                await IoC.Get<FilterJobsViewModel>().TryCloseAsync(false);
-            }
-            if (IoC.Get<SortJobsViewModel>().IsActive == true)
-            {
-                await IoC.Get<SortJobsViewModel>().TryCloseAsync(false);
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Close Other Windows";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"ShellViewModel: OnMouseDownEvent() FAIL\n\t{ex.Message}");
             }
         }
 
         public Task Exit()
         {
-            Application.Current.Shutdown();
+            try
+            {
+                Application.Current.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Exit Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"ShellViewModel: Exit() FAIL\n\t{ex.Message}");
+            }
             return Task.CompletedTask;
         }
 
         public Task Minimise()
         {
-            Application.Current.MainWindow.WindowState = WindowState.Minimized;
+            try
+            {
+                Application.Current.MainWindow.WindowState = WindowState.Minimized;
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Exit Form";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"ShellViewModel: Exit() FAIL\n\t{ex.Message}");
+            }
+
             return Task.CompletedTask;
         }
 

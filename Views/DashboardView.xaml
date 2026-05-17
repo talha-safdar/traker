@@ -59,7 +59,12 @@
                         
                             <!-- add client -->
                             <Grid Grid.Column="0" Margin="10,0,0,0">
-                                <Border x:Name="AddClientBorder" SnapsToDevicePixels="True" BorderThickness="1" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" Background="#1E1E1E" VerticalAlignment="Center" CornerRadius="25" Height="50">
+                                <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="2000" x:Name="AddClientBorder" SnapsToDevicePixels="True" BorderThickness="1" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" Background="#1E1E1E" VerticalAlignment="Center" CornerRadius="25" Height="50">
+                                    <Border.ToolTip>
+                                        <ToolTip Style="{StaticResource DarkToolTip}">
+                                            <TextBlock Text="Add a new client with job" />
+                                        </ToolTip>
+                                    </Border.ToolTip>
                                     <Border.Style>
                                         <Style TargetType="Border">
                                             <!-- 1. Base Background (rgba 255,255,255, 0.05) -->
@@ -142,7 +147,12 @@
                         
                             <!-- add job -->
                             <Grid Grid.Column="2" Margin="0,0,10,0">
-                                <Border x:Name="AddJobBorder" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" BorderThickness="1" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddJob()]" Background="#1E1E1E" VerticalAlignment="Center" CornerRadius="25" Height="50">
+                                <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="2000" x:Name="AddJobBorder" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" BorderThickness="1" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddJob()]" Background="#1E1E1E" VerticalAlignment="Center" CornerRadius="25" Height="50">
+                                    <Border.ToolTip>
+                                        <ToolTip Style="{StaticResource DarkToolTip}">
+                                            <TextBlock Text="Add job to an existing client" />
+                                        </ToolTip>
+                                    </Border.ToolTip>
                                     <Border.Style>
                                         <Style TargetType="Border">
                                             <!-- 1. Base Background (rgba 255,255,255, 0.05) -->
@@ -394,28 +404,58 @@
 
                             <!-- profile / account -->
                             <Grid Grid.Row="4">
-                                <Border Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenUserContenxtMenu($source)]" Background="#121212" CornerRadius="15" Height="65" Padding="5,0" BorderThickness="1">
+                                <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenUserContenxtMenu($source)]" CornerRadius="30" Height="65" Padding="5,0" BorderThickness="1">
+                                    <Border.BorderBrush>
+                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                                            <GradientStop Color="LightGray" Offset="0" />
+                                            <GradientStop Color="Transparent" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Border.BorderBrush>
                                     <Border.Style>
-                                        <!--<SolidColorBrush Color="LightGray" Opacity="0.5" />-->
                                         <Style TargetType="Border">
-                                            <Setter Property="BorderBrush" Value="#121212"/>
+                                            <Setter Property="Background" Value="#121212"/>
+
                                             <Style.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="BorderBrush" Value="#80D3D3D3"/>
-                                                    <Setter Property="BorderThickness" Value="1"/>
+                                                    <Setter Property="Background" Value="#2C2C2C"/>
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>
                                     </Border.Style>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0">
-                                        <Border Background="#1E1E1E"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="50" Width="50">
-                                            <svg:SvgViewbox                         
-                                            RenderOptions.BitmapScalingMode="HighQuality"
-                                            SnapsToDevicePixels="True"
-                                            Source="/Resources/Media/Images/Icons/Lucide/user-round-cog.svg" Width="25" Height="25"/>
-                                        </Border>
-                                        <TextBlock VerticalAlignment="Center" Margin="15,0,0,0" Text="{Binding DataService.User[0].FullName}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
-                                    </StackPanel>                                
+                                    <Border.ToolTip>
+                                        <ToolTip Style="{StaticResource DarkToolTip}">
+                                            <TextBlock Text="Edit Your Information" />
+                                        </ToolTip>
+                                    </Border.ToolTip>
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" /> <!-- icon / name -->
+                                            <ColumnDefinition Width="auto" /> <!-- click icon -->
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <!-- icon / name -->
+                                        <Grid Grid.Column="0">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,0,0,0">
+                                                    <svg:SvgViewbox                         
+                                                    RenderOptions.BitmapScalingMode="HighQuality"
+                                                    SnapsToDevicePixels="True"
+                                                    Source="/Resources/Media/Images/Icons/Lucide/user-round-cog.svg" Width="25" Height="25"/>
+                                                <TextBlock VerticalAlignment="Center" Margin="15,0,0,0" Text="{Binding DataService.User[0].FullName}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="22" />
+                                            </StackPanel>    
+                                        </Grid>
+
+                                        <!-- click icon -->
+                                        <Grid Grid.Column="1">
+                                            <svg:SvgViewbox   
+                                                VerticalAlignment="Center"
+                                                Margin="0,0,20,0"
+                                                Opacity="0.3"
+                                                RenderOptions.BitmapScalingMode="HighQuality"
+                                                SnapsToDevicePixels="True"
+                                                Source="/Resources/Media/Images/Icons/Lucide/chevron-up.svg" Width="20" Height="20"/>
+                                        </Grid>
+                                    </Grid>
                                 </Border>
                             </Grid>
                         </Grid>
@@ -500,7 +540,7 @@
                         <ItemsControl ItemsSource="{Binding DashboardData}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                        <Border 
+                                    <Border 
                                         ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="2000" 
                                         Background="#242424"
                                         Height="135"

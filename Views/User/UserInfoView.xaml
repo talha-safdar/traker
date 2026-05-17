@@ -23,7 +23,9 @@
                 <GradientStop Color="Transparent" Offset="1" />
             </LinearGradientBrush>
         </Border.BorderBrush>
-
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="15" Opacity="0.3" ShadowDepth="0"/>
+        </Border.Effect>
 
         <Grid Margin="30,20,30,20">
             <Grid.RowDefinitions>
