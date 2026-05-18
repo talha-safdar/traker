@@ -69,10 +69,11 @@ namespace Traker.ViewModels
                  * 1 = active
                  * 2 = done
                  * 3 = invoiced
-                 * 4 = paid // to be added?
+                 * 4 = overdue
+                 * 5 = paid
                  */
-                _optionsStatus = new List<bool>() { false, false, false, false };
-                _opacityStatus = new ObservableCollection<double>() { _fullOpacity, _fullOpacity, _fullOpacity, _fullOpacity };
+                _optionsStatus = new List<bool>() { false, false, false, false, false, false };
+                _opacityStatus = new ObservableCollection<double>() { _fullOpacity, _fullOpacity, _fullOpacity, _fullOpacity, _fullOpacity, _fullOpacity };
 
                 _clientType = new ObservableCollection<bool>() { false, false }; // 0=individual, 1=company
                 _opacityClientType = new ObservableCollection<double>() { _fullOpacity, _fullOpacity };
@@ -250,6 +251,14 @@ namespace Traker.ViewModels
                 else if (option == 3) // invoiced jobs
                 {
                     _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobStatusInvoiced });
+                }
+                else if (option == 4) // overdue jobs
+                {
+                    _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobStatusOverdue });
+                }
+                else if (option == 5) // paid jobs
+                {
+                    _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobStatusPaid });
                 }
             }
             catch (Exception ex)

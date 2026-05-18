@@ -478,11 +478,10 @@
                                 BorderThickness="1"
                                 CornerRadius="8"
                                 Margin="0,4,0,0">
-
-                            <ScrollViewer>
-                                <ItemsPresenter/>
-                            </ScrollViewer>
-                        </Border>
+                                <ScrollViewer MaxHeight="{TemplateBinding MaxDropDownHeight}" VerticalScrollBarVisibility="Auto">
+                                    <ItemsPresenter/>
+                                </ScrollViewer>
+                            </Border>
                     </Popup>
 
                 </Grid>

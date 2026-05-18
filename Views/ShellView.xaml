@@ -5,9 +5,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
     xmlns:conv="clr-namespace:Traker.Converters"
-    xmlns:local="clr-namespace:Traker.Views"
-    xmlns:cal="http://caliburnmicro.com"
-    mc:Ignorable="d"
+        xmlns:cal="http://caliburnmicro.com"
+        xmlns:gif="http://wpfanimatedgif.codeplex.com"
+        xmlns:lottie="clr-namespace:LottieSharp.WPF;assembly=LottieSharp"
+        mc:Ignorable="d"
     WindowState="Maximized"
     Title="Traker" 
     MinHeight="600" MinWidth="1200"
@@ -26,29 +27,7 @@ WindowStyle="None"
             GlassFrameThickness="0"/>
     </WindowChrome.WindowChrome>
 
-    <Border Background="{StaticResource MainBackgroundBrush}" cal:Message.Attach="[Event PreviewMouseDown] = [Action OnMouseDownEvent($source)]">
-        <!--<Border.Style>
-            <Style TargetType="Border">
-
-                <Setter Property="CornerRadius"
-                        Value="20"/>
-
-                <Style.Triggers>
-
-                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=WindowState}"
-                                 Value="Maximized">
-
-                        <Setter Property="CornerRadius"
-                                Value="0"/>
-
-                    </DataTrigger>
-
-                </Style.Triggers>
-
-            </Style>
-        </Border.Style>-->
-        
-        
+    <Border Background="{StaticResource MainBackgroundBrush}" cal:Message.Attach="[Event PreviewMouseDown] = [Action OnMouseDownEvent($source)]">       
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.07*"/> <!-- top bar-->
@@ -110,6 +89,99 @@ WindowStyle="None"
             <!-- body -->
             <Grid Grid.Row="1">
                 <ContentControl x:Name="ActiveItem" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+            </Grid>
+            
+            <!-- loading -->
+            <Grid Grid.RowSpan="2"  x:Name="OverlayGrid" Background="Transparent" Visibility="Visible">
+                <Border Background="Black" Opacity="0">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=OverlayGrid, Path=Visibility}" Value="Visible">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation 
+                                                    Storyboard.TargetProperty="Opacity"
+                                                    From="0"
+                                                    To="0.7"
+                                                    Duration="0:0:0.25"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                </Border>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <!-- loading animation -->
+                            <RowDefinition Height="auto" />
+                            <!-- text -->
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- loading animation -->
+                        <Grid Grid.Row="0">
+                            <Border Width="150" Height="200" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="10"
+                                      ShadowDepth="0"
+                                      Opacity="1"
+                                      Color="#2D2D34"/>
+                                </Border.Effect>
+                                <lottie:LottieAnimationView x:Name="Loader"
+                                   FileName="C:\Users\Safda\Documents\Projects\Personal\Traker\Resources\Media\Images\Icons\Loading\spinner.json"
+                                    AutoPlay="True"                                            
+                                    RepeatCount="-1" />
+                            </Border>
+                        </Grid>
+
+                        <!-- text -->
+                        <Grid Grid.Row="1">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="PLEASE WAIT" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="28" />
+                                <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
+                                    <TextBlock x:Name="Dot1" Text=". " FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="28" />
+                                    <TextBlock x:Name="Dot2" Text=". " FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="28" />
+                                    <TextBlock x:Name="Dot3" Text="." FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="28" />
+                                </StackPanel>
+
+                                <StackPanel.Triggers>
+                                    <EventTrigger RoutedEvent="StackPanel.Loaded">
+                                        <BeginStoryboard>
+                                            <Storyboard RepeatBehavior="Forever">
+
+                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Dot1" Storyboard.TargetProperty="Opacity">
+                                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0.0"/>
+                                                    <DiscreteDoubleKeyFrame KeyTime="0:0:1" Value="1.0"/>
+                                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3.5" Value="0.0"/>
+                                                </DoubleAnimationUsingKeyFrames>
+
+                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Dot2" Storyboard.TargetProperty="Opacity">
+                                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0.0"/>
+                                                    <DiscreteDoubleKeyFrame KeyTime="0:0:2" Value="1.0"/>
+                                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3.5" Value="0.0"/>
+                                                </DoubleAnimationUsingKeyFrames>
+
+                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Dot3" Storyboard.TargetProperty="Opacity">
+                                                    <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0.0"/>
+                                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3" Value="1.0"/>
+                                                    <DiscreteDoubleKeyFrame KeyTime="0:0:3.5" Value="0.0"/>
+                                                </DoubleAnimationUsingKeyFrames>
+
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </StackPanel.Triggers>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </StackPanel>
+                
             </Grid>
         </Grid>
     </Border>

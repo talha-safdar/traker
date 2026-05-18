@@ -96,7 +96,7 @@
 
                             <!-- overdue -->
                             <Grid Grid.Column="0" Grid.Row="2">
-                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[3]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(3)]" Background="#3F3F46" CornerRadius="15" Height="30">
+                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[4]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(4)]" Background="#3F3F46" CornerRadius="15" Height="30">
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
                                     </Border.Effect>
@@ -109,7 +109,7 @@
 
                             <!-- paid -->
                             <Grid Grid.Column="2" Grid.Row="2">
-                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[3]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(3)]" Background="#3F3F46" CornerRadius="15" Height="30">
+                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[5]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(5)]" Background="#3F3F46" CornerRadius="15" Height="30">
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
                                     </Border.Effect>

@@ -6,7 +6,8 @@
              xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
              xmlns:cal="http://caliburnmicro.com"
              xmlns:conv="clr-namespace:Traker.Converters"
-             xmlns:local="clr-namespace:Traker.Views" xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:local="clr-namespace:Traker.Views" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
@@ -508,13 +509,23 @@
                     <!-- filter/sort -->
                     <Grid Grid.Column="2" VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,0">
-                            <Border x:Name="SubmitFilterBorder" MouseLeave="SubmitFilterBorder_MouseLeave" MouseLeftButtonUp="SubmitFilterBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitFilterBorder_MouseLeftButtonDown" Cursor="Hand" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" Margin="0,0,10,0" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFilterContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                            <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" x:Name="SubmitFilterBorder" MouseLeave="SubmitFilterBorder_MouseLeave" MouseLeftButtonUp="SubmitFilterBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitFilterBorder_MouseLeftButtonDown" Cursor="Hand" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" Margin="0,0,10,0" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFilterContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                                <Border.ToolTip>
+                                    <ToolTip Style="{StaticResource DarkToolTip}">
+                                        <TextBlock Text="Filter Jobs" />
+                                    </ToolTip>
+                                </Border.ToolTip>
                                 <svg:SvgViewbox                         
                                     RenderOptions.BitmapScalingMode="HighQuality"
                                     SnapsToDevicePixels="True"
                                     Source="/Resources/Media/Images/Icons/Lucide/list-filter.svg" Width="15" Height="15"/>
                             </Border>
-                            <Border x:Name="SubmitSortBorder" MouseLeave="SubmitSortBorder_MouseLeave" MouseLeftButtonUp="SubmitSortBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitSortBorder_MouseLeftButtonDown" Cursor="Hand" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenSortContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                            <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" x:Name="SubmitSortBorder" MouseLeave="SubmitSortBorder_MouseLeave" MouseLeftButtonUp="SubmitSortBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitSortBorder_MouseLeftButtonDown" Cursor="Hand" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenSortContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                                <Border.ToolTip>
+                                    <ToolTip Style="{StaticResource DarkToolTip}">
+                                        <TextBlock Text="Sort Jobs" />
+                                    </ToolTip>
+                                </Border.ToolTip>
                                 <svg:SvgViewbox                         
                                     RenderOptions.BitmapScalingMode="HighQuality"
                                     SnapsToDevicePixels="True"

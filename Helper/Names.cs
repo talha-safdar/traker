@@ -48,6 +48,8 @@ namespace Traker.Helper
         public const string JobStatusActive = "JobStatusActive";
         public const string JobStatusDone = "JobStatusDone";
         public const string JobStatusInvoiced = "JobStatusInvoiced";
+        public const string JobStatusOverdue = "JobStatusOverdue";
+        public const string JobStatusPaid = "JobStatusPaid";
         public const string FilterIndividual = "FilterIndividual";
         public const string FilterComapny = "FilterComapny";
         public const string AllJobStatus = "AllJobStatus";

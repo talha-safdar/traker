@@ -68,6 +68,13 @@ namespace Traker.ViewModels.Add
                 // submit button
                 EnableSubmitBtn = false;
                 OpacitySubmitBtn = _halfOpacity;
+
+
+
+                BusinessName = "ABC";
+                JobTitle = "Count";
+                Price = "12.45";
+                DueDate = "12/12/2026";
             }
             catch (Exception ex)
             {
@@ -245,7 +252,7 @@ namespace Traker.ViewModels.Add
 
                     // refresh database
                     await _events.PublishOnUIThreadAsync(new RefreshDatabase());
-                    await TryCloseAsync();
+                    //await TryCloseAsync();
                 });
             }
             catch (Exception ex)

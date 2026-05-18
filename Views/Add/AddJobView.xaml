@@ -77,7 +77,8 @@
                                 <Run Text="Number of Clients: " />
                                     <Run Text="{Binding AddJob.Count, Mode=OneWay}" />
                                 </TextBlock>
-                                <ComboBox Style="{DynamicResource ComboBoxNormal}"                                         
+                                <ComboBox Style="{DynamicResource ComboBoxNormal}"
+                                          MaxDropDownHeight="300"
                                       IsEditable="False"
                                       FontWeight="Regular"
                                       HorizontalAlignment="Stretch" 

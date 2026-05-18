@@ -170,7 +170,7 @@ namespace Traker.ViewModels
                     double dpiX = source.CompositionTarget.TransformToDevice.M11;
 
                     // 3. Calculate "Above": 
-                    double popupTop = (locationFromScreen.Y / dpiY) - 30; // positive=down, negative=up
+                    double popupTop = (locationFromScreen.Y / dpiY) - 12.5; // positive=down, negative=up
                     double popupLeft = (locationFromScreen.X / dpiX) - 295; // psotiive=right, negative=left
 
                     await _windowManager.ShowPopupAsync(IoC.Get<FilterJobsViewModel>(), null, CustomWindow.SettingsForDialog(295, 160, true, popupTop, popupLeft)); // vertical, horizontal
@@ -669,7 +669,6 @@ namespace Traker.ViewModels
         {
             try
             {
-                if (_cts != null) return; // Already running
                 _cts = new CancellationTokenSource();
                 _pauseEvent.Set(); // Ensure gate is open
                 _ = RunLoopAsync(_cts.Token);
@@ -786,14 +785,6 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
-                {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Run Loop Check";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: RunLoopAsync() FAIL\n\t{ex.Message}");
             }
         }
@@ -1004,6 +995,24 @@ namespace Traker.ViewModels
                             _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
                         }
                     }
+                    else if (command == Names.JobStatusOverdue)
+                    {
+                        DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.InvoiceStatus == "Overdue").ToList());
+
+                        if (DashboardData.Count > 0)
+                        {
+                            _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
+                        }
+                    }
+                    else if (command == Names.JobStatusPaid)
+                    {
+                        DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.InvoiceStatus == "Paid").ToList());
+
+                        if (DashboardData.Count > 0)
+                        {
+                            _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
+                        }
+                    }
                     _isFilterJobStatusOn = true;
                 }
                 else if (command == Names.FilterIndividual || command == Names.FilterComapny) // cllient type
@@ -1191,6 +1200,14 @@ namespace Traker.ViewModels
                     else if (message.Command == Names.JobStatusInvoiced)
                     {
                         await FilterJobs(Names.JobStatusInvoiced);
+                    }
+                    else if (message.Command == Names.JobStatusOverdue)
+                    {
+                        await FilterJobs(Names.JobStatusOverdue);
+                    }
+                    else if (message.Command == Names.JobStatusPaid)
+                    {
+                        await FilterJobs(Names.JobStatusPaid);
                     }
                     else if (message.Command == Names.FilterIndividual)
                     {
