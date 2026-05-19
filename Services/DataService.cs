@@ -25,7 +25,7 @@ namespace Traker.Services
 
         #region Public Data Functions
 
-        public async Task FetchDatabase()
+        public async Task FetchDatabaseBG()
         {
             await Task.Run(async() =>
             {
@@ -58,7 +58,7 @@ namespace Traker.Services
             });
         }
 
-        public async Task ClearDataVariables()
+        public async Task ClearDataVariablesBG()
         {
             await Task.Run(async () =>
             {
@@ -92,8 +92,8 @@ namespace Traker.Services
         {
             try
             {
-                await ClearDataVariables();
-                await FetchDatabase();
+                await ClearDataVariablesBG();
+                await FetchDatabaseBG();
             }
             catch (Exception ex)
             {

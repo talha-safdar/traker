@@ -228,6 +228,7 @@ namespace Traker.ViewModels
             {
                 await Task.Run(async () =>
                 {
+                    await TryCloseAsync();
                     var dueDate = DateOnly.MinValue;
                     if (DueDate != String.Empty)
                     {
@@ -249,7 +250,6 @@ namespace Traker.ViewModels
                     await GenerateInvoice(invoiceName);
 
                     await _events.PublishOnUIThreadAsync(new RefreshDatabase() { Command = "Invoice" });
-                    await TryCloseAsync();
                     await _events.PublishOnUIThreadAsync(new DashboardVMEvents { Command = Names.ShowInvoice });
                 });
             }

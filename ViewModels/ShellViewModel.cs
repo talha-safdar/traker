@@ -78,8 +78,8 @@ namespace Traker.ViewModels
                 // setting up database
                 State.SplashText = "Initialising database...";
                 await Task.Delay(1000);
-                await Database.SetUpDatabase();
-                await _dataService.FetchDatabase();
+                await Database.SetUpDatabaseBG();
+                await _dataService.FetchDatabaseBG();
 
                 await base.OnInitializedAsync(cancellationToken);
             }

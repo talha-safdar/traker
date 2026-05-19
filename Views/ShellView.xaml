@@ -84,9 +84,7 @@ WindowStyle="None"
                                 <Image Width="25" Source="/Resources/Media/Images/Icons/close-button.png" Opacity="0.9" />
                             </Border>
                         </StackPanel>
-                    </Grid>
-                    
-                    
+                    </Grid>      
                 </Grid>
             </Grid>
 

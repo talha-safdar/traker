@@ -28,6 +28,7 @@
     <None Remove="Resources\Fonts\RobotoMono-Italic.ttf" />
     <None Remove="Resources\Fonts\RobotoMono.ttf" />
     <None Remove="Resources\Media\Images\Icons\close-button.png" />
+    <None Remove="Resources\Media\Images\Icons\Loading\spinner.gif" />
     <None Remove="Resources\Media\Images\Icons\Logo\traker-logo.ico" />
     <None Remove="Resources\Media\Images\Icons\Lucide\arrow-down-narrow-wide.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\arrow-down-wide-narrow.svg" />
@@ -109,6 +110,7 @@
     <Resource Include="Resources\Fonts\RobotoMono-Italic.ttf" />
     <Resource Include="Resources\Fonts\RobotoMono.ttf" />
     <Resource Include="Resources\Media\Images\Icons\close-button.png" />
+    <Resource Include="Resources\Media\Images\Icons\Loading\spinner.gif" />
     <Resource Include="Resources\Media\Images\Icons\Logo\traker-logo.ico" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\arrow-down-narrow-wide.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\arrow-down-wide-narrow.svg" />

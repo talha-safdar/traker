@@ -27,7 +27,7 @@ namespace Traker.Database
         /// <summary>
         /// Set up the database by creating the database file if it doesn't exist
         /// </summary>
-        public static async Task SetUpDatabase()
+        public static async Task SetUpDatabaseBG()
         {
             await Task.Run(async () =>
             {

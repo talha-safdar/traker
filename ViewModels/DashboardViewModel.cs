@@ -120,9 +120,7 @@ namespace Traker.ViewModels
                 EnableBtns = false;
                 OpacityBtns = _halfOpacity;
 
-                await SetupDashboardData();
-
-                //return base.OnInitializedAsync(cancellationToken);
+                DashboardData = new ObservableCollection<DashboardModel>(await SetupDashboardDataBG());
             }
             catch (Exception ex)
             {
@@ -536,233 +534,262 @@ namespace Traker.ViewModels
         #endregion
 
         #region Private Functions
-        private Task SetupDashboardData()
+        private async Task<List<DashboardModel>> SetupDashboardDataBG()
         {
-            try
+            return await Task.Run(async() =>
             {
-                PauseLoop();
 
-                // row data
-                _dashboardData.Clear();
-                int index = 0;
-                foreach (var job in DataService.Jobs)
+                await Task.Delay(5000);
+
+                try
                 {
-                    var client = DataService.Clients.First(c => c.ClientId == job.ClientId);
+                    List<DashboardModel> _dashboardDataBackground = new();
 
-                    DashboardModel dashboardEntry = new DashboardModel
+                    int index = 0;
+                    foreach (var job in DataService.Jobs)
                     {
-                        // client
-                        ClientId = client.ClientId,
-                        ClientType = client.Type,
-                        TypeIcon = (client.Type == "Individual") ? "/Resources/Media/Images/Icons/Lucide/user-round.svg" : "/Resources/Media/Images/Icons/Lucide/building.svg",
-                        ClientName = client.FullName,
-                        ClientEmail = client.Email,
-                        ClientPhone = client.PhoneNumber,
-                        CompanyName = client.CompanyName,
-                        Address = client.BillingAddress,
-                        City = client.City,
-                        Postcode = client.Postcode,
-                        Country = client.Country,
-                        CreatedDate = client.CreatedDate,
-                        IsActive = client.IsActive,
+                        var client = DataService.Clients.First(c => c.ClientId == job.ClientId);
 
-                        // job
-                        JobId = job.JobId,
-                        JobTitle = job.Title,
-                        JobDescription = job.Description,
-                        Price = job.FinalPrice, // use toString("C") only for ui side
-                        AmountReceived = job.AmountReceived,
-                        JobStatus = DataService.Invoices.Where(i => i.JobId == job.JobId && string.IsNullOrEmpty(i.Status) == false).Select(i => i.Status).FirstOrDefault() ?? job.Status.ToString(),
-                        StartDate = job.StartDate,
-                        DueDate = job.DueDate,
+                        DashboardModel dashboardEntry = new DashboardModel
+                        {
+                            // client
+                            ClientId = client.ClientId,
+                            ClientType = client.Type,
+                            TypeIcon = (client.Type == "Individual") ? "/Resources/Media/Images/Icons/Lucide/user-round.svg" : "/Resources/Media/Images/Icons/Lucide/building.svg",
+                            ClientName = client.FullName,
+                            ClientEmail = client.Email,
+                            ClientPhone = client.PhoneNumber,
+                            CompanyName = client.CompanyName,
+                            Address = client.BillingAddress,
+                            City = client.City,
+                            Postcode = client.Postcode,
+                            Country = client.Country,
+                            CreatedDate = client.CreatedDate,
+                            IsActive = client.IsActive,
 
-                        // invoice
-                        HasInvoice = DataService.Invoices.Any(i => i.JobId == job.JobId && i.IsDeleted == false),
-                        InvoiceStatus = DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? "Not invoiced", // if left side not null return that else right side
-                        InvoiceDueDate = DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.DueDate).FirstOrDefault(),
-                        PaidDate = DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.PaidDate).FirstOrDefault(),
-                    };
-                    DashboardData.Add(dashboardEntry);
-                    index++;
-                }
+                            // job
+                            JobId = job.JobId,
+                            JobTitle = job.Title,
+                            JobDescription = job.Description,
+                            Price = job.FinalPrice, // use toString("C") only for ui side
+                            AmountReceived = job.AmountReceived,
+                            JobStatus = DataService.Invoices.Where(i => i.JobId == job.JobId && string.IsNullOrEmpty(i.Status) == false).Select(i => i.Status).FirstOrDefault() ?? job.Status.ToString(),
+                            StartDate = job.StartDate,
+                            DueDate = job.DueDate,
 
-                Task.Run(() =>
-                {
+                            // invoice
+                            HasInvoice = DataService.Invoices.Any(i => i.JobId == job.JobId && i.IsDeleted == false),
+                            InvoiceStatus = DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? "Not invoiced", // if left side not null return that else right side
+                            InvoiceDueDate = DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.DueDate).FirstOrDefault(),
+                            PaidDate = DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.PaidDate).FirstOrDefault(),
+                        };
+                        _dashboardDataBackground.Add(dashboardEntry);
+                        index++;
+                    }
+
                     _dashboardDataBackup = DashboardData; // backup for filtering
                     _dashboardDataStatusFiltered = DashboardData;
                     _dashboardDataTypeFiltered = DashboardData;
-                });
 
-                // disable sort and filter
-                State.IsSortToClear = true;
-                State.IsFilterToClear = true;
+                    // disable sort and filter
+                    State.IsSortToClear = true;
+                    State.IsFilterToClear = true;
 
-                NewJobsCount = DataService.Jobs.Where(j => j.Status == Names.New).Count().ToString(); // new jobs count
-                DoneJobsCount = DataService.Jobs.Where(j => j.Status == Names.Done).Count().ToString(); // done jobs count
-                ActiveJobsCount = DataService.Jobs.Where(j => j.Status == Names.Active).Count().ToString(); // active jobs count
-                InvoicedJobsCount = DataService.Jobs.Where(j => j.Status == Names.Invoiced && DataService.Invoices.Any(i => i.JobId == j.JobId && i.Status != Names.Paid)).Count().ToString(); // invoiced jobs count
-                GrossAmount = DataService.Jobs.Sum(gross => gross.FinalPrice).ToString("C"); // gross amount
-                ReceivedAmount = DataService.Jobs
-                    .Join(DataService.Invoices,
-                    j => j.JobId,
-                    i => i.JobId,
-                    (j, i) => new { j, i }).Where(combined => combined.i.Status == Names.Paid)
-                    .Sum(combined => combined.j.FinalPrice).ToString("C");
+                    NewJobsCount = DataService.Jobs.Where(j => j.Status == Names.New).Count().ToString(); // new jobs count
+                    DoneJobsCount = DataService.Jobs.Where(j => j.Status == Names.Done).Count().ToString(); // done jobs count
+                    ActiveJobsCount = DataService.Jobs.Where(j => j.Status == Names.Active).Count().ToString(); // active jobs count
+                    InvoicedJobsCount = DataService.Jobs.Where(j => j.Status == Names.Invoiced && DataService.Invoices.Any(i => i.JobId == j.JobId && i.Status != Names.Paid)).Count().ToString(); // invoiced jobs count
+                    GrossAmount = DataService.Jobs.Sum(gross => gross.FinalPrice).ToString("C"); // gross amount
+                    ReceivedAmount = DataService.Jobs
+                        .Join(DataService.Invoices,
+                        j => j.JobId,
+                        i => i.JobId,
+                        (j, i) => new { j, i }).Where(combined => combined.i.Status == Names.Paid)
+                        .Sum(combined => combined.j.FinalPrice).ToString("C");
 
-                OutstandingAmount = DataService.Jobs
-                    .Where(
-                        j => j.Status == Names.Done || // job = done
-                        (j.Status == Names.Invoiced && DataService.Invoices.Any(i => i.JobId == j.JobId && i.Status != Names.Paid)) || // job = invoiced
-                        DataService.Invoices.Any(i => i.JobId == j.JobId && i.DueDate < DateOnly.FromDateTime(DateTime.Now) && i.Status == Names.Overdue) // invoice = overdue
-                    ).Sum(j => j.FinalPrice).ToString("C");
+                    OutstandingAmount = DataService.Jobs
+                        .Where(
+                            j => j.Status == Names.Done || // job = done
+                            (j.Status == Names.Invoiced && DataService.Invoices.Any(i => i.JobId == j.JobId && i.Status != Names.Paid)) || // job = invoiced
+                            DataService.Invoices.Any(i => i.JobId == j.JobId && i.DueDate < DateOnly.FromDateTime(DateTime.Now) && i.Status == Names.Overdue) // invoice = overdue
+                        ).Sum(j => j.FinalPrice).ToString("C");
 
-                OverdueAmount = DataService.Jobs
-                                    .Where(j => j.Status == Names.Invoiced)
-                                    .Join(DataService.Invoices,
-                                          job => job.JobId,
-                                          inv => inv.JobId, (job, inv) => new { job.FinalPrice, inv.DueDate, inv.Status })
-                                    .Where(x => x.DueDate < DateOnly.FromDateTime(DateTime.Now) && x.Status != Names.Paid)
-                                    .Sum(x => x.FinalPrice).ToString("C"); // overdue
+                    OverdueAmount = DataService.Jobs
+                                        .Where(j => j.Status == Names.Invoiced)
+                                        .Join(DataService.Invoices,
+                                              job => job.JobId,
+                                              inv => inv.JobId, (job, inv) => new { job.FinalPrice, inv.DueDate, inv.Status })
+                                        .Where(x => x.DueDate < DateOnly.FromDateTime(DateTime.Now) && x.Status != Names.Paid)
+                                        .Sum(x => x.FinalPrice).ToString("C"); // overdue
 
-                TotalJobsCount = DataService.Jobs.Count();
+                    TotalJobsCount = DataService.Jobs.Count();
 
-                // if job count is zero then disable edit buttons and add jobs
-                if (TotalJobsCount == 0)
-                {
-                    EnableBtns = false;
-                    OpacityBtns = _halfOpacity;
-                    SelectedJob = null;
+                    // if job count is zero then disable edit buttons and add jobs
+                    if (TotalJobsCount == 0)
+                    {
+                        EnableBtns = false;
+                        OpacityBtns = _halfOpacity;
+                        SelectedJob = null;
+                    }
+                    else if (TotalJobsCount > 0)
+                    {
+                        EnableBtns = true;
+                        OpacityBtns = _fullOpacity;
+                    }
+
+                    // if there is any overdue
+                    if (decimal.Parse(OverdueAmount, NumberStyles.Currency, CultureInfo.CurrentCulture) > 0.0m)
+                    {
+                        OutstandingStatusBorder = "Overdue";
+                    }
+                    else
+                    {
+                        OutstandingStatusBorder = string.Empty;
+                    }
+
+                    //DashboardData = new ObservableCollection<DashboardModel>(_dashboardDataBackground); // assign to main dashboard data for ui binding
+                    return _dashboardDataBackground;
                 }
-                else if (TotalJobsCount > 0)
+                catch (Exception ex)
                 {
-                    EnableBtns = true;
-                    OpacityBtns = _fullOpacity;
+                    await Execute.OnUIThreadAsync(async () =>
+                    { 
+                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                        {
+                            State.messageBoxVM.Symbol = 2;
+                            State.messageBoxVM.HeadMessage = "Setup Dashboard";
+                            State.messageBoxVM.Message = ex.Message;
+                            State.messageBoxVM.ButtonStyle = Names.OK;
+                            await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        }     
+                    });
+                    Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: SetupDashboardData() FAIL\n\t{ex.Message}");
+                    return new List<DashboardModel>();
                 }
-
-                // if there is any overdue
-                if (decimal.Parse(OverdueAmount, NumberStyles.Currency, CultureInfo.CurrentCulture) > 0.0m)
-                {
-                    OutstandingStatusBorder = "Overdue";
-                }
-                else
-                {
-                    OutstandingStatusBorder = string.Empty;
-                }
-
-                StartLoop();
-            }
-            catch (Exception ex)
-            {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
-                {
-                    State.messageBoxVM.Symbol = 2;
-                    State.messageBoxVM.HeadMessage = "Setup Dashboard";
-                    State.messageBoxVM.Message = ex.Message;
-                    State.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                }
-                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: SetupDashboardData() FAIL\n\t{ex.Message}");
-            }
-            return Task.CompletedTask;
+            });
         }
         
-        private void StartLoop()
+        private void StartLoopBG()
         {
-            try
+            Task.Run(async () =>
             {
-                _cts = new CancellationTokenSource();
-                _pauseEvent.Set(); // Ensure gate is open
-                _ = RunLoopAsync(_cts.Token);
-            }
-            catch (Exception ex)
-            {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                try
                 {
-                    State.messageBoxVM.Symbol = 2;
-                    State.messageBoxVM.HeadMessage = "Start Loop Check";
-                    State.messageBoxVM.Message = ex.Message;
-                    State.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    _cts = new CancellationTokenSource();
+                    _pauseEvent.Set(); // Ensure gate is open
+                    _ = RunLoopAsync(_cts.Token);
                 }
-                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: StartLoop() FAIL\n\t{ex.Message}");
-            }
+                catch (Exception ex)
+                {
+                    await Execute.OnUIThreadAsync(async() =>
+                    {
+                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                        {
+                            State.messageBoxVM.Symbol = 2;
+                            State.messageBoxVM.HeadMessage = "Start Loop Check";
+                            State.messageBoxVM.Message = ex.Message;
+                            State.messageBoxVM.ButtonStyle = Names.OK;
+                            await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        }
+                        Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: StartLoop() FAIL\n\t{ex.Message}");
+                    });
+                }
+            });
         }
 
         /// <summary>
         /// Pause the loop call
         /// </summary>
-        private void PauseLoop()
+        private async Task PauseLoopBG()
         {
-            try
+            await Task.Run(async () =>
             {
-                if (_pauseEvent != null)
+                try
                 {
-                    _pauseEvent.Reset(); // Close the gate
+                    if (_pauseEvent != null)
+                    {
+                        _pauseEvent.Reset(); // Close the gate
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                catch (Exception ex)
                 {
-                    State.messageBoxVM.Symbol = 2;
-                    State.messageBoxVM.HeadMessage = "Pause Loop Check";
-                    State.messageBoxVM.Message = ex.Message;
-                    State.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    await Execute.OnUIThreadAsync(async () =>
+                    {
+                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                        {
+                            State.messageBoxVM.Symbol = 2;
+                            State.messageBoxVM.HeadMessage = "Pause Loop Check";
+                            State.messageBoxVM.Message = ex.Message;
+                            State.messageBoxVM.ButtonStyle = Names.OK;
+                            await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        }
+                        Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: PauseLoop() FAIL\n\t{ex.Message}");
+                    });
                 }
-                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: PauseLoop() FAIL\n\t{ex.Message}");
-            }
+            });
         }
 
         /// <summary>
         /// Resume the loop call
         /// </summary>
-        private void ResumeLoop()
+        private async Task ResumeLoopBG()
         {
-            try
+            await Task.Run(async () =>
             {
-                if (_pauseEvent != null)
+                try
                 {
-                    _pauseEvent.Set(); // Open the gate
+                    if (_pauseEvent != null)
+                    {
+                        _pauseEvent.Set(); // Open the gate
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                catch (Exception ex)
                 {
-                    State.messageBoxVM.Symbol = 2;
-                    State.messageBoxVM.HeadMessage = "Resume Loop Check";
-                    State.messageBoxVM.Message = ex.Message;
-                    State.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    await Execute.OnUIThreadAsync(async () =>
+                    {
+                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                        {
+                            State.messageBoxVM.Symbol = 2;
+                            State.messageBoxVM.HeadMessage = "Resume Loop Check";
+                            State.messageBoxVM.Message = ex.Message;
+                            State.messageBoxVM.ButtonStyle = Names.OK;
+                            await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        }
+                        Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: ResumeLoop() FAIL\n\t{ex.Message}");
+                    });
                 }
-                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: ResumeLoop() FAIL\n\t{ex.Message}");
-            }
+            });
         }
 
         /// <summary>
         /// Stop the loop call
         /// </summary>
-        private void StopLoop()
+        private void StopLoopBG()
         {
-            try
+            Task.Run(async () =>
             {
-                _cts?.Cancel();
-                _cts = null;
-                _pauseEvent.Set(); // Release the gate so the loop can exit
-            }
-            catch (Exception ex)
-            {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                try
                 {
-                    State.messageBoxVM.Symbol = 2;
-                    State.messageBoxVM.HeadMessage = "Stop Loop Check";
-                    State.messageBoxVM.Message = ex.Message;
-                    State.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    _cts?.Cancel();
+                    _cts = null;
+                    _pauseEvent.Set(); // Release the gate so the loop can exit
                 }
-                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: StopLoop() FAIL\n\t{ex.Message}");
-            }
+                catch (Exception ex)
+                {
+                    await Execute.OnUIThreadAsync(async () =>
+                    {
+                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                        {
+                            State.messageBoxVM.Symbol = 2;
+                            State.messageBoxVM.HeadMessage = "Stop Loop Check";
+                            State.messageBoxVM.Message = ex.Message;
+                            State.messageBoxVM.ButtonStyle = Names.OK;
+                            await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        }
+                        Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: StopLoop() FAIL\n\t{ex.Message}");
+                    });
+                }
+            });
         }
 
         /// <summary>
@@ -778,10 +805,10 @@ namespace Traker.ViewModels
                     await Task.Run(() => _pauseEvent.Wait(token), token);
 
                     // 2. Perform work
-                    await CheckOverDuePay();
+                    await CheckOverDuePayBG();
 
                     // 3. Wait for the next interval
-                    await Task.Delay(1000, token);
+                    await Task.Delay(20000, token);
                 }
             }
             catch (Exception ex)
@@ -790,11 +817,11 @@ namespace Traker.ViewModels
             }
         }
 
-        private async Task CheckOverDuePay()
+        private async Task CheckOverDuePayBG()
         {
-            try
+            await Task.Run(async () =>
             {
-                await Task.Run(async () =>
+                try
                 {
                     foreach (var job in DashboardData.ToList())
                     {
@@ -802,29 +829,32 @@ namespace Traker.ViewModels
                         {
                             await Database.SetInvoiceStatus(DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.InvoiceId).First(), Names.Overdue, null);
                             await DataService.RefreshDatabase();
-                            await Execute.OnUIThreadAsync(async () => { await SetupDashboardData(); });
+                            DashboardData = new ObservableCollection<DashboardModel>(await SetupDashboardDataBG());
                         }
                         else if (job.JobStatus == Names.Overdue && DateOnly.FromDateTime(DateTime.Now) < job.InvoiceDueDate)
                         {
                             await Database.SetInvoiceStatus(DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.InvoiceId).First(), Names.Invoiced, null);
                             await DataService.RefreshDatabase();
-                            await Execute.OnUIThreadAsync(async () => { await SetupDashboardData(); });
+                            DashboardData = new ObservableCollection<DashboardModel>(await SetupDashboardDataBG());
                         }
                     }
-                });
-            }
-            catch (Exception ex)
-            {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
-                {
-                    State.messageBoxVM.Symbol = 2;
-                    State.messageBoxVM.HeadMessage = "Check Overdue";
-                    State.messageBoxVM.Message = ex.Message;
-                    State.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
-                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: CheckOverDuePay() FAIL\n\t{ex.Message}");
-            }
+                catch (Exception ex)
+                {
+                    await Execute.OnUIThreadAsync(async () =>
+                    {
+                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                        {
+                            State.messageBoxVM.Symbol = 2;
+                            State.messageBoxVM.HeadMessage = "Check Overdue";
+                            State.messageBoxVM.Message = ex.Message;
+                            State.messageBoxVM.ButtonStyle = Names.OK;
+                            await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        }
+                    });
+                    Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: CheckOverDuePay() FAIL\n\t{ex.Message}");
+                }
+            });
         }
 
         private Task SortJobs(string command)
@@ -1256,10 +1286,11 @@ namespace Traker.ViewModels
                 State.LoadingMessage = "P L E A S E   W A I T ";
                 await Task.Delay(50);
 
-                await DataService.RefreshDatabase();
+                await PauseLoopBG();
 
-                await SetupDashboardData();
-
+                await DataService.RefreshDatabase(); // has only background functions
+                DashboardData = new ObservableCollection<DashboardModel>(await SetupDashboardDataBG());
+                //NotifyOfPropertyChange(() => DashboardData);
                 if (message != null)
                 {
                     if (message.Command != Names.Invoice) // skip for invoice creation as no data has been amneded
@@ -1267,6 +1298,7 @@ namespace Traker.ViewModels
                         SelectedJob = null;
                     }
                 }
+                await ResumeLoopBG();
             }
             catch (Exception ex)
             {
