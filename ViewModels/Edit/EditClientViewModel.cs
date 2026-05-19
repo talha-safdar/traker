@@ -186,7 +186,7 @@ namespace Traker.ViewModels.Edit
                 SelectedJob.Country != Country)
                 {
                     // check if name changes for folder naming purpose
-                    if ((SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName) != ClientName || (SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName) != CompanyName)
+                    if ((SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName) != ClientName && (SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName) != CompanyName)
                     {
                         // if it returns true then the folder was successfully renamed
                         if (await FileStore.UpdateClientFolderName(SelectedJob.ClientId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim(), ClientType == Names.Individual ? ClientName.Trim() : CompanyName.Trim()) == true)
@@ -197,24 +197,18 @@ namespace Traker.ViewModels.Edit
                                 await Database.EditClient(SelectedJob.ClientId, ClientType.Trim(), ClientName.Trim(), ClientEmail.Trim(), CompanyName.Trim(), PhoneNumber.Trim(), BillingAddress.Trim(), City.Trim(), Postcode.Trim(), Country.Trim(), IsActive);
                                 await _events.PublishOnUIThreadAsync(new RefreshDatabase());
                             });
-                            await TryCloseAsync();
                         }
                     }
                     else // folder name not changed
                     {
                         await Task.Run(async () =>
                         {
-                            // only update database if file folder change name was successful
                             await Database.EditClient(SelectedJob.ClientId, ClientType.Trim(), ClientName.Trim(), ClientEmail.Trim(), CompanyName.Trim(), PhoneNumber.Trim(), BillingAddress.Trim(), City.Trim(), Postcode.Trim(), Country.Trim(), IsActive);
                             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
                         });
-                        await TryCloseAsync();
                     }
                 }
-                else
-                {
-                    await TryCloseAsync();
-                }   
+                await TryCloseAsync();
             }
             catch (Exception ex)
             {

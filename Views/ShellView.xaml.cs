@@ -25,6 +25,15 @@ namespace Traker.Views
         {
             InitializeComponent();
 
+            Loader.FileName = System.IO.Path.Combine(
+            AppDomain.CurrentDomain.BaseDirectory,
+            "Resources",
+            "Media",
+            "Images",
+            "Icons",
+            "Loading",
+            "spinner.json");
+
             ApplyWindowStateFix();
         }
 

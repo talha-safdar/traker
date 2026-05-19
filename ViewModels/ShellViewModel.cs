@@ -22,7 +22,10 @@ namespace Traker.ViewModels
         private readonly IEventAggregator _events;
         private readonly IWindowManager _windowManager;
         private readonly DataService _dataService;
-        private readonly AppState _state;
+        #endregion
+
+        #region Public View Variables
+        public AppState State { get; set; }
         #endregion
 
         public ShellViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
@@ -30,7 +33,7 @@ namespace Traker.ViewModels
             _events = events;
             _windowManager = windowManager;
             _dataService = dataService;
-            _state = state;
+            State = state;
 
             _events.SubscribeOnPublishedThread(this);
         }
@@ -44,23 +47,23 @@ namespace Traker.ViewModels
                 if (await Database.CheckUserDatabase() == false) // if false it means ds exists but check failed
                 {
                     // No database found
-                    _state.SplashText = "Database is corrupted";
+                    State.SplashText = "Database is corrupted";
 
                     await Task.Delay(1000);
 
                     // Delete current db
-                    _state.SplashText = "Deleting current database...";
+                    State.SplashText = "Deleting current database...";
 
                     await Task.Delay(1000);
 
                     if (await FileStore.DeleteDatabase() == true)
                     {
-                        _state.SplashText = "Current Database Deleted";
+                        State.SplashText = "Current Database Deleted";
                         Logger.LogActivity(Logger.INFO, "ShellViewModel: Deleted Corrupted Database");
                     }
                     else
                     {
-                        _state.SplashText = "Cannot access the database";
+                        State.SplashText = "Cannot access the database";
                         await Task.Delay(1000);
                         Environment.Exit(1); // close app
                         Logger.LogActivity(Logger.WARNING, "ShellViewModel: Failed to Delete Corrupted Database");
@@ -68,12 +71,12 @@ namespace Traker.ViewModels
 
                     // Creating database
                     await Task.Delay(1000);
-                    _state.SplashText = "Creating a new database...";
+                    State.SplashText = "Creating a new database...";
                     await Task.Delay(1000);
                 }
 
                 // setting up database
-                _state.SplashText = "Initialising database...";
+                State.SplashText = "Initialising database...";
                 await Task.Delay(1000);
                 await Database.SetUpDatabase();
                 await _dataService.FetchDatabase();
@@ -82,13 +85,13 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Initialise";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Initialise";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"ShellViewModel: OnInitializedAsync() FAIL\n\t{ex.Message}");
             }
@@ -107,26 +110,26 @@ namespace Traker.ViewModels
                 {
                     // open the setup window
                     await Task.Delay(2000);
-                    SetupViewModel setupViewModel = new SetupViewModel(_events, _windowManager, _dataService, _state);
+                    SetupViewModel setupViewModel = new SetupViewModel(_events, _windowManager, _dataService, State);
                     await _windowManager.ShowWindowAsync(setupViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
                 }
                 else
                 {
-                    DashboardViewModel dashboardViewModel = new DashboardViewModel(_events, _windowManager, _dataService, _state);
+                    DashboardViewModel dashboardViewModel = new DashboardViewModel(_events, _windowManager, _dataService, State);
                     await ActivateItemAsync(dashboardViewModel);
                 }
             }
             catch (Exception ex)
             {
                 // not already open?
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Shell OnViewReady";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _state.messageBoxVM.Action = Names.Close;
-                    await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Shell OnViewReady";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    State.messageBoxVM.Action = Names.Close;
+                    await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"ShellViewModel: OnViewReady() FAIL\n\t{ex.Message}");
             }
@@ -144,13 +147,13 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "On View Loaded";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "On View Loaded";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"ShellViewModel: OnViewLoaded() FAIL\n\t{ex.Message}");
             }
@@ -166,13 +169,13 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "On View Attached";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "On View Attached";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"ShellViewModel: OnViewAttached() FAIL\n\t{ex.Message}");
             }
@@ -183,10 +186,10 @@ namespace Traker.ViewModels
         {
             try
             {
-                if (_state.UserContextMenuViewModel != null)
+                if (State.UserContextMenuViewModel != null)
                 {
-                    await _state.UserContextMenuViewModel.TryCloseAsync(false);
-                    _state.UserContextMenuViewModel = null;
+                    await State.UserContextMenuViewModel.TryCloseAsync(false);
+                    State.UserContextMenuViewModel = null;
                 }
                 if (IoC.Get<FilterJobsViewModel>().IsActive == true)
                 {
@@ -199,13 +202,13 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Close Other Windows";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Close Other Windows";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"ShellViewModel: OnMouseDownEvent() FAIL\n\t{ex.Message}");
             }
@@ -219,13 +222,13 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Exit Form";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Exit Form";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"ShellViewModel: Exit() FAIL\n\t{ex.Message}");
             }
@@ -240,13 +243,13 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Exit Form";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Exit Form";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"ShellViewModel: Exit() FAIL\n\t{ex.Message}");
             }
@@ -261,7 +264,7 @@ namespace Traker.ViewModels
             {
                 if (message.Command == Names.SetupCompleted)
                 {
-                    DashboardViewModel dashboardViewModel = new DashboardViewModel(_events, _windowManager, _dataService, _state);
+                    DashboardViewModel dashboardViewModel = new DashboardViewModel(_events, _windowManager, _dataService, State);
                     ActivateItemAsync(dashboardViewModel, cancellationToken);
                 }
             }

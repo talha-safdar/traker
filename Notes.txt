@@ -71,8 +71,8 @@ V1:
 - disable filter / sort on add, edit client
 - calculate the total price for job using (total - remaining)
 - add splash screen if necessary
-#- add on click animation to the rest of the buttons
-#- add loading bar
+- add on click animation to the rest of the buttons
+- add loading bar
 - if set to paid why still show as invoiced status on the left panel? do something
 - try/catch
 - add edit client button on cards and other edits delete? on hover only
@@ -80,8 +80,12 @@ V1:
 - add background thread
 - what if enter empty fields?
 - on click anywhere disable all windows
-#- dont forget button animations for edit invoice
-#- ask chatgpt if log file is necessary if being released on microsfot store
+- dont forget button animations for edit invoice
+- ask chatgpt if log file is necessary if being released on microsfot store
+- remove throw in database catch
+#- fix threading for loading
+#- job context menu match the colours for active and done with the pastel and do something about the side panel job status colouring
+#- create invoice window is squared at the tbottom
 
 V2:
 #- the selected not invoiced then confirmation box yes/no. that row with invoice details will be saved in a e.g. "rubbish" folder in txt. 
@@ -256,3 +260,29 @@ i only fill: billing shit due date subtotal and VAT
 
 Invoice number to UI:
 string formatted = $"INV-{invoiceNumber:D4}";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Assembly name
+Default namespace
+Application icon
+Version
+Company
+Product name
+Copyright

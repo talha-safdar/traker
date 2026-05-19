@@ -19,6 +19,10 @@ WindowStyle="None"
     Background="#01000000"
     StateChanged="Window_StateChanged">
 
+    <Window.Resources>
+        <conv:BoolToVisibilityCollapsed x:Key="BoolToVisCollapsed"/>
+    </Window.Resources>
+
     <WindowChrome.WindowChrome>
         <shell:WindowChrome
             CaptionHeight="32"
@@ -92,7 +96,7 @@ WindowStyle="None"
             </Grid>
             
             <!-- loading -->
-            <Grid Grid.RowSpan="2"  x:Name="OverlayGrid" Background="Transparent" Visibility="Visible">
+            <Grid Grid.RowSpan="2" x:Name="OverlayGrid" Background="Transparent" Visibility="{Binding State.IsBusy, Converter={StaticResource BoolToVisCollapsed}}">
                 <Border Background="Black" Opacity="0">
                     <Border.Style>
                         <Style TargetType="Border">
@@ -133,8 +137,8 @@ WindowStyle="None"
                                       Opacity="1"
                                       Color="#2D2D34"/>
                                 </Border.Effect>
-                                <lottie:LottieAnimationView x:Name="Loader"
-                                   FileName="C:\Users\Safda\Documents\Projects\Personal\Traker\Resources\Media\Images\Icons\Loading\spinner.json"
+                                <lottie:LottieAnimationView 
+                                    x:Name="Loader"
                                     AutoPlay="True"                                            
                                     RepeatCount="-1" />
                             </Border>
@@ -143,7 +147,7 @@ WindowStyle="None"
                         <!-- text -->
                         <Grid Grid.Row="1">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="PLEASE WAIT" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="28" />
+                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding State.LoadingMessage}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="28" />
                                 <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
                                     <TextBlock x:Name="Dot1" Text=". " FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="28" />
                                     <TextBlock x:Name="Dot2" Text=". " FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="28" />

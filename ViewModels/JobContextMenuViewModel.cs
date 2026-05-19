@@ -106,10 +106,10 @@ namespace Traker.ViewModels
             {
                 await Task.Run(async () =>
                 {
+                    await TryCloseAsync();
                     await Database.SetJobStatus(status, SelectedJob.ClientId, SelectedJob.JobId);
                     await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
                     await _dataService.RefreshDatabase();
-                    await TryCloseAsync();
                 });
             }
             catch (Exception ex)
@@ -132,12 +132,11 @@ namespace Traker.ViewModels
             {
                 await Task.Run(async () =>
                 {
+                    await TryCloseAsync();
                     // get list of jobs under the client ID
                     List<JobsModel> jobDetails = new List<JobsModel>();
                     jobDetails = _dataService.Jobs.Where(j => j.ClientId == SelectedJob.ClientId).ToList();
-
                     await FileStore.LocateJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName, SelectedJob.JobTitle);
-                    await TryCloseAsync();
                 });
             }
             catch (Exception ex)
@@ -226,7 +225,6 @@ namespace Traker.ViewModels
             try
             {
                 await TryCloseAsync();
-
                 if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
                 {
                     _state.messageBoxVM.Symbol = 0;

@@ -21,6 +21,10 @@ namespace Traker.States
         // splash screen
         public string _splashText = string.Empty;
 
+        // loading animation 
+        public bool _isBusy = false; // true = shows loading animation, false = hide
+        public string _loadingMessage = string.Empty; // text below the loading animation 
+
         // filter sort
         public bool IsSortToClear = false; // set from dashboard to clear the sort on opening its menu
         public bool IsFilterToClear = false; // set from dashboard to clear the filter on opening its menu
@@ -49,6 +53,26 @@ namespace Traker.States
             {
                 _splashText = value;
                 NotifyOfPropertyChange(() => SplashText);
+            }
+        }
+
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set
+            {
+                _isBusy = value;
+                NotifyOfPropertyChange(() => IsBusy);
+            }
+        }
+
+        public string LoadingMessage
+        {
+            get => _loadingMessage;
+            set
+            {
+                _loadingMessage = value;
+                NotifyOfPropertyChange(() => LoadingMessage);
             }
         }
     }

@@ -24,13 +24,14 @@ namespace Traker.ViewModels
         #region Caliburn Variables
         private readonly IEventAggregator _events;
         private readonly IWindowManager _windowManager;
-        private readonly AppState _state;
+        
         #endregion
         public DataService DataService { get; }
 
         #region Public View Variables
         public List<string> JobStatusEdit { get; set; } = new List<string> { "New", "Active", "Done" };
         public List<string> InvoiceStatusEdit { get; set; } = new List<string> { "Created", "Sent", "Paid", "Overdue" };
+        public AppState State { set; get; }
         #endregion
 
         #region Private View Variables
@@ -77,7 +78,7 @@ namespace Traker.ViewModels
             _events = events;
             _windowManager = windowManager;
             DataService = dataService;
-            _state = state;
+            State = state;
 
             // private view variable
             _receivedAmount = "0";
@@ -93,15 +94,15 @@ namespace Traker.ViewModels
             _selectedJob = new DashboardModel();
 
             // private variables
-            _state.EditJobViewModel = new EditJobViewModel(_events, _windowManager, _state);
-            _state.AddJobViewModel = new AddJobViewModel(_events, _windowManager, _state);
-            _state.SortJobsViewModel = new SortJobsViewModel(_events, _windowManager, DataService, _state);
-            _state.FilterJobsViewModel = new FilterJobsViewModel(_events, _windowManager, DataService, _state);
-            _state.JobContextMenuViewModel = new JobContextMenuViewModel(_events, _windowManager, DataService, _state);
-            _state.AddClientViewModel = new AddClientViewModel(_events, _windowManager, DataService, _state);
-            _state.EditClientViewModel = new EditClientViewModel(_events, _windowManager, DataService, _state);
-            _state.UserContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager, DataService, _state);
-            _state.EditInvoiceViewModel = new EditInvoiceViewModel(_events, _windowManager, DataService, _state);
+            State.EditJobViewModel = new EditJobViewModel(_events, _windowManager, State);
+            State.AddJobViewModel = new AddJobViewModel(_events, _windowManager, State);
+            State.SortJobsViewModel = new SortJobsViewModel(_events, _windowManager, DataService, State);
+            State.FilterJobsViewModel = new FilterJobsViewModel(_events, _windowManager, DataService, State);
+            State.JobContextMenuViewModel = new JobContextMenuViewModel(_events, _windowManager, DataService, State);
+            State.AddClientViewModel = new AddClientViewModel(_events, _windowManager, DataService, State);
+            State.EditClientViewModel = new EditClientViewModel(_events, _windowManager, DataService, State);
+            State.UserContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager, DataService, State);
+            State.EditInvoiceViewModel = new EditInvoiceViewModel(_events, _windowManager, DataService, State);
             _dashboardDataBackup = new ObservableCollection<DashboardModel>();
             _dashboardDataStatusFiltered = new ObservableCollection<DashboardModel>();
             _dashboardDataTypeFiltered = new ObservableCollection<DashboardModel>();
@@ -125,13 +126,13 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Initialise Form";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Initialise Form";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: OnInitializedAsync() FAIL\n\t{ex.Message}");
             }
@@ -178,13 +179,13 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Open FIlter Menu";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Open FIlter Menu";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: OpenFilterContextMenu() FAIL\n\t{ex.Message}");
             }
@@ -223,13 +224,13 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Open Sort Menu";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Open Sort Menu";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: OpenSortContextMenu() FAIL\n\t{ex.Message}");
             }
@@ -255,19 +256,19 @@ namespace Traker.ViewModels
                     double popupTop = (locationFromScreen.Y / dpiY) - 260;
                     double popupLeft = (locationFromScreen.X / dpiX) - 20;
 
-                    _state.UserContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager, DataService, _state);
-                    await _windowManager.ShowPopupAsync(_state.UserContextMenuViewModel, null, CustomWindow.SettingsForDialog(310, 335, true, popupTop, popupLeft)); // vertical, horizontal
+                    State.UserContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager, DataService, State);
+                    await _windowManager.ShowPopupAsync(State.UserContextMenuViewModel, null, CustomWindow.SettingsForDialog(310, 335, true, popupTop, popupLeft)); // vertical, horizontal
                 }
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Open User Menu";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Open User Menu";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: OpenUserContenxtMenu() FAIL\n\t{ex.Message}");
             }
@@ -284,13 +285,13 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Exit Form";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Exit Form";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: SelectJob() FAIL\n\t{ex.Message}");
             }
@@ -305,21 +306,21 @@ namespace Traker.ViewModels
                 {
                     if (SelectedJob.ClientId == selectedJob.ClientId)
                     {
-                        _state.JobContextMenuViewModel = new JobContextMenuViewModel(_events, _windowManager, DataService, _state);
-                        _state.JobContextMenuViewModel.SelectedJob = selectedJob; // pass job selected data
-                        await _windowManager.ShowPopupAsync(_state.JobContextMenuViewModel, null, CustomWindow.SettingsForDialog(310, 335, false)); // vertical, horizontal
+                        State.JobContextMenuViewModel = new JobContextMenuViewModel(_events, _windowManager, DataService, State);
+                        State.JobContextMenuViewModel.SelectedJob = selectedJob; // pass job selected data
+                        await _windowManager.ShowPopupAsync(State.JobContextMenuViewModel, null, CustomWindow.SettingsForDialog(310, 335, false)); // vertical, horizontal
                     }
                 }
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Open Options Menu";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Open Options Menu";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: OpenContextMenu() FAIL\n\t{ex.Message}");
             }
@@ -333,41 +334,41 @@ namespace Traker.ViewModels
                  // double-click
                 if (jobSelected != null && DataService.Invoices.Any(i => i.JobId == jobSelected.JobId && i.IsDeleted == false) == true)
                 {
-                    _state.EditInvoiceViewModel = new EditInvoiceViewModel(_events, _windowManager, DataService, _state);
-                    _state.EditInvoiceViewModel.SelectedJob = jobSelected;
-                    await _windowManager.ShowDialogAsync(_state.EditInvoiceViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
+                    State.EditInvoiceViewModel = new EditInvoiceViewModel(_events, _windowManager, DataService, State);
+                    State.EditInvoiceViewModel.SelectedJob = jobSelected;
+                    await _windowManager.ShowDialogAsync(State.EditInvoiceViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
                 }
                 // icon click
                 else if (SelectedJob != null && DataService.Invoices.Any(i => i.JobId == SelectedJob.JobId && i.IsDeleted == false) == true)
                 {
-                    _state.EditInvoiceViewModel = new EditInvoiceViewModel(_events, _windowManager, DataService, _state);
-                    _state.EditInvoiceViewModel.SelectedJob = SelectedJob;
-                    await _windowManager.ShowDialogAsync(_state.EditInvoiceViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
+                    State.EditInvoiceViewModel = new EditInvoiceViewModel(_events, _windowManager, DataService, State);
+                    State.EditInvoiceViewModel.SelectedJob = SelectedJob;
+                    await _windowManager.ShowDialogAsync(State.EditInvoiceViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
                 }
                 else
                 {
-                    _state.EditJobViewModel = new EditJobViewModel(_events, _windowManager, _state);
+                    State.EditJobViewModel = new EditJobViewModel(_events, _windowManager, State);
 
                     if (jobSelected != null)
                     {
-                        _state.EditJobViewModel.SelectedJob = jobSelected; // pass selected   row to EditJobViewModel
+                        State.EditJobViewModel.SelectedJob = jobSelected; // pass selected   row to EditJobViewModel
                     }
                     else
                     {
-                        _state.EditJobViewModel.SelectedJob = SelectedJob!;
+                        State.EditJobViewModel.SelectedJob = SelectedJob!;
                     }
-                    await _windowManager.ShowDialogAsync(_state.EditJobViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
+                    await _windowManager.ShowDialogAsync(State.EditJobViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
                 }
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Exit Form";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Exit Form";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: EditJob() FAIL\n\t{ex.Message}");
             }
@@ -377,19 +378,19 @@ namespace Traker.ViewModels
         {
             try
             {
-                _state.EditClientViewModel = new EditClientViewModel(_events, _windowManager, DataService, _state);
-                _state.EditClientViewModel.SelectedJob = SelectedJob; // pass selected row to EditClientViewModel
-                await _windowManager.ShowDialogAsync(_state.EditClientViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
+                State.EditClientViewModel = new EditClientViewModel(_events, _windowManager, DataService, State);
+                State.EditClientViewModel.SelectedJob = SelectedJob; // pass selected row to EditClientViewModel
+                await _windowManager.ShowDialogAsync(State.EditClientViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Edit Client";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Edit Client";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: EditClient() FAIL\n\t{ex.Message}");
             }
@@ -399,17 +400,17 @@ namespace Traker.ViewModels
         {
             try
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 0;
-                    _state.messageBoxVM.HeadMessage = "Delete Job";
-                    _state.messageBoxVM.Message = Names.DeleteJobConfirmation;
-                    _state.messageBoxVM.ButtonStyle = Names.NoYes;
-                    await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 0;
+                    State.messageBoxVM.HeadMessage = "Delete Job";
+                    State.messageBoxVM.Message = Names.DeleteJobConfirmation;
+                    State.messageBoxVM.ButtonStyle = Names.NoYes;
+                    await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
 
                 // if clicked yes
-                if (_state.messageBoxVM.Output == true)
+                if (State.messageBoxVM.Output == true)
                 {
                     await Task.Run(async () =>
                     {
@@ -434,13 +435,13 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Delete Job";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Delete Job";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"JobContextMenuViewModel: DeleteJob() FAIL\n\t{ex.Message}");
             }
@@ -450,18 +451,18 @@ namespace Traker.ViewModels
         {
             try
             {
-                _state.AddClientViewModel = new AddClientViewModel(_events, _windowManager, DataService, _state);
-                await _windowManager.ShowDialogAsync(_state.AddClientViewModel, null, CustomWindow.SettingsForDialog(790, 600, false));
+                State.AddClientViewModel = new AddClientViewModel(_events, _windowManager, DataService, State);
+                await _windowManager.ShowDialogAsync(State.AddClientViewModel, null, CustomWindow.SettingsForDialog(790, 600, false));
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Add Client";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Add Client";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: AddClient() FAIL\n\t{ex.Message}");
             }
@@ -471,19 +472,19 @@ namespace Traker.ViewModels
         {
             try
             {
-                _state.AddJobViewModel = new AddJobViewModel(_events, _windowManager, _state);
-                _state.AddJobViewModel.dashboardData = _dashboardData; // pass dashboard data to AddJob
-                await _windowManager.ShowDialogAsync(_state.AddJobViewModel, null, CustomWindow.SettingsForDialog(700, 550, false));
+                State.AddJobViewModel = new AddJobViewModel(_events, _windowManager, State);
+                State.AddJobViewModel.dashboardData = _dashboardData; // pass dashboard data to AddJob
+                await _windowManager.ShowDialogAsync(State.AddJobViewModel, null, CustomWindow.SettingsForDialog(700, 550, false));
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Add Job";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Add Job";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: AddJob() FAIL\n\t{ex.Message}");
             }
@@ -496,15 +497,15 @@ namespace Traker.ViewModels
                 try
                 {
                     // disable all context menus on click away
-                    if (_state.JobContextMenuViewModel != null)
+                    if (State.JobContextMenuViewModel != null)
                     {
-                        await _state.JobContextMenuViewModel.TryCloseAsync(false);
-                        _state.JobContextMenuViewModel = null;
+                        await State.JobContextMenuViewModel.TryCloseAsync(false);
+                        State.JobContextMenuViewModel = null;
                     }
-                    if (_state.UserContextMenuViewModel != null)
+                    if (State.UserContextMenuViewModel != null)
                     {
-                        await _state.UserContextMenuViewModel.TryCloseAsync(false);
-                        _state.UserContextMenuViewModel = null;
+                        await State.UserContextMenuViewModel.TryCloseAsync(false);
+                        State.UserContextMenuViewModel = null;
                     }
                     if (IoC.Get<FilterJobsViewModel>().IsActive == true)
                     {
@@ -519,13 +520,13 @@ namespace Traker.ViewModels
                 {
                     await Execute.OnUIThreadAsync(async() =>
                     {
-                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                         {
-                            _state.messageBoxVM.Symbol = 2;
-                            _state.messageBoxVM.HeadMessage = "Close Window";
-                            _state.messageBoxVM.Message = ex.Message;
-                            _state.messageBoxVM.ButtonStyle = Names.OK;
-                            await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                            State.messageBoxVM.Symbol = 2;
+                            State.messageBoxVM.HeadMessage = "Close Window";
+                            State.messageBoxVM.Message = ex.Message;
+                            State.messageBoxVM.ButtonStyle = Names.OK;
+                            await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                         }
                     });
                     Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: OnMouseDownEvent() FAIL\n\t{ex.Message}");
@@ -593,8 +594,8 @@ namespace Traker.ViewModels
                 });
 
                 // disable sort and filter
-                _state.IsSortToClear = true;
-                _state.IsFilterToClear = true;
+                State.IsSortToClear = true;
+                State.IsFilterToClear = true;
 
                 NewJobsCount = DataService.Jobs.Where(j => j.Status == Names.New).Count().ToString(); // new jobs count
                 DoneJobsCount = DataService.Jobs.Where(j => j.Status == Names.Done).Count().ToString(); // done jobs count
@@ -652,13 +653,13 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Setup Dashboard";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Setup Dashboard";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: SetupDashboardData() FAIL\n\t{ex.Message}");
             }
@@ -675,13 +676,13 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Start Loop Check";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Start Loop Check";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: StartLoop() FAIL\n\t{ex.Message}");
             }
@@ -701,13 +702,13 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Pause Loop Check";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Pause Loop Check";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: PauseLoop() FAIL\n\t{ex.Message}");
             }
@@ -727,13 +728,13 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Resume Loop Check";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Resume Loop Check";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: ResumeLoop() FAIL\n\t{ex.Message}");
             }
@@ -752,13 +753,13 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Stop Loop Check";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Stop Loop Check";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: StopLoop() FAIL\n\t{ex.Message}");
             }
@@ -814,13 +815,13 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Check Overdue";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Check Overdue";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: CheckOverDuePay() FAIL\n\t{ex.Message}");
             }
@@ -917,13 +918,13 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Sort Jobs";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Sort Jobs";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: SortJobs() FAIL\n\t{ex.Message}");
             }
@@ -1067,9 +1068,9 @@ namespace Traker.ViewModels
                         _isFilterJobStatusOn = false;
 
                         // check if sort was enabled
-                        if (string.IsNullOrEmpty(_state.currentSortOption) == false)
+                        if (string.IsNullOrEmpty(State.currentSortOption) == false)
                         {
-                            SortJobs(_state.currentSortOption);
+                            SortJobs(State.currentSortOption);
                         }
                     }
                 }
@@ -1090,22 +1091,22 @@ namespace Traker.ViewModels
                         _isFilterClientTypeOn = false;
 
                         // check if sort was enabled
-                        if (string.IsNullOrEmpty(_state.currentSortOption) == false)
+                        if (string.IsNullOrEmpty(State.currentSortOption) == false)
                         {
-                            SortJobs(_state.currentSortOption);
+                            SortJobs(State.currentSortOption);
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Exit Form";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Exit Form";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: HandleKeyPress() FAIL\n\t{ex.Message}");
             }
@@ -1227,21 +1228,21 @@ namespace Traker.ViewModels
                     }
                     else if (message.Command == Names.ShowInvoice)
                     {
-                        _state.EditInvoiceViewModel = new EditInvoiceViewModel(_events, _windowManager, DataService, _state);
-                        _state.EditInvoiceViewModel.SelectedJob = SelectedJob!;
-                        await _windowManager.ShowWindowAsync(_state.EditInvoiceViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
+                        State.EditInvoiceViewModel = new EditInvoiceViewModel(_events, _windowManager, DataService, State);
+                        State.EditInvoiceViewModel.SelectedJob = SelectedJob!;
+                        await _windowManager.ShowWindowAsync(State.EditInvoiceViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
                     }
                 }
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Dashboard Events";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Dashboard Events";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: HandleAsync(DashboardVMEvents) FAIL\n\t{ex.Message}");
             }
@@ -1251,8 +1252,12 @@ namespace Traker.ViewModels
         {
             try
             {
+                State.IsBusy = true;
+                State.LoadingMessage = "P L E A S E   W A I T ";
+                await Task.Delay(50);
 
                 await DataService.RefreshDatabase();
+
                 await SetupDashboardData();
 
                 if (message != null)
@@ -1265,15 +1270,20 @@ namespace Traker.ViewModels
             }
             catch (Exception ex)
             {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "Refresh Database";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Refresh Database";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: HandleAsync(RefreshDatabase) FAIL\n\t{ex.Message}");
+            }
+            finally
+            {
+                State.IsBusy = false;
+                State.LoadingMessage = string.Empty;
             }
         }
         #endregion
