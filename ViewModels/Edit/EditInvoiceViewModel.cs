@@ -200,6 +200,7 @@ namespace Traker.ViewModels.Edit
         {
             try
             {
+                await TryCloseAsync();
                 // Invoice status: Created, Paid
                 if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Invoiced || _dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Overdue)
                 {
@@ -227,7 +228,6 @@ namespace Traker.ViewModels.Edit
                     ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#16A34A")!;
                     ButtonHover = (Brush)new BrushConverter().ConvertFrom("#15803D")!;
                 }
-                // add animation?
             }
             catch (Exception ex)
             {

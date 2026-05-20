@@ -57,7 +57,6 @@ namespace Traker.ViewModels
         {
             try
             {
-
                 // If already done this once, stop here!
                 if (_isInitialized == true)
                 {

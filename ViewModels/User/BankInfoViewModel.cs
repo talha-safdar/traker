@@ -133,9 +133,9 @@ namespace Traker.ViewModels.User
             {
                 await Task.Run(async() =>
                 {
+                    await TryCloseAsync();
                     await Database.EditBank(_dataService.User[0].UserId, BankName.Trim(), AccountName.Trim(), AccountNumber.Trim(), Sortcode.Trim(), IBAN.Trim(), BIC.Trim());
                     await _events.PublishOnUIThreadAsync(new RefreshDatabase());
-                    await TryCloseAsync();
                 });
             }
             catch (Exception ex)

@@ -54,6 +54,7 @@ namespace Traker.ViewModels
          */
         private bool _enableBtns;
         private double _opacityBtns;
+        private bool _isInitialized; // This stays 'true' because the VM is a Singleton
         #endregion
 
         #region Private Field Variables
@@ -117,6 +118,12 @@ namespace Traker.ViewModels
         {
             try
             {
+                // If already done this once, stop here!
+                if (_isInitialized == true)
+                {
+                    await base.OnInitializedAsync(cancellationToken);
+                }
+
                 EnableBtns = false;
                 OpacityBtns = _halfOpacity;
 
@@ -530,6 +537,38 @@ namespace Traker.ViewModels
                     Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: OnMouseDownEvent() FAIL\n\t{ex.Message}");
                 }
             });
+        }
+        #endregion
+
+        #region Public Functions
+        public async Task RefreshDatabase()
+        {
+            try
+            {
+                await PauseLoopBG(); // pause loop (overdue check)
+
+                await DataService.RefreshDatabase(); // has only background functions
+
+                var data = await SetupDashboardDataBG(); // get new data
+
+                await Task.Yield(); // make it rest one frame
+
+                DashboardData = new ObservableCollection<DashboardModel>(data); // refresh the UI with new data
+
+                await ResumeLoopBG(); // resume loop (overdue check)
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                {
+                    State.messageBoxVM.Symbol = 2;
+                    State.messageBoxVM.HeadMessage = "Exit Form";
+                    State.messageBoxVM.Message = ex.Message;
+                    State.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: RefreshDatabase() FAIL\n\t{ex.Message}");
+            }
         }
         #endregion
 
@@ -1142,7 +1181,6 @@ namespace Traker.ViewModels
             }
             return Task.CompletedTask;
         }
-
         #endregion
 
         #region Event Handlers
@@ -1284,13 +1322,10 @@ namespace Traker.ViewModels
             {
                 State.IsBusy = true;
                 State.LoadingMessage = "P L E A S E   W A I T ";
-                await Task.Delay(50);
+                await Task.Delay(50); // let rendering breath
 
-                await PauseLoopBG();
+                await RefreshDatabase();
 
-                await DataService.RefreshDatabase(); // has only background functions
-                DashboardData = new ObservableCollection<DashboardModel>(await SetupDashboardDataBG());
-                //NotifyOfPropertyChange(() => DashboardData);
                 if (message != null)
                 {
                     if (message.Command != Names.Invoice) // skip for invoice creation as no data has been amneded
@@ -1298,7 +1333,6 @@ namespace Traker.ViewModels
                         SelectedJob = null;
                     }
                 }
-                await ResumeLoopBG();
             }
             catch (Exception ex)
             {

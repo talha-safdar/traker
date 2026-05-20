@@ -23,6 +23,7 @@ on edit client update folder names too
 tooltip change message for invocied "double-click to open invoice"
 user context if click on another window while preivous open close it
 - user table has timestamp
+#- allow export of clients in excel format
 
 V1:
 - check all windows have fix width and height
@@ -86,6 +87,8 @@ V1:
 #- fix threading for loading
 #- job context menu match the colours for active and done with the pastel and do something about the side panel job status colouring
 #- create invoice window is squared at the tbottom
+#- check warnings in error list
+#- thread sort/filter
 
 V2:
 #- the selected not invoiced then confirmation box yes/no. that row with invoice details will be saved in a e.g. "rubbish" folder in txt. 

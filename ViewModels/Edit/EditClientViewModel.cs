@@ -175,6 +175,7 @@ namespace Traker.ViewModels.Edit
         {
             try
             {
+                await TryCloseAsync();
                 if (SelectedJob.ClientType != ClientType ||
                 SelectedJob.CompanyName != CompanyName ||
                 SelectedJob.ClientName != ClientName ||
@@ -208,7 +209,6 @@ namespace Traker.ViewModels.Edit
                         });
                     }
                 }
-                await TryCloseAsync();
             }
             catch (Exception ex)
             {

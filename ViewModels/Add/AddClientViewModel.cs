@@ -207,7 +207,7 @@ namespace Traker.ViewModels.Add
             try
             {
                 await Task.Run(async() => {
-                    await TryCloseAsync();
+                    //await TryCloseAsync();
                     var dueDate = DateOnly.MinValue;
                     decimal amount = 0;
 

@@ -85,7 +85,41 @@
 
             <!-- text -->
             <Grid Grid.Row="1">
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding State.SplashText}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#888888" FontSize="18"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding State.SplashText}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#888888" FontSize="18" />
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+                        <TextBlock x:Name="Dot1" Text="." FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#888888" FontSize="18" />
+                        <TextBlock x:Name="Dot2" Text="." FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#888888" FontSize="18" />
+                        <TextBlock x:Name="Dot3" Text="." FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#888888" FontSize="18" />
+                    </StackPanel>
+
+                    <StackPanel.Triggers>
+                        <EventTrigger RoutedEvent="StackPanel.Loaded">
+                            <BeginStoryboard>
+                                <Storyboard RepeatBehavior="Forever">
+
+                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Dot1" Storyboard.TargetProperty="Opacity">
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0.0"/>
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:1" Value="1.0"/>
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:3.5" Value="0.0"/>
+                                    </DoubleAnimationUsingKeyFrames>
+
+                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Dot2" Storyboard.TargetProperty="Opacity">
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0.0"/>
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:2" Value="1.0"/>
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:3.5" Value="0.0"/>
+                                    </DoubleAnimationUsingKeyFrames>
+
+                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Dot3" Storyboard.TargetProperty="Opacity">
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0.0"/>
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:3" Value="1.0"/>
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:3.5" Value="0.0"/>
+                                    </DoubleAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </StackPanel.Triggers>
+                </StackPanel>
             </Grid>
         </Grid>
     </Border>

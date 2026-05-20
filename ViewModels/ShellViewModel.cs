@@ -22,18 +22,20 @@ namespace Traker.ViewModels
         private readonly IEventAggregator _events;
         private readonly IWindowManager _windowManager;
         private readonly DataService _dataService;
+        private readonly DashboardViewModel _dashboardViewModel;
         #endregion
 
         #region Public View Variables
         public AppState State { get; set; }
         #endregion
 
-        public ShellViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
+        public ShellViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state, DashboardViewModel dashboardViewModel)
         {
             _events = events;
             _windowManager = windowManager;
             _dataService = dataService;
             State = state;
+            _dashboardViewModel = dashboardViewModel;
 
             _events.SubscribeOnPublishedThread(this);
         }
@@ -73,13 +75,21 @@ namespace Traker.ViewModels
                     await Task.Delay(1000);
                     State.SplashText = "Creating a new database...";
                     await Task.Delay(1000);
+                    await Database.SetUpDatabaseBG(); // it creates the database if it does not exist
                 }
 
-                // setting up database
-                State.SplashText = "Initialising database...";
+                State.SplashText = "Initialising database";
                 await Task.Delay(1000);
-                await Database.SetUpDatabaseBG();
-                await _dataService.FetchDatabaseBG();
+                await _dataService.FetchDatabaseBG(); // it feteches database
+
+                State.SplashText = "Populating dashboard";
+                await Task.Delay(1000);
+                await _dashboardViewModel.RefreshDatabase(); // Get data ready for dashboard
+
+                if (_dataService.User?.Any() == true)
+                {
+                    await ActivateItemAsync(_dashboardViewModel);
+                }
 
                 await base.OnInitializedAsync(cancellationToken);
             }
@@ -109,14 +119,9 @@ namespace Traker.ViewModels
                 if (_dataService.User?.Any() == false)
                 {
                     // open the setup window
-                    await Task.Delay(2000);
+                    await Task.Delay(1000);
                     SetupViewModel setupViewModel = new SetupViewModel(_events, _windowManager, _dataService, State);
                     await _windowManager.ShowWindowAsync(setupViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
-                }
-                else
-                {
-                    DashboardViewModel dashboardViewModel = new DashboardViewModel(_events, _windowManager, _dataService, State);
-                    await ActivateItemAsync(dashboardViewModel);
                 }
             }
             catch (Exception ex)

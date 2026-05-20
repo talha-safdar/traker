@@ -95,28 +95,7 @@ WindowStyle="None"
             
             <!-- loading -->
             <Grid Grid.RowSpan="2" x:Name="OverlayGrid" Background="Transparent" Visibility="{Binding State.IsBusy, Converter={StaticResource BoolToVisCollapsed}}">
-                <Border Background="Black" Opacity="0">
-                    <Border.Style>
-                        <Style TargetType="Border">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=OverlayGrid, Path=Visibility}" Value="Visible">
-                                    <DataTrigger.EnterActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation 
-                                                    Storyboard.TargetProperty="Opacity"
-                                                    From="0"
-                                                    To="0.7"
-                                                    Duration="0:0:0.25"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </DataTrigger.EnterActions>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
-                </Border>
-
+                <Border Background="Black" Opacity="0.5" />
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -145,11 +124,11 @@ WindowStyle="None"
                         <!-- text -->
                         <Grid Grid.Row="1">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding State.LoadingMessage}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="28" />
+                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding State.LoadingMessage}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="24" />
                                 <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
-                                    <TextBlock x:Name="Dot1" Text=". " FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="28" />
-                                    <TextBlock x:Name="Dot2" Text=". " FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="28" />
-                                    <TextBlock x:Name="Dot3" Text="." FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="28" />
+                                    <TextBlock x:Name="Dot1" Text="." FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="22" />
+                                    <TextBlock x:Name="Dot2" Text="." FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="22" />
+                                    <TextBlock x:Name="Dot3" Text="." FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="22" />
                                 </StackPanel>
 
                                 <StackPanel.Triggers>
@@ -174,7 +153,6 @@ WindowStyle="None"
                                                     <DiscreteDoubleKeyFrame KeyTime="0:0:3" Value="1.0"/>
                                                     <DiscreteDoubleKeyFrame KeyTime="0:0:3.5" Value="0.0"/>
                                                 </DoubleAnimationUsingKeyFrames>
-
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </EventTrigger>
@@ -182,8 +160,7 @@ WindowStyle="None"
                             </StackPanel>
                         </Grid>
                     </Grid>
-                </StackPanel>
-                
+                </StackPanel>                
             </Grid>
         </Grid>
     </Border>

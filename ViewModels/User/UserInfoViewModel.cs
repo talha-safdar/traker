@@ -150,9 +150,9 @@ namespace Traker.ViewModels.User
             {
                 await Task.Run(async () =>
                 {
+                    await TryCloseAsync();
                     await Database.EditUser(_dataService.User[0].UserId, FullName.Trim(), Email.Trim(), Phone.Trim(), BusinessType.Trim());
                     await _events.PublishOnUIThreadAsync(new RefreshDatabase());
-                    await TryCloseAsync();
                 });
             }
             catch (Exception ex)

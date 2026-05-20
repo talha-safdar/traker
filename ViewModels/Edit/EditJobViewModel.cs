@@ -214,6 +214,7 @@ namespace Traker.ViewModels.Edit
         {
             try
             {
+                await TryCloseAsync();
                 // price
                 decimal.TryParse(Price,
                 NumberStyles.Currency,
@@ -258,7 +259,6 @@ namespace Traker.ViewModels.Edit
                                 await Database.EditJob(SelectedJob.JobId, JobTitle.Trim(), JobDescription.Trim(), Status.Trim(), priceFormatted.ToString().Trim(), AmountReceivedFormatted.ToString().Trim(), startDate, dueDate);
                                 await _events.PublishOnUIThreadAsync(new RefreshDatabase());
                             });
-                            await TryCloseAsync();
                         }
                     }
                     else
@@ -268,12 +268,7 @@ namespace Traker.ViewModels.Edit
                             await Database.EditJob(SelectedJob.JobId, JobTitle.Trim(), JobDescription.Trim(), Status.Trim(), priceFormatted.ToString().Trim(), AmountReceivedFormatted.ToString().Trim(), startDate, dueDate);
                             await _events.PublishOnUIThreadAsync(new RefreshDatabase());
                         });
-                        await TryCloseAsync();
                     }
-                }
-                else
-                {
-                    await TryCloseAsync();
                 }
             }
             catch (Exception ex)
