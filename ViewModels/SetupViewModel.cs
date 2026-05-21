@@ -151,13 +151,14 @@ namespace Traker.ViewModels
                 await Task.Run(async () =>
                 {
                     await Database.CreateUser(FullName.Trim(), Email.Trim(), Phone.Trim());
-                    await _dataService.RefreshDatabase();
+                    //await _dataService.RefreshDatabase();
                 });
 
                 // check if company or not then deal with busienss name
                 // if user table is not empty
                 // only exepcted one row
-                if (_dataService.User?.Any() == true)
+
+                if (await Database.CheckUserExists() == true)
                 {
                     // individual
                     if (BusinessType == Names.Individual)
@@ -202,7 +203,7 @@ namespace Traker.ViewModels
             {
                 await Task.Run(async () =>
                 {
-                    await Database.CreateBusiness(_dataService.User[0].UserId, BusinessName.Trim(), BusinessType.Trim(), Country.Trim(), City.Trim(), Address.Trim(), Postcode.Trim(), VatNumber.Trim(), RegistrationNumber.Trim());
+                    await Database.CreateBusiness(await Database.GetUserId(), BusinessName.Trim(), BusinessType.Trim(), Country.Trim(), City.Trim(), Address.Trim(), Postcode.Trim(), VatNumber.Trim(), RegistrationNumber.Trim());
                     await UIHelper.SwitchBetweenViews(SetupWindows, 3); // 3=bank
                 });
                 // reset the next button
@@ -232,9 +233,9 @@ namespace Traker.ViewModels
             {
                 await Task.Run(async () =>
                 {
-                    await Database.CreateBank(_dataService.User[0].UserId, BankName.Trim(), AccountName.Trim(), AccountNumber.Trim(), Sortcode.Trim(), IBAN.Trim(), BIC.Trim());
+                    await Database.CreateBank(await Database.GetUserId(), BankName.Trim(), AccountName.Trim(), AccountNumber.Trim(), Sortcode.Trim(), IBAN.Trim(), BIC.Trim());
                     await TryCloseAsync();
-                    await _dataService.RefreshDatabase(); // refresh the data service
+                    //await _dataService.RefreshDatabase(); // refresh the data service
                     await _events.PublishOnUIThreadAsync(new ShellVM { Command = Names.SetupCompleted });
                 });
             }

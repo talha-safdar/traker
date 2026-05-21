@@ -22,6 +22,7 @@ namespace Traker.ViewModels
     using Traker.Events;
     using Traker.Events.DashboardVM;
     using Traker.Helper;
+    using Traker.Models.Database;
     using Traker.Services;
     using Traker.States;
 
@@ -61,6 +62,11 @@ namespace Traker.ViewModels
 
         private decimal _subtotalAmountDb; // subTotAmount#1 used for database
         private decimal _totalAmountDb; // totAmount#1 used for database
+
+        private InvoicesModel _invoicesModel;
+        private ClientsModel _clientModel;
+        private BankModel _bankModel; 
+        private BusinessModel _businessModel; 
         #endregion
 
         public CreateInvoiceViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
@@ -88,11 +94,16 @@ namespace Traker.ViewModels
         }
 
         #region Caliburn Functions
-        protected override Task OnInitializedAsync(CancellationToken cancellationToken)
+        protected async override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
             try
             {
-                CanSubmit(); // check wether to enable/disbale submit button
+                _invoicesModel = await Database.GetInvoice(SelectedJob.JobId);
+                _clientModel = await Database.GetClient(SelectedJob.ClientId);
+                _bankModel = await Database.FetchBank();
+                _businessModel = await Database.FetchBusiness();
+
+                await CanSubmit(); // check wether to enable/disbale submit button
                 BillingName = SelectedJob.ClientName;
                 BillingAddress = SelectedJob.Address;
                 BillingCity = SelectedJob.City;
@@ -114,7 +125,7 @@ namespace Traker.ViewModels
                 }
                 Logger.LogActivity(Logger.ERROR, $"CreateInvoiceViewModel: OnInitializedAsync() FAIL\n\t{ex.Message}");
             }
-            return base.OnInitializedAsync(cancellationToken);
+            await base.OnInitializedAsync(cancellationToken);
         }
 
         protected override Task OnDeactivateAsync(bool close, CancellationToken cancellationToken)
@@ -241,15 +252,17 @@ namespace Traker.ViewModels
                     DateTime dateTimeIssued = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second);
 
                     await Database.CreateInvoice(SelectedJob.ClientId, SelectedJob.JobId, _subtotalAmountDb, result, _totalAmountDb, dueDate, BillingName.Trim(), BillingAddress.Trim(), BillingCity.Trim(), BillingPostcode.Trim(), BillingCountry.Trim(), dateTimeIssued);
-                    await _dataService.RefreshDatabase();
+                    //await _dataService.RefreshDatabase();
 
-                    var invoiceId = Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId);
+                    var invoiceId = _invoicesModel.InvoiceId;
                     var invoiceName = $"INV-{invoiceId}_{SelectedJob.ClientId}_{SelectedJob.JobId}_{dateTimeIssued.ToString("dd-MM-yyyy")}_{dateTimeIssued.ToString("HHmmss")}.pdf";
                     await Database.SetInvoiceName(invoiceId, invoiceName.Trim());
 
                     await GenerateInvoice(invoiceName);
 
+
                     await _events.PublishOnUIThreadAsync(new RefreshDatabase() { Command = "Invoice" });
+                    //await Task.Delay(5000); // 5 seconds gap to allow the creation of the file first
                     await _events.PublishOnUIThreadAsync(new DashboardVMEvents { Command = Names.ShowInvoice });
                 });
             }
@@ -329,17 +342,17 @@ namespace Traker.ViewModels
                                         billingInfo.Item().Text(text =>
                                         {
                                             text.Span("Phone Number: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                            text.Span(_dataService.Clients.FirstOrDefault(c => c.ClientId == SelectedJob.ClientId)?.PhoneNumber).FontSize(14);
+                                            text.Span(_clientModel.PhoneNumber).FontSize(14);
                                         });
                                         billingInfo.Item().Text(text =>
                                         {
                                             text.Span("Email Address: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                            text.Span(_dataService.Clients.FirstOrDefault(c => c.ClientId == SelectedJob.ClientId)?.Email).FontSize(14);
+                                            text.Span(_clientModel.Email).FontSize(14);
                                         });
                                         billingInfo.Item().Text(text =>
                                         {
                                             text.Span("Home Address: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                            text.Span(_dataService.Clients.FirstOrDefault(c => c.ClientId == SelectedJob.ClientId)?.BillingAddress).FontSize(14);
+                                            text.Span(_clientModel.BillingAddress).FontSize(14);
                                         });
                                     });
 
@@ -349,7 +362,7 @@ namespace Traker.ViewModels
                                         invoiceInfo.Item().Text(text =>
                                         {
                                             text.Span("Invoice No: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                            text.Span(_dataService.Invoices.Max(c => c.InvoiceNumber + 1).ToString()).FontSize(14);
+                                            text.Span((_invoicesModel.InvoiceNumber + 1).ToString()).FontSize(14);
                                         });
                                         invoiceInfo.Item().Text(text =>
                                         {
@@ -451,37 +464,37 @@ namespace Traker.ViewModels
                                         paymentInfo.Item().Text(text =>
                                         {
                                             text.Span("Name: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                            text.Span(_dataService.Bank[0]?.BankName).FontSize(14);
+                                            text.Span(_bankModel.BankName).FontSize(14);
                                         });
                                         paymentInfo.Item().Text(text =>
                                         {
                                             text.Span("Account Name: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                            text.Span(_dataService.Bank[0]?.AccountName).FontSize(14);
+                                            text.Span(_bankModel.AccountName).FontSize(14);
                                         });
                                         paymentInfo.Item().Text(text =>
                                         {
                                             text.Span("Account Number: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                            text.Span(_dataService.Bank[0]?.AccountNumber).FontSize(14);
+                                            text.Span(_bankModel.AccountNumber).FontSize(14);
                                         });
                                         paymentInfo.Item().Text(text =>
                                         {
                                             text.Span("Sort Code: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                            text.Span(_dataService.Bank[0]?.SortCode).FontSize(14);
+                                            text.Span(_bankModel.SortCode).FontSize(14);
                                         });
-                                        if (string.IsNullOrEmpty(_dataService.Bank[0]?.IBAN) == false)
+                                        if (string.IsNullOrEmpty(_bankModel.IBAN) == false)
                                         {
                                             paymentInfo.Item().Text(text =>
                                             {
                                                 text.Span("IBAN: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                                text.Span(_dataService.Bank[0]?.IBAN).FontSize(14);
+                                                text.Span(_bankModel.IBAN).FontSize(14);
                                             });
                                         }
-                                        if (string.IsNullOrEmpty(_dataService.Bank[0]?.BIC) == false)
+                                        if (string.IsNullOrEmpty(_bankModel.BIC) == false)
                                         {
                                             paymentInfo.Item().Text(text =>
                                             {
                                                 text.Span("BIC: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                                text.Span(_dataService.Bank[0]?.BIC).FontSize(14);
+                                                text.Span(_bankModel.BIC).FontSize(14);
                                             });
                                         }
                                         paymentInfo.Item().Text(text =>
@@ -493,8 +506,8 @@ namespace Traker.ViewModels
 
                                     section5.RelativeItem().AlignRight().Column(companyInfo =>
                                     {
-                                        companyInfo.Item().Text(_dataService.Business[0]?.BusinessName).FontSize(14);
-                                        companyInfo.Item().Text(_dataService.Business[0]?.Address).FontSize(14);
+                                        companyInfo.Item().Text(_businessModel.BusinessName).FontSize(14);
+                                        companyInfo.Item().Text(_businessModel.Address).FontSize(14);
                                     });
                                 });
 

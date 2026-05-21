@@ -11,6 +11,7 @@ using Traker.States;
 namespace Traker.Database
 {
     using Dapper;
+    using Traker.Models;
 
     /// <summary>
     /// Handle relationships between the UI and the database.
@@ -708,6 +709,720 @@ namespace Traker.Database
                     return Task.CompletedTask;
                 });
                 Logger.LogActivity(Logger.ERROR, $"Database: FetchBankTable() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // DAPPER
+        /// <summary>  
+        /// Check if user exists
+        /// </summary>
+        public async static Task<bool> CheckUserExists()
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<bool>("SELECT EXISTS(SELECT 1 FROM User);");
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Check User Exists";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: CheckUserExists() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+        
+        /// <summary>
+        /// Grabs the User Id
+        /// </summary>
+        public async static Task<int> GetUserId()
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<int>("SELECT UserId FROM User LIMIT 1;");
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Get User Id";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: GetUserId() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+        
+        /// <summary>
+        /// Fetch User Table
+        /// </summary>
+        public async static Task<UserModel> FetchUser()
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.QueryFirstAsync<UserModel>("SELECT * FROM User LIMIT 1;");
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Fetch User Details";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchUser() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Fetch Bank Table
+        /// </summary>
+        public async static Task<BankModel> FetchBank()
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.QueryFirstAsync<BankModel>("SELECT * FROM Bank WHERE UserId = @userId LIMIT 1;",
+                    new { userId = await GetUserId() });
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Fetch Bank Details";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchBank() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Fetch Business Table
+        /// </summary>
+        public async static Task<BusinessModel> FetchBusiness()
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.QueryFirstAsync<BusinessModel>("SELECT * FROM Business WHERE UserId = @userId LIMIT 1;",
+                    new { userId = await GetUserId() });
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Fetch Business Details";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchBusiness() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+       
+        /// <summary>
+        /// Get indiviudal client
+        /// </summary>
+        /// <param name="clientId"></param>
+        public async static Task<ClientsModel> GetClient(int clientId)
+        {
+            try 
+            {                
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.QueryFirstAsync<ClientsModel>("SELECT * FROM Clients WHERE ClientId = @clientId LIMIT 1;",
+                    new { clientId = clientId });
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Get Client Details";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: GetClient() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get individual ivoice
+        /// </summary>
+        /// <param name="jobId"></param>
+        public async static Task<InvoicesModel> GetInvoice(int jobId)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                //return conn.QueryFirstAsync<InvoicesModel>("SELECT * FROM Invoices WHERE JobId IN (SELECT JobId FROM Jobs WHERE ClientId IN (SELECT ClientId FROM Clients)) LIMIT 1;");
+                return await conn.QueryFirstAsync<InvoicesModel>("SELECT * FROM Invoices WHERE JobId = @jobId LIMIT 1;", 
+                    new { jobId = jobId });
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Fetch Invoice Details";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchInvoices() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get last client row number for clientId
+        /// </summary>
+        /// <returns></returns>
+        public async static Task<int> GetLastClientlastRowId()
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<int>("SELECT ClientId FROM Clients ORDER BY ClientId DESC LIMIT 1;");
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Get Last Client Row Number";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: GetLastClientRowNumber() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Fetch dashboard data
+        /// </summary>
+        public async static Task<List<DashboardModel>> FetchDashboardData()
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                string sql = @"
+                    SELECT 
+                        c.ClientId,
+                        c.Type AS ClientType,
+                        c.FullName AS ClientName,
+                        c.CompanyName,
+                        c.Email AS ClientEmail,
+                        c.PhoneNumber AS ClientPhone,
+                        c.BillingAddress AS Address,
+                        c.City,
+                        c.Postcode,
+                        c.Country,
+                        c.IsActive,
+
+                        j.JobId,
+                        j.Title AS JobTitle,
+                        j.Description AS JobDescription,
+                        j.FinalPrice AS Price,
+                        j.Status AS JobStatus,
+                        j.StartDate,
+                        j.DueDate,
+                        j.AmountReceived,
+                        j.CreatedDate,
+
+                        i.PaidDate,
+
+                        CASE 
+                            WHEN i.InvoiceId IS NOT NULL AND i.IsDeleted = 0 THEN 1 
+                            ELSE 0 
+                        END AS HasInvoice,
+
+                        COALESCE(NULLIF(i.Status, ''), 'Not invoiced') AS InvoiceStatus
+
+                    FROM Clients c
+
+                    LEFT JOIN Jobs j
+                        ON c.ClientId = j.ClientId
+
+                    LEFT JOIN Invoices i
+                        ON j.JobId = i.JobId
+                        AND i.IsDeleted = 0;
+                    ";
+                var dashboardData = await conn.QueryAsync<DashboardModel>(sql);
+                return dashboardData.ToList();
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Fetch Dashboard Data";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchDashboardData() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Fetch money information for dashboard
+        /// </summary>
+        public async static Task<MoneyInfoModel> FetchMoneyInformation()
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                //string sql = @"
+                //    SELECT 
+                //        (SELECT COUNT(*) FROM Jobs WHERE JobStatus = 'New') AS NewJobsCount,
+                //        (SELECT COUNT(*) FROM Jobs WHERE JobStatus = 'Done') AS DoneJobsCount,
+                //        (SELECT COUNT(*) FROM Jobs WHERE JobStatus = 'Active') AS ActiveJobsCount,
+                //        (SELECT COUNT(*) FROM Invoices WHERE Status = 'Invoiced' AND IsDeleted = 0) AS InvoicedJobsCount,
+                //        (SELECT IFNULL(SUM(TotalAmount), 0) FROM Invoices WHERE Status = 'Invoiced' AND IsDeleted = 0) AS GrossAmount,
+                //        (SELECT IFNULL(SUM(TotalAmount), 0) FROM Invoices WHERE Status = 'Paid' AND IsDeleted = 0) AS ReceivedAmount,
+                //        (SELECT IFNULL(SUM(TotalAmount), 0) FROM Invoices WHERE Status != 'Paid' AND IsDeleted = 0) AS OutstandingAmount,
+                //        (SELECT IFNULL(SUM(TotalAmount), 0) FROM Invoices WHERE DueDate < DATE('now') AND Status != 'Paid' AND IsDeleted = 0) AS OverdueAmount
+                //";
+                string sql = @"
+                    SELECT
+                        COUNT(CASE WHEN j.Status = @New THEN 1 END) AS NewJobsCount,
+                        COUNT(CASE WHEN j.Status = @Done THEN 1 END) AS DoneJobsCount,
+                        COUNT(CASE WHEN j.Status = @Active THEN 1 END) AS ActiveJobsCount,
+
+                        COUNT(CASE 
+                            WHEN j.Status = @Invoiced
+                            AND EXISTS (
+                                SELECT 1
+                                FROM Invoices i
+                                WHERE i.JobId = j.JobId
+                                  AND i.Status <> @Paid
+                            )
+                            THEN 1 
+                        END) AS InvoicedJobsCount,
+
+                        COALESCE(SUM(j.FinalPrice), 0) AS GrossAmount,
+
+                        COALESCE(SUM(CASE 
+                            WHEN EXISTS (
+                                SELECT 1
+                                FROM Invoices i
+                                WHERE i.JobId = j.JobId
+                                  AND i.Status = @Paid
+                            )
+                            THEN j.FinalPrice ELSE 0 
+                        END), 0) AS ReceivedAmount,
+
+                        COALESCE(SUM(CASE 
+                            WHEN j.Status = @Done
+                              OR (
+                                  j.Status = @Invoiced
+                                  AND EXISTS (
+                                      SELECT 1
+                                      FROM Invoices i
+                                      WHERE i.JobId = j.JobId
+                                        AND i.Status <> @Paid
+                                  )
+                              )
+                              OR EXISTS (
+                                  SELECT 1
+                                  FROM Invoices i
+                                  WHERE i.JobId = j.JobId
+                                    AND i.DueDate < @Today
+                                    AND i.Status = @Overdue
+                              )
+                            THEN j.FinalPrice ELSE 0 
+                        END), 0) AS OutstandingAmount,
+
+                        COALESCE(SUM(CASE 
+                            WHEN j.Status = @Invoiced
+                            AND EXISTS (
+                                SELECT 1
+                                FROM Invoices i
+                                WHERE i.JobId = j.JobId
+                                  AND i.DueDate < @Today
+                                  AND i.Status <> @Paid
+                            )
+                            THEN j.FinalPrice ELSE 0 
+                        END), 0) AS OverdueAmount
+
+                    FROM Jobs j;
+                ";
+
+                var moneyInfo = await conn.QueryFirstAsync<MoneyInfoModel>(
+                    sql,
+                    new
+                    {
+                        New = "New",
+                        Done = "Done",
+                        Active = "Active",
+                        Invoiced = "Invoiced",
+                        Paid = "Paid",
+                        Overdue = "Overdue",
+                        Today = DateTime.Today.ToString("yyyy-MM-dd")
+                    });
+
+                return moneyInfo;
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Fetch Money Information";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchMoneyInformation() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+        
+        public async static Task<int> GetJobsCount()
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Jobs;");
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Get Jobs Count";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: GetJobsCount() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+        
+        public async static Task<bool> CheckIfJobHasInvoice(int jobId)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<bool>("SELECT EXISTS(SELECT 1 FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0);",
+                    new { jobId = jobId });
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Check If Job Has Invoice";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: CheckIfJobHasInvoice() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+        
+        public async static Task<int> GetInvoiceIdByJobId(int jobId)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<int>("SELECT InvoiceId FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0;",
+                    new { jobId = jobId });
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Get Invoice Id By Job Id";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: GetInvoiceIdByJobId() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+        
+        public async static Task<string> GetInvoiceStatusByJobId(int jobId)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<string>("SELECT Status FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0;",
+                    new { jobId = jobId });
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Get Invoice Status By Job Id";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: GetInvoiceStatusByJobId() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+        
+        public async static Task<DateTime> GetInvoiceIssueDateByJobId(int jobId)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<DateTime>("SELECT IssueDate FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0;",
+                    new { jobId = jobId });
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Get Invoice Issue Date By Job Id";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: GetInvoiceIssueDateByJobId() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+        
+        public async static Task<string> GetInvoiceNameByJobId(int jobId)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<string>("SELECT InvoiceName FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0;",
+                    new { jobId = jobId });
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Get Invoice Name By Job Id";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: GetInvoiceNameByJobId() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+        
+        public async static Task<List<JobsModel>> getJobsByClientId(int clientId)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return (await conn.QueryAsync<JobsModel>("SELECT * FROM Jobs WHERE ClientId = @clientId;",
+                    new { clientId = clientId })).ToList();
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Get Jobs By Client Id";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: GetJobsByClientId() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+        
+        public async static Task<bool> CheckIfInvoicedByJobId(int jobId)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<bool>("SELECT EXISTS(SELECT 1 FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0);",
+                    new { jobId = jobId });
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Check If Invoiced By Job Id";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: CheckIfInvoicedByJobId() FAIL\n\t{ex.Message}");
                 throw;
             }
         }

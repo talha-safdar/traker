@@ -547,16 +547,44 @@
                     </Border.BorderBrush>
                     <Grid>
 
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10,20,10,10" Padding="0,0,10,0" CanContentScroll="True">
-                        <ItemsControl ItemsSource="{Binding DashboardData}"
-                                      VirtualizingPanel.IsVirtualizing="True"
-                                      VirtualizingPanel.VirtualizationMode="Recycling">
-                                <ItemsControl.ItemsPanel>
+                        <!--<ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10,20,10,10" Padding="0,0,10,0" CanContentScroll="True">-->
+                            <ListBox  ItemsSource="{Binding DashboardData}"
+                                      Background="Transparent"
+                                               BorderThickness="0"
+         Padding="0"
+         HorizontalContentAlignment="Stretch"
+         ScrollViewer.CanContentScroll="True"
+         VirtualizingPanel.IsVirtualizing="True"
+         VirtualizingPanel.VirtualizationMode="Recycling">
+                                <ListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <VirtualizingStackPanel/>
                                     </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
+                                </ListBox.ItemsPanel>
+
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Margin" Value="0,0,0,10"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <ContentPresenter/>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+
+
+
+                            <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Border 
                                         ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="2000" 
@@ -571,14 +599,14 @@
                                                             [Event MouseRightButtonUp] = [Action OpenContextMenu($dataContext)];"
                                             Cursor="Hand"
                                         MouseLeftButtonDown="EditJob">
-                                        <Border.BorderBrush>
+                                        <!--<Border.BorderBrush>
                                             <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                <!-- The "Rim Light" on the top edge -->
+                                                --><!-- The "Rim Light" on the top edge --><!--
                                                 <GradientStop Color="#40FFFFFF" Offset="0" />
-                                                <!-- Fades to transparent so the bottom/sides stay dark -->
+                                                --><!-- Fades to transparent so the bottom/sides stay dark --><!--
                                                 <GradientStop Color="Transparent" Offset="0.2" />
                                             </LinearGradientBrush>
-                                        </Border.BorderBrush>
+                                        </Border.BorderBrush>-->
                                         <Border.ToolTip>
                                             <ToolTip Style="{StaticResource DarkToolTip}">
                                                 <TextBlock>
@@ -857,9 +885,9 @@
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </ScrollViewer>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    <!--</ScrollViewer>-->
 
                         <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="5000" Visibility="{Binding EnableBtns, Converter={StaticResource BoolToVisCollapsedInverse}}" x:Name="AddNewClient" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" SnapsToDevicePixels="True" BorderThickness="1" Background="#1E1E1E" VerticalAlignment="Center" HorizontalAlignment="Center" CornerRadius="30" Height="60" Width="240">
                             <Border.ToolTip>

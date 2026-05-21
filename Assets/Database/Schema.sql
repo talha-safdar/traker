@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS Invoices (
     TotalAmount TEXT,
     IssueDate DATETIME,
     DueDate DATETIME,
-    BillingName TEXT,
+    Subtotal TEXT,
     BillingAddress TEXT,
     BillingCity TEXT,
     BillingPostcode TEXT,

@@ -207,7 +207,7 @@ namespace Traker.ViewModels.Add
             try
             {
                 await Task.Run(async() => {
-                    //await TryCloseAsync();
+                    await TryCloseAsync();
                     var dueDate = DateOnly.MinValue;
                     decimal amount = 0;
 
@@ -239,10 +239,10 @@ namespace Traker.ViewModels.Add
                     }
 
                     // refresh database
-                    await _dataService.RefreshDatabase();
+                    //await _dataService.RefreshDatabase();
 
                     // create Client folder in file store and get its name
-                    string clientFolderName = await FileStore.CreateClientFolder(_dataService.Clients.OrderByDescending(c => c.ClientId).First().ClientId, BusinessName.Trim());
+                    string clientFolderName = await FileStore.CreateClientFolder(await Database.GetLastClientlastRowId(), BusinessName.Trim());
 
                     // create Job folder in file store and get its name
                     string jobFolderName = await FileStore.CreateJobFolder(clientJobIds[0], clientJobIds[1], BusinessName.Trim(), JobTitle.Trim());

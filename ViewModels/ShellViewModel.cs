@@ -80,13 +80,13 @@ namespace Traker.ViewModels
 
                 State.SplashText = "Initialising database";
                 await Task.Delay(1000);
-                await _dataService.FetchDatabaseBG(); // it feteches database
+                //await _dataService.FetchDatabaseBG(); // it feteches database
 
                 State.SplashText = "Populating dashboard";
                 await Task.Delay(1000);
                 await _dashboardViewModel.RefreshDatabase(); // Get data ready for dashboard
 
-                if (_dataService.User?.Any() == true)
+                if (await Database.CheckUserExists() == true)
                 {
                     await ActivateItemAsync(_dashboardViewModel);
                 }
@@ -116,7 +116,7 @@ namespace Traker.ViewModels
                 // check if user table is empty
                 // if so, it means it's a fresh start
                 // else ignore
-                if (_dataService.User?.Any() == false)
+                if (await Database.CheckUserExists() == false)
                 {
                     // open the setup window
                     await Task.Delay(1000);

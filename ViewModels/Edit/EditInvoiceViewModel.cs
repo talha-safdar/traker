@@ -67,18 +67,18 @@ namespace Traker.ViewModels.Edit
         }
 
         #region Caliburn Functions
-        protected override Task OnInitializedAsync(CancellationToken cancellationToken)
+        protected async override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
             try
             {
                 // set button text
-                if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Invoiced || _dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Overdue)
+                if (await Database.GetInvoiceStatusByJobId(SelectedJob.JobId) == Names.Invoiced || await Database.GetInvoiceStatusByJobId(SelectedJob.JobId) == Names.Overdue)
                 {
                     ButtonText = "✔ Mark as Paid";
                     ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#16A34A")!;
                     ButtonHover = (Brush)new BrushConverter().ConvertFrom("#15803D")!;
                 }
-                else if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Paid)
+                else if (await Database.GetInvoiceStatusByJobId(SelectedJob.JobId) == Names.Paid)
                 {
                     ButtonText = "⏳ Mark as Not Paid";
                     ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#F59E0B")!;
@@ -91,13 +91,13 @@ namespace Traker.ViewModels.Edit
                 {
                     _state.messageBoxVM.Symbol = 2;
                     _state.messageBoxVM.HeadMessage = "Initialise Form";
-                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.Message = $"Edit Invoice\n\n{ex.Message}";
                     _state.messageBoxVM.ButtonStyle = Names.OK;
                     _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"EditInvoiceViewModel: OnInitializedAsync() FAIL\n\t{ex.Message}");
             }
-            return base.OnInitializedAsync(cancellationToken);
+            await base.OnInitializedAsync(cancellationToken);
         }
 
         protected override async void OnViewLoaded(object view)
@@ -107,10 +107,10 @@ namespace Traker.ViewModels.Edit
             try
             {
                 _invoicePath = await FileStore.GetInvoiceFilePath(
-                Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId),
+                Convert.ToInt32(await Database.GetInvoiceIdByJobId(SelectedJob.JobId)),
                 SelectedJob.ClientId,
-                Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).JobId),
-                _dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).IssueDate,
+                Convert.ToInt32(SelectedJob.JobId),
+                await Database.GetInvoiceIssueDateByJobId(SelectedJob.JobId),
                 SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName);
 
                 // if no file found
@@ -121,7 +121,7 @@ namespace Traker.ViewModels.Edit
                     {
                         _state.messageBoxVM.Symbol = 1;
                         _state.messageBoxVM.HeadMessage = "View Form";
-                        _state.messageBoxVM.Message = $"Could not locate the invoice file\n\n{_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceName}";
+                        _state.messageBoxVM.Message = $"Could not locate the invoice file\n\n{await Database.GetInvoiceNameByJobId(SelectedJob.JobId)}";
                         _state.messageBoxVM.ButtonStyle = Names.OK;
                         _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
@@ -135,7 +135,6 @@ namespace Traker.ViewModels.Edit
 
                 string exeDir = AppDomain.CurrentDomain.BaseDirectory;
                 string pdfPath = _invoicePath;
-                Debug.WriteLine(pdfPath);
                 await browser.EnsureCoreWebView2Async();
                 browser.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
                 browser.CoreWebView2.Settings.IsStatusBarEnabled = false;
@@ -202,26 +201,26 @@ namespace Traker.ViewModels.Edit
             {
                 await TryCloseAsync();
                 // Invoice status: Created, Paid
-                if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Invoiced || _dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Overdue)
+                if (await Database.GetInvoiceStatusByJobId(SelectedJob.JobId) == Names.Invoiced || await Database.GetInvoiceStatusByJobId(SelectedJob.JobId) == Names.Overdue)
                 {
                     ButtonText = "✔ Paid";
                     ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#16A34A")!;
                     ButtonHover = (Brush)new BrushConverter().ConvertFrom("#15803D")!;
 
-                    await Database.SetInvoiceStatus(Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), "Paid", DateOnly.FromDateTime(DateTime.Now));
+                    await Database.SetInvoiceStatus(Convert.ToInt32(await Database.GetInvoiceIdByJobId(SelectedJob.JobId)), "Paid", DateOnly.FromDateTime(DateTime.Now));
                     await _events.PublishOnUIThreadAsync(new RefreshDatabase());
 
                     ButtonText = "⏳ Marks as Not Paid";
                     ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#F59E0B")!;
                     ButtonHover = (Brush)new BrushConverter().ConvertFrom("#D97706")!;
                 }
-                else if (_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).Status == Names.Paid)
+                else if (await Database.GetInvoiceStatusByJobId(SelectedJob.JobId) == Names.Paid)
                 {
                     ButtonText = "⏳ Not Paid";
                     ButtonBackground = (Brush)new BrushConverter().ConvertFrom("#F59E0B")!;
                     ButtonHover = (Brush)new BrushConverter().ConvertFrom("#D97706")!;
 
-                    await Database.SetInvoiceStatus(Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), "Invoiced", null);
+                    await Database.SetInvoiceStatus(Convert.ToInt32(await Database.GetInvoiceIdByJobId(SelectedJob.JobId)), "Invoiced", null);
                     await _events.PublishOnUIThreadAsync(new RefreshDatabase());
 
                     ButtonText = "✔ Mark as Paid";
@@ -243,7 +242,7 @@ namespace Traker.ViewModels.Edit
             }
         }
 
-        public Task DownloadInvoice()
+        public async Task DownloadInvoice()
         {
             try
             {
@@ -251,7 +250,7 @@ namespace Traker.ViewModels.Edit
                 SaveFileDialog saveFileDialog = new SaveFileDialog
                 {
                     Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",
-                    FileName = $"Invoice_{FileStore.MakeSafeFolderName(SelectedJob.ClientName)}_{_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).IssueDate.ToString("dd-MM-yyyy")}_{_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).IssueDate.ToString("HHmmss")}.pdf", // Default name
+                    FileName = $"Invoice_{FileStore.MakeSafeFolderName(SelectedJob.ClientName)}_{(await Database.GetInvoiceIssueDateByJobId(SelectedJob.JobId)).ToString("dd-MM-yyyy")}_{(await Database.GetInvoiceIssueDateByJobId(SelectedJob.JobId)).ToString("HHmmss")}.pdf", // Default name
                     InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
                 };
 
@@ -303,7 +302,6 @@ namespace Traker.ViewModels.Edit
                 }
                 Logger.LogActivity(Logger.ERROR, $"EditInvoiceViewModel: DownloadInvoice() FAIL\n\t{ex.Message}");
             }
-            return Task.CompletedTask;
         }
 
         public async Task DeleteInvoice()
@@ -324,7 +322,7 @@ namespace Traker.ViewModels.Edit
                 {
                     await Task.Run(async() =>
                     {
-                        await Database.DeleteInvoice(Convert.ToInt32(_dataService.Invoices.First(i => i.JobId == SelectedJob.JobId).InvoiceId), SelectedJob.JobId);
+                        await Database.DeleteInvoice(Convert.ToInt32(await Database.GetInvoiceIdByJobId(SelectedJob.JobId)), SelectedJob.JobId);
                         await _events.PublishOnUIThreadAsync(new RefreshDatabase());
                         await TryCloseAsync();
                     });

@@ -9,12 +9,14 @@ using System.Windows;
 using System.Windows.Input;
 using Traker.Helper;
 using Traker.Models;
+using Traker.Models.Database;
 using Traker.Services;
 using Traker.States;
 using Traker.ViewModels.Edit;
 
 namespace Traker.ViewModels
 {
+    using Database;
     public class JobsListViewModel : Screen
     {
         #region Caliburn Variables
@@ -55,15 +57,16 @@ namespace Traker.ViewModels
         }
 
         #region Caliburn Functions
-        protected override Task OnInitializedAsync(CancellationToken cancellationToken)
+        protected override async Task OnInitializedAsync(CancellationToken cancellationToken)
         {
             try
             {
-                var jobsForClient = _dataService.Jobs.Where(j => j.ClientId == SelectedJob.ClientId).ToList();
+                List<JobsModel> jobsModel = await Database.getJobsByClientId(SelectedJob.ClientId);
+
                 _businessName = SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName;
                 _clientType = SelectedJob.TypeIcon;
 
-                foreach (var job in jobsForClient)
+                foreach (var job in jobsModel)
                 {
                     DashboardModel currentJob = new DashboardModel
                     {
@@ -89,8 +92,8 @@ namespace Traker.ViewModels
                         StartDate = job.StartDate,
                         DueDate = job.DueDate,
 
-                        HasInvoice = _dataService.Invoices.Any(i => i.JobId == job.JobId && i.IsDeleted == false),
-                        InvoiceStatus = _dataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? Names.NotInvoiced
+                        HasInvoice = await Database.CheckIfInvoicedByJobId(job.JobId),
+                        InvoiceStatus = await Database.GetInvoiceStatusByJobId(job.JobId) ?? Names.NotInvoiced
                     };
                     _jobsList.Add(currentJob);
                 }
@@ -107,7 +110,7 @@ namespace Traker.ViewModels
                 }
                 Logger.LogActivity(Logger.ERROR, $"JobsListViewModel: OnInitializedAsync() FAIL\n\t{ex.Message}");
             }
-            return base.OnInitializedAsync(cancellationToken);
+            await base.OnInitializedAsync(cancellationToken);
         }
         #endregion
 

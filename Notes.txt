@@ -86,9 +86,12 @@ V1:
 - remove throw in database catch
 #- fix threading for loading
 #- job context menu match the colours for active and done with the pastel and do something about the side panel job status colouring
-#- create invoice window is squared at the tbottom
-#- check warnings in error list
+#- create invoice window is squared at the bottom
 #- thread sort/filter
+#- fix the race condition between create invoice, save to database and read file
+#- check warnings in error list
+#- remove local database and use purely SQL
+#- ask about wewther i should use Task<List<Stuff> in database or keep List<Stuff>
 
 V2:
 #- the selected not invoiced then confirmation box yes/no. that row with invoice details will be saved in a e.g. "rubbish" folder in txt. 

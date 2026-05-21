@@ -14,6 +14,7 @@ namespace Traker.ViewModels.User
     using System.Windows;
     using System.Windows.Input;
     using Traker.Events.DashboardVM;
+    using Traker.Models.Database;
     using Traker.States;
 
     public class BusinessInfoViewModel : Screen
@@ -38,6 +39,9 @@ namespace Traker.ViewModels.User
         private string _vatNumber;
         private string _registrationNumber;
         private double _businessNameOpacity; // for UI
+
+        private BusinessModel _businessModel;
+        private UserModel _userModel;
         #endregion
 
         public BusinessInfoViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
@@ -60,31 +64,34 @@ namespace Traker.ViewModels.User
         }
 
         #region Caliburn Functions
-        protected override Task OnInitializedAsync(CancellationToken cancellationToken)
+        protected override async Task OnInitializedAsync(CancellationToken cancellationToken)
         {
             try
             {
-                if (_dataService.Business[0]?.BusinessType == Names.Individual)
+                _businessModel = await Database.FetchBusiness();
+                _userModel = await Database.FetchUser();
+
+                if (_businessModel.BusinessType == Names.Individual)
                 {
-                    BusinessName = _dataService.User[0].FullName;
+                    BusinessName = _userModel.FullName;
                     BusinessNameOpacity = 0.5;
                     CompanyView = false;
                     IndividualView = true;
                 }
-                else if (_dataService.Business[0]?.BusinessType == Names.Company)
+                else if (_businessModel.BusinessType == Names.Company)
                 {
-                    BusinessName = _dataService.Business.First(b => b.UserId == _dataService.User[0].UserId).BusinessName;
+                    BusinessName = _businessModel.BusinessName;
                     BusinessNameOpacity = 1.0;
                     IndividualView = false;
                     CompanyView = true;
                 }
 
-                Address = _dataService.Business.First(b => b.UserId == _dataService.User[0].UserId).Address;
-                City = _dataService.Business.First(b => b.UserId == _dataService.User[0].UserId).City;
-                Postcode = _dataService.Business.First(b => b.UserId == _dataService.User[0].UserId).Postcode;
-                Country = _dataService.Business.First(b => b.UserId == _dataService.User[0].UserId).Country;
-                VatNumber = _dataService.Business.First(b => b.UserId == _dataService.User[0].UserId).VatNumber;
-                RegistrationNumber = _dataService.Business.First(b => b.UserId == _dataService.User[0].UserId).RegistrationNumber;
+                Address = _businessModel.Address;
+                City = _businessModel.City;
+                Postcode = _businessModel.Postcode;
+                Country = _businessModel.Country;
+                VatNumber = _businessModel.VatNumber;
+                RegistrationNumber = _businessModel.RegistrationNumber;
             }
             catch (Exception ex)
             {
@@ -98,7 +105,7 @@ namespace Traker.ViewModels.User
                 }
                 Logger.LogActivity(Logger.ERROR, $"BankInfoViewModel: OnInitializedAsync() FAIL\n\t{ex.Message}");
             }
-            return base.OnInitializedAsync(cancellationToken);
+            await base.OnInitializedAsync(cancellationToken);
         }
         #endregion
 
@@ -109,12 +116,12 @@ namespace Traker.ViewModels.User
             {
                 if (e.Key == Key.Escape)
                 {
-                    if (_dataService.Business[0].Address != Address ||
-                        _dataService.Business[0].City != City ||
-                        _dataService.Business[0].Postcode != Postcode ||
-                        _dataService.Business[0].Country != Country ||
-                        _dataService.Business[0].VatNumber != VatNumber ||
-                        _dataService.Business[0].RegistrationNumber != RegistrationNumber
+                    if (_businessModel.Address != Address ||
+                        _businessModel.City != City ||
+                        _businessModel.Postcode != Postcode ||
+                        _businessModel.Country != Country ||
+                        _businessModel.VatNumber != VatNumber ||
+                        _businessModel.RegistrationNumber != RegistrationNumber
                         )
                     {
                         if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
@@ -159,7 +166,7 @@ namespace Traker.ViewModels.User
                 await Task.Run(async() => 
                 {
                     await TryCloseAsync();
-                    await Database.EditBusiness(_dataService.User[0].UserId, BusinessName.Trim(), Country.Trim(), City.Trim(), Address.Trim(), Postcode.Trim(), VatNumber.Trim(), RegistrationNumber.Trim());
+                    await Database.EditBusiness(_userModel.UserId, BusinessName.Trim(), Country.Trim(), City.Trim(), Address.Trim(), Postcode.Trim(), VatNumber.Trim(), RegistrationNumber.Trim());
                     await _events.PublishOnUIThreadAsync(new RefreshDatabase());
                 });
             }
@@ -181,12 +188,12 @@ namespace Traker.ViewModels.User
         {
             try
             {
-                if (_dataService.Business[0].Address != Address ||
-                    _dataService.Business[0].City != City ||
-                    _dataService.Business[0].Postcode != Postcode ||
-                    _dataService.Business[0].Country != Country ||
-                    _dataService.Business[0].VatNumber != VatNumber ||
-                    _dataService.Business[0].RegistrationNumber != RegistrationNumber
+                if (_businessModel.Address != Address ||
+                    _businessModel.City != City ||
+                    _businessModel.Postcode != Postcode ||
+                    _businessModel.Country != Country ||
+                    _businessModel.VatNumber != VatNumber ||
+                    _businessModel.RegistrationNumber != RegistrationNumber
                     )
                 {
                     if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)

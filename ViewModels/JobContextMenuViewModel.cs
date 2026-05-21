@@ -109,7 +109,7 @@ namespace Traker.ViewModels
                     await TryCloseAsync();
                     await Database.SetJobStatus(status, SelectedJob.ClientId, SelectedJob.JobId);
                     await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
-                    await _dataService.RefreshDatabase();
+                    //await _dataService.RefreshDatabase();
                 });
             }
             catch (Exception ex)
@@ -135,7 +135,7 @@ namespace Traker.ViewModels
                     await TryCloseAsync();
                     // get list of jobs under the client ID
                     List<JobsModel> jobDetails = new List<JobsModel>();
-                    jobDetails = _dataService.Jobs.Where(j => j.ClientId == SelectedJob.ClientId).ToList();
+                    jobDetails = await Database.getJobsByClientId(SelectedJob.ClientId);
                     await FileStore.LocateJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName, SelectedJob.JobTitle);
                 });
             }

@@ -8,6 +8,7 @@ namespace Traker.ViewModels.User
     using System.Windows.Input;
     using Traker.Events.DashboardVM;
     using Traker.Helper;
+    using Traker.Models.Database;
     using Traker.States;
 
     public class BankInfoViewModel : Screen
@@ -26,6 +27,8 @@ namespace Traker.ViewModels.User
         private string _sortcode;
         private string _IBAN;
         private string _BIC;
+
+        private BankModel _bankModel;
         #endregion
 
         public BankInfoViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
@@ -44,16 +47,18 @@ namespace Traker.ViewModels.User
         }
 
         #region Caliburn Functions
-        protected override Task OnInitializedAsync(CancellationToken cancellationToken)
+        protected override async Task OnInitializedAsync(CancellationToken cancellationToken)
         {
             try
             {
-                BankName = _dataService.Bank.First(b => b.UserId == _dataService.User[0].UserId).BankName;
-                AccountName = _dataService.Bank.First(b => b.UserId == _dataService.User[0].UserId).AccountName;
-                AccountNumber = _dataService.Bank.First(b => b.UserId == _dataService.User[0].UserId).AccountNumber;
-                Sortcode = _dataService.Bank.First(b => b.UserId == _dataService.User[0].UserId).SortCode;
-                IBAN = _dataService.Bank.First(b => b.UserId == _dataService.User[0].UserId).IBAN;
-                BIC = _dataService.Bank.First(b => b.UserId == _dataService.User[0].UserId).BIC;
+                _bankModel = await Database.FetchBank();
+
+                BankName = _bankModel.BankName;
+                AccountName = _bankModel.AccountName;
+                AccountNumber = _bankModel.AccountNumber;
+                Sortcode = _bankModel.SortCode;
+                IBAN = _bankModel.IBAN;
+                BIC = _bankModel.BIC;
             }
             catch (Exception ex)
             {
@@ -67,7 +72,7 @@ namespace Traker.ViewModels.User
                 }
                 Logger.LogActivity(Logger.ERROR, $"BankInfoViewModel: OnInitializedAsync() FAIL\n\t{ex.Message}");
             }
-            return base.OnInitializedAsync(cancellationToken);
+            await base.OnInitializedAsync(cancellationToken);
         }
 
         protected override Task OnDeactivateAsync(bool close, CancellationToken cancellationToken)
@@ -84,12 +89,12 @@ namespace Traker.ViewModels.User
             {
                 if (e.Key == Key.Escape)
                 {
-                    if (_dataService.Bank[0].BankName != BankName ||
-                        _dataService.Bank[0].AccountName != AccountName ||
-                        _dataService.Bank[0].AccountNumber != AccountNumber ||
-                        _dataService.Bank[0].SortCode != Sortcode ||
-                        _dataService.Bank[0].IBAN != IBAN ||
-                        _dataService.Bank[0].BIC != BIC
+                    if (_bankModel.BankName != BankName ||
+                        _bankModel.AccountName != AccountName ||
+                        _bankModel.AccountNumber != AccountNumber ||
+                        _bankModel.SortCode != Sortcode ||
+                        _bankModel.IBAN != IBAN ||
+                        _bankModel.BIC != BIC
                         )
                     {
                         if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
@@ -134,7 +139,7 @@ namespace Traker.ViewModels.User
                 await Task.Run(async() =>
                 {
                     await TryCloseAsync();
-                    await Database.EditBank(_dataService.User[0].UserId, BankName.Trim(), AccountName.Trim(), AccountNumber.Trim(), Sortcode.Trim(), IBAN.Trim(), BIC.Trim());
+                    await Database.EditBank(await Database.GetUserId(), BankName.Trim(), AccountName.Trim(), AccountNumber.Trim(), Sortcode.Trim(), IBAN.Trim(), BIC.Trim());
                     await _events.PublishOnUIThreadAsync(new RefreshDatabase());
                 });
             }
@@ -156,12 +161,12 @@ namespace Traker.ViewModels.User
         {
             try
             {
-                if (_dataService.Bank[0].BankName != BankName ||
-                    _dataService.Bank[0].AccountName != AccountName ||
-                    _dataService.Bank[0].AccountNumber != AccountNumber ||
-                    _dataService.Bank[0].SortCode != Sortcode ||
-                    _dataService.Bank[0].IBAN != IBAN ||
-                    _dataService.Bank[0].BIC != BIC
+                if (_bankModel.BankName != BankName ||
+                    _bankModel.AccountName != AccountName ||
+                    _bankModel.AccountNumber != AccountNumber ||
+                    _bankModel.SortCode != Sortcode ||
+                    _bankModel.IBAN != IBAN ||
+                    _bankModel.BIC != BIC
                     )
                 {
                     if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)

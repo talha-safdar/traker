@@ -1,9 +1,11 @@
-﻿using QuestPDF.Infrastructure;
+﻿using Dapper;
+using QuestPDF.Infrastructure;
 using System.Configuration;
 using System.Data;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Markup;
+using Traker.Handler;
 using Traker.Services;
 
 namespace Traker
@@ -17,6 +19,8 @@ namespace Traker
         {
             try
             {
+                SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
+
                 QuestPDF.Settings.License = LicenseType.Community;
                 base.OnStartup(e);
 

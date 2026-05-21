@@ -11,6 +11,7 @@ namespace Traker.ViewModels.User
     using System.Windows.Media;
     using Traker.Events.DashboardVM;
     using Traker.Helper;
+    using Traker.Models.Database;
     using Traker.States;
 
     public class UserInfoViewModel : Screen
@@ -38,6 +39,9 @@ namespace Traker.ViewModels.User
         private string _inactiveButonColour = "#1A1A1A";
         private string _activeTextColour = "#FFFFFF";
         private string _inactiveTextColour = "#888888";
+
+        private UserModel _userModel;
+        private BusinessModel _businessModel;
         #endregion
 
         public UserInfoViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
@@ -57,14 +61,17 @@ namespace Traker.ViewModels.User
         }
 
         #region Caliburn Functions
-        protected override Task OnInitializedAsync(CancellationToken cancellationToken)
+        protected async override Task OnInitializedAsync(CancellationToken cancellationToken)
         {
             try
             {
-                FullName = _dataService.User[0].FullName;
-                Email = _dataService.User[0].Email;
-                Phone = _dataService.User[0].Phone;
-                BusinessType = _dataService.Business.First(b => b.UserId == _dataService.User[0].UserId).BusinessType;
+                _userModel = await Database.FetchUser();
+                _businessModel = await Database.FetchBusiness();
+
+                FullName = _userModel.FullName;
+                Email = _userModel.Email;
+                Phone = _userModel.Phone;
+                BusinessType = _businessModel.BusinessType;
 
                 // 0=individual, 1=company
                 if (BusinessType == Names.Individual)
@@ -92,7 +99,7 @@ namespace Traker.ViewModels.User
                 }
                 Logger.LogActivity(Logger.ERROR, $"UserInfoViewModel: OnInitializedAsync() FAIL\n\t{ex.Message}");
             }
-            return base.OnInitializedAsync(cancellationToken);
+            await base.OnInitializedAsync(cancellationToken);
         }
         #endregion
 
@@ -103,10 +110,10 @@ namespace Traker.ViewModels.User
             {
                 if (e.Key == Key.Escape)
                 {
-                    if (_dataService.User[0].FullName != FullName ||
-                        _dataService.User[0].Email != Email ||
-                        _dataService.User[0].Phone != Phone ||
-                        _dataService.Business.First(b => b.UserId == _dataService.User[0].UserId).BusinessType != BusinessType
+                    if (_userModel.FullName != FullName ||
+                        _userModel.Email != Email ||
+                        _userModel.Phone != Phone ||
+                        _businessModel.BusinessType != BusinessType
                         )
                     {
                         if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
@@ -151,7 +158,7 @@ namespace Traker.ViewModels.User
                 await Task.Run(async () =>
                 {
                     await TryCloseAsync();
-                    await Database.EditUser(_dataService.User[0].UserId, FullName.Trim(), Email.Trim(), Phone.Trim(), BusinessType.Trim());
+                    await Database.EditUser(_userModel.UserId, FullName.Trim(), Email.Trim(), Phone.Trim(), BusinessType.Trim());
                     await _events.PublishOnUIThreadAsync(new RefreshDatabase());
                 });
             }
@@ -206,10 +213,10 @@ namespace Traker.ViewModels.User
         {
             try
             {
-                if (_dataService.User[0].FullName != FullName ||
-                    _dataService.User[0].Email != Email ||
-                    _dataService.User[0].Phone != Phone ||
-                    _dataService.Business.First(b => b.UserId == _dataService.User[0].UserId).BusinessType != BusinessType
+                if (_userModel.FullName != FullName ||
+                    _userModel.Email != Email ||
+                    _userModel.Phone != Phone ||
+                    _businessModel.BusinessType != BusinessType
                     )
                 {
                     if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)

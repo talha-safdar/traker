@@ -124,7 +124,7 @@ WindowStyle="None"
                         <!-- text -->
                         <Grid Grid.Row="1">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding State.LoadingMessage}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="24" />
+                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding State.LoadingMessage}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="22" />
                                 <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
                                     <TextBlock x:Name="Dot1" Text="." FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="22" />
                                     <TextBlock x:Name="Dot2" Text="." FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" conv:TextBlockSpacer.LetterSpacing="5.0" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="22" />

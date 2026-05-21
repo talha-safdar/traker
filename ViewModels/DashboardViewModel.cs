@@ -13,6 +13,7 @@ namespace Traker.ViewModels
     using Traker.Events.DashboardVM;
     using Traker.Helper;
     using Traker.Models;
+    using Traker.Models.Database;
     using Traker.Services;
     using Traker.States;
     using Traker.ViewModels.Add;
@@ -337,14 +338,14 @@ namespace Traker.ViewModels
             {
                  // if already invoiced
                  // double-click
-                if (jobSelected != null && DataService.Invoices.Any(i => i.JobId == jobSelected.JobId && i.IsDeleted == false) == true)
+                if (jobSelected != null && await Database.CheckIfJobHasInvoice(jobSelected.JobId) == true)
                 {
                     State.EditInvoiceViewModel = new EditInvoiceViewModel(_events, _windowManager, DataService, State);
                     State.EditInvoiceViewModel.SelectedJob = jobSelected;
                     await _windowManager.ShowDialogAsync(State.EditInvoiceViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
                 }
                 // icon click
-                else if (SelectedJob != null && DataService.Invoices.Any(i => i.JobId == SelectedJob.JobId && i.IsDeleted == false) == true)
+                else if (SelectedJob != null && await Database.CheckIfJobHasInvoice(SelectedJob.JobId) == true)
                 {
                     State.EditInvoiceViewModel = new EditInvoiceViewModel(_events, _windowManager, DataService, State);
                     State.EditInvoiceViewModel.SelectedJob = SelectedJob;
@@ -547,12 +548,13 @@ namespace Traker.ViewModels
             {
                 await PauseLoopBG(); // pause loop (overdue check)
 
-                await DataService.RefreshDatabase(); // has only background functions
+                //await DataService.RefreshDatabase(); // has only background functions
 
                 var data = await SetupDashboardDataBG(); // get new data
 
                 await Task.Yield(); // make it rest one frame
 
+                //DashboardData = new ObservableCollection<DashboardModel>(data.Take(20)); // refresh the UI with new data
                 DashboardData = new ObservableCollection<DashboardModel>(data); // refresh the UI with new data
 
                 await ResumeLoopBG(); // resume loop (overdue check)
@@ -575,56 +577,59 @@ namespace Traker.ViewModels
         #region Private Functions
         private async Task<List<DashboardModel>> SetupDashboardDataBG()
         {
-            return await Task.Run(async() =>
-            {
-
-                await Task.Delay(5000);
-
+            //return await Task.Run(async() =>
+            //{
                 try
                 {
+                DashboardData.Clear();
+
+                    List<DashboardModel> dashboadRows = await Database.FetchDashboardData();
+
+                    var cards = new List<DashboardModel>();
+
                     List<DashboardModel> _dashboardDataBackground = new();
 
-                    int index = 0;
-                    foreach (var job in DataService.Jobs)
+                foreach (var batch in dashboadRows.Chunk(10))
+                {
+                    foreach (var row in batch)
                     {
-                        var client = DataService.Clients.First(c => c.ClientId == job.ClientId);
-
-                        DashboardModel dashboardEntry = new DashboardModel
+                        cards.Add(new DashboardModel
                         {
                             // client
-                            ClientId = client.ClientId,
-                            ClientType = client.Type,
-                            TypeIcon = (client.Type == "Individual") ? "/Resources/Media/Images/Icons/Lucide/user-round.svg" : "/Resources/Media/Images/Icons/Lucide/building.svg",
-                            ClientName = client.FullName,
-                            ClientEmail = client.Email,
-                            ClientPhone = client.PhoneNumber,
-                            CompanyName = client.CompanyName,
-                            Address = client.BillingAddress,
-                            City = client.City,
-                            Postcode = client.Postcode,
-                            Country = client.Country,
-                            CreatedDate = client.CreatedDate,
-                            IsActive = client.IsActive,
+                            ClientId = row.ClientId,
+                            ClientType = row.ClientType,
+                            TypeIcon = (row.ClientType == "Individual") ? "/Resources/Media/Images/Icons/Lucide/user-round.svg" : "/Resources/Media/Images/Icons/Lucide/building.svg",
+                            ClientName = row.ClientName,
+                            ClientEmail = row.ClientEmail,
+                            ClientPhone = row.ClientPhone,
+                            CompanyName = row.CompanyName,
+                            Address = row.Address,
+                            City = row.City,
+                            Postcode = row.Postcode,
+                            Country = row.Country,
+                            CreatedDate = row.CreatedDate,
+                            IsActive = row.IsActive,
 
                             // job
-                            JobId = job.JobId,
-                            JobTitle = job.Title,
-                            JobDescription = job.Description,
-                            Price = job.FinalPrice, // use toString("C") only for ui side
-                            AmountReceived = job.AmountReceived,
-                            JobStatus = DataService.Invoices.Where(i => i.JobId == job.JobId && string.IsNullOrEmpty(i.Status) == false).Select(i => i.Status).FirstOrDefault() ?? job.Status.ToString(),
-                            StartDate = job.StartDate,
-                            DueDate = job.DueDate,
+                            JobId = row.JobId,
+                            JobTitle = row.JobTitle,
+                            JobDescription = row.JobDescription,
+                            Price = row.Price, // use toString("C") only for ui side
+                            AmountReceived = row.AmountReceived,
+                            JobStatus = row.JobStatus,
+                            StartDate = row.StartDate,
+                            DueDate = row.DueDate,
 
                             // invoice
-                            HasInvoice = DataService.Invoices.Any(i => i.JobId == job.JobId && i.IsDeleted == false),
-                            InvoiceStatus = DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.Status).FirstOrDefault() ?? "Not invoiced", // if left side not null return that else right side
-                            InvoiceDueDate = DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.DueDate).FirstOrDefault(),
-                            PaidDate = DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.PaidDate).FirstOrDefault(),
-                        };
-                        _dashboardDataBackground.Add(dashboardEntry);
-                        index++;
+                            HasInvoice = row.HasInvoice,
+                            InvoiceStatus = row.InvoiceStatus, // if left side not null return that else right side
+                            InvoiceDueDate = row.InvoiceDueDate,
+                            PaidDate = row.PaidDate,
+                        });
                     }
+
+                    await Task.Delay(10);
+                }
 
                     _dashboardDataBackup = DashboardData; // backup for filtering
                     _dashboardDataStatusFiltered = DashboardData;
@@ -634,34 +639,17 @@ namespace Traker.ViewModels
                     State.IsSortToClear = true;
                     State.IsFilterToClear = true;
 
-                    NewJobsCount = DataService.Jobs.Where(j => j.Status == Names.New).Count().ToString(); // new jobs count
-                    DoneJobsCount = DataService.Jobs.Where(j => j.Status == Names.Done).Count().ToString(); // done jobs count
-                    ActiveJobsCount = DataService.Jobs.Where(j => j.Status == Names.Active).Count().ToString(); // active jobs count
-                    InvoicedJobsCount = DataService.Jobs.Where(j => j.Status == Names.Invoiced && DataService.Invoices.Any(i => i.JobId == j.JobId && i.Status != Names.Paid)).Count().ToString(); // invoiced jobs count
-                    GrossAmount = DataService.Jobs.Sum(gross => gross.FinalPrice).ToString("C"); // gross amount
-                    ReceivedAmount = DataService.Jobs
-                        .Join(DataService.Invoices,
-                        j => j.JobId,
-                        i => i.JobId,
-                        (j, i) => new { j, i }).Where(combined => combined.i.Status == Names.Paid)
-                        .Sum(combined => combined.j.FinalPrice).ToString("C");
+                    var moneyInfo = await Database.FetchMoneyInformation();
 
-                    OutstandingAmount = DataService.Jobs
-                        .Where(
-                            j => j.Status == Names.Done || // job = done
-                            (j.Status == Names.Invoiced && DataService.Invoices.Any(i => i.JobId == j.JobId && i.Status != Names.Paid)) || // job = invoiced
-                            DataService.Invoices.Any(i => i.JobId == j.JobId && i.DueDate < DateOnly.FromDateTime(DateTime.Now) && i.Status == Names.Overdue) // invoice = overdue
-                        ).Sum(j => j.FinalPrice).ToString("C");
-
-                    OverdueAmount = DataService.Jobs
-                                        .Where(j => j.Status == Names.Invoiced)
-                                        .Join(DataService.Invoices,
-                                              job => job.JobId,
-                                              inv => inv.JobId, (job, inv) => new { job.FinalPrice, inv.DueDate, inv.Status })
-                                        .Where(x => x.DueDate < DateOnly.FromDateTime(DateTime.Now) && x.Status != Names.Paid)
-                                        .Sum(x => x.FinalPrice).ToString("C"); // overdue
-
-                    TotalJobsCount = DataService.Jobs.Count();
+                    NewJobsCount = moneyInfo.NewJobsCount;
+                    DoneJobsCount = moneyInfo.DoneJobsCount;
+                    ActiveJobsCount = moneyInfo.ActiveJobsCount;
+                    InvoicedJobsCount = moneyInfo.InvoicedJobsCount;
+                    GrossAmount = moneyInfo.GrossAmount.ToString("C");
+                    ReceivedAmount = moneyInfo.ReceivedAmount.ToString("C");
+                    OutstandingAmount = moneyInfo.OutstandingAmount.ToString("C");
+                    OverdueAmount = moneyInfo.OverdueAmount.ToString("C"); 
+                    TotalJobsCount = await Database.GetJobsCount();
 
                     // if job count is zero then disable edit buttons and add jobs
                     if (TotalJobsCount == 0)
@@ -687,7 +675,7 @@ namespace Traker.ViewModels
                     }
 
                     //DashboardData = new ObservableCollection<DashboardModel>(_dashboardDataBackground); // assign to main dashboard data for ui binding
-                    return _dashboardDataBackground;
+                    return cards;
                 }
                 catch (Exception ex)
                 {
@@ -705,7 +693,7 @@ namespace Traker.ViewModels
                     Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: SetupDashboardData() FAIL\n\t{ex.Message}");
                     return new List<DashboardModel>();
                 }
-            });
+            //});
         }
         
         private void StartLoopBG()
@@ -866,14 +854,14 @@ namespace Traker.ViewModels
                     {
                         if (job.JobStatus == Names.Invoiced && DateOnly.FromDateTime(DateTime.Now) > job.InvoiceDueDate)
                         {
-                            await Database.SetInvoiceStatus(DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.InvoiceId).First(), Names.Overdue, null);
-                            await DataService.RefreshDatabase();
+                            await Database.SetInvoiceStatus(await Database.GetInvoiceIdByJobId(job.JobId), Names.Overdue, null);
+                            //await DataService.RefreshDatabase();
                             DashboardData = new ObservableCollection<DashboardModel>(await SetupDashboardDataBG());
                         }
                         else if (job.JobStatus == Names.Overdue && DateOnly.FromDateTime(DateTime.Now) < job.InvoiceDueDate)
                         {
-                            await Database.SetInvoiceStatus(DataService.Invoices.Where(i => i.JobId == job.JobId).Select(i => i.InvoiceId).First(), Names.Invoiced, null);
-                            await DataService.RefreshDatabase();
+                            await Database.SetInvoiceStatus(await Database.GetInvoiceIdByJobId(job.JobId), Names.Invoiced, null);
+                            //await DataService.RefreshDatabase();
                             DashboardData = new ObservableCollection<DashboardModel>(await SetupDashboardDataBG());
                         }
                     }

@@ -19,7 +19,6 @@ namespace Traker.Models
         public int ClientId { get; set; } = 0;
         public string ClientType { get; set; } = string.Empty;
         public string ClientName { get; set; } = string.Empty;
-        public string InvoiceStatus { get; set; } = string.Empty;
         public string CompanyName { get; set; } = string.Empty;
         public string ClientEmail { get; set; } = string.Empty;
         public string ClientPhone { get; set; } = string.Empty;
@@ -44,6 +43,7 @@ namespace Traker.Models
 
         // invoice
         public bool HasInvoice { get; set; } = false;
+        public string InvoiceStatus { get; set; } = string.Empty;
         public DateOnly InvoiceDueDate { get; set; } = new DateOnly();
         public DateOnly PaidDate { get; set; } = new DateOnly();
         public List<InvoicesModel> Invoices { get; set; } = new List<InvoicesModel>(); // list of invoices of the client
