@@ -84,7 +84,7 @@ V1:
 - dont forget button animations for edit invoice
 - ask chatgpt if log file is necessary if being released on microsfot store
 - remove throw in database catch
-#- fix threading for loading
+- fix threading for loading
 #- job context menu match the colours for active and done with the pastel and do something about the side panel job status colouring
 #- create invoice window is squared at the bottom
 #- thread sort/filter
@@ -92,6 +92,8 @@ V1:
 #- check warnings in error list
 #- remove local database and use purely SQL
 #- ask about wewther i should use Task<List<Stuff> in database or keep List<Stuff>
+#-add border flag if filter sort is enabled so user knows
+#- rethink about colours (maybe scifi)
 
 V2:
 #- the selected not invoiced then confirmation box yes/no. that row with invoice details will be saved in a e.g. "rubbish" folder in txt. 
@@ -114,6 +116,51 @@ Not finalised
 #- backup strategy
 #- if status option is 0 dim it alongside the label
 #- make job status clickable to sort automatically
+#- allow user to decide items per page
+#- in-page sorting-filtering
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -292,3 +339,35 @@ Version
 Company
 Product name
 Copyright
+
+
+
+
+
+
+
+
+
+Dapper
+| Method                        | Purpose                  | Example                         |
+| ----------------------------- | ------------------------ | ------------------------------- |
+| `QueryAsync<T>`               | Get multiple rows        | `SELECT * FROM Jobs`            |
+| `QueryFirstAsync<T>`          | Get one row              | `SELECT * FROM Jobs WHERE Id=1` |
+| `QueryFirstOrDefaultAsync<T>` | Get one row or null      | search by id/name               |
+| `ExecuteAsync`                | INSERT / UPDATE / DELETE | `UPDATE Jobs SET...`            |
+| `ExecuteScalarAsync<T>`       | Get single value         | `COUNT`, `EXISTS`, `SUM`        |
+
+
+| Area              | What to do                                             |
+| ----------------- | ------------------------------------------------------ |
+| Querying          | Select only needed columns, not `SELECT *`             |
+| Paging            | Load 50–100 rows first, not everything                 |
+| UI                | Keep virtualized `ListBox`, no external `ScrollViewer` |
+| UI loading        | Keep batched insertion with `Chunk(25)`                |
+| SQL               | Use `JOIN`s instead of LINQ lookups inside loops       |
+| Sorting/filtering | Do it in SQL, not in memory                            |
+| Cards             | Avoid shadows/gradients on every card                  |
+| Refreshing        | Refresh only changed item, not whole dashboard         |
+| DB writes         | Wrap multiple inserts/updates in a transaction         |
+| Dates/prices      | Store clean values, format only in UI                  |
+| Diagnostics       | Use `EXPLAIN QUERY PLAN` to check if indexes are used  |

@@ -548,14 +548,18 @@
                     <Grid>
 
                         <!--<ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10,20,10,10" Padding="0,0,10,0" CanContentScroll="True">-->
-                            <ListBox  ItemsSource="{Binding DashboardData}"
-                                      Background="Transparent"
-                                               BorderThickness="0"
-         Padding="0"
-         HorizontalContentAlignment="Stretch"
-         ScrollViewer.CanContentScroll="True"
-         VirtualizingPanel.IsVirtualizing="True"
-         VirtualizingPanel.VirtualizationMode="Recycling">
+                            <ListBox ItemsSource="{Binding DashboardData}"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Padding="0"
+                                        HorizontalContentAlignment="Stretch"
+
+                                        ScrollViewer.CanContentScroll="True"
+                                        VirtualizingPanel.IsVirtualizing="True"
+                                        VirtualizingPanel.VirtualizationMode="Recycling"
+                                        VirtualizingPanel.ScrollUnit="Pixel"
+                                        VirtualizingPanel.CacheLength="2"
+                                        VirtualizingPanel.CacheLengthUnit="Page">
                                 <ListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <VirtualizingStackPanel/>
@@ -956,6 +960,70 @@
                         </Border>
                     </Grid>
                 </Border>
+            </Grid>
+            
+            <!-- pagination buttons -->
+            <Grid Grid.Row="1" Grid.RowSpan="2">
+                <Border Background="#2A2A2A" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="25,0,30,15" Padding="10,3,10,1" CornerRadius="22">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Opacity" Value="0.5" />
+
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Opacity" Value="1.0" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Border.Effect>
+                        <DropShadowEffect
+                        Color="Black"
+                        BlurRadius="24"
+                        ShadowDepth="0"
+                        Opacity="0.5"
+                        Direction="0" />
+                    </Border.Effect>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Border Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action PreviousPage()]">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Opacity" Value="1.0"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Opacity" Value="0.7"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <svg:SvgViewbox                         
+                                RenderOptions.BitmapScalingMode="HighQuality"
+                                SnapsToDevicePixels="True"
+                                Source="/Resources/Media/Images/Icons/Lucide/circle-chevron-left.svg" Width="30" Height="30"/>
+                        </Border>
+                        <TextBlock Cursor="Arrow" Foreground="{StaticResource FontSecondaryBrush}" Text="{Binding PageInfo}" Padding="10" FontSize="18" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
+
+                        <Border Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action NextPage()]">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Opacity" Value="1.0"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Opacity" Value="0.7"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <svg:SvgViewbox                         
+                                RenderOptions.BitmapScalingMode="HighQuality"
+                                SnapsToDevicePixels="True"
+                                Source="/Resources/Media/Images/Icons/Lucide/circle-chevron-right.svg" Width="30" Height="30"/>
+                        </Border>
+                    
+                    </StackPanel>
+                </Border>
+
+
             </Grid>
             
             <!-- info bar for V2 -->

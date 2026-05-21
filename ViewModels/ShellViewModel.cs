@@ -84,7 +84,7 @@ namespace Traker.ViewModels
 
                 State.SplashText = "Populating dashboard";
                 await Task.Delay(1000);
-                await _dashboardViewModel.RefreshDatabase(); // Get data ready for dashboard
+                await _dashboardViewModel.RefreshDashboard(); // Get data ready for dashboard
 
                 if (await Database.CheckUserExists() == true)
                 {

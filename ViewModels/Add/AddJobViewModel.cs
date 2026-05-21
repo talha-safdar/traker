@@ -155,6 +155,7 @@ namespace Traker.ViewModels.Add
         {
             try
             {
+                await TryCloseAsync();
                 var dueDate = DateOnly.MinValue;
                 decimal amount = 0;
 
@@ -183,7 +184,6 @@ namespace Traker.ViewModels.Add
 
                 // refresh database
                 await _events.PublishOnUIThreadAsync(new RefreshDatabase());
-                await TryCloseAsync();
             }
             catch (Exception ex)
             {

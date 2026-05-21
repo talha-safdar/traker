@@ -4,7 +4,9 @@ using System.Collections.ObjectModel;
 namespace Traker.ViewModels
 {
     using Database;
+    using System.Collections.Generic;
     using System.Diagnostics;
+    using System.DirectoryServices;
     using System.Globalization;
     using System.Windows;
     using System.Windows.Controls;
@@ -33,6 +35,11 @@ namespace Traker.ViewModels
         public List<string> JobStatusEdit { get; set; } = new List<string> { "New", "Active", "Done" };
         public List<string> InvoiceStatusEdit { get; set; } = new List<string> { "Created", "Sent", "Paid", "Overdue" };
         public AppState State { set; get; }
+        public int PageSize { get; set; } = 4000;
+        public int TotalItems { get; set; } = 0; // grab from jobs count from the query
+        public int TotalPages { get; set; } = 0;
+        public string CurrentSortColumn { get; set; } = string.Empty;
+        public string CurrentSortDirection { get; set; } = string.Empty;
         #endregion
 
         #region Private View Variables
@@ -48,6 +55,8 @@ namespace Traker.ViewModels
         private ObservableCollection<DashboardModel> _dashboardData; // listo of data shown on the data grid
         public DashboardModel _selectedJob; // selected data row automatically filled on click
         private string _outstandingStatusBorder; // grey=normal, pink=overdue
+        private int _currentPage;
+        private string _pageInfo;
 
         /*
          * for buttons:
@@ -94,6 +103,8 @@ namespace Traker.ViewModels
             _outstandingStatusBorder = string.Empty;
             _dashboardData = new ObservableCollection<DashboardModel>();
             _selectedJob = new DashboardModel();
+            _currentPage = 1;
+            _pageInfo = string.Empty;
 
             // private variables
             State.EditJobViewModel = new EditJobViewModel(_events, _windowManager, State);
@@ -128,7 +139,7 @@ namespace Traker.ViewModels
                 EnableBtns = false;
                 OpacityBtns = _halfOpacity;
 
-                DashboardData = new ObservableCollection<DashboardModel>(await SetupDashboardDataBG());
+                await SetListStyle();
             }
             catch (Exception ex)
             {
@@ -539,22 +550,36 @@ namespace Traker.ViewModels
                 }
             });
         }
+        
+        public async Task NextPage()
+        {
+            CurrentPage++;
+            await RefreshDashboard();
+        }
+
+        public async Task PreviousPage()
+        {
+            CurrentPage--;
+            await RefreshDashboard();
+        }
         #endregion
 
         #region Public Functions
-        public async Task RefreshDatabase()
+        public async Task RefreshDashboard()
         {
             try
             {
+                State.IsBusy = true;
+                State.LoadingMessage = "P L E A S E   W A I T ";
+                await Task.Delay(50); // let rendering breath
+
+
                 await PauseLoopBG(); // pause loop (overdue check)
 
-                //await DataService.RefreshDatabase(); // has only background functions
+                DashboardData.Clear();
 
-                var data = await SetupDashboardDataBG(); // get new data
+                var data = await SetDashboardData(); // get new data
 
-                await Task.Yield(); // make it rest one frame
-
-                //DashboardData = new ObservableCollection<DashboardModel>(data.Take(20)); // refresh the UI with new data
                 DashboardData = new ObservableCollection<DashboardModel>(data); // refresh the UI with new data
 
                 await ResumeLoopBG(); // resume loop (overdue check)
@@ -564,32 +589,29 @@ namespace Traker.ViewModels
                 if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
                 {
                     State.messageBoxVM.Symbol = 2;
-                    State.messageBoxVM.HeadMessage = "Exit Form";
+                    State.messageBoxVM.HeadMessage = "Refresh Dashboard";
                     State.messageBoxVM.Message = ex.Message;
                     State.messageBoxVM.ButtonStyle = Names.OK;
                     _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
-                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: RefreshDatabase() FAIL\n\t{ex.Message}");
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: RefreshDashboard() FAIL\n\t{ex.Message}");
+            }
+            finally
+            {
+                State.IsBusy = false;
+                State.LoadingMessage = string.Empty;
             }
         }
         #endregion
 
         #region Private Functions
-        private async Task<List<DashboardModel>> SetupDashboardDataBG()
+        private async Task<List<DashboardModel>> SetSortFilterData(List<DashboardModel> rows)
         {
-            //return await Task.Run(async() =>
-            //{
-                try
-                {
-                DashboardData.Clear();
+            try
+            {
+                List<DashboardModel> cards = new List<DashboardModel>();
 
-                    List<DashboardModel> dashboadRows = await Database.FetchDashboardData();
-
-                    var cards = new List<DashboardModel>();
-
-                    List<DashboardModel> _dashboardDataBackground = new();
-
-                foreach (var batch in dashboadRows.Chunk(10))
+                foreach (var batch in rows.Chunk(10))
                 {
                     foreach (var row in batch)
                     {
@@ -627,73 +649,139 @@ namespace Traker.ViewModels
                             PaidDate = row.PaidDate,
                         });
                     }
-
-                    await Task.Delay(10);
+                    await Task.Delay(1);
                 }
-
-                    _dashboardDataBackup = DashboardData; // backup for filtering
-                    _dashboardDataStatusFiltered = DashboardData;
-                    _dashboardDataTypeFiltered = DashboardData;
-
-                    // disable sort and filter
-                    State.IsSortToClear = true;
-                    State.IsFilterToClear = true;
-
-                    var moneyInfo = await Database.FetchMoneyInformation();
-
-                    NewJobsCount = moneyInfo.NewJobsCount;
-                    DoneJobsCount = moneyInfo.DoneJobsCount;
-                    ActiveJobsCount = moneyInfo.ActiveJobsCount;
-                    InvoicedJobsCount = moneyInfo.InvoicedJobsCount;
-                    GrossAmount = moneyInfo.GrossAmount.ToString("C");
-                    ReceivedAmount = moneyInfo.ReceivedAmount.ToString("C");
-                    OutstandingAmount = moneyInfo.OutstandingAmount.ToString("C");
-                    OverdueAmount = moneyInfo.OverdueAmount.ToString("C"); 
-                    TotalJobsCount = await Database.GetJobsCount();
-
-                    // if job count is zero then disable edit buttons and add jobs
-                    if (TotalJobsCount == 0)
-                    {
-                        EnableBtns = false;
-                        OpacityBtns = _halfOpacity;
-                        SelectedJob = null;
-                    }
-                    else if (TotalJobsCount > 0)
-                    {
-                        EnableBtns = true;
-                        OpacityBtns = _fullOpacity;
-                    }
-
-                    // if there is any overdue
-                    if (decimal.Parse(OverdueAmount, NumberStyles.Currency, CultureInfo.CurrentCulture) > 0.0m)
-                    {
-                        OutstandingStatusBorder = "Overdue";
-                    }
-                    else
-                    {
-                        OutstandingStatusBorder = string.Empty;
-                    }
-
-                    //DashboardData = new ObservableCollection<DashboardModel>(_dashboardDataBackground); // assign to main dashboard data for ui binding
-                    return cards;
-                }
-                catch (Exception ex)
+                return cards;
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(async () =>
                 {
-                    await Execute.OnUIThreadAsync(async () =>
-                    { 
-                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                    {
+                        State.messageBoxVM.Symbol = 2;
+                        State.messageBoxVM.HeadMessage = "Setup Dashboard";
+                        State.messageBoxVM.Message = ex.Message;
+                        State.messageBoxVM.ButtonStyle = Names.OK;
+                        await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                });
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: SetupDashboardData() FAIL\n\t{ex.Message}");
+                return new List<DashboardModel>();
+            }
+        }
+
+        private async Task<List<DashboardModel>> SetDashboardData()
+        {
+            try
+            {
+                var rows = await Database.SortList(CurrentPage, PageSize, CurrentSortColumn, CurrentSortDirection);
+
+                List<DashboardModel> cards = new List<DashboardModel>();
+                               
+                foreach (var batch in rows.Chunk(10))
+                {
+                    foreach (var row in batch)
+                    {
+                        cards.Add(new DashboardModel
                         {
-                            State.messageBoxVM.Symbol = 2;
-                            State.messageBoxVM.HeadMessage = "Setup Dashboard";
-                            State.messageBoxVM.Message = ex.Message;
-                            State.messageBoxVM.ButtonStyle = Names.OK;
-                            await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                        }     
-                    });
-                    Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: SetupDashboardData() FAIL\n\t{ex.Message}");
-                    return new List<DashboardModel>();
+                            // client
+                            ClientId = row.ClientId,
+                            ClientType = row.ClientType,
+                            TypeIcon = (row.ClientType == "Individual") ? "/Resources/Media/Images/Icons/Lucide/user-round.svg" : "/Resources/Media/Images/Icons/Lucide/building.svg",
+                            ClientName = row.ClientName,
+                            ClientEmail = row.ClientEmail,
+                            ClientPhone = row.ClientPhone,
+                            CompanyName = row.CompanyName,
+                            Address = row.Address,
+                            City = row.City,
+                            Postcode = row.Postcode,
+                            Country = row.Country,
+                            CreatedDate = row.CreatedDate,
+                            IsActive = row.IsActive,
+
+                            // job
+                            JobId = row.JobId,
+                            JobTitle = row.JobTitle,
+                            JobDescription = row.JobDescription,
+                            Price = row.Price, // use toString("C") only for ui side
+                            AmountReceived = row.AmountReceived,
+                            JobStatus = row.JobStatus,
+                            StartDate = row.StartDate,
+                            DueDate = row.DueDate,
+
+                            // invoice
+                            HasInvoice = row.HasInvoice,
+                            InvoiceStatus = row.InvoiceStatus,
+                            InvoiceDueDate = row.InvoiceDueDate,
+                            PaidDate = row.PaidDate,
+                        });
+                    }
+                    await Task.Delay(1);
                 }
-            //});
+
+                TotalItems = await Database.GetJobsCount();
+                TotalPages = (int)Math.Ceiling((double)TotalItems / PageSize);
+
+                NotifyOfPropertyChange(() => PageInfo);
+
+                _dashboardDataBackup = DashboardData; // backup for filtering
+                _dashboardDataStatusFiltered = DashboardData;
+                _dashboardDataTypeFiltered = DashboardData;
+
+                var moneyInfo = await Database.FetchMoneyInformation();
+
+                NewJobsCount = moneyInfo.NewJobsCount;
+                DoneJobsCount = moneyInfo.DoneJobsCount;
+                ActiveJobsCount = moneyInfo.ActiveJobsCount;
+                InvoicedJobsCount = moneyInfo.InvoicedJobsCount;
+                GrossAmount = moneyInfo.GrossAmount.ToString("C");
+                ReceivedAmount = moneyInfo.ReceivedAmount.ToString("C");
+                OutstandingAmount = moneyInfo.OutstandingAmount.ToString("C");
+                OverdueAmount = moneyInfo.OverdueAmount.ToString("C"); 
+                TotalJobsCount = await Database.GetJobsCount();
+
+                // if job count is zero then disable edit buttons and add jobs
+                if (TotalJobsCount == 0)
+                {
+                    EnableBtns = false;
+                    OpacityBtns = _halfOpacity;
+                    SelectedJob = null;
+                }
+                else if (TotalJobsCount > 0)
+                {
+                    EnableBtns = true;
+                    OpacityBtns = _fullOpacity;
+                }
+
+                // if there is any overdue
+                if (decimal.Parse(OverdueAmount, NumberStyles.Currency, CultureInfo.CurrentCulture) > 0.0m)
+                {
+                    OutstandingStatusBorder = "Overdue";
+                }
+                else
+                {
+                    OutstandingStatusBorder = string.Empty;
+                }
+
+                return cards;
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(async () =>
+                { 
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                    {
+                        State.messageBoxVM.Symbol = 2;
+                        State.messageBoxVM.HeadMessage = "Setup Dashboard";
+                        State.messageBoxVM.Message = ex.Message;
+                        State.messageBoxVM.ButtonStyle = Names.OK;
+                        await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }     
+                });
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: SetupDashboardData() FAIL\n\t{ex.Message}");
+                return new List<DashboardModel>();
+            }
         }
         
         private void StartLoopBG()
@@ -856,13 +944,13 @@ namespace Traker.ViewModels
                         {
                             await Database.SetInvoiceStatus(await Database.GetInvoiceIdByJobId(job.JobId), Names.Overdue, null);
                             //await DataService.RefreshDatabase();
-                            DashboardData = new ObservableCollection<DashboardModel>(await SetupDashboardDataBG());
+                            DashboardData = new ObservableCollection<DashboardModel>(await SetDashboardData());
                         }
                         else if (job.JobStatus == Names.Overdue && DateOnly.FromDateTime(DateTime.Now) < job.InvoiceDueDate)
                         {
                             await Database.SetInvoiceStatus(await Database.GetInvoiceIdByJobId(job.JobId), Names.Invoiced, null);
                             //await DataService.RefreshDatabase();
-                            DashboardData = new ObservableCollection<DashboardModel>(await SetupDashboardDataBG());
+                            DashboardData = new ObservableCollection<DashboardModel>(await SetDashboardData());
                         }
                     }
                 }
@@ -884,93 +972,93 @@ namespace Traker.ViewModels
             });
         }
 
-        private Task SortJobs(string command)
+        private async Task SetListStyle(string columnName = null, string sortDirection = null)
+        {
+            /*
+             * null, null // default sort by jobId DESC
+             * "ClientName", ASC/"DESC
+             * "JobTitle", "ASC"
+             * "JobStatus", "DESC"
+             * "JobPrice", "ASC"
+             * "DueDate", "DESC"
+             * "CreatedDate", "DESC"
+             * "BusinessType", "ASC"
+             * "StatusFlow", ASC/DESC
+             * "ClientType", ASC/DESC
+             */
+
+            CurrentSortColumn = columnName;
+            CurrentSortDirection = sortDirection;
+            await RefreshDashboard();
+        }
+
+        private async Task SortJobs(string command)
         {
             try
             {
                 if (command == Names.ClientNameAsc)
                 {
-                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.ClientName));
+                    await SetListStyle(Names.ClientName, Names.ASC);
                 }
                 else if (command == Names.ClientNameDesc)
                 {
-                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.ClientName));
+                    await SetListStyle(Names.ClientName, Names.DESC);
                 }
 
                 else if (command == Names.JobTitleAsc)
                 {
-                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.JobTitle));
+                    await SetListStyle(Names.JobTitle, Names.ASC);
                 }
                 else if (command == Names.JobTitleDesc)
                 {
-                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.JobTitle));
+                    await SetListStyle(Names.JobTitle, Names.DESC);
                 }
                 else if (command == Names.JobStatusAsc)
                 {
-                    DashboardData = new ObservableCollection<DashboardModel>(_dashboardData.OrderBy(j =>
-                    {
-                        switch (j.JobStatus.ToLower())
-                        {
-                            case "new": return 1;
-                            case "active": return 2;
-                            case "done": return 3;
-                            case "invoiced": return 4;
-                            default: return 5; // Anything else goes to the bottom
-                        }
-                    }));
+                    await SetListStyle(Names.StatusFlow, Names.ASC);
                 }
                 else if (command == Names.JobStatusDesc)
                 {
-                    DashboardData = new ObservableCollection<DashboardModel>(_dashboardData.OrderByDescending(j =>
-                    {
-                        switch (j.JobStatus.ToLower())
-                        {
-                            case "new": return 1;
-                            case "active": return 2;
-                            case "done": return 3;
-                            case "invoiced": return 4;
-                            default: return 5; // Anything else goes to the bottom
-                        }
-                    }));
+                    await SetListStyle(Names.StatusFlow, Names.DESC);
                 }
                 else if (command == Names.JobPriceAsc)
                 {
-                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => Decimal.Parse(j.Price.ToString(), NumberStyles.Currency)));
+                    await SetListStyle(Names.JobPrice, Names.ASC);
                 }
                 else if (command == Names.JobPriceDesc)
                 {
-                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => Decimal.Parse(j.Price.ToString(), NumberStyles.Currency)));
+                    await SetListStyle(Names.JobPrice, Names.DESC);
                 }
 
                 else if (command == Names.DueDateAsc)
                 {
-                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.DueDate));
+                    await SetListStyle(Names.DueDate, Names.ASC);
                 }
                 else if (command == Names.DueDateDesc)
                 {
-                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.DueDate));
+                    await SetListStyle(Names.DueDate, Names.DESC);
                 }
 
                 else if (command == Names.CreatedDateAsc)
                 {
-                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.CreatedDate));
+                    await SetListStyle(Names.CreatedDate, Names.ASC);
                 }
                 else if (command == Names.CreatedDateDesc)
                 {
-                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.CreatedDate));
+                    await SetListStyle(Names.CreatedDate, Names.DESC);
                 }
 
                 else if (command == Names.ClientTypeAsc)
                 {
-                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.ClientType));
+                    await SetListStyle(Names.ClientType, Names.ASC);
                 }
                 else if (command == Names.ClientTypeDesc)
                 {
-                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderByDescending(j => j.ClientType));
+                    await SetListStyle(Names.ClientType, Names.DESC);
                 }
                 else if (command == Names.ResetSort)
                 {
-                    DashboardData = new ObservableCollection<DashboardModel>(DashboardData.OrderBy(j => j.ClientId));
+                    await SetListStyle(); // defualt style
                 }
             }
             catch (Exception ex)
@@ -985,7 +1073,6 @@ namespace Traker.ViewModels
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: SortJobs() FAIL\n\t{ex.Message}");
             }
-            return Task.CompletedTask;
         }
 
         private Task FilterJobs(string command)
@@ -1307,12 +1394,8 @@ namespace Traker.ViewModels
         public async Task HandleAsync(RefreshDatabase message, CancellationToken cancellationToken)
         {
             try
-            {
-                State.IsBusy = true;
-                State.LoadingMessage = "P L E A S E   W A I T ";
-                await Task.Delay(50); // let rendering breath
-
-                await RefreshDatabase();
+            {              
+                await RefreshDashboard();
 
                 if (message != null)
                 {
@@ -1333,11 +1416,6 @@ namespace Traker.ViewModels
                     _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: HandleAsync(RefreshDatabase) FAIL\n\t{ex.Message}");
-            }
-            finally
-            {
-                State.IsBusy = false;
-                State.LoadingMessage = string.Empty;
             }
         }
         #endregion
@@ -1480,6 +1558,26 @@ namespace Traker.ViewModels
             {
                 _outstandingStatusBorder = value;
                 NotifyOfPropertyChange(() => OutstandingStatusBorder);
+            }
+        }
+
+        public int CurrentPage
+        {
+            get => _currentPage;
+            set
+            {
+                _currentPage = value;
+                NotifyOfPropertyChange(() => CurrentPage);
+            }
+        }
+
+        public string PageInfo
+        {
+            get =>  $"Page {CurrentPage} of {TotalPages}";
+            set
+            {
+                _pageInfo = value;
+                NotifyOfPropertyChange(() => PageInfo);
             }
         }
         #endregion

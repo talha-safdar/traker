@@ -11,6 +11,9 @@ using Traker.States;
 namespace Traker.Database
 {
     using Dapper;
+    using QuestPDF.Helpers;
+    using System.Globalization;
+    using System.Windows.Controls;
     using Traker.Models;
 
     /// <summary>
@@ -1068,6 +1071,95 @@ namespace Traker.Database
         }
 
         /// <summary>
+        /// Fetch Database in pagination style
+        /// </summary>
+        public async static Task<List<DashboardModel>> FetchDashboardDataPage(int page, int pageSize)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+
+                int offset = (page - 1) * pageSize;
+
+                string sql = @"
+                    SELECT 
+                        c.ClientId,
+                        c.Type AS ClientType,
+                        c.FullName AS ClientName,
+                        c.CompanyName,
+                        c.Email AS ClientEmail,
+                        c.PhoneNumber AS ClientPhone,
+                        c.BillingAddress AS Address,
+                        c.City,
+                        c.Postcode,
+                        c.Country,
+                        c.IsActive,
+
+                        j.JobId,
+                        j.Title AS JobTitle,
+                        j.Description AS JobDescription,
+                        j.FinalPrice AS Price,
+                        j.Status AS JobStatus,
+                        j.StartDate,
+                        j.DueDate,
+                        j.AmountReceived,
+                        j.CreatedDate,
+
+                        i.PaidDate,
+
+                        CASE 
+                            WHEN i.InvoiceId IS NOT NULL AND i.IsDeleted = 0 THEN 1 
+                            ELSE 0 
+                        END AS HasInvoice,
+
+                        COALESCE(NULLIF(i.Status, ''), 'Not invoiced') AS InvoiceStatus
+
+                    FROM Clients c
+
+                    LEFT JOIN Jobs j
+                        ON c.ClientId = j.ClientId
+
+                    LEFT JOIN Invoices i
+                        ON j.JobId = i.JobId
+                        AND i.IsDeleted = 0
+
+                    ORDER BY j.JobId DESC
+
+                    LIMIT @PageSize OFFSET @Offset;
+                    ";
+                var dashboardData = await conn.QueryAsync<DashboardModel>(
+                    sql,
+                    new
+                    {
+                        PageSize = pageSize,
+                        Offset = offset
+                    });
+
+                return dashboardData.ToList();
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Fetch Dashboard Data Page";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchDashboardDataPage() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Fetch money information for dashboard
         /// </summary>
         public async static Task<MoneyInfoModel> FetchMoneyInformation()
@@ -1075,17 +1167,6 @@ namespace Traker.Database
             try
             {
                 using var conn = new SqliteConnection(_connectionString);
-                //string sql = @"
-                //    SELECT 
-                //        (SELECT COUNT(*) FROM Jobs WHERE JobStatus = 'New') AS NewJobsCount,
-                //        (SELECT COUNT(*) FROM Jobs WHERE JobStatus = 'Done') AS DoneJobsCount,
-                //        (SELECT COUNT(*) FROM Jobs WHERE JobStatus = 'Active') AS ActiveJobsCount,
-                //        (SELECT COUNT(*) FROM Invoices WHERE Status = 'Invoiced' AND IsDeleted = 0) AS InvoicedJobsCount,
-                //        (SELECT IFNULL(SUM(TotalAmount), 0) FROM Invoices WHERE Status = 'Invoiced' AND IsDeleted = 0) AS GrossAmount,
-                //        (SELECT IFNULL(SUM(TotalAmount), 0) FROM Invoices WHERE Status = 'Paid' AND IsDeleted = 0) AS ReceivedAmount,
-                //        (SELECT IFNULL(SUM(TotalAmount), 0) FROM Invoices WHERE Status != 'Paid' AND IsDeleted = 0) AS OutstandingAmount,
-                //        (SELECT IFNULL(SUM(TotalAmount), 0) FROM Invoices WHERE DueDate < DATE('now') AND Status != 'Paid' AND IsDeleted = 0) AS OverdueAmount
-                //";
                 string sql = @"
                     SELECT
                         COUNT(CASE WHEN j.Status = @New THEN 1 END) AS NewJobsCount,
@@ -1423,6 +1504,304 @@ namespace Traker.Database
                     return Task.CompletedTask;
                 });
                 Logger.LogActivity(Logger.ERROR, $"Database: CheckIfInvoicedByJobId() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+        #endregion
+
+        #region Sort/Filter Functions
+        /// <summary>
+        /// SORT: Sort by Client Name Ascending
+        /// </summary>
+        public async static Task<List<DashboardModel>> SortListbyClientNameAsc(int page, int pageSize)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+
+                int offset = (page - 1) * pageSize;
+
+                string sql = @"
+                            SELECT 
+                                c.ClientId,
+                                c.FullName AS ClientName,
+
+                                j.JobId,
+                                j.Title AS JobTitle,
+                                j.Status AS JobStatus,
+                                j.FinalPrice AS Price
+
+                            FROM Jobs j
+
+                            LEFT JOIN Clients c
+                                ON c.ClientId = j.ClientId
+
+                            LEFT JOIN Invoices i
+                                ON i.JobId = j.JobId
+                                AND i.IsDeleted = 0
+
+                            ORDER BY c.FullName ASC
+
+                            LIMIT @PageSize OFFSET @Offset;
+                        ";
+
+                var dashboardData = await conn.QueryAsync<DashboardModel>(
+                                sql,
+                                new
+                                {
+                                    PageSize = pageSize,
+                                    Offset = offset
+                                });
+                return dashboardData.ToList();
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Sort by Client Name Asc";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: CheckIfInvoicedByJobId() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// SORT: Sort by Client Name Descending
+        /// </summary>
+        public async static Task<List<DashboardModel>> SortListbyClientNameDesc(int page, int pageSize)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+
+                int offset = (page - 1) * pageSize;
+
+                string sql = @"
+                        SELECT 
+                        c.ClientId,
+                        c.Type AS ClientType,
+                        c.FullName AS ClientName,
+                        c.CompanyName,
+                        c.Email AS ClientEmail,
+                        c.PhoneNumber AS ClientPhone,
+                        c.BillingAddress AS Address,
+                        c.City,
+                        c.Postcode,
+                        c.Country,
+                        c.IsActive,
+
+                        j.JobId,
+                        j.Title AS JobTitle,
+                        j.Description AS JobDescription,
+                        j.FinalPrice AS Price,
+                        j.Status AS JobStatus,
+                        j.StartDate,
+                        j.DueDate,
+                        j.AmountReceived,
+                        j.CreatedDate,
+
+                        i.PaidDate,
+
+                        CASE 
+                            WHEN i.InvoiceId IS NOT NULL AND i.IsDeleted = 0 THEN 1 
+                            ELSE 0 
+                        END AS HasInvoice,
+
+                        COALESCE(NULLIF(i.Status, ''), 'Not invoiced') AS InvoiceStatus
+
+                    FROM Clients c
+
+                    LEFT JOIN Jobs j
+                        ON c.ClientId = j.ClientId
+
+                    LEFT JOIN Invoices i
+                        ON j.JobId = i.JobId
+                        AND i.IsDeleted = 0
+
+                    ORDER BY c.FullName COLLATE NOCASE ASC, j.JobId DESC
+
+                    LIMIT @PageSize OFFSET @Offset;
+                        ";
+
+                var dashboardData = await conn.QueryAsync<DashboardModel>(
+                                sql,
+                                new
+                                {
+                                    PageSize = pageSize,
+                                    Offset = offset
+                                });
+                return dashboardData.ToList();
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Sort by Client Name Desc";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: CheckIfInvoicedByJobId() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+
+        public async static Task<List<DashboardModel>> SortList(int currentPage, int pageSize, string sortBy, string sortDirection)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+
+                int offset = (currentPage - 1) * pageSize;
+
+                string orderBy;
+
+                if (string.IsNullOrWhiteSpace(sortBy))
+                {
+                    orderBy = "j.JobId DESC";
+                }
+                else
+                {
+                    string direction = sortDirection == "ASC" ? "ASC" : "DESC";
+
+                    orderBy = sortBy switch
+                    {
+                        "ClientName" =>
+                            $"c.FullName COLLATE NOCASE {direction}, j.JobId DESC",
+
+                        "ClientType" =>
+                            $"c.Type COLLATE NOCASE {direction}, j.JobId DESC",
+
+                        "JobName" =>
+                            $"j.Title COLLATE NOCASE {direction}, j.JobId DESC",
+
+                        "JobStatus" =>
+                            $"j.Status {direction}, j.JobId DESC",
+
+                        "JobPrice" =>
+                            $"j.FinalPrice {direction}, j.JobId DESC",
+
+                        "DueDate" =>
+                            $"j.DueDate {direction}, j.JobId DESC",
+
+                        "CreatedDate" =>
+                            $"j.CreatedDate {direction}, j.JobId DESC",
+
+                        "BusinessType" =>
+                            $"c.Type COLLATE NOCASE {direction}, j.JobId DESC",
+
+                        "StatusFlow" =>
+                            $@"
+                            CASE LOWER(COALESCE(NULLIF(i.Status, ''), j.Status))
+                                WHEN 'new' THEN 1
+                                WHEN 'active' THEN 2
+                                WHEN 'done' THEN 3
+                                WHEN 'invoiced' THEN 4
+                                WHEN 'overdue' THEN 5
+                                WHEN 'paid' THEN 6
+                                ELSE 99
+                            END {direction},
+                            j.JobId DESC",
+
+                        _ =>
+                            "j.JobId DESC"
+                    };
+                }
+
+                string sql = $@"
+                    SELECT 
+                        c.ClientId,
+                        c.Type AS ClientType,
+                        c.FullName AS ClientName,
+                        c.CompanyName,
+                        c.Email AS ClientEmail,
+                        c.PhoneNumber AS ClientPhone,
+                        c.BillingAddress AS Address,
+                        c.City,
+                        c.Postcode,
+                        c.Country,
+                        c.IsActive,
+
+                        j.JobId,
+                        j.Title AS JobTitle,
+                        j.Description AS JobDescription,
+                        j.FinalPrice AS Price,
+                        j.Status AS JobStatus,
+                        j.StartDate,
+                        j.DueDate,
+                        j.AmountReceived,
+                        j.CreatedDate,
+
+                        i.PaidDate,
+
+                        CASE 
+                            WHEN i.InvoiceId IS NOT NULL AND i.IsDeleted = 0 THEN 1 
+                            ELSE 0 
+                        END AS HasInvoice,
+
+                        COALESCE(NULLIF(i.Status, ''), 'Not invoiced') AS InvoiceStatus
+
+                    FROM Clients c
+
+                    LEFT JOIN Jobs j
+                        ON c.ClientId = j.ClientId
+
+                    LEFT JOIN Invoices i
+                        ON j.JobId = i.JobId
+                        AND i.IsDeleted = 0
+
+                    ORDER BY {orderBy}
+
+                    LIMIT @PageSize OFFSET @Offset;
+                ";
+
+                var rows = await conn.QueryAsync<DashboardModel>(
+                    sql,
+                    new
+                    {
+                        PageSize = pageSize,
+                        Offset = offset
+                    });
+
+                return rows.ToList();
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Database: SortList()";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: SortList() FAIL\n\t{ex.Message}");
                 throw;
             }
         }

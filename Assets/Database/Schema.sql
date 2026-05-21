@@ -95,4 +95,13 @@ CREATE TABLE IF NOT EXISTS Bank (
     FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE
 );
 
+-- indexes speed up the queries. check if it is used by adding "EXPLAIN QUERY PLAN" at the top of a query
+CREATE INDEX IF NOT EXISTS idx_jobs_clientid ON Jobs(ClientId);
+CREATE INDEX IF NOT EXISTS idx_jobs_status ON Jobs(Status);
+CREATE INDEX IF NOT EXISTS idx_jobs_createddate ON Jobs(CreatedDate);
+CREATE INDEX IF NOT EXISTS idx_jobs_status ON Jobs(Status);
+CREATE INDEX IF NOT EXISTS idx_invoices_jobid ON Invoices(JobId);
+CREATE INDEX IF NOT EXISTS idx_invoices_status ON Invoices(Status);
+CREATE INDEX IF NOT EXISTS idx_invoices_duedate ON Invoices(DueDate);
+
 PRAGMA foreign_keys = ON;
