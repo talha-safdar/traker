@@ -1665,7 +1665,7 @@ namespace Traker.Database
             }
         }
 
-        public async static Task<List<DashboardModel>> SortList(int currentPage, int pageSize, string sortBy, string sortDirection)
+        public async static Task<List<DashboardModel>> GetDashboardRows(int currentPage, int pageSize, string? sortBy, string? sortDirection, string? statusFilter, string? clientTypeFilter)
         {
             try
             {
@@ -1691,7 +1691,7 @@ namespace Traker.Database
                         "ClientType" =>
                             $"c.Type COLLATE NOCASE {direction}, j.JobId DESC",
 
-                        "JobName" =>
+                        "JobTitle" =>
                             $"j.Title COLLATE NOCASE {direction}, j.JobId DESC",
 
                         "JobStatus" =>
@@ -1769,17 +1769,42 @@ namespace Traker.Database
                         ON j.JobId = i.JobId
                         AND i.IsDeleted = 0
 
+                    WHERE
+                        (NULLIF(@ClientTypeFilter, '') IS NULL OR c.Type = @ClientTypeFilter)
+
+                        AND
+                        (
+                            NULLIF(@StatusFilter, '') IS NULL
+
+                            OR
+                            (
+                                @StatusFilter IN ('New', 'Active', 'Done', 'Invoiced')
+                                AND j.Status = @StatusFilter
+                            )
+
+                            OR
+                            (
+                                @StatusFilter IN ('Overdue', 'Paid')
+                                AND i.Status = @StatusFilter
+                            )
+                        )
+
                     ORDER BY {orderBy}
 
                     LIMIT @PageSize OFFSET @Offset;
                 ";
+
+                statusFilter = string.IsNullOrWhiteSpace(statusFilter) ? null : statusFilter;
+                clientTypeFilter = string.IsNullOrWhiteSpace(clientTypeFilter) ? null : clientTypeFilter;
 
                 var rows = await conn.QueryAsync<DashboardModel>(
                     sql,
                     new
                     {
                         PageSize = pageSize,
-                        Offset = offset
+                        Offset = offset,
+                        StatusFilter = statusFilter,
+                        ClientTypeFilter = clientTypeFilter
                     });
 
                 return rows.ToList();

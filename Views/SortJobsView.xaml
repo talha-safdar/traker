@@ -95,13 +95,13 @@
                                     </Border>
                                 </Grid>
 
-                                <!-- job name -->
+                                <!-- job title -->
                                 <Grid Height="50">
                                     <Border Cursor="Hand" Opacity="{Binding OpacityOptions[1]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SortOption(1)]" Background="#3F3F46" CornerRadius="17" Height="35">
                                         <Border.Effect>
                                             <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
                                         </Border.Effect>
-                                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Job Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Job Title" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
                                     </Border>
                                 </Grid>
 

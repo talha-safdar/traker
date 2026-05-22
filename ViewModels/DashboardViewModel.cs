@@ -40,6 +40,8 @@ namespace Traker.ViewModels
         public int TotalPages { get; set; } = 0;
         public string CurrentSortColumn { get; set; } = string.Empty;
         public string CurrentSortDirection { get; set; } = string.Empty;
+        public string StatusFilter { get; set; } = string.Empty; // New / Active / Done / Invoiced / Overdue / Paid / null (null means unselected)
+        public string ClientTypeFilter { get; set; } = string.Empty; // Individual / Company / null
         #endregion
 
         #region Private View Variables
@@ -139,7 +141,7 @@ namespace Traker.ViewModels
                 EnableBtns = false;
                 OpacityBtns = _halfOpacity;
 
-                await SetListStyle();
+                await SetSortList();
             }
             catch (Exception ex)
             {
@@ -605,77 +607,11 @@ namespace Traker.ViewModels
         #endregion
 
         #region Private Functions
-        private async Task<List<DashboardModel>> SetSortFilterData(List<DashboardModel> rows)
-        {
-            try
-            {
-                List<DashboardModel> cards = new List<DashboardModel>();
-
-                foreach (var batch in rows.Chunk(10))
-                {
-                    foreach (var row in batch)
-                    {
-                        cards.Add(new DashboardModel
-                        {
-                            // client
-                            ClientId = row.ClientId,
-                            ClientType = row.ClientType,
-                            TypeIcon = (row.ClientType == "Individual") ? "/Resources/Media/Images/Icons/Lucide/user-round.svg" : "/Resources/Media/Images/Icons/Lucide/building.svg",
-                            ClientName = row.ClientName,
-                            ClientEmail = row.ClientEmail,
-                            ClientPhone = row.ClientPhone,
-                            CompanyName = row.CompanyName,
-                            Address = row.Address,
-                            City = row.City,
-                            Postcode = row.Postcode,
-                            Country = row.Country,
-                            CreatedDate = row.CreatedDate,
-                            IsActive = row.IsActive,
-
-                            // job
-                            JobId = row.JobId,
-                            JobTitle = row.JobTitle,
-                            JobDescription = row.JobDescription,
-                            Price = row.Price, // use toString("C") only for ui side
-                            AmountReceived = row.AmountReceived,
-                            JobStatus = row.JobStatus,
-                            StartDate = row.StartDate,
-                            DueDate = row.DueDate,
-
-                            // invoice
-                            HasInvoice = row.HasInvoice,
-                            InvoiceStatus = row.InvoiceStatus, // if left side not null return that else right side
-                            InvoiceDueDate = row.InvoiceDueDate,
-                            PaidDate = row.PaidDate,
-                        });
-                    }
-                    await Task.Delay(1);
-                }
-                return cards;
-            }
-            catch (Exception ex)
-            {
-                await Execute.OnUIThreadAsync(async () =>
-                {
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
-                    {
-                        State.messageBoxVM.Symbol = 2;
-                        State.messageBoxVM.HeadMessage = "Setup Dashboard";
-                        State.messageBoxVM.Message = ex.Message;
-                        State.messageBoxVM.ButtonStyle = Names.OK;
-                        await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                });
-                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: SetupDashboardData() FAIL\n\t{ex.Message}");
-                return new List<DashboardModel>();
-            }
-        }
-
         private async Task<List<DashboardModel>> SetDashboardData()
         {
             try
             {
-                var rows = await Database.SortList(CurrentPage, PageSize, CurrentSortColumn, CurrentSortDirection);
+                var rows = await Database.GetDashboardRows(CurrentPage, PageSize, CurrentSortColumn, CurrentSortDirection, StatusFilter, ClientTypeFilter);
 
                 List<DashboardModel> cards = new List<DashboardModel>();
                                
@@ -972,7 +908,7 @@ namespace Traker.ViewModels
             });
         }
 
-        private async Task SetListStyle(string columnName = null, string sortDirection = null)
+        private async Task SetSortList(string columnName = null, string sortDirection = null)
         {
             /*
              * null, null // default sort by jobId DESC
@@ -992,73 +928,87 @@ namespace Traker.ViewModels
             await RefreshDashboard();
         }
 
+        //private async Task SetFilterList(string statusFilter = null, string clientTypeFilter = null)
+        //{
+        //    /*
+        //     * New / Active / Done / Invoiced / Overdue / Paid / null (null means unselected)
+        //     *  Individual / Company / null
+        //     */
+
+        //    StatusFilter = statusFilter;
+        //    ClientTypeFilter = clientTypeFilter;
+        //    await RefreshDashboard();
+        //}
+
         private async Task SortJobs(string command)
         {
             try
             {
+                CurrentPage = 1; // reset page to 1 when filter by status
+
                 if (command == Names.ClientNameAsc)
                 {
-                    await SetListStyle(Names.ClientName, Names.ASC);
+                    await SetSortList(Names.ClientName, Names.ASC);
                 }
                 else if (command == Names.ClientNameDesc)
                 {
-                    await SetListStyle(Names.ClientName, Names.DESC);
+                    await SetSortList(Names.ClientName, Names.DESC);
                 }
 
                 else if (command == Names.JobTitleAsc)
                 {
-                    await SetListStyle(Names.JobTitle, Names.ASC);
+                    await SetSortList(Names.JobTitle, Names.ASC);
                 }
                 else if (command == Names.JobTitleDesc)
                 {
-                    await SetListStyle(Names.JobTitle, Names.DESC);
+                    await SetSortList(Names.JobTitle, Names.DESC);
                 }
                 else if (command == Names.JobStatusAsc)
                 {
-                    await SetListStyle(Names.StatusFlow, Names.ASC);
+                    await SetSortList(Names.StatusFlow, Names.ASC);
                 }
                 else if (command == Names.JobStatusDesc)
                 {
-                    await SetListStyle(Names.StatusFlow, Names.DESC);
+                    await SetSortList(Names.StatusFlow, Names.DESC);
                 }
                 else if (command == Names.JobPriceAsc)
                 {
-                    await SetListStyle(Names.JobPrice, Names.ASC);
+                    await SetSortList(Names.JobPrice, Names.ASC);
                 }
                 else if (command == Names.JobPriceDesc)
                 {
-                    await SetListStyle(Names.JobPrice, Names.DESC);
+                    await SetSortList(Names.JobPrice, Names.DESC);
                 }
 
                 else if (command == Names.DueDateAsc)
                 {
-                    await SetListStyle(Names.DueDate, Names.ASC);
+                    await SetSortList(Names.DueDate, Names.ASC);
                 }
                 else if (command == Names.DueDateDesc)
                 {
-                    await SetListStyle(Names.DueDate, Names.DESC);
+                    await SetSortList(Names.DueDate, Names.DESC);
                 }
 
                 else if (command == Names.CreatedDateAsc)
                 {
-                    await SetListStyle(Names.CreatedDate, Names.ASC);
+                    await SetSortList(Names.CreatedDate, Names.ASC);
                 }
                 else if (command == Names.CreatedDateDesc)
                 {
-                    await SetListStyle(Names.CreatedDate, Names.DESC);
+                    await SetSortList(Names.CreatedDate, Names.DESC);
                 }
 
                 else if (command == Names.ClientTypeAsc)
                 {
-                    await SetListStyle(Names.ClientType, Names.ASC);
+                    await SetSortList(Names.ClientType, Names.ASC);
                 }
                 else if (command == Names.ClientTypeDesc)
                 {
-                    await SetListStyle(Names.ClientType, Names.DESC);
+                    await SetSortList(Names.ClientType, Names.DESC);
                 }
                 else if (command == Names.ResetSort)
                 {
-                    await SetListStyle(); // defualt style
+                    await SetSortList(); // defualt style
                 }
             }
             catch (Exception ex)
@@ -1075,7 +1025,7 @@ namespace Traker.ViewModels
             }
         }
 
-        private Task FilterJobs(string command)
+        private async Task FilterJobs(string command)
         {
             try
             {
@@ -1084,6 +1034,7 @@ namespace Traker.ViewModels
                  * DashboardFiltered = backup of current filter
                  * Dashboard = Normal UI list
                  */
+                CurrentPage = 1; // reset page to 1 when filter by status
 
                 if (command != Names.FilterIndividual && command != Names.FilterComapny && command != Names.AllJobStatus && command != Names.UnfilterClientType) // status
                 {
@@ -1091,107 +1042,138 @@ namespace Traker.ViewModels
                     {
                         if (_isFilterClientTypeIndividual == true)
                         {
-                            _dashboardDataTypeFiltered = new ObservableCollection<DashboardModel>(_dashboardDataBackup.Where(j => j.ClientType == "Individual").ToList());
+                            //_dashboardDataTypeFiltered = new ObservableCollection<DashboardModel>(_dashboardDataBackup.Where(j => j.ClientType == "Individual").ToList());
+                            ClientTypeFilter = Names.Individual;
+                            await RefreshDashboard();
                         }
                         else if (_isFilterClientTypeCompany == true)
                         {
-                            _dashboardDataTypeFiltered = new ObservableCollection<DashboardModel>(_dashboardDataBackup.Where(j => j.ClientType == "Company").ToList());
+                            //_dashboardDataTypeFiltered = new ObservableCollection<DashboardModel>(_dashboardDataBackup.Where(j => j.ClientType == "Company").ToList());
+                            ClientTypeFilter = Names.Company;
+                            await RefreshDashboard();
                         }
-                        DashboardData = _dashboardDataTypeFiltered;
+                        //DashboardData = _dashboardDataTypeFiltered;
                     }
                     else
                     {
-                        DashboardData = _dashboardDataBackup;
+                        ClientTypeFilter = string.Empty;
+                        await RefreshDashboard();
+                        //DashboardData = _dashboardDataBackup;
                     }
 
                     if (command == Names.JobStatusNew)
-                    {
-                        DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "New").ToList());
+                    {                        
+                        StatusFilter = Names.New;
+                        await RefreshDashboard();
 
-                        if (DashboardData.Count > 0)
-                        {
-                            _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
-                        }
+
+                        //DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "New").ToList());
+
+                        //if (DashboardData.Count > 0)
+                        //{
+                        //    _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
+                        //}
                     }
                     else if (command == Names.JobStatusActive)
                     {
-                        DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Active").ToList());
+                        StatusFilter = Names.Active;
+                        await RefreshDashboard();
 
-                        if (DashboardData.Count > 0)
-                        {
-                            _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
-                        }
+                        //DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Active").ToList());
+
+                        //if (DashboardData.Count > 0)
+                        //{
+                        //    _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
+                        //}
                     }
                     else if (command == Names.JobStatusDone)
                     {
-                        DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Done").ToList());
+                        StatusFilter = Names.Done;
+                        await RefreshDashboard();
 
-                        if (DashboardData.Count > 0)
-                        {
-                            _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
-                        }
+                        //DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Done").ToList());
+
+                        //if (DashboardData.Count > 0)
+                        //{
+                        //    _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
+                        //}
                     }
                     else if (command == Names.JobStatusInvoiced)
                     {
-                        DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Invoiced").ToList());
+                        StatusFilter = Names.Invoiced;
+                        await RefreshDashboard();
 
-                        if (DashboardData.Count > 0)
-                        {
-                            _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
-                        }
+                        //DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Invoiced").ToList());
+
+                        //if (DashboardData.Count > 0)
+                        //{
+                        //    _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
+                        //}
                     }
                     else if (command == Names.JobStatusOverdue)
                     {
-                        DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.InvoiceStatus == "Overdue").ToList());
+                        StatusFilter = Names.Overdue;
+                        await RefreshDashboard();
 
-                        if (DashboardData.Count > 0)
-                        {
-                            _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
-                        }
+                        //DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.InvoiceStatus == "Overdue").ToList());
+
+                        //if (DashboardData.Count > 0)
+                        //{
+                        //    _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
+                        //}
                     }
                     else if (command == Names.JobStatusPaid)
                     {
-                        DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.InvoiceStatus == "Paid").ToList());
+                        StatusFilter = Names.Paid;
+                        await RefreshDashboard();
 
-                        if (DashboardData.Count > 0)
-                        {
-                            _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
-                        }
+                        //DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.InvoiceStatus == "Paid").ToList());
+
+                        //if (DashboardData.Count > 0)
+                        //{
+                        //    _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
+                        //}
                     }
                     _isFilterJobStatusOn = true;
                 }
                 else if (command == Names.FilterIndividual || command == Names.FilterComapny) // cllient type
                 {
-                    if (_isFilterJobStatusOn == true)
-                    {
-                        DashboardData = _dashboardDataStatusFiltered;
-                    }
-                    else
-                    {
-                        DashboardData = _dashboardDataBackup;
-                    }
+                    //if (_isFilterJobStatusOn == true)
+                    //{
+                    //    DashboardData = _dashboardDataStatusFiltered;
+                    //}
+                    //else
+                    //{
+                    //    DashboardData = _dashboardDataBackup;
+                    //}
 
                     if (command == Names.FilterIndividual)
                     {
-                        DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.ClientType == "Individual").ToList());
+                        ClientTypeFilter = Names.Individual;
+                        await RefreshDashboard();
 
-                        if (DashboardData.Count > 0)
-                        {
-                            _dashboardDataTypeFiltered = DashboardData;
-                        }
-                        _isFilterClientTypeCompany = false;
-                        _isFilterClientTypeIndividual = true;
+                        //DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.ClientType == "Individual").ToList());
+
+                        //if (DashboardData.Count > 0)
+                        //{
+                        //    _dashboardDataTypeFiltered = DashboardData;
+                        //}
+                        //_isFilterClientTypeCompany = false;
+                        //_isFilterClientTypeIndividual = true;
                     }
                     else if (command == Names.FilterComapny)
                     {
-                        DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.ClientType == "Company").ToList());
+                        ClientTypeFilter = Names.Company;
+                        await RefreshDashboard();
 
-                        if (DashboardData.Count > 0)
-                        {
-                            _dashboardDataTypeFiltered = DashboardData;
-                        }
-                        _isFilterClientTypeIndividual = false;
-                        _isFilterClientTypeCompany = true;
+                        //DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.ClientType == "Company").ToList());
+
+                        //if (DashboardData.Count > 0)
+                        //{
+                        //    _dashboardDataTypeFiltered = DashboardData;
+                        //}
+                        //_isFilterClientTypeIndividual = false;
+                        //_isFilterClientTypeCompany = true;
                     }
                     _isFilterClientTypeOn = true;
                 }
@@ -1199,46 +1181,62 @@ namespace Traker.ViewModels
                 {
                     if (_isFilterJobStatusOn == false)
                     {
-                        DashboardData = _dashboardDataBackup; // reset list
-                        _dashboardDataStatusFiltered = DashboardData;
+
+                        StatusFilter = string.Empty;
+                        ClientTypeFilter = string.Empty;
+                        await RefreshDashboard();
+
+                        //DashboardData = _dashboardDataBackup; // reset list
+                        //_dashboardDataStatusFiltered = DashboardData;
                     }
                     else if (_isFilterJobStatusOn == true) // deselect status (new, active, done, invoiced)
                     {
-                        DashboardData = _dashboardDataBackup;
-                        if (_isFilterClientTypeOn == true)
-                        {
-                            DashboardData = _dashboardDataTypeFiltered;
-                        }
-                        _isFilterJobStatusOn = false;
+
+                        StatusFilter = string.Empty;
+                        await RefreshDashboard();
+
+
+                        //DashboardData = _dashboardDataBackup;
+                        //if (_isFilterClientTypeOn == true)
+                        //{
+                        //    DashboardData = _dashboardDataTypeFiltered;
+                        //}
+                        //_isFilterJobStatusOn = false;
 
                         // check if sort was enabled
-                        if (string.IsNullOrEmpty(State.currentSortOption) == false)
-                        {
-                            SortJobs(State.currentSortOption);
-                        }
+                        //if (string.IsNullOrEmpty(State.currentSortOption) == false)
+                        //{
+                        //    await SortJobs(State.currentSortOption);
+                        //}
                     }
                 }
                 else if (command == Names.UnfilterClientType) // reset client type
                 {
                     if (_isFilterClientTypeOn == false)
                     {
-                        DashboardData = _dashboardDataBackup; // reset list
-                        _dashboardDataTypeFiltered = DashboardData;
+                        StatusFilter = string.Empty;
+                        ClientTypeFilter = string.Empty;
+                        await RefreshDashboard();
+                        //DashboardData = _dashboardDataBackup; // reset list
+                        //_dashboardDataTypeFiltered = DashboardData;
                     }
                     else if (_isFilterClientTypeOn == true) // deselect type (individual, company)
                     {
-                        DashboardData = _dashboardDataBackup;
-                        if (_isFilterJobStatusOn == true)
-                        {
-                            DashboardData = _dashboardDataStatusFiltered;
-                        }
-                        _isFilterClientTypeOn = false;
+                        ClientTypeFilter = string.Empty;
+                        await RefreshDashboard();
 
-                        // check if sort was enabled
-                        if (string.IsNullOrEmpty(State.currentSortOption) == false)
-                        {
-                            SortJobs(State.currentSortOption);
-                        }
+                        //DashboardData = _dashboardDataBackup;
+                        //if (_isFilterJobStatusOn == true)
+                        //{
+                        //    DashboardData = _dashboardDataStatusFiltered;
+                        //}
+                        //_isFilterClientTypeOn = false;
+
+                        //// check if sort was enabled
+                        //if (string.IsNullOrEmpty(State.currentSortOption) == false)
+                        //{
+                        //    SortJobs(State.currentSortOption);
+                        //}
                     }
                 }
             }
@@ -1254,7 +1252,6 @@ namespace Traker.ViewModels
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: HandleKeyPress() FAIL\n\t{ex.Message}");
             }
-            return Task.CompletedTask;
         }
         #endregion
 
