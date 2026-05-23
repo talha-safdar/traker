@@ -44,6 +44,8 @@ namespace Traker.ViewModels.User
             _sortcode = string.Empty;
             _IBAN = string.Empty;
             _BIC = string.Empty;
+
+            _bankModel = new BankModel();
         }
 
         #region Caliburn Functions

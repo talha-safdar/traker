@@ -771,7 +771,7 @@ namespace Traker.Database
             {
                 using var conn = new SqliteConnection(_connectionString);
                 return await conn.ExecuteScalarAsync<string>("SELECT Status FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0;",
-                    new { jobId = jobId });
+                    new { jobId = jobId }) ?? "No Status";
             }
             catch (Exception ex)
             {

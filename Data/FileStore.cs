@@ -596,7 +596,7 @@ namespace Traker.Data
         /// <summary>
         /// Get invoice file
         /// </summary>
-        public static Task<string> GetInvoiceFilePath(int invoiceId, int clientId, int jobId, DateTime dateIssued, string clientName)
+        public static Task<string>? GetInvoiceFilePath(int invoiceId, int clientId, int jobId, DateTime dateIssued, string clientName)
         {
             try
             {

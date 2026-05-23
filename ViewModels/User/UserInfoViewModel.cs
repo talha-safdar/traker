@@ -58,6 +58,9 @@ namespace Traker.ViewModels.User
             _toggleButtons = new ObservableCollection<bool>();
             _backgroundButtons = new ObservableCollection<Brush>();
             _foregroundText = new ObservableCollection<Brush>();
+
+            _userModel = new UserModel();
+            _businessModel = new BusinessModel();
         }
 
         #region Caliburn Functions

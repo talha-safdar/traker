@@ -91,6 +91,11 @@ namespace Traker.ViewModels
             _totalAmountDb = 0.0m;
             _windowManager = windowManager;
             _invoiceStatusEdit = new List<string> { "0%", "5%", "20%" };
+
+            _invoicesModel = new InvoicesModel();
+            _clientModel = new ClientsModel();
+            _bankModel = new BankModel();
+            _businessModel = new BusinessModel();
         }
 
         #region Caliburn Functions

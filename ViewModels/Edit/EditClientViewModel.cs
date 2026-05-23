@@ -39,7 +39,7 @@ namespace Traker.ViewModels.Edit
         private string _postcode;
         private string _country;
         private string _createdDate;
-        private bool _isActive;
+        private bool _isClientActive;
 
         // submit button
         private bool _enableSubmitBtn;
@@ -94,7 +94,7 @@ namespace Traker.ViewModels.Edit
                 Postcode = SelectedJob.Postcode;
                 Country = SelectedJob.Country;
                 CreatedDate = SelectedJob.CreatedDate.ToString();
-                IsActive = SelectedJob.IsActive;
+                IsClientActive = SelectedJob.IsActive;
             }
             catch (Exception ex)
             {
@@ -519,13 +519,13 @@ namespace Traker.ViewModels.Edit
             }
         }
 
-        public bool IsActive
+        public bool IsClientActive
         {
-            get { return _isActive; }
+            get { return _isClientActive; }
             set
             {
-                _isActive = value;
-                NotifyOfPropertyChange(() => IsActive);
+                _isClientActive = value;
+                NotifyOfPropertyChange(() => IsClientActive);
                 CanSubmit();
             }
         }

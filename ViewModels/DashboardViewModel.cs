@@ -75,7 +75,7 @@ namespace Traker.ViewModels
         private bool _isFilterClientTypeIndividual = false;
         private bool _isFilterClientTypeCompany = false;
 
-        private CancellationTokenSource _cts; // for checking overude
+        private CancellationTokenSource? _cts; // for checking overude
         private ManualResetEventSlim _pauseEvent; // true = start open
 
         private double _fullOpacity = 1.0;
@@ -105,6 +105,7 @@ namespace Traker.ViewModels
             _currentPage = 1;
             _pageInfo = string.Empty;
             _paginationButtons = new ObservableCollection<bool>();
+            _isInitialized = false;
 
             // private variables
             State.EditJobViewModel = new EditJobViewModel(_events, _windowManager, State);
@@ -140,6 +141,7 @@ namespace Traker.ViewModels
                 UserName = await Database.GetUserName();
 
                 await RefreshDashboard(); //set dashboard
+                StartLoopBG(); // start background check for overdue
             }
             catch (Exception ex)
             {
@@ -396,7 +398,7 @@ namespace Traker.ViewModels
             try
             {
                 State.EditClientViewModel = new EditClientViewModel(_events, _windowManager, DataService, State);
-                State.EditClientViewModel.SelectedJob = SelectedJob; // pass selected row to EditClientViewModel
+                State.EditClientViewModel.SelectedJob = SelectedJob ?? SetDashboardModelDefault(); // pass selected row to EditClientViewModel
                 await _windowManager.ShowDialogAsync(State.EditClientViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
             }
             catch (Exception ex)
@@ -565,12 +567,12 @@ namespace Traker.ViewModels
         #endregion
 
         #region Public Functions
-        public async Task RefreshDashboard()
+        public async Task RefreshDashboard(bool showLoading = true)
         {
             try
             {
-                State.IsBusy = true;
-                State.LoadingMessage = "P L E A S E   W A I T ";
+                State.IsBusy = showLoading == true ? true : false;
+                State.LoadingMessage = showLoading == true ? "P L E A S E   W A I T " : string.Empty;
                 await Task.Delay(50); // let rendering breath
 
 
@@ -878,7 +880,7 @@ namespace Traker.ViewModels
                     await CheckOverDuePayBG();
 
                     // 3. Wait for the next interval
-                    await Task.Delay(20000, token);
+                    await Task.Delay(2000, token);
                 }
             }
             catch (Exception ex)
@@ -895,17 +897,39 @@ namespace Traker.ViewModels
                 {
                     foreach (var job in DashboardData.ToList())
                     {
-                        if (job.JobStatus == Names.Invoiced && DateOnly.FromDateTime(DateTime.Now) > job.InvoiceDueDate)
+                        // if invoiced and due date has passed then set to overdue
+                        if (job.JobStatus == Names.Invoiced && DateOnly.FromDateTime(DateTime.Now) > job.InvoiceDueDate && job.InvoiceStatus != Names.Overdue && job.InvoiceStatus != Names.Paid)
                         {
-                            await Database.SetInvoiceStatus(await Database.GetInvoiceIdByJobId(job.JobId), Names.Overdue, null);
-                            //await DataService.RefreshDatabase();
-                            DashboardData = new ObservableCollection<DashboardModel>(await SetDashboardData());
+                            await Execute.OnUIThreadAsync(async () =>
+                            {
+                                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                                {
+                                    State.messageBoxVM.Symbol = 1;
+                                    State.messageBoxVM.HeadMessage = "Invoice Overdue";
+                                    State.messageBoxVM.Message = $"Invoice for job '{job.JobTitle}' is overdue!";
+                                    State.messageBoxVM.ButtonStyle = Names.OK;
+                                    await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                                }
+                                await Database.SetInvoiceStatus(await Database.GetInvoiceIdByJobId(job.JobId), Names.Overdue, null);
+                                await RefreshDashboard(false);
+                            });
                         }
-                        else if (job.JobStatus == Names.Overdue && DateOnly.FromDateTime(DateTime.Now) < job.InvoiceDueDate)
+                        // if overdue but due date is in the future (maybe admin updated the due date) then set back to invoiced
+                        else if (job.InvoiceStatus == Names.Overdue && DateOnly.FromDateTime(DateTime.Now) < job.InvoiceDueDate)
                         {
-                            await Database.SetInvoiceStatus(await Database.GetInvoiceIdByJobId(job.JobId), Names.Invoiced, null);
-                            //await DataService.RefreshDatabase();
-                            DashboardData = new ObservableCollection<DashboardModel>(await SetDashboardData());
+                            await Execute.OnUIThreadAsync(async () =>
+                            {
+                                //if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == State.messageBoxVM) == false)
+                                //{
+                                //    State.messageBoxVM.Symbol = 0;
+                                //    State.messageBoxVM.HeadMessage = "Invoice Status Update";
+                                //    State.messageBoxVM.Message = $"Invoice for job '{job.JobTitle}' status has been updated back to Invoiced.";
+                                //    State.messageBoxVM.ButtonStyle = Names.OK;
+                                //    await _windowManager.ShowDialogAsync(State.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                                //}
+                                await Database.SetInvoiceStatus(await Database.GetInvoiceIdByJobId(job.JobId), Names.Invoiced, null);
+                                await RefreshDashboard(false);
+                            });
                         }
                     }
                 }
@@ -927,7 +951,7 @@ namespace Traker.ViewModels
             });
         }
 
-        private async Task SetSortList(string columnName = null, string sortDirection = null)
+        private async Task SetSortList(string? columnName = null, string? sortDirection = null)
         {
             /*
              * null, null // default sort by jobId DESC
@@ -1149,6 +1173,50 @@ namespace Traker.ViewModels
                 }
                 Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: HandleKeyPress() FAIL\n\t{ex.Message}");
             }
+        }
+        
+        /// <summary>
+        /// Used when SelectedJob is null
+        /// </summary>
+        private DashboardModel SetDashboardModelDefault()
+        {
+            return new DashboardModel()
+            {
+                 // client
+                ClientId = -1,
+                ClientType = string.Empty,
+                ClientName = "No Client",
+                CompanyName = "No Company",
+                ClientEmail = string.Empty,
+                ClientPhone = string.Empty,
+                Address = string.Empty,
+                City = string.Empty,
+                Postcode = string.Empty,
+                Country = string.Empty,
+                IsActive = true,
+
+                // jobs
+                JobId = 0,
+                JobTitle = "No Job",
+                JobDescription = string.Empty,
+                Price = 0.0m,
+                JobStatus = "No Status",
+                StartDate = new DateOnly(),
+                DueDate = new DateOnly(),
+                AmountReceived = 0.0m,
+                Jobs = new List<JobsModel>(), // list of jobs of the client
+                CreatedDate = new DateOnly(),
+
+                // invoice
+                HasInvoice = false,
+                InvoiceStatus = string.Empty,
+                InvoiceDueDate = new DateOnly(),
+                PaidDate = new DateOnly(),
+                Invoices = new List<InvoicesModel>(), // list of invoices of the client
+
+                // UI
+                TypeIcon = string.Empty
+            };
         }
         #endregion
 
@@ -1420,7 +1488,7 @@ namespace Traker.ViewModels
             get { return _selectedJob; }
             set
             {
-                _selectedJob = value;
+                _selectedJob = value ?? SetDashboardModelDefault();
                 NotifyOfPropertyChange(() => SelectedJob);
             }
         }

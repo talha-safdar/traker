@@ -106,12 +106,12 @@ namespace Traker.ViewModels.Edit
 
             try
             {
-                _invoicePath = await FileStore.GetInvoiceFilePath(
-                Convert.ToInt32(await Database.GetInvoiceIdByJobId(SelectedJob.JobId)),
-                SelectedJob.ClientId,
-                Convert.ToInt32(SelectedJob.JobId),
-                await Database.GetInvoiceIssueDateByJobId(SelectedJob.JobId),
-                SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName);
+                _invoicePath = 
+                    await FileStore.GetInvoiceFilePath(Convert.ToInt32(await Database.GetInvoiceIdByJobId(SelectedJob.JobId)),
+                                                        SelectedJob.ClientId,
+                                                        Convert.ToInt32(SelectedJob.JobId),
+                                                        await Database.GetInvoiceIssueDateByJobId(SelectedJob.JobId),
+                                                        SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName);
 
                 // if no file found
                 if (string.IsNullOrEmpty(_invoicePath))

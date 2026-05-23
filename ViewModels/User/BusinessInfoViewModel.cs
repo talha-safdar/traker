@@ -61,6 +61,9 @@ namespace Traker.ViewModels.User
             _vatNumber = string.Empty;
             _registrationNumber = string.Empty;
             _businessNameOpacity = 0.0;
+
+            _businessModel = new BusinessModel();
+            _userModel = new UserModel();
         }
 
         #region Caliburn Functions
