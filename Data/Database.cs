@@ -55,7 +55,7 @@ namespace Traker.Database
                         using var reader = new StreamReader(stream); // get Schema.sql
                         string sql = reader.ReadToEnd(); // read Schema.sql
                         var _sqliteCommand = conn.CreateCommand();
-                        _sqliteCommand.CommandText = sql; // set Schema.sqlwr
+                        _sqliteCommand.CommandText = sql; // set Schema.sql
                         _sqliteCommand.ExecuteNonQuery(); // execute Schema.sql
                         Logger.LogActivity(Logger.INFO, "Database: SetUpDatabase() DATABASE CONNECTED");
                     }
@@ -104,642 +104,15 @@ namespace Traker.Database
 
         #region Fetch Functions
         /// <summary>
-        /// Checks user database on startup if empty then
-        /// prompt setup window (after deleting the databse file)
+        /// Fetch Business Table
         /// </summary>
-        public async static Task<bool> CheckUserDatabase()
-        {
-            bool isSuccessful = false;
-
-            try
-            {
-                await Task.Run(async() =>
-                {
-                    // set directory and database name
-                    var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Traker");
-                    if (Directory.Exists(folder) == false)
-                    {
-                        // to test
-                        isSuccessful = false;
-                        return;
-                    }
-
-                    var dbPath = Path.Combine(folder, "traker.db");
-                     _connectionString = $"Data Source={dbPath}";
-
-
-                    using (var conn = new SqliteConnection(_connectionString))
-                    {
-                        // query database
-                        int countUser = await conn.ExecuteScalarAsync<int>(
-                        @"SELECT COUNT(*) FROM 'User'"
-                        );
-
-                        int countBusiness = await conn.ExecuteScalarAsync<int>(
-                        @"SELECT COUNT(*) FROM 'Business'"
-                        );
-
-                        int countBank = await conn.ExecuteScalarAsync<int>(
-                        @"SELECT COUNT(*) FROM 'bank'"
-                        );
-
-                        // if any table is empty delete database file to trigger setup window
-                        if (countUser == 0 || countBusiness == 0 || countBank == 0)
-                        {
-                            SqliteConnection.ClearAllPools();
-
-                            GC.Collect();
-                            GC.WaitForPendingFinalizers();
-
-                            //File.Delete(dbPath);
-
-                            isSuccessful = false;
-                        }
-                        else
-                        {
-                            isSuccessful = true;
-                        }
-                    }
-                });                
-            }
-            catch (Exception ex)
-            {
-                AppState state = IoC.Get<AppState>();
-                IWindowManager windowManager = IoC.Get<IWindowManager>();
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                {
-                    state.messageBoxVM.Symbol = 2;
-                    state.messageBoxVM.HeadMessage = "Fetch Clients Tables";
-                    state.messageBoxVM.Message = ex.Message;
-                    state.messageBoxVM.ButtonStyle = Names.OK;
-                    state.messageBoxVM.Action = Names.Close;
-                    await windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                }
-                isSuccessful = false;
-                Logger.LogActivity(Logger.ERROR, $"Database: CheckUserDatabase() FAIL\n\t{ex.Message}");
-            }
-            return isSuccessful;
-        }
-
-        /// <summary>
-        /// Fetch Clients table
-        /// </summary>
-        public static List<ClientsModel> FetchClientsTable()
-        {
-            List<ClientsModel> clientsList = new List<ClientsModel>();
-
-            try
-            {
-                using (var conn = new SqliteConnection(_connectionString))
-                {
-                    conn.Open();
-
-                    using (var cmd = conn.CreateCommand())
-                    {
-                        cmd.CommandText = "SELECT * FROM Clients";
-
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var ClientId = reader["ClientId"];
-                                var Type = reader["Type"];
-                                var FullName = reader["FullName"];
-                                var CompanyName = reader["CompanyName"];
-                                var Email = reader["Email"];
-                                var PhoneNumber = reader["PhoneNumber"];
-                                var BillingAddress = reader["BillingAddress"];
-                                var City = reader["City"];
-                                var Postcode = reader["Postcode"];
-                                var Country = reader["Country"];
-                                var CreatedDate = reader["CreatedDate"];
-                                var FolderName = reader["FolderName"];
-                                var IsActive = reader["IsActive"];
-
-                                if (string.IsNullOrEmpty(ClientId.ToString()) == false ||
-                                    string.IsNullOrEmpty(Type.ToString()) == false ||
-                                    string.IsNullOrEmpty(FullName.ToString()) == false ||
-                                    string.IsNullOrEmpty(CompanyName.ToString()) == false ||
-                                    string.IsNullOrEmpty(Email.ToString()) == false ||
-                                    string.IsNullOrEmpty(PhoneNumber.ToString()) == false ||
-                                    string.IsNullOrEmpty(BillingAddress.ToString()) == false ||
-                                    string.IsNullOrEmpty(City.ToString()) == false ||
-                                    string.IsNullOrEmpty(Postcode.ToString()) == false ||
-                                    string.IsNullOrEmpty(Country.ToString()) == false ||
-                                    string.IsNullOrEmpty(CreatedDate.ToString()) == false ||
-                                    string.IsNullOrEmpty(FolderName.ToString()) == false ||
-                                    string.IsNullOrEmpty(IsActive.ToString()) == false)
-                                {
-                                    clientsList.Add(new ClientsModel
-                                    {
-                                        ClientId = Convert.ToInt32(ClientId),
-                                        Type = Type.ToString()!,
-                                        FullName = FullName.ToString()!,
-                                        CompanyName = CompanyName.ToString()!,
-                                        Email = Email.ToString()!,
-                                        PhoneNumber = PhoneNumber.ToString()!,
-                                        BillingAddress = BillingAddress.ToString()!,
-                                        City = City.ToString()!,
-                                        Postcode = Postcode.ToString()!,
-                                        Country = Country.ToString()!,
-                                        CreatedDate = DateOnly.FromDateTime(Convert.ToDateTime(CreatedDate))!,
-                                        FolderName = FolderName.ToString()!,
-                                        IsActive = Convert.ToBoolean(IsActive)
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-                return clientsList;
-            }
-            catch (Exception ex)
-            {
-                AppState state = IoC.Get<AppState>();
-                IWindowManager windowManager = IoC.Get<IWindowManager>();
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                {
-                    state.messageBoxVM.Symbol = 2;
-                    state.messageBoxVM.HeadMessage = "Fetch Clients Tables";
-                    state.messageBoxVM.Message = ex.Message;
-                    state.messageBoxVM.ButtonStyle = Names.OK;
-                    state.messageBoxVM.Action = Names.Close;
-                    windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                }
-                Logger.LogActivity(Logger.ERROR, $"Database: FetchClientsTable() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Fetch Jobs table
-        /// </summary>
-        public static List<JobsModel> FetchJobsTable()
-        {
-            List<JobsModel> jobsList = new List<JobsModel>();
-
-            try
-            {
-                using (var conn = new SqliteConnection(_connectionString))
-                {
-                    conn.Open();
-
-                    using (var cmd = conn.CreateCommand())
-                    {
-                        cmd.CommandText = "SELECT * FROM Jobs";
-
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var JobId = reader["JobId"];
-                                var ClientId = reader["ClientId"];
-                                var Title = reader["Title"] == DBNull.Value ? String.Empty : reader["Title"];
-                                var Description = reader["Description"] == DBNull.Value ? String.Empty : reader["Description"];
-                                var Status = reader["Status"] == DBNull.Value ? String.Empty : reader["Status"];
-                                var EstimatedPrice = reader["EstimatedPrice"] == DBNull.Value ? "0" : reader["EstimatedPrice"];
-                                var FinalPrice = reader["FinalPrice"] == DBNull.Value ? "0" : reader["FinalPrice"];
-                                var AmountReceived = reader["AmountReceived"] == DBNull.Value ? "0" : reader["AmountReceived"];
-                                var CreatedDate = reader["CreatedDate"] == DBNull.Value ? DateTime.MinValue : reader["CreatedDate"];
-                                var StartDate = reader["StartDate"] == DBNull.Value ? DateTime.MinValue : reader["StartDate"];
-                                var CompletedDate = reader["CompletedDate"] == DBNull.Value ? DateTime.MinValue : reader["CompletedDate"];
-                                var DueDate = reader["DueDate"] == DBNull.Value ? DateTime.MinValue : reader["DueDate"]; ;
-                                var Notes = reader["Notes"] == DBNull.Value ? String.Empty : reader["Notes"];
-                                var FolderName = reader["FolderName"] == DBNull.Value ? String.Empty : reader["FolderName"];
-                                var IsArchived = reader["IsArchived"] == DBNull.Value ? false : reader["IsArchived"];
-
-                                if (string.IsNullOrEmpty(JobId.ToString()) == false ||
-                                    string.IsNullOrEmpty(ClientId.ToString()) == false ||
-                                    string.IsNullOrEmpty(Title.ToString()) == false ||
-                                    string.IsNullOrEmpty(Description.ToString()) == false ||
-                                    string.IsNullOrEmpty(Status.ToString()) == false ||
-                                    string.IsNullOrEmpty(EstimatedPrice.ToString()) == false ||
-                                    string.IsNullOrEmpty(FinalPrice.ToString()) == false ||
-                                    string.IsNullOrEmpty(AmountReceived.ToString()) == false ||
-                                    string.IsNullOrEmpty(CreatedDate.ToString()) == false ||
-                                    string.IsNullOrEmpty(StartDate.ToString()) == false ||
-                                    string.IsNullOrEmpty(CompletedDate.ToString()) == false ||
-                                    string.IsNullOrEmpty(DueDate.ToString()) == false ||
-                                    string.IsNullOrEmpty(Notes.ToString()) == false ||
-                                    string.IsNullOrEmpty(FolderName.ToString()) == false ||
-                                    string.IsNullOrEmpty(IsArchived.ToString()) == false)
-                                {
-                                    jobsList.Add(new JobsModel
-                                    {
-                                        JobId = Convert.ToInt32(JobId),
-                                        ClientId = Convert.ToInt32(ClientId),
-                                        Title = Title.ToString()!,
-                                        Description = Description.ToString()!,
-                                        Status = Status.ToString()!,
-                                        EstimatedPrice = Convert.ToDecimal(EstimatedPrice),
-                                        FinalPrice = Convert.ToDecimal(FinalPrice),
-                                        AmountReceived = Convert.ToDecimal(AmountReceived),
-                                        CreatedDate = DateOnly.FromDateTime(Convert.ToDateTime(CreatedDate)),
-                                        StartDate = DateOnly.FromDateTime(Convert.ToDateTime(StartDate)),
-                                        CompletedDate = DateOnly.FromDateTime(Convert.ToDateTime(CompletedDate)),
-                                        DueDate = DateOnly.FromDateTime(Convert.ToDateTime(DueDate)),
-                                        Notes = Notes.ToString()!,
-                                        FolderName = FolderName.ToString()!,
-                                        IsArchived = Convert.ToBoolean(IsArchived),
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-                return jobsList;
-            }
-            catch (Exception ex)
-            {
-                Execute.OnUIThreadAsync(() =>
-                {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Fetch Jobs Tables";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
-                Logger.LogActivity(Logger.ERROR, $"Database: FetchJobsTable() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Fetch Invoices table
-        /// </summary>
-        public static List<InvoicesModel> FetchInvoicesTable()
-        {
-            List<InvoicesModel> invoicesList = new List<InvoicesModel>();
-
-            try
-            {
-                using (var conn = new SqliteConnection(_connectionString))
-                {
-                    conn.Open();
-
-                    using (var cmd = conn.CreateCommand())
-                    {
-                        cmd.CommandText = "SELECT * FROM Invoices";
-
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var InvoiceId = reader["InvoiceId"];
-                                var JobId = reader["JobId"];
-                                var InvoiceNumber = reader["InvoiceNumber"];
-                                var Subtotal = reader["Subtotal"] == DBNull.Value ? "0" : reader["Subtotal"];
-                                var TaxAmount = reader["TaxAmount"] == DBNull.Value ? "0" : reader["TaxAmount"];
-                                var TotalAmount = reader["TotalAmount"] == DBNull.Value ? "0" : reader["TotalAmount"];
-                                var IssueDate = reader["IssueDate"] == DBNull.Value ? DateTime.MinValue : reader["IssueDate"];
-                                var DueDate = reader["DueDate"] == DBNull.Value ? DateTime.MinValue : reader["DueDate"];
-                                var BillingName = reader["BillingName"] == DBNull.Value ? String.Empty : reader["BillingName"];
-                                var BillingAddress = reader["BillingAddress"] == DBNull.Value ? String.Empty : reader["BillingAddress"];
-                                var BillingCity = reader["BillingCity"] == DBNull.Value ? String.Empty : reader["BillingCity"];
-                                var BillingPostcode = reader["BillingPostcode"] == DBNull.Value ? String.Empty : reader["BillingPostcode"];
-                                var BillingCountry = reader["BillingCountry"] == DBNull.Value ? String.Empty : reader["BillingCountry"];
-                                var Status = reader["Status"] == DBNull.Value ? String.Empty : reader["Status"];
-                                var IsDeleted = reader["IsDeleted"] == DBNull.Value ? String.Empty : reader["IsDeleted"];
-                                var PaidDate = reader["PaidDate"] == DBNull.Value ? DateTime.MinValue : reader["PaidDate"];
-                                var PaymentMethod = reader["PaymentMethod"] == DBNull.Value ? String.Empty : reader["PaymentMethod"];
-                                var Notes = reader["Notes"] == DBNull.Value ? String.Empty : reader["Notes"];
-                                var InvoiceName = reader["InvoiceName"] == DBNull.Value ? String.Empty : reader["InvoiceName"];
-
-                                if (string.IsNullOrEmpty(InvoiceId.ToString()) == false ||
-                                    string.IsNullOrEmpty(JobId.ToString()) == false ||
-                                    string.IsNullOrEmpty(InvoiceNumber.ToString()) == false ||
-                                    string.IsNullOrEmpty(Subtotal.ToString()) == false ||
-                                    string.IsNullOrEmpty(TaxAmount.ToString()) == false ||
-                                    string.IsNullOrEmpty(TotalAmount.ToString()) == false ||
-                                    string.IsNullOrEmpty(IssueDate.ToString()) == false ||
-                                    string.IsNullOrEmpty(DueDate.ToString()) == false ||
-                                    string.IsNullOrEmpty(BillingName.ToString()) == false ||
-                                    string.IsNullOrEmpty(BillingAddress.ToString()) == false ||
-                                    string.IsNullOrEmpty(BillingCity.ToString()) == false ||
-                                    string.IsNullOrEmpty(BillingPostcode.ToString()) == false ||
-                                    string.IsNullOrEmpty(BillingCountry.ToString()) == false ||
-                                    string.IsNullOrEmpty(Status.ToString()) == false ||
-                                    string.IsNullOrEmpty(IsDeleted.ToString()) == false ||
-                                    string.IsNullOrEmpty(PaidDate.ToString()) == false ||
-                                    string.IsNullOrEmpty(PaymentMethod.ToString()) == false ||
-                                    string.IsNullOrEmpty(Notes.ToString()) == false ||
-                                    string.IsNullOrEmpty(InvoiceName.ToString()) == false)
-                                {
-                                    invoicesList.Add(new InvoicesModel
-                                    {
-                                        InvoiceId = Convert.ToInt32(InvoiceId),
-                                        JobId = Convert.ToInt32(JobId),
-                                        InvoiceNumber = Convert.ToInt32(InvoiceNumber),
-                                        Subtotal = Convert.ToDecimal(Subtotal),
-                                        TaxAmount = Convert.ToDecimal(TaxAmount),
-                                        TotalAmount = Convert.ToDecimal(TotalAmount),
-                                        IssueDate = Convert.ToDateTime(IssueDate),
-                                        DueDate = DateOnly.FromDateTime(Convert.ToDateTime(DueDate)),
-                                        Status = Status.ToString()!,
-                                        BillingName = BillingName.ToString()!,
-                                        BillingAddress = BillingAddress.ToString()!,
-                                        BillingCity = BillingCity.ToString()!,
-                                        BillingPostcode = BillingPostcode.ToString()!,
-                                        BillingCountry = BillingCountry.ToString()!,
-                                        IsDeleted = Convert.ToBoolean(IsDeleted),
-                                        PaidDate = DateOnly.FromDateTime(Convert.ToDateTime(PaidDate)),
-                                        PaymentMethod = PaymentMethod.ToString()!,
-                                        Notes = Notes.ToString()!,
-                                        InvoiceName = InvoiceName.ToString()!,
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-                return invoicesList;
-            }
-            catch (Exception ex)
-            {
-                Execute.OnUIThreadAsync(() =>
-                {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Fetch Invoices Tables";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
-                Logger.LogActivity(Logger.ERROR, $"Database: FetchInvoicesTable() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Fetch User table
-        /// </summary>
-        public static List<UserModel> FetchUserTable()
-        {
-            List<UserModel> userList = new List<UserModel>();
-
-            try
-            {
-                using (var conn = new SqliteConnection(_connectionString))
-                {
-                    conn.Open();
-
-                    using (var cmd = conn.CreateCommand())
-                    {
-                        cmd.CommandText = "SELECT * FROM User";
-
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var UserId = reader["UserId"];
-                                var FullName = reader["FullName"] == DBNull.Value ? string.Empty : reader["FullName"];
-                                var Email = reader["Email"] == DBNull.Value ? string.Empty : reader["Email"];
-                                var Phone = reader["Phone"] == DBNull.Value ? string.Empty : reader["Phone"];
-
-
-                                if (string.IsNullOrEmpty(UserId.ToString()) == false ||
-                                    string.IsNullOrEmpty(FullName.ToString()) == false ||
-                                    string.IsNullOrEmpty(Email.ToString()) == false ||
-                                    string.IsNullOrEmpty(Phone.ToString()) == false)
-                                {
-                                    userList.Add(new UserModel
-                                    {
-                                        UserId = Convert.ToInt32(UserId),
-                                        FullName = FullName.ToString()!,
-                                        Email = Email.ToString()!,
-                                        Phone = Phone.ToString()!,
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-                return userList;
-            }
-            catch (Exception ex)
-            {
-                Execute.OnUIThreadAsync(() =>
-                {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Fetch User Table";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
-                Logger.LogActivity(Logger.ERROR, $"Database: FetchUserTable() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Fetch Business table
-        /// </summary>
-        public static List<BusinessModel> FetchBusinessTable()
-        {
-            List<BusinessModel> businessList = new List<BusinessModel>();
-
-            try
-            {
-                using (var conn = new SqliteConnection(_connectionString))
-                {
-                    conn.Open();
-
-                    using (var cmd = conn.CreateCommand())
-                    {
-                        cmd.CommandText = "SELECT * FROM Business";
-
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var BusinessId = reader["BusinessId"];
-                                var UserId = reader["UserId"];
-                                var BusinessName = reader["BusinessName"] == DBNull.Value ? string.Empty : reader["BusinessName"];
-                                var BusinessType = reader["BusinessType"] == DBNull.Value ? string.Empty : reader["BusinessType"];
-                                var Address = reader["Address"] == DBNull.Value ? string.Empty : reader["Address"];
-                                var City = reader["City"] == DBNull.Value ? string.Empty : reader["City"];
-                                var Postcode = reader["Postcode"] == DBNull.Value ? string.Empty : reader["Postcode"];
-                                var Country = reader["Country"] == DBNull.Value ? string.Empty : reader["Country"];
-                                var VatNumber = reader["VatNumber"] == DBNull.Value ? string.Empty : reader["VatNumber"];
-                                var RegistrationNumber = reader["RegistrationNumber"] == DBNull.Value ? string.Empty : reader["RegistrationNumber"];
-
-
-                                if (string.IsNullOrEmpty(BusinessId.ToString()) == false ||
-                                    string.IsNullOrEmpty(UserId.ToString()) == false ||
-                                    string.IsNullOrEmpty(BusinessName.ToString()) == false ||
-                                    string.IsNullOrEmpty(BusinessType.ToString()) == false ||
-                                    string.IsNullOrEmpty(Address.ToString()) == false ||
-                                    string.IsNullOrEmpty(City.ToString()) == false ||
-                                    string.IsNullOrEmpty(Postcode.ToString()) == false ||
-                                    string.IsNullOrEmpty(Country.ToString()) == false ||
-                                    string.IsNullOrEmpty(VatNumber.ToString()) == false ||
-                                    string.IsNullOrEmpty(RegistrationNumber.ToString()) == false)
-                                {
-                                    businessList.Add(new BusinessModel
-                                    {
-                                        BusinessId = Convert.ToInt32(BusinessId),
-                                        UserId = Convert.ToInt32(UserId),
-                                        BusinessName = BusinessName.ToString()!,
-                                        BusinessType = BusinessType.ToString()!,
-                                        Address = Address.ToString()!,
-                                        City = City.ToString()!,
-                                        Postcode = Postcode.ToString()!,
-                                        Country = Country.ToString()!,
-                                        VatNumber = VatNumber.ToString()!,
-                                        RegistrationNumber = RegistrationNumber.ToString()!,
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-                return businessList;
-            }
-            catch (Exception ex)
-            {
-                Execute.OnUIThreadAsync(() =>
-                {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Fetch Business Table";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
-                Logger.LogActivity(Logger.ERROR, $"Database: FetchBusinessTable() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Fetch Bank table
-        /// </summary>
-        public static List<BankModel> FetchBankTable()
-        {
-            List<BankModel> bankList = new List<BankModel>();
-
-            try
-            {
-                using (var conn = new SqliteConnection(_connectionString))
-                {
-                    conn.Open();
-
-                    using (var cmd = conn.CreateCommand())
-                    {
-                        cmd.CommandText = "SELECT * FROM Bank";
-
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var BankId = reader["BankId"];
-                                var UserId = reader["UserId"];
-                                var BankName = reader["BankName"] == DBNull.Value ? string.Empty : reader["BankName"];
-                                var AccountName = reader["AccountName"] == DBNull.Value ? string.Empty : reader["AccountName"];
-                                var AccountNumber = reader["AccountNumber"] == DBNull.Value ? string.Empty : reader["AccountNumber"];
-                                var SortCode = reader["SortCode"] == DBNull.Value ? string.Empty : reader["SortCode"];
-                                var IBAN = reader["IBAN"] == DBNull.Value ? string.Empty : reader["IBAN"];
-                                var BIC = reader["BIC"] == DBNull.Value ? string.Empty : reader["BIC"];
-
-                                if (string.IsNullOrEmpty(BankId.ToString()) == false ||
-                                    string.IsNullOrEmpty(UserId.ToString()) == false ||
-                                    string.IsNullOrEmpty(BankName.ToString()) == false ||
-                                    string.IsNullOrEmpty(AccountName.ToString()) == false ||
-                                    string.IsNullOrEmpty(AccountNumber.ToString()) == false ||
-                                    string.IsNullOrEmpty(SortCode.ToString()) == false ||
-                                    string.IsNullOrEmpty(IBAN.ToString()) == false ||
-                                    string.IsNullOrEmpty(BIC.ToString()) == false)
-                                {
-                                    bankList.Add(new BankModel
-                                    {
-                                        BankId = Convert.ToInt32(BankId),
-                                        UserId = Convert.ToInt32(UserId),
-                                        BankName = BankName.ToString()!,
-                                        AccountName = AccountName.ToString()!,
-                                        AccountNumber = AccountNumber.ToString()!,
-                                        SortCode = SortCode.ToString()!,
-                                        IBAN = IBAN.ToString()!,
-                                        BIC = BIC.ToString()!,
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-                return bankList;
-            }
-            catch (Exception ex)
-            {
-                Execute.OnUIThreadAsync(() =>
-                {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Fetch Bank Table";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
-                Logger.LogActivity(Logger.ERROR, $"Database: FetchBankTable() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // DAPPER
-        /// <summary>
-        /// Fetch User Table
-        /// </summary>
-        public async static Task<UserModel> FetchUser()
+        public async static Task<BusinessModel> FetchBusiness()
         {
             try
             {
                 using var conn = new SqliteConnection(_connectionString);
-                return await conn.QueryFirstAsync<UserModel>("SELECT * FROM User LIMIT 1;");
+                return await conn.QueryFirstAsync<BusinessModel>("SELECT * FROM Business WHERE UserId = @userId LIMIT 1;",
+                    new { userId = await GetUserId() });
             }
             catch (Exception ex)
             {
@@ -750,7 +123,7 @@ namespace Traker.Database
                     if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
                     {
                         state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Fetch User Details";
+                        state.messageBoxVM.HeadMessage = "Fetch Business Details";
                         state.messageBoxVM.Message = ex.Message;
                         state.messageBoxVM.ButtonStyle = Names.OK;
                         state.messageBoxVM.Action = Names.Close;
@@ -758,7 +131,7 @@ namespace Traker.Database
                     }
                     return Task.CompletedTask;
                 });
-                Logger.LogActivity(Logger.ERROR, $"Database: FetchUser() FAIL\n\t{ex.Message}");
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchBusiness() FAIL\n\t{ex.Message}");
                 throw;
             }
         }
@@ -797,15 +170,14 @@ namespace Traker.Database
         }
         
         /// <summary>
-        /// Fetch Business Table
+        /// Fetch User Table
         /// </summary>
-        public async static Task<BusinessModel> FetchBusiness()
+        public async static Task<UserModel> FetchUser()
         {
             try
             {
                 using var conn = new SqliteConnection(_connectionString);
-                return await conn.QueryFirstAsync<BusinessModel>("SELECT * FROM Business WHERE UserId = @userId LIMIT 1;",
-                    new { userId = await GetUserId() });
+                return await conn.QueryFirstAsync<UserModel>("SELECT * FROM User LIMIT 1;");
             }
             catch (Exception ex)
             {
@@ -816,7 +188,7 @@ namespace Traker.Database
                     if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
                     {
                         state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Fetch Business Details";
+                        state.messageBoxVM.HeadMessage = "Fetch User Details";
                         state.messageBoxVM.Message = ex.Message;
                         state.messageBoxVM.ButtonStyle = Names.OK;
                         state.messageBoxVM.Action = Names.Close;
@@ -824,104 +196,7 @@ namespace Traker.Database
                     }
                     return Task.CompletedTask;
                 });
-                Logger.LogActivity(Logger.ERROR, $"Database: FetchBusiness() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
-        
-        
-        
-        
-        
-        /// <summary>  
-        /// Check if user exists
-        /// </summary>
-        public async static Task<bool> CheckUserExists()
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                return await conn.ExecuteScalarAsync<bool>("SELECT EXISTS(SELECT 1 FROM User);");
-            }
-            catch (Exception ex)
-            {
-                await Execute.OnUIThreadAsync(() =>
-                {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Check User Exists";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
-                Logger.LogActivity(Logger.ERROR, $"Database: CheckUserExists() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
-        
-        /// <summary>
-        /// Grabs the User Id
-        /// </summary>
-        public async static Task<int> GetUserId()
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                return await conn.ExecuteScalarAsync<int>("SELECT UserId FROM User LIMIT 1;");
-            }
-            catch (Exception ex)
-            {
-                await Execute.OnUIThreadAsync(() =>
-                {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Get User Id";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
-                Logger.LogActivity(Logger.ERROR, $"Database: GetUserId() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
-        
-        public async static Task<string> GetUserName()
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                return await conn.ExecuteScalarAsync<string>("SELECT FullName FROM User LIMIT 1;") ?? "Admin";
-            }
-            catch (Exception ex)
-            {
-                await Execute.OnUIThreadAsync(() =>
-                {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Get User Name";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
-                Logger.LogActivity(Logger.ERROR, $"Database: GetUserName() FAIL\n\t{ex.Message}");
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchUser() FAIL\n\t{ex.Message}");
                 throw;
             }
         }
@@ -1035,292 +310,12 @@ namespace Traker.Database
                 throw;
             }
         }
-
-
-       
+               
         /// <summary>
-        /// Get indiviudal client
+        /// Get jobs by client id
         /// </summary>
         /// <param name="clientId"></param>
-        public async static Task<ClientsModel> GetClient(int clientId)
-        {
-            try 
-            {                
-                using var conn = new SqliteConnection(_connectionString);
-                return await conn.QueryFirstAsync<ClientsModel>("SELECT * FROM Clients WHERE ClientId = @clientId LIMIT 1;",
-                    new { clientId = clientId });
-            }
-            catch (Exception ex)
-            {
-                await Execute.OnUIThreadAsync(() =>
-                {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Get Client Details";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
-                Logger.LogActivity(Logger.ERROR, $"Database: GetClient() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Get individual ivoice
-        /// </summary>
-        /// <param name="jobId"></param>
-        public async static Task<InvoicesModel> GetInvoice(int jobId)
-        {
-            try
-            {
-                //return conn.QueryFirstAsync<InvoicesModel>("SELECT * FROM Invoices WHERE JobId IN (SELECT JobId FROM Jobs WHERE ClientId IN (SELECT ClientId FROM Clients)) LIMIT 1;");
-                using var conn = new SqliteConnection(_connectionString);
-                return await conn.QueryFirstAsync<InvoicesModel>("SELECT * FROM Invoices WHERE JobId = @jobId LIMIT 1;", 
-                    new { jobId = jobId });
-            }
-            catch (Exception ex)
-            {
-                await Execute.OnUIThreadAsync(() =>
-                {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Fetch Invoice Details";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
-                Logger.LogActivity(Logger.ERROR, $"Database: FetchInvoices() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Get last client row number for clientId
-        /// </summary>
-        /// <returns></returns>
-        public async static Task<int> GetLastClientlastRowId()
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                return await conn.ExecuteScalarAsync<int>("SELECT ClientId FROM Clients ORDER BY ClientId DESC LIMIT 1;");
-            }
-            catch (Exception ex)
-            {
-                await Execute.OnUIThreadAsync(() =>
-                {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Get Last Client Row Number";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
-                Logger.LogActivity(Logger.ERROR, $"Database: GetLastClientRowNumber() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
-
-        
-        public async static Task<int> GetJobsCount()
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                return await conn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Jobs;");
-            }
-            catch (Exception ex)
-            {
-                await Execute.OnUIThreadAsync(() =>
-                {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Get Jobs Count";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
-                Logger.LogActivity(Logger.ERROR, $"Database: GetJobsCount() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
-        
-        public async static Task<bool> CheckIfJobHasInvoice(int jobId)
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                return await conn.ExecuteScalarAsync<bool>("SELECT EXISTS(SELECT 1 FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0);",
-                    new { jobId = jobId });
-            }
-            catch (Exception ex)
-            {
-                await Execute.OnUIThreadAsync(() =>
-                {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Check If Job Has Invoice";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
-                Logger.LogActivity(Logger.ERROR, $"Database: CheckIfJobHasInvoice() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
-        
-        public async static Task<int> GetInvoiceIdByJobId(int jobId)
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                return await conn.ExecuteScalarAsync<int>("SELECT InvoiceId FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0;",
-                    new { jobId = jobId });
-            }
-            catch (Exception ex)
-            {
-                await Execute.OnUIThreadAsync(() =>
-                {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Get Invoice Id By Job Id";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
-                Logger.LogActivity(Logger.ERROR, $"Database: GetInvoiceIdByJobId() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
-        
-        public async static Task<string> GetInvoiceStatusByJobId(int jobId)
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                return await conn.ExecuteScalarAsync<string>("SELECT Status FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0;",
-                    new { jobId = jobId });
-            }
-            catch (Exception ex)
-            {
-                await Execute.OnUIThreadAsync(() =>
-                {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Get Invoice Status By Job Id";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
-                Logger.LogActivity(Logger.ERROR, $"Database: GetInvoiceStatusByJobId() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
-        
-        public async static Task<DateTime> GetInvoiceIssueDateByJobId(int jobId)
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                return await conn.ExecuteScalarAsync<DateTime>("SELECT IssueDate FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0;",
-                    new { jobId = jobId });
-            }
-            catch (Exception ex)
-            {
-                await Execute.OnUIThreadAsync(() =>
-                {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Get Invoice Issue Date By Job Id";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
-                Logger.LogActivity(Logger.ERROR, $"Database: GetInvoiceIssueDateByJobId() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
-        
-        public async static Task<string> GetInvoiceNameByJobId(int jobId)
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                return (await conn.ExecuteScalarAsync<string>("SELECT InvoiceName FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0;",
-                    new { jobId = jobId }))?.ToString() ?? string.Empty;
-            }
-            catch (Exception ex)
-            {
-                await Execute.OnUIThreadAsync(() =>
-                {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Get Invoice Name By Job Id";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
-                Logger.LogActivity(Logger.ERROR, $"Database: GetInvoiceNameByJobId() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
-        
-        public async static Task<List<JobsModel>> getJobsByClientId(int clientId)
+        public async static Task<List<JobsModel>> FetchJobsByClientId(int clientId)
         {
             try
             {
@@ -1350,36 +345,16 @@ namespace Traker.Database
             }
         }
         
-        public async static Task<bool> CheckIfInvoicedByJobId(int jobId)
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
-                return await conn.ExecuteScalarAsync<bool>("SELECT EXISTS(SELECT 1 FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0);",
-                    new { jobId = jobId });
-            }
-            catch (Exception ex)
-            {
-                await Execute.OnUIThreadAsync(() =>
-                {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Check If Invoiced By Job Id";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
-                Logger.LogActivity(Logger.ERROR, $"Database: CheckIfInvoicedByJobId() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
-        public async static Task<List<DashboardModel>> GetDashboardRows(int currentPage, int pageSize, string? sortBy, string? sortDirection, string? statusFilter, string? clientTypeFilter)
+        /// <summary>
+        /// Dashboard data query
+        /// </summary>
+        /// <param name="currentPage"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="sortBy"></param>
+        /// <param name="sortDirection"></param>
+        /// <param name="statusFilter"></param>
+        /// <param name="clientTypeFilter"></param>
+        public async static Task<List<DashboardModel>> FetchDashboardRows(int currentPage, int pageSize, string? sortBy, string? sortDirection, string? statusFilter, string? clientTypeFilter)
         {
             try
             {
@@ -1546,7 +521,488 @@ namespace Traker.Database
         }
         #endregion
 
+        #region Get Functions
+        /// <summary>
+        /// Grabs the User Id
+        /// </summary>
+        public async static Task<int> GetUserId()
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<int>("SELECT UserId FROM User LIMIT 1;");
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Get User Id";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: GetUserId() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+        
+        /// <summary>
+        /// Get User name
+        /// </summary>
+        public async static Task<string> GetUserName()
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<string>("SELECT FullName FROM User LIMIT 1;") ?? "Admin";
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Get User Name";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: GetUserName() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+               
+        /// <summary>
+        /// Get indiviudal client
+        /// </summary>
+        /// <param name="clientId"></param>
+        public async static Task<ClientsModel> GetClient(int clientId)
+        {
+            try 
+            {                
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.QueryFirstAsync<ClientsModel>("SELECT * FROM Clients WHERE ClientId = @clientId LIMIT 1;",
+                    new { clientId = clientId });
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Get Client Details";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: GetClient() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
 
+        /// <summary>
+        /// Get individual ivoice
+        /// </summary>
+        /// <param name="jobId"></param>
+        public async static Task<InvoicesModel> GetInvoice(int jobId)
+        {
+            try
+            {
+                //return conn.QueryFirstAsync<InvoicesModel>("SELECT * FROM Invoices WHERE JobId IN (SELECT JobId FROM Jobs WHERE ClientId IN (SELECT ClientId FROM Clients)) LIMIT 1;");
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.QueryFirstAsync<InvoicesModel>("SELECT * FROM Invoices WHERE JobId = @jobId LIMIT 1;", 
+                    new { jobId = jobId });
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Fetch Invoice Details";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: FetchInvoices() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get last client row number for clientId
+        /// </summary>
+        /// <returns></returns>
+        public async static Task<int> GetLastClientlastRowId()
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<int>("SELECT ClientId FROM Clients ORDER BY ClientId DESC LIMIT 1;");
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Get Last Client Row Number";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: GetLastClientRowNumber() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get number of jobs
+        /// </summary>
+        /// <returns></returns>
+        public async static Task<int> GetJobsCount()
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Jobs;");
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Get Jobs Count";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: GetJobsCount() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+        
+        /// <summary>
+        /// Get invoice id by job id
+        /// </summary>
+        /// <param name="jobId"></param>
+        public async static Task<int> GetInvoiceIdByJobId(int jobId)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<int>("SELECT InvoiceId FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0;",
+                    new { jobId = jobId });
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Get Invoice Id By Job Id";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: GetInvoiceIdByJobId() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get invoice status by job id
+        /// </summary>
+        /// <param name="jobId"></param>
+        public async static Task<string> GetInvoiceStatusByJobId(int jobId)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<string>("SELECT Status FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0;",
+                    new { jobId = jobId });
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Get Invoice Status By Job Id";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: GetInvoiceStatusByJobId() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get invoice issue date by job id
+        /// </summary>
+        /// <param name="jobId"></param>
+        public async static Task<DateTime> GetInvoiceIssueDateByJobId(int jobId)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<DateTime>("SELECT IssueDate FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0;",
+                    new { jobId = jobId });
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Get Invoice Issue Date By Job Id";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: GetInvoiceIssueDateByJobId() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get invoice name by job id
+        /// </summary>
+        /// <param name="jobId"></param>
+        public async static Task<string> GetInvoiceNameByJobId(int jobId)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return (await conn.ExecuteScalarAsync<string>("SELECT InvoiceName FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0;",
+                    new { jobId = jobId }))?.ToString() ?? string.Empty;
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Get Invoice Name By Job Id";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: GetInvoiceNameByJobId() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+        #endregion
+
+        #region Check Functions
+        /// <summary>
+        /// Checks user database on startup if empty then
+        /// prompt setup window (after deleting the databse file)
+        /// </summary>
+        public async static Task<bool> CheckUserDatabase()
+        {
+            bool isSuccessful = false;
+
+            try
+            {
+                await Task.Run(async() =>
+                {
+                    // set directory and database name
+                    var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Traker");
+                    if (Directory.Exists(folder) == false)
+                    {
+                        // to test
+                        isSuccessful = false;
+                        return;
+                    }
+
+                    var dbPath = Path.Combine(folder, "traker.db");
+                     _connectionString = $"Data Source={dbPath}";
+
+
+                    using (var conn = new SqliteConnection(_connectionString))
+                    {
+                        // query database
+                        int countUser = await conn.ExecuteScalarAsync<int>(
+                        @"SELECT COUNT(*) FROM 'User'"
+                        );
+
+                        int countBusiness = await conn.ExecuteScalarAsync<int>(
+                        @"SELECT COUNT(*) FROM 'Business'"
+                        );
+
+                        int countBank = await conn.ExecuteScalarAsync<int>(
+                        @"SELECT COUNT(*) FROM 'bank'"
+                        );
+
+                        // if any table is empty delete database file to trigger setup window
+                        if (countUser == 0 || countBusiness == 0 || countBank == 0)
+                        {
+                            SqliteConnection.ClearAllPools();
+
+                            GC.Collect();
+                            GC.WaitForPendingFinalizers();
+
+                            //File.Delete(dbPath);
+
+                            isSuccessful = false;
+                        }
+                        else
+                        {
+                            isSuccessful = true;
+                        }
+                    }
+                });                
+            }
+            catch (Exception ex)
+            {
+                AppState state = IoC.Get<AppState>();
+                IWindowManager windowManager = IoC.Get<IWindowManager>();
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                {
+                    state.messageBoxVM.Symbol = 2;
+                    state.messageBoxVM.HeadMessage = "Fetch Clients Tables";
+                    state.messageBoxVM.Message = ex.Message;
+                    state.messageBoxVM.ButtonStyle = Names.OK;
+                    state.messageBoxVM.Action = Names.Close;
+                    await windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                isSuccessful = false;
+                Logger.LogActivity(Logger.ERROR, $"Database: CheckUserDatabase() FAIL\n\t{ex.Message}");
+            }
+            return isSuccessful;
+        }
+       
+        /// <summary>  
+        /// Check if user exists
+        /// </summary>
+        public async static Task<bool> CheckUserExists()
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<bool>("SELECT EXISTS(SELECT 1 FROM User);");
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Check User Exists";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: CheckUserExists() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+        
+        /// <summary>
+        /// Check if job has invoice
+        /// </summary>
+        /// <param name="jobId"></param>
+        public async static Task<bool> CheckIfJobHasInvoice(int jobId)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<bool>("SELECT EXISTS(SELECT 1 FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0);",
+                    new { jobId = jobId });
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Check If Job Has Invoice";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: CheckIfJobHasInvoice() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+        #endregion
 
         #region Create Functions
         /// <summary>
@@ -1559,74 +1015,65 @@ namespace Traker.Database
                 using var conn = new SqliteConnection(_connectionString);
                 conn.Open();
 
-                using (var pragma = conn.CreateCommand())
-                {
-                    pragma.CommandText = "PRAGMA foreign_keys = ON;";
-                    pragma.ExecuteNonQuery();
-                }
+                conn.Execute("PRAGMA foreign_keys = ON;");
 
                 using var transaction = conn.BeginTransaction();
 
-                long nextNumber;
+                var nextNumber =
+                    conn.ExecuteScalar<long>(
+                        "SELECT IFNULL(MAX(InvoiceNumber), 0) FROM Invoices;",
+                        transaction: transaction) + 1;
 
-                // find the highest invoice number and add +1 for current entry
-                using (var cmd = conn.CreateCommand())
-                {
-                    cmd.Transaction = transaction;
-                    cmd.CommandText = "SELECT IFNULL(MAX(InvoiceNumber), 0) FROM Invoices;";
-                    nextNumber = (long)cmd.ExecuteScalar()! + 1;
-                }
-
-                // insert into Invoices table
-                using (var invoicesCmd = conn.CreateCommand())
-                {
-                    invoicesCmd.CommandText = @"
+                const string sql = @"
                     INSERT INTO Invoices
-                    (JobId, 
-                    InvoiceNumber, 
-                    Subtotal, 
-                    TaxAmount, 
-                    TotalAmount, 
-                    IssueDate, 
-                    DueDate,    
-                    BillingName, 
-                    BillingAddress,
-                    BillingCity,
-                    BillingPostcode,
-                    BillingCountry,
-                    Status)
-
+                    (
+                        JobId,
+                        InvoiceNumber,
+                        Subtotal,
+                        TaxAmount,
+                        TotalAmount,
+                        IssueDate,
+                        DueDate,
+                        BillingName,
+                        BillingAddress,
+                        BillingCity,
+                        BillingPostcode,
+                        BillingCountry,
+                        Status
+                    )
                     VALUES
-                    (@jobId, 
-                    @invoiceNumber, 
-                    @subtotal,
-                    @taxAmount,
-                    @totalAmount,
-                    @issueDate,
-                    @dueDate,
-                    @billingName,
-                    @billingAddress,
-                    @billingCity,
-                    @billingPostcode,
-                    @billingCountry,
-                    @status);
-                    ";
-                    invoicesCmd.Parameters.AddWithValue("@jobId", jobId);
-                    invoicesCmd.Parameters.AddWithValue("@invoiceNumber", nextNumber);
-                    invoicesCmd.Parameters.AddWithValue("@subtotal", subtotal);
-                    invoicesCmd.Parameters.AddWithValue("@taxAmount", taxAmount);
-                    invoicesCmd.Parameters.AddWithValue("@totalAmount", totalAmount);
-                    invoicesCmd.Parameters.AddWithValue("@issueDate", dateIssued);
-                    invoicesCmd.Parameters.AddWithValue("@dueDate", dueDate.ToString("dd-MM-yyyy"));
-                    invoicesCmd.Parameters.AddWithValue("@billingName", billingName);
-                    invoicesCmd.Parameters.AddWithValue("@billingAddress", billingAddress);
-                    invoicesCmd.Parameters.AddWithValue("@billingCity", billingCity);
-                    invoicesCmd.Parameters.AddWithValue("@billingPostcode", billingPostcode);
-                    invoicesCmd.Parameters.AddWithValue("@billingCountry", billingCountry);
-                    invoicesCmd.Parameters.AddWithValue("@status", "Invoiced");
+                    (
+                        @JobId,
+                        @InvoiceNumber,
+                        @Subtotal,
+                        @TaxAmount,
+                        @TotalAmount,
+                        @IssueDate,
+                        @DueDate,
+                        @BillingName,
+                        @BillingAddress,
+                        @BillingCity,
+                        @BillingPostcode,
+                        @BillingCountry,
+                        @Status
+                    );";
 
-                    invoicesCmd.ExecuteNonQuery();
-                }
+                conn.Execute(sql, new
+                {
+                    JobId = jobId,
+                    InvoiceNumber = nextNumber,
+                    Subtotal = subtotal,
+                    TaxAmount = taxAmount,
+                    TotalAmount = totalAmount,
+                    IssueDate = dateIssued,
+                    DueDate = dueDate.ToString("dd-MM-yyyy"),
+                    BillingName = billingName,
+                    BillingAddress = billingAddress,
+                    BillingCity = billingCity,
+                    BillingPostcode = billingPostcode,
+                    BillingCountry = billingCountry,
+                    Status = "Invoiced"
+                }, transaction);
 
                 transaction.Commit();
 
@@ -1665,19 +1112,26 @@ namespace Traker.Database
                 using var conn = new SqliteConnection(_connectionString);
                 conn.Open();
 
-                using var cmd = conn.CreateCommand();
-
-                cmd.CommandText = @"
+                const string sql = @"
                     INSERT INTO User
-                    (FullName, Email, Phone)
-                    VALUES (@fullName, @email, @phone)
-                ";
+                    (
+                        FullName,
+                        Email,
+                        Phone
+                    )
+                    VALUES
+                    (
+                        @FullName,
+                        @Email,
+                        @Phone
+                    );";
 
-                cmd.Parameters.AddWithValue("@fullName", fullName);
-                cmd.Parameters.AddWithValue("@email", email);
-                cmd.Parameters.AddWithValue("@phone", phone);
-
-                cmd.ExecuteNonQuery();
+                conn.Execute(sql, new
+                {
+                    FullName = fullName,
+                    Email = email,
+                    Phone = phone
+                });
             }
             catch (Exception ex)
             {
@@ -1712,25 +1166,44 @@ namespace Traker.Database
                 using var conn = new SqliteConnection(_connectionString);
                 conn.Open();
 
-                using var cmd = conn.CreateCommand();
-
-                cmd.CommandText = @"
+                const string sql = @"
                     INSERT INTO Business
-                    (UserId, BusinessName, BusinessType, Country, City, Address, Postcode, VatNumber, RegistrationNumber)
-                    VALUES (@userId, @businessName, @businessType, @country, @city, @address, @postcode, @vatNumber, @registrationNumber)
-                ";
+                    (
+                        UserId,
+                        BusinessName,
+                        BusinessType,
+                        Country,
+                        City,
+                        Address,
+                        Postcode,
+                        VatNumber,
+                        RegistrationNumber
+                    )
+                    VALUES
+                    (
+                        @UserId,
+                        @BusinessName,
+                        @BusinessType,
+                        @Country,
+                        @City,
+                        @Address,
+                        @Postcode,
+                        @VatNumber,
+                        @RegistrationNumber
+                    );";
 
-                cmd.Parameters.AddWithValue("@userId", userId);
-                cmd.Parameters.AddWithValue("@businessName", businessName);
-                cmd.Parameters.AddWithValue("@businessType", businessType);
-                cmd.Parameters.AddWithValue("@country", country);
-                cmd.Parameters.AddWithValue("@city", city);
-                cmd.Parameters.AddWithValue("@address", address);
-                cmd.Parameters.AddWithValue("@postcode", postcode);
-                cmd.Parameters.AddWithValue("@vatNumber", vatNumber);
-                cmd.Parameters.AddWithValue("@registrationNumber", registrationNumber);
-
-                cmd.ExecuteNonQuery();
+                conn.Execute(sql, new
+                {
+                    UserId = userId,
+                    BusinessName = businessName,
+                    BusinessType = businessType,
+                    Country = country,
+                    City = city,
+                    Address = address,
+                    Postcode = postcode,
+                    VatNumber = vatNumber,
+                    RegistrationNumber = registrationNumber
+                });
             }
             catch (Exception ex)
             {
@@ -1765,22 +1238,38 @@ namespace Traker.Database
                 using var conn = new SqliteConnection(_connectionString);
                 conn.Open();
 
-                using var cmd = conn.CreateCommand();
-
-                cmd.CommandText = @"
+                const string sql = @"
                     INSERT INTO Bank
-                    (UserId, BankName, AccountName, AccountNumber, SortCode, IBAN, BIC)
-                    VALUES (@userId, @bankName, @accountName, @accountNumber, @sortcode, @IBAN, @BIC)
-                ";
+                    (
+                        UserId,
+                        BankName,
+                        AccountName,
+                        AccountNumber,
+                        SortCode,
+                        IBAN,
+                        BIC
+                    )
+                    VALUES
+                    (
+                        @UserId,
+                        @BankName,
+                        @AccountName,
+                        @AccountNumber,
+                        @SortCode,
+                        @IBAN,
+                        @BIC
+                    );";
 
-                cmd.Parameters.AddWithValue("@userId", userId);
-                cmd.Parameters.AddWithValue("@bankName", bankName);
-                cmd.Parameters.AddWithValue("@accountName", accountName);
-                cmd.Parameters.AddWithValue("@accountNumber", accountNumber);
-                cmd.Parameters.AddWithValue("@sortcode", sortcode);
-                cmd.Parameters.AddWithValue("@IBAN", IBAN);
-                cmd.Parameters.AddWithValue("@BIC", BIC);
-                cmd.ExecuteNonQuery();
+                conn.Execute(sql, new
+                {
+                    UserId = userId,
+                    BankName = bankName,
+                    AccountName = accountName,
+                    AccountNumber = accountNumber,
+                    SortCode = sortcode,
+                    IBAN,
+                    BIC
+                });
             }
             catch (Exception ex)
             {
@@ -1815,87 +1304,92 @@ namespace Traker.Database
             try
             {
                 // list to be passed on add client to get hold of clientId and jobid
-                List<int> clientJobIds = new List<int>();
-
-                long clientId = 0;
-                long jobId = 0;
+                List<int> clientJobIds = new();
 
                 using var conn = new SqliteConnection(_connectionString);
                 conn.Open();
 
-                using (var pragma = conn.CreateCommand())
-                {
-                    pragma.CommandText = "PRAGMA foreign_keys = ON;";
-                    pragma.ExecuteNonQuery();
-                }
+                conn.Execute("PRAGMA foreign_keys = ON;");
 
                 // work all at once, if one query fails it rolls back
                 // if you don't care about failures you can avoid transaction
                 using var tx = conn.BeginTransaction();
 
-                // insert into Clients table
-                using (var clienstCmd = conn.CreateCommand())
+                try
                 {
-                    clienstCmd.CommandText = @"
-                    INSERT INTO Clients
-                    (FullName, Type, CreatedDate)
+                    // insert into Clients table
+                    const string insertClientSql = @"
+                        INSERT INTO Clients
+                        (
+                            FullName,
+                            Type,
+                            CreatedDate
+                        )
+                        VALUES
+                        (
+                            @FullName,
+                            @Type,
+                            @CreatedDate
+                        );
 
-                    VALUES
-                    (@clientName, @type, @createdDate);
-                    ";
-                    clienstCmd.Parameters.AddWithValue("@type", clientType);
-                    clienstCmd.Parameters.AddWithValue("@clientName", clientName);
-                    clienstCmd.Parameters.AddWithValue("@createdDate", DateOnly.FromDateTime(DateTime.Now));
-                    clienstCmd.ExecuteNonQuery();
+                        SELECT last_insert_rowid();";
+
+                    // get last inserted client id
+                    var clientId = conn.ExecuteScalar<long>(insertClientSql, new
+                    {
+                        FullName = clientName,
+                        Type = clientType,
+                        CreatedDate = DateTime.Now.ToString("yyyy-MM-dd")
+                    }, tx);
+
+                    clientJobIds.Add((int)clientId);
+
+                    // insert into jobs table
+                    const string insertJobSql = @"
+                        INSERT INTO Jobs
+                        (
+                            ClientId,
+                            Title,
+                            Status,
+                            FinalPrice,
+                            CreatedDate,
+                            DueDate
+                        )
+                        VALUES
+                        (
+                            @ClientId,
+                            @Title,
+                            @Status,
+                            @FinalPrice,
+                            @CreatedDate,
+                            @DueDate
+                        );
+
+                        SELECT last_insert_rowid();";
+
+                    // get last inserted job id based on current clientId
+                    var jobId = conn.ExecuteScalar<long>(insertJobSql, new
+                    {
+                        ClientId = clientId,
+                        Title = jobTitle,
+                        Status = "New",
+                        FinalPrice = finalPrice,
+                        CreatedDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                        DueDate = dueDate.ToString("yyyy-MM-dd")
+                    }, tx);
+
+                    clientJobIds.Add((int)jobId); // add it to the list that will be passed to addclientVM
+
+                    // Commit both together
+                    tx.Commit();
+
+                    return Task.FromResult(clientJobIds);
                 }
-
-
-                // get last inserted client id
-                using (var clientIdCmd = conn.CreateCommand())
+                catch
                 {
-                    clientIdCmd.CommandText = "SELECT last_insert_rowid();";
-                    clientId = (long)clientIdCmd.ExecuteScalar()!;
-                    clientJobIds.Add(Convert.ToInt32(clientId)); // add it to the list that will be passed to addclientVM
+                    tx.Rollback();
+                    throw;
                 }
-
-                // insert into jobs table
-                using (var jobsCmd = conn.CreateCommand())
-                {
-                    jobsCmd.CommandText = @"
-                    INSERT INTO Jobs
-                    (ClientId, Title, Status, FinalPrice, CreatedDate, DueDate)
-
-                    VALUES
-                    (@clientId, @title, @status, @finalPrice, @createdDate, @dueDate);
-                    ";
-
-                    jobsCmd.Parameters.AddWithValue("@clientId", clientId);
-                    jobsCmd.Parameters.AddWithValue("@title", jobTitle);
-                    jobsCmd.Parameters.AddWithValue("@status", "New");
-                    jobsCmd.Parameters.AddWithValue("@finalPrice", finalPrice);
-                    jobsCmd.Parameters.AddWithValue("@createdDate", DateTime.Now.Date);
-                    jobsCmd.Parameters.AddWithValue("@dueDate", dueDate.ToString("yyyy-MM-dd"));
-                    jobsCmd.ExecuteNonQuery();
-                }
-
-                // get last inserted job id based on current clientId
-                using (var jobIdCmd = conn.CreateCommand())
-                {
-                    jobIdCmd.CommandText = @"
-                        SELECT JobId
-                        FROM Jobs
-                        WHERE ClientId = @clientId
-                        ORDER BY JobId DESC
-                        LIMIT 1;
-                    ";
-                    jobIdCmd.Parameters.AddWithValue("@clientId", clientId);
-                    jobId = (long)jobIdCmd.ExecuteScalar()!;
-                    clientJobIds.Add(Convert.ToInt32(jobId)); // add it to the list that will be passed to addclientVM
-                }
-
-                // Commit both together
-                tx.Commit();
-                return Task.FromResult(clientJobIds);
             }
             catch (Exception ex)
             {
@@ -1925,88 +1419,85 @@ namespace Traker.Database
         {
             try
             {
-                // list to be passed on add client to get hold of clientId and jobid
-                List<int> clientJobIds = new List<int>();
-
-                long clientId = 0;
-                long jobId = 0;
+                List<int> clientJobIds = new();
 
                 using var conn = new SqliteConnection(_connectionString);
                 conn.Open();
 
-                using (var pragma = conn.CreateCommand())
-                {
-                    pragma.CommandText = "PRAGMA foreign_keys = ON;";
-                    pragma.ExecuteNonQuery();
-                }
+                conn.Execute("PRAGMA foreign_keys = ON;");
 
-                // work all at once, if one query fails it rolls back
-                // if you don't care about failures you can avoid transaction
                 using var tx = conn.BeginTransaction();
 
-                // insert into Clients table
-                using (var clienstCmd = conn.CreateCommand())
+                try
                 {
-                    clienstCmd.CommandText = @"
-                    INSERT INTO Clients
-                    (CompanyName, Type, CreatedDate)
+                    const string insertClientSql = @"
+                        INSERT INTO Clients
+                        (
+                            CompanyName,
+                            Type,
+                            CreatedDate
+                        )
+                        VALUES
+                        (
+                            @CompanyName,
+                            @Type,
+                            @CreatedDate
+                        );
 
-                    VALUES
-                    (@companyName, @type, @createdDate);
-                    ";
-                    clienstCmd.Parameters.AddWithValue("@type", clientType);
-                    clienstCmd.Parameters.AddWithValue("@companyName", companyName);
-                    clienstCmd.Parameters.AddWithValue("@createdDate", DateOnly.FromDateTime(DateTime.Now));
-                    clienstCmd.ExecuteNonQuery();
+                        SELECT last_insert_rowid();";
+
+                    var clientId = conn.ExecuteScalar<long>(insertClientSql, new
+                    {
+                        CompanyName = companyName,
+                        Type = clientType,
+                        CreatedDate = DateTime.Now.ToString("yyyy-MM-dd")
+                    }, tx);
+
+                    clientJobIds.Add((int)clientId);
+
+                    const string insertJobSql = @"
+                        INSERT INTO Jobs
+                        (
+                            ClientId,
+                            Title,
+                            Status,
+                            FinalPrice,
+                            CreatedDate,
+                            DueDate
+                        )
+                        VALUES
+                        (
+                            @ClientId,
+                            @Title,
+                            @Status,
+                            @FinalPrice,
+                            @CreatedDate,
+                            @DueDate
+                        );
+
+                        SELECT last_insert_rowid();";
+
+                    var jobId = conn.ExecuteScalar<long>(insertJobSql, new
+                    {
+                        ClientId = clientId,
+                        Title = jobTitle,
+                        Status = "New",
+                        FinalPrice = finalPrice,
+                        CreatedDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                        DueDate = dueDate.ToString("yyyy-MM-dd")
+                    }, tx);
+
+                    clientJobIds.Add((int)jobId);
+
+                    tx.Commit();
+
+                    return Task.FromResult(clientJobIds);
                 }
-
-
-                // get last inserted client id
-                using (var clientIdCmd = conn.CreateCommand())
+                catch
                 {
-                    clientIdCmd.CommandText = "SELECT last_insert_rowid();";
-                    clientId = (long)clientIdCmd.ExecuteScalar()!;
-                    clientJobIds.Add(Convert.ToInt32(clientId)); // add it to the list that will be passed to addclientVM
+                    tx.Rollback();
+                    throw;
                 }
-
-                // insert into jobs table
-                using (var jobsCmd = conn.CreateCommand())
-                {
-                    jobsCmd.CommandText = @"
-                    INSERT INTO Jobs
-                    (ClientId, Title, Status, FinalPrice, CreatedDate, DueDate)
-
-                    VALUES
-                    (@clientId, @title, @status, @finalPrice, @createdDate, @dueDate);
-                    ";
-
-                    jobsCmd.Parameters.AddWithValue("@clientId", clientId);
-                    jobsCmd.Parameters.AddWithValue("@title", jobTitle);
-                    jobsCmd.Parameters.AddWithValue("@status", "New");
-                    jobsCmd.Parameters.AddWithValue("@finalPrice", finalPrice);
-                    jobsCmd.Parameters.AddWithValue("@createdDate", DateTime.Now.Date);
-                    jobsCmd.Parameters.AddWithValue("@dueDate", dueDate.ToString("yyyy-MM-dd"));
-                    jobsCmd.ExecuteNonQuery();
-                }
-
-                // get last inserted job id based on current clientId
-                using (var jobIdCmd = conn.CreateCommand())
-                {
-                    jobIdCmd.CommandText = @"
-                        SELECT JobId
-                        FROM Jobs
-                        WHERE ClientId = @clientId
-                        ORDER BY JobId DESC
-                        LIMIT 1;
-                    ";
-                    jobIdCmd.Parameters.AddWithValue("@clientId", clientId);
-                    jobId = (long)jobIdCmd.ExecuteScalar()!;
-                    clientJobIds.Add(Convert.ToInt32(jobId)); // add it to the list that will be passed to addclientVM
-                }
-
-                // Commit both together
-                tx.Commit();
-                return Task.FromResult(clientJobIds);
             }
             catch (Exception ex)
             {
@@ -2036,38 +1527,42 @@ namespace Traker.Database
         {
             try
             {
-                long jobId = 0;
-
                 using var conn = new SqliteConnection(_connectionString);
                 conn.Open();
 
-                // insert into jobs table
-                using (var jobsCmd = conn.CreateCommand())
-                {
-                    jobsCmd.CommandText = @"
+                const string sql = @"
                     INSERT INTO Jobs
-                    (ClientId, Title, Status, FinalPrice, CreatedDate, DueDate)
-
+                    (
+                        ClientId,
+                        Title,
+                        Status,
+                        FinalPrice,
+                        CreatedDate,
+                        DueDate
+                    )
                     VALUES
-                    (@clientId, @title, @status, @finalPrice, @createdDate, @dueDate);
-                    ";
+                    (
+                        @ClientId,
+                        @Title,
+                        @Status,
+                        @FinalPrice,
+                        @CreatedDate,
+                        @DueDate
+                    );
 
-                    jobsCmd.Parameters.AddWithValue("@clientId", clientId);
-                    jobsCmd.Parameters.AddWithValue("@title", JobTitle);
-                    jobsCmd.Parameters.AddWithValue("@status", "New");
-                    jobsCmd.Parameters.AddWithValue("@finalPrice", finalPrice);
-                    jobsCmd.Parameters.AddWithValue("@createdDate", DateTime.Now.Date);
-                    jobsCmd.Parameters.AddWithValue("@dueDate", dueDate.ToString("yyyy-MM-dd"));
-                    jobsCmd.ExecuteNonQuery();
-                }
+                    SELECT last_insert_rowid();";
 
-                //// get last inserted job id based on current clientId
-                using (var jobIdCmd = conn.CreateCommand())
+                var jobId = conn.ExecuteScalar<long>(sql, new
                 {
-                    jobIdCmd.CommandText = "SELECT last_insert_rowid();";
-                    jobId = (long)jobIdCmd.ExecuteScalar()!;
-                }
-                return Task.FromResult(Convert.ToInt32(jobId));
+                    ClientId = clientId,
+                    Title = JobTitle,
+                    Status = "New",
+                    FinalPrice = finalPrice,
+                    CreatedDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                    DueDate = dueDate.ToString("yyyy-MM-dd")
+                });
+
+                return Task.FromResult((int)jobId);
             }
             catch (Exception ex)
             {
@@ -2104,36 +1599,34 @@ namespace Traker.Database
                 using var conn = new SqliteConnection(_connectionString);
                 conn.Open();
 
-                using var cmd = conn.CreateCommand();
-
-                cmd.CommandText = @"
+                const string sql = @"
                     UPDATE Clients
-                    SET Type = @type,
-                        FullName = @fullname,
-                        Email = @email,
-                        CompanyName = @companyName,
-                        PhoneNumber = @phoneNumber,
-                        BillingAddress = @billingAddress,
-                        City = @city,
-                        Postcode = @postcode,
-                        Country = @country,
-                        IsActive = @isActive
-                    WHERE ClientId = @clientId;
-                ";
+                    SET Type = @Type,
+                        FullName = @FullName,
+                        Email = @Email,
+                        CompanyName = @CompanyName,
+                        PhoneNumber = @PhoneNumber,
+                        BillingAddress = @BillingAddress,
+                        City = @City,
+                        Postcode = @Postcode,
+                        Country = @Country,
+                        IsActive = @IsActive
+                    WHERE ClientId = @ClientId;";
 
-                cmd.Parameters.AddWithValue("@clientId", clientId);
-                cmd.Parameters.AddWithValue("@type", type);
-                cmd.Parameters.AddWithValue("@fullname", fullName);
-                cmd.Parameters.AddWithValue("@email", email);
-                cmd.Parameters.AddWithValue("@companyName", companyName);
-                cmd.Parameters.AddWithValue("@phoneNumber", phoneNumber);
-                cmd.Parameters.AddWithValue("@billingAddress", billingAddress);
-                cmd.Parameters.AddWithValue("@city", city);
-                cmd.Parameters.AddWithValue("@postcode", postcode);
-                cmd.Parameters.AddWithValue("@country", country);
-                cmd.Parameters.AddWithValue("@isActive", isActive);
-
-                cmd.ExecuteNonQuery();
+                conn.Execute(sql, new
+                {
+                    ClientId = clientId,
+                    Type = type,
+                    FullName = fullName,
+                    Email = email,
+                    CompanyName = companyName,
+                    PhoneNumber = phoneNumber,
+                    BillingAddress = billingAddress,
+                    City = city,
+                    Postcode = postcode,
+                    Country = country,
+                    IsActive = isActive
+                });
             }
             catch (Exception ex)
             {
@@ -2169,30 +1662,28 @@ namespace Traker.Database
                 using var conn = new SqliteConnection(_connectionString);
                 conn.Open();
 
-                using var cmd = conn.CreateCommand();
-
-                cmd.CommandText = @"
+                const string sql = @"
                     UPDATE Jobs
-                    SET Title = @title,
-                        Description = @description,
-                        Status = @status,
-                        FinalPrice = @finalPrice,
-                        AmountReceived = @amountReceived,
-                        StartDate = @startDate,
-                        DueDate = @dueDate
-                    WHERE JobId = @jobId;
-                ";
+                    SET Title = @Title,
+                        Description = @Description,
+                        Status = @Status,
+                        FinalPrice = @FinalPrice,
+                        AmountReceived = @AmountReceived,
+                        StartDate = @StartDate,
+                        DueDate = @DueDate
+                    WHERE JobId = @JobId;";
 
-                cmd.Parameters.AddWithValue("@jobId", jobId);
-                cmd.Parameters.AddWithValue("@title", jobTitle);
-                cmd.Parameters.AddWithValue("@description", jobDescription);
-                cmd.Parameters.AddWithValue("@status", status);
-                cmd.Parameters.AddWithValue("@finalPrice", price);
-                cmd.Parameters.AddWithValue("@amountReceived", amountReceived);
-                cmd.Parameters.AddWithValue("@startDate", startDate);
-                cmd.Parameters.AddWithValue("@dueDate", dueDate);
-
-                cmd.ExecuteNonQuery();
+                conn.Execute(sql, new
+                {
+                    JobId = jobId,
+                    Title = jobTitle,
+                    Description = jobDescription,
+                    Status = status,
+                    FinalPrice = price,
+                    AmountReceived = amountReceived,
+                    StartDate = startDate,
+                    DueDate = dueDate
+                });
             }
             catch (Exception ex)
             {
@@ -2224,43 +1715,34 @@ namespace Traker.Database
             // in the future replace the long ass arguments with a variable list :)
             try
             {
-                using (var conn = new SqliteConnection(_connectionString))
-                {
-                    conn.Open();
-                    using var cmd = conn.CreateCommand();
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
 
-                    cmd.CommandText = @"
+                const string updateUserSql = @"
                     UPDATE User
-                    SET FullName = @fullname,
-                        Email = @email,
-                        Phone = @phone
-                    WHERE UserId = @userId;
-                    ";
+                    SET FullName = @FullName,
+                        Email = @Email,
+                        Phone = @Phone
+                    WHERE UserId = @UserId;";
 
-                    cmd.Parameters.AddWithValue("@userId", userId);
-                    cmd.Parameters.AddWithValue("@fullname", fullName);
-                    cmd.Parameters.AddWithValue("@email", email);
-                    cmd.Parameters.AddWithValue("@phone", phone);
-
-                    cmd.ExecuteNonQuery();
-                }
-
-                using (var conn = new SqliteConnection(_connectionString))
+                conn.Execute(updateUserSql, new
                 {
-                    conn.Open();
-                    using var cmd = conn.CreateCommand();
+                    UserId = userId,
+                    FullName = fullName,
+                    Email = email,
+                    Phone = phone
+                });
 
-                    cmd.CommandText = @"
+                const string updateBusinessSql = @"
                     UPDATE Business
-                    SET BusinessType = @businessType
-                    WHERE UserId = @userId;
-                    ";
+                    SET BusinessType = @BusinessType
+                    WHERE UserId = @UserId;";
 
-                    cmd.Parameters.AddWithValue("@businessType", businessType);
-                    cmd.Parameters.AddWithValue("@userId", userId);
-
-                    cmd.ExecuteNonQuery();
-                }
+                conn.Execute(updateBusinessSql, new
+                {
+                    UserId = userId,
+                    BusinessType = businessType
+                });
             }
             catch (Exception ex)
             {
@@ -2293,34 +1775,31 @@ namespace Traker.Database
 
             try
             {
-                using (var conn = new SqliteConnection(_connectionString))
-                {
-                    conn.Open();
-                    using var cmd = conn.CreateCommand();
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
 
-                    cmd.CommandText = @"
+                const string sql = @"
                     UPDATE Business
-                    SET BusinessName = @businessName,
-                        Country = @country,
-                        City = @city,
-                        Address = @address,
-                        Postcode = @postcode,
-                        VatNumber = @vatNumber,
-                        RegistrationNumber = @registrationNumber
-                    WHERE UserId = @userId;
-                    ";
+                    SET BusinessName = @BusinessName,
+                        Country = @Country,
+                        City = @City,
+                        Address = @Address,
+                        Postcode = @Postcode,
+                        VatNumber = @VatNumber,
+                        RegistrationNumber = @RegistrationNumber
+                    WHERE UserId = @UserId;";
 
-                    cmd.Parameters.AddWithValue("@userId", userId);
-                    cmd.Parameters.AddWithValue("@businessName", businessName);
-                    cmd.Parameters.AddWithValue("@country", country);
-                    cmd.Parameters.AddWithValue("@city", city);
-                    cmd.Parameters.AddWithValue("@address", address);
-                    cmd.Parameters.AddWithValue("@postcode", postcode);
-                    cmd.Parameters.AddWithValue("@vatNumber", vatNumber);
-                    cmd.Parameters.AddWithValue("@registrationNumber", registrationNumber);
-
-                    cmd.ExecuteNonQuery();
-                }
+                conn.Execute(sql, new
+                {
+                    UserId = userId,
+                    BusinessName = businessName,
+                    Country = country,
+                    City = city,
+                    Address = address,
+                    Postcode = postcode,
+                    VatNumber = vatNumber,
+                    RegistrationNumber = registrationNumber
+                });
             }
             catch (Exception ex)
             {
@@ -2353,31 +1832,29 @@ namespace Traker.Database
 
             try
             {
-                using (var conn = new SqliteConnection(_connectionString))
-                {
-                    conn.Open();
-                    using var cmd = conn.CreateCommand();
+                using var conn = new SqliteConnection(_connectionString);
+                conn.Open();
 
-                    cmd.CommandText = @"
+                const string sql = @"
                     UPDATE Bank
-                    SET BankName = @bankName,
-                        AccountName = @accountName,
-                        AccountNumber = @accountNumber,
-                        SortCode = @sortcode,
+                    SET BankName = @BankName,
+                        AccountName = @AccountName,
+                        AccountNumber = @AccountNumber,
+                        SortCode = @SortCode,
                         IBAN = @IBAN,
                         BIC = @BIC
-                    WHERE UserId = @userId;
-                    ";
-                    cmd.Parameters.AddWithValue("@userId", userId);
-                    cmd.Parameters.AddWithValue("@bankName", bankName);
-                    cmd.Parameters.AddWithValue("@accountName", accountName);
-                    cmd.Parameters.AddWithValue("@accountNumber", accountNumber);
-                    cmd.Parameters.AddWithValue("@sortcode", sortcode);
-                    cmd.Parameters.AddWithValue("@IBAN", IBAN);
-                    cmd.Parameters.AddWithValue("@BIC", BIC);
+                    WHERE UserId = @UserId;";
 
-                    cmd.ExecuteNonQuery();
-                }
+                conn.Execute(sql, new
+                {
+                    UserId = userId,
+                    BankName = bankName,
+                    AccountName = accountName,
+                    AccountNumber = accountNumber,
+                    SortCode = sortcode,
+                    IBAN,
+                    BIC
+                });
             }
             catch (Exception ex)
             {
@@ -2413,70 +1890,67 @@ namespace Traker.Database
                 using var conn = new SqliteConnection(_connectionString);
                 conn.Open();
 
-                using (var pragma = conn.CreateCommand())
+                conn.Execute("PRAGMA foreign_keys = ON;");
+
+                if (status == Names.New)
                 {
-                    pragma.CommandText = "PRAGMA foreign_keys = ON;";
-                    pragma.ExecuteNonQuery();
+                    const string sql = @"
+                        UPDATE Jobs
+                        SET Status = @Status,
+                            StartDate = @StartDate,
+                            CompletedDate = @CompletedDate
+                        WHERE JobId = @JobId;";
 
-                    using (var jobStatusCmd = conn.CreateCommand())
+                    conn.Execute(sql, new
                     {
-                        if (status == Names.New)
-                        {
-                            jobStatusCmd.CommandText = @"    
-                            UPDATE Jobs
-                            SET Status = @status,
-                                StartDate = @startDate,
-                                CompletedDate = @completedDate
-                            WHERE JobId = @jobId;                        
-                            ";
+                        JobId = jobId,
+                        Status = status,
+                        StartDate = DateTime.MinValue,
+                        CompletedDate = DateTime.MinValue
+                    });
+                }
+                else if (status == Names.Active)
+                {
+                    const string sql = @"
+                        UPDATE Jobs
+                        SET Status = @Status,
+                            StartDate = @StartDate
+                        WHERE JobId = @JobId;";
 
-                            jobStatusCmd.Parameters.AddWithValue("@status", status);
-                            jobStatusCmd.Parameters.AddWithValue("@startDate", DateTime.MinValue); // then you can check if new if less than today
-                            jobStatusCmd.Parameters.AddWithValue("@completedDate", DateTime.MinValue); // then you can check if new if less than today
-                            jobStatusCmd.Parameters.AddWithValue("@jobId", jobId);
-                            jobStatusCmd.ExecuteNonQuery();
-                        }
-                        else if (status == Names.Active)
-                        {
-                            jobStatusCmd.CommandText = @"    
-                            UPDATE Jobs
-                            SET Status = @status,
-                                StartDate = @startDate
-                            WHERE JobId = @jobId;                        
-                            ";
+                    conn.Execute(sql, new
+                    {
+                        JobId = jobId,
+                        Status = status,
+                        StartDate = DateTime.Now.ToString("yyyy-MM-dd")
+                    });
+                }
+                else if (status == Names.Done)
+                {
+                    const string sql = @"
+                        UPDATE Jobs
+                        SET Status = @Status,
+                            CompletedDate = @CompletedDate
+                        WHERE JobId = @JobId;";
 
-                            jobStatusCmd.Parameters.AddWithValue("@status", status);
-                            jobStatusCmd.Parameters.AddWithValue("@startDate", DateOnly.FromDateTime(Convert.ToDateTime(DateTime.Now)));
-                            jobStatusCmd.Parameters.AddWithValue("@jobId", jobId);
-                            jobStatusCmd.ExecuteNonQuery();
-                        }
-                        else if (status == Names.Done)
-                        {
-                            jobStatusCmd.CommandText = @"    
-                            UPDATE Jobs
-                            SET Status = @status,
-                                CompletedDate = @completedDate
-                            WHERE JobId = @jobId;                        
-                            ";
+                    conn.Execute(sql, new
+                    {
+                        JobId = jobId,
+                        Status = status,
+                        CompletedDate = DateTime.Now.ToString("yyyy-MM-dd")
+                    });
+                }
+                else if (status == Names.Invoiced)
+                {
+                    const string sql = @"
+                        UPDATE Jobs
+                        SET Status = @Status
+                        WHERE JobId = @JobId;";
 
-                            jobStatusCmd.Parameters.AddWithValue("@status", status);
-                            jobStatusCmd.Parameters.AddWithValue("@completedDate", DateOnly.FromDateTime(Convert.ToDateTime(DateTime.Now)));
-                            jobStatusCmd.Parameters.AddWithValue("@jobId", jobId);
-                            jobStatusCmd.ExecuteNonQuery();
-                        }
-                        else if (status == Names.Invoiced)
-                        {
-                            jobStatusCmd.CommandText = @"    
-                            UPDATE Jobs
-                            SET Status = @status
-                            WHERE JobId = @jobId;                        
-                            ";
-
-                            jobStatusCmd.Parameters.AddWithValue("@status", status);
-                            jobStatusCmd.Parameters.AddWithValue("@jobId", jobId);
-                            jobStatusCmd.ExecuteNonQuery();
-                        }
-                    }
+                    conn.Execute(sql, new
+                    {
+                        JobId = jobId,
+                        Status = status
+                    });
                 }
             }
             catch (Exception ex)
@@ -2510,16 +1984,17 @@ namespace Traker.Database
             {
                 using var conn = new SqliteConnection(_connectionString);
                 conn.Open();
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = @"
+
+                const string sql = @"
                     UPDATE Invoices
-                    SET InvoiceName = @invoiceName
-                    WHERE InvoiceId = @invoiceId;
-                ";
-                cmd.Parameters.AddWithValue("@invoiceName", invoiceName);
-                cmd.Parameters.AddWithValue("@invoiceId", invoiceId);
-                cmd.ExecuteNonQuery();
-                Logger.LogActivity(Logger.INFO, $"Database: SetInvoiceName() OK - InvoiceId: {invoiceId}");
+                    SET InvoiceName = @InvoiceName
+                    WHERE InvoiceId = @InvoiceId;";
+
+                conn.Execute(sql, new
+                {
+                    InvoiceName = invoiceName,
+                    InvoiceId = invoiceId
+                });
             }
             catch (Exception ex)
             {
@@ -2552,17 +2027,19 @@ namespace Traker.Database
             {
                 using var conn = new SqliteConnection(_connectionString);
                 conn.Open();
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = @"
+
+                const string sql = @"
                     UPDATE Invoices
-                    SET Status = @invoiceName,
-                        PaidDate = @paidDate
-                    WHERE InvoiceId = @invoiceId;
-                ";
-                cmd.Parameters.AddWithValue("@invoiceName", status);
-                cmd.Parameters.AddWithValue("@paidDate", (object)paidDate ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@invoiceId", invoiceId);
-                cmd.ExecuteNonQuery();
+                    SET Status = @Status,
+                        PaidDate = @PaidDate
+                    WHERE InvoiceId = @InvoiceId;";
+
+                conn.Execute(sql, new
+                {
+                    Status = status,
+                    PaidDate = paidDate,
+                    InvoiceId = invoiceId
+                });
             }
             catch (Exception ex)
             {
@@ -2595,15 +2072,17 @@ namespace Traker.Database
             {
                 using var conn = new SqliteConnection(_connectionString);
                 conn.Open();
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = @"
+
+                const string sql = @"
                     UPDATE Clients
-                    SET FolderName = @folderName
-                    WHERE ClientId = @clientId;
-                ";
-                cmd.Parameters.AddWithValue("@clientId", clientId);
-                cmd.Parameters.AddWithValue("@folderName", folderName);
-                cmd.ExecuteNonQuery();
+                    SET FolderName = @FolderName
+                    WHERE ClientId = @ClientId;";
+
+                conn.Execute(sql, new
+                {
+                    ClientId = clientId,
+                    FolderName = folderName
+                });
             }
             catch (Exception ex)
             {
@@ -2628,7 +2107,7 @@ namespace Traker.Database
         }
 
         /// <summary>
-        /// save clijobent folder name
+        /// save job folder name
         /// </summary>
         public static Task SetJobFolderName(int jobId, string folderName)
         {
@@ -2636,15 +2115,17 @@ namespace Traker.Database
             {
                 using var conn = new SqliteConnection(_connectionString);
                 conn.Open();
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = @"
+
+                const string sql = @"
                     UPDATE Jobs
-                    SET FolderName = @folderName
-                    WHERE JobId = @jobId;
-                ";
-                cmd.Parameters.AddWithValue("@jobId", jobId);
-                cmd.Parameters.AddWithValue("@folderName", folderName);
-                cmd.ExecuteNonQuery();
+                    SET FolderName = @FolderName
+                    WHERE JobId = @JobId;";
+
+                conn.Execute(sql, new
+                {
+                    JobId = jobId,
+                    FolderName = folderName
+                });
             }
             catch (Exception ex)
             {
@@ -2680,26 +2161,28 @@ namespace Traker.Database
                 using var conn = new SqliteConnection(_connectionString);
                 conn.Open();
 
-                using (var pragma = conn.CreateCommand())
-                {
-                    pragma.CommandText = "PRAGMA foreign_keys = ON;";
-                    pragma.ExecuteNonQuery();
-                }
+                conn.Execute("PRAGMA foreign_keys = ON;");
 
                 using var tx = conn.BeginTransaction();
 
-                using (var deleteRowCmd = conn.CreateCommand())
+                try
                 {
-                    deleteRowCmd.CommandText = @"    
+                    const string sql = @"
                         DELETE FROM Clients
-                        WHERE ClientId = @clientId;
-                        ";
+                        WHERE ClientId = @ClientId;";
 
-                    deleteRowCmd.Parameters.AddWithValue("@clientId", clientId);
-                    deleteRowCmd.ExecuteNonQuery();
+                    conn.Execute(sql, new
+                    {
+                        ClientId = clientId
+                    }, tx);
+
+                    tx.Commit();
                 }
-
-                tx.Commit();
+                catch
+                {
+                    tx.Rollback();
+                    throw;
+                }
             }
             catch (Exception ex)
             {
@@ -2733,26 +2216,28 @@ namespace Traker.Database
                 using var conn = new SqliteConnection(_connectionString);
                 conn.Open();
 
-                using (var pragma = conn.CreateCommand())
-                {
-                    pragma.CommandText = "PRAGMA foreign_keys = ON;";
-                    pragma.ExecuteNonQuery();
-                }
+                conn.Execute("PRAGMA foreign_keys = ON;");
 
                 using var tx = conn.BeginTransaction();
 
-                using (var deleteRowCmd = conn.CreateCommand())
+                try
                 {
-                    deleteRowCmd.CommandText = @"    
+                    const string sql = @"
                         DELETE FROM Jobs
-                        WHERE JobId = @jobId;
-                        ";
+                        WHERE JobId = @JobId;";
 
-                    deleteRowCmd.Parameters.AddWithValue("@jobId", jobId);
-                    deleteRowCmd.ExecuteNonQuery();
+                    conn.Execute(sql, new
+                    {
+                        JobId = jobId
+                    }, tx);
+
+                    tx.Commit();
                 }
-
-                tx.Commit();
+                catch
+                {
+                    tx.Rollback();
+                    throw;
+                }
             }
             catch (Exception ex)
             {
@@ -2785,34 +2270,40 @@ namespace Traker.Database
             {
                 using var conn = new SqliteConnection(_connectionString);
                 conn.Open();
-                using (var pragma = conn.CreateCommand())
-                {
-                    pragma.CommandText = "PRAGMA foreign_keys = ON;";
-                    pragma.ExecuteNonQuery();
-                }
-                using var tx = conn.BeginTransaction();
-                using (var deleteInvoiceCmd = conn.CreateCommand())
-                {
-                    deleteInvoiceCmd.CommandText = @"    
-                        DELETE FROM Invoices
-                        WHERE InvoiceId = @invoiceId;
-                        ";
-                    deleteInvoiceCmd.Parameters.AddWithValue("@invoiceId", invoiceId);
-                    deleteInvoiceCmd.ExecuteNonQuery();
-                }
 
-                using (var updateJobStatusCmd = conn.CreateCommand())
+                conn.Execute("PRAGMA foreign_keys = ON;");
+
+                using var tx = conn.BeginTransaction();
+
+                try
                 {
-                    updateJobStatusCmd.CommandText = @"    
+                    const string deleteInvoiceSql = @"
+                        DELETE FROM Invoices
+                        WHERE InvoiceId = @InvoiceId;";
+
+                    conn.Execute(deleteInvoiceSql, new
+                    {
+                        InvoiceId = invoiceId
+                    }, tx);
+
+                    const string updateJobStatusSql = @"
                         UPDATE Jobs
-                        SET Status = @status
-                        WHERE JobId = @jobId;
-                        ";
-                    updateJobStatusCmd.Parameters.AddWithValue("@status", "Active");
-                    updateJobStatusCmd.Parameters.AddWithValue("@jobId", jobId);
-                    updateJobStatusCmd.ExecuteNonQuery();
+                        SET Status = @Status
+                        WHERE JobId = @JobId;";
+
+                    conn.Execute(updateJobStatusSql, new
+                    {
+                        JobId = jobId,
+                        Status = "Active"
+                    }, tx);
+
+                    tx.Commit();
                 }
-                tx.Commit();
+                catch
+                {
+                    tx.Rollback();
+                    throw;
+                }
             }
             catch (Exception ex)
             {

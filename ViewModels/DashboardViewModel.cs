@@ -33,7 +33,7 @@ namespace Traker.ViewModels
 
         #region Public View Variables
         public AppState State { set; get; }
-        public int PageSize { get; set; } = 4000;
+        public int PageSize { get; set; } = 100;
         public int TotalItems { get; set; } = 0; // grab from jobs count from the query
         public int TotalPages { get; set; } = 0;
         public string CurrentSortColumn { get; set; } = string.Empty;
@@ -634,7 +634,7 @@ namespace Traker.ViewModels
         {
             try
             {
-                var rows = await Database.GetDashboardRows(CurrentPage, PageSize, CurrentSortColumn, CurrentSortDirection, StatusFilter, ClientTypeFilter);
+                var rows = await Database.FetchDashboardRows(CurrentPage, PageSize, CurrentSortColumn, CurrentSortDirection, StatusFilter, ClientTypeFilter);
 
                 List<DashboardModel> cards = new List<DashboardModel>();
                                

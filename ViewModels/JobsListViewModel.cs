@@ -61,7 +61,7 @@ namespace Traker.ViewModels
         {
             try
             {
-                List<JobsModel> jobsModel = await Database.getJobsByClientId(SelectedJob.ClientId);
+                List<JobsModel> jobsModel = await Database.FetchJobsByClientId(SelectedJob.ClientId);
 
                 _businessName = SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName;
                 _clientType = SelectedJob.TypeIcon;
@@ -92,7 +92,7 @@ namespace Traker.ViewModels
                         StartDate = job.StartDate,
                         DueDate = job.DueDate,
 
-                        HasInvoice = await Database.CheckIfInvoicedByJobId(job.JobId),
+                        HasInvoice = await Database.CheckIfJobHasInvoice(job.JobId),
                         InvoiceStatus = await Database.GetInvoiceStatusByJobId(job.JobId) ?? Names.NotInvoiced
                     };
                     _jobsList.Add(currentJob);

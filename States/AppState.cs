@@ -26,10 +26,10 @@ namespace Traker.States
         public string _loadingMessage = string.Empty; // text below the loading animation 
 
         // filter sort
-        //public bool IsSortToClear = false; // set from dashboard to clear the sort on opening its menu
-        public bool IsFilterToClear = false; // set from dashboard to clear the filter on opening its menu
         public string currentSortOption = string.Empty; // useful when resetting filter but sort was on to restore it on filter reset
         public string currentFilterOption = string.Empty;
+        public bool _isSortInUse = false;
+        public bool _isFilterInUse = false;
 
         // messagebox
         public MessageBoxViewModel messageBoxVM = new MessageBoxViewModel();
@@ -73,6 +73,26 @@ namespace Traker.States
             {
                 _loadingMessage = value;
                 NotifyOfPropertyChange(() => LoadingMessage);
+            }
+        }
+
+        public bool IsSortInUse
+        {
+            get => _isSortInUse;
+            set
+            {
+                _isSortInUse = value;
+                NotifyOfPropertyChange(() => IsSortInUse);
+            }
+        }
+
+        public bool IsFilterInUse
+        {
+            get => _isFilterInUse;
+            set
+            {
+                _isFilterInUse = value;
+                NotifyOfPropertyChange(() => IsFilterInUse);
             }
         }
     }

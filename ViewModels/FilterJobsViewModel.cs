@@ -91,33 +91,7 @@ namespace Traker.ViewModels
                 Logger.LogActivity(Logger.ERROR, $"FilterJobsViewModel: OnInitializedAsync() FAIL\n\t{ex.Message}");
             }
             return base.OnInitializedAsync(cancellationToken);
-        }
-
-        protected override Task OnActivatedAsync(CancellationToken cancellationToken)
-        {
-            try
-            {
-                // if dashbaord refreshed and notified to reset
-                if (_state.IsFilterToClear == true)
-                {
-                    DisbaleOptions();
-                    _state.IsFilterToClear = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
-                {
-                    _state.messageBoxVM.Symbol = 2;
-                    _state.messageBoxVM.HeadMessage = "OnActivatedAsync";
-                    _state.messageBoxVM.Message = ex.Message;
-                    _state.messageBoxVM.ButtonStyle = Names.OK;
-                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                }
-                Logger.LogActivity(Logger.ERROR, $"FilterJobsViewModel: OnActivatedAsync() FAIL\n\t{ex.Message}");
-            }
-            return base.OnActivatedAsync(cancellationToken);
-        }
+        }        
         #endregion
 
         #region Public View Functions
@@ -134,6 +108,7 @@ namespace Traker.ViewModels
                     }
                     UIHelper.SetOpacityFull(_opacityStatus);
                     await _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.AllJobStatus });
+                    _state.IsFilterInUse = false;
                 }
                 else // select
                 {
@@ -141,6 +116,7 @@ namespace Traker.ViewModels
                     //_optionsStatus[option] = true;
                     UIHelper.InverseRadioOptionChangedOpacity(option, _opacityStatus);
                     await SelectedOption(option);
+                    _state.IsFilterInUse = true;
                 }
             }
             catch (Exception ex)

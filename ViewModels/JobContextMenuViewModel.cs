@@ -135,7 +135,7 @@ namespace Traker.ViewModels
                     await TryCloseAsync();
                     // get list of jobs under the client ID
                     List<JobsModel> jobDetails = new List<JobsModel>();
-                    jobDetails = await Database.getJobsByClientId(SelectedJob.ClientId);
+                    jobDetails = await Database.FetchJobsByClientId(SelectedJob.ClientId);
                     await FileStore.LocateJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName, SelectedJob.JobTitle);
                 });
             }

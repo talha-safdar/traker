@@ -508,7 +508,18 @@
                     <!-- filter/sort -->
                     <Grid Grid.Column="2" VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,0">
-                            <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" x:Name="SubmitFilterBorder" MouseLeave="SubmitFilterBorder_MouseLeave" MouseLeftButtonUp="SubmitFilterBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitFilterBorder_MouseLeftButtonDown" Cursor="Hand" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" Margin="0,0,10,0" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFilterContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                            <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" x:Name="SubmitFilterBorder" MouseLeave="SubmitFilterBorder_MouseLeave" MouseLeftButtonUp="SubmitFilterBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitFilterBorder_MouseLeftButtonDown" Cursor="Hand" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" Margin="0,0,10,0" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFilterContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="#E0E0E0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding State.IsFilterInUse}" Value="True">
+                                                <Setter Property="BorderThickness" Value="1" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                
                                 <Border.ToolTip>
                                     <ToolTip Style="{StaticResource DarkToolTip}">
                                         <TextBlock Text="Filter Jobs" />
@@ -519,7 +530,17 @@
                                     SnapsToDevicePixels="True"
                                     Source="/Resources/Media/Images/Icons/Lucide/list-filter.svg" Width="15" Height="15"/>
                             </Border>
-                            <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" x:Name="SubmitSortBorder" MouseLeave="SubmitSortBorder_MouseLeave" MouseLeftButtonUp="SubmitSortBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitSortBorder_MouseLeftButtonDown" Cursor="Hand" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenSortContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="{StaticResource FontPrimaryBrush}" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                            <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" x:Name="SubmitSortBorder" MouseLeave="SubmitSortBorder_MouseLeave" MouseLeftButtonUp="SubmitSortBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitSortBorder_MouseLeftButtonDown" Cursor="Hand" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenSortContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="#E0E0E0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding State.IsSortInUse}" Value="True">
+                                                <Setter Property="BorderThickness" Value="1" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
                                 <Border.ToolTip>
                                     <ToolTip Style="{StaticResource DarkToolTip}">
                                         <TextBlock Text="Sort Jobs" />
@@ -958,8 +979,12 @@
             <Grid Grid.Row="1" Grid.RowSpan="2">
                 <Border Background="#2A2A2A" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="25,0,0,15" Padding="10,3,10,1" CornerRadius="22">
                     <Border.Style>
-                        <Style TargetType="Border">
-                            <Style.Triggers>                                
+                        <Style TargetType="Border">     
+                            <Setter Property="Opacity" Value="0.5" />
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Opacity" Value="1.0" />
+                                </Trigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
                                         <Condition Binding="{Binding PaginationButtons[0]}" Value="False" />

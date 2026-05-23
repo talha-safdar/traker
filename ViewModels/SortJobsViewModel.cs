@@ -117,6 +117,7 @@ namespace Traker.ViewModels
                     _opacityOrderStyle[0] = _halfOpacity;
                     _opacityOrderStyle[1] = _halfOpacity;
                     _selectedOption = -1;
+                    _state.IsSortInUse = false;
                 }
                 else // select
                 {
@@ -135,6 +136,7 @@ namespace Traker.ViewModels
                         _orderStyle[0] = true;
                         _opacityOrderStyle[0] = _fullOpacity;
                     }
+                    _state.IsSortInUse = true;
                 }
 
                 // do logics
