@@ -441,7 +441,7 @@
                                                     RenderOptions.BitmapScalingMode="HighQuality"
                                                     SnapsToDevicePixels="True"
                                                     Source="/Resources/Media/Images/Icons/Lucide/user-round-cog.svg" Width="25" Height="25"/>
-                                                <TextBlock VerticalAlignment="Center" Margin="15,0,0,0" Text="{Binding DataService.User[0].FullName}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="22" />
+                                                <TextBlock VerticalAlignment="Center" Margin="15,0,0,0" Text="{Binding UserName}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="22" />
                                             </StackPanel>    
                                         </Grid>
 
@@ -603,14 +603,6 @@
                                                             [Event MouseRightButtonUp] = [Action OpenContextMenu($dataContext)];"
                                             Cursor="Hand"
                                         MouseLeftButtonDown="EditJob">
-                                        <!--<Border.BorderBrush>
-                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                --><!-- The "Rim Light" on the top edge --><!--
-                                                <GradientStop Color="#40FFFFFF" Offset="0" />
-                                                --><!-- Fades to transparent so the bottom/sides stay dark --><!--
-                                                <GradientStop Color="Transparent" Offset="0.2" />
-                                            </LinearGradientBrush>
-                                        </Border.BorderBrush>-->
                                         <Border.ToolTip>
                                             <ToolTip Style="{StaticResource DarkToolTip}">
                                                 <TextBlock>
@@ -985,14 +977,21 @@
                         Direction="0" />
                     </Border.Effect>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Border Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action PreviousPage()]">
+                        <Border IsEnabled="{Binding PaginationButtons[0]}" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action PreviousPage()]">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <Setter Property="Opacity" Value="1.0"/>
                                     <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Opacity" Value="0.7"/>
-                                        </Trigger>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver}" Value="True" />
+                                                <Condition Binding="{Binding PaginationButtons[0]}" Value="True" />
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Opacity" Value="0.7" />
+                                        </MultiDataTrigger>
+                                        <DataTrigger Binding="{Binding PaginationButtons[0]}" Value="False">
+                                            <Setter Property="Opacity" Value="0.5" />
+                                        </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>
@@ -1003,14 +1002,21 @@
                         </Border>
                         <TextBlock Cursor="Arrow" Foreground="{StaticResource FontSecondaryBrush}" Text="{Binding PageInfo}" Padding="10" FontSize="18" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
 
-                        <Border Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action NextPage()]">
+                        <Border IsEnabled="{Binding PaginationButtons[1]}" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action NextPage()]">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <Setter Property="Opacity" Value="1.0"/>
                                     <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Opacity" Value="0.7"/>
-                                        </Trigger>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver}" Value="True" />
+                                                <Condition Binding="{Binding PaginationButtons[1]}" Value="True" />
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Opacity" Value="0.7" />
+                                        </MultiDataTrigger>
+                                        <DataTrigger Binding="{Binding PaginationButtons[1]}" Value="False">
+                                            <Setter Property="Opacity" Value="0.5" />
+                                        </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>

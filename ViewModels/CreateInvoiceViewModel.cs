@@ -98,7 +98,6 @@ namespace Traker.ViewModels
         {
             try
             {
-                _invoicesModel = await Database.GetInvoice(SelectedJob.JobId);
                 _clientModel = await Database.GetClient(SelectedJob.ClientId);
                 _bankModel = await Database.FetchBank();
                 _businessModel = await Database.FetchBusiness();
@@ -106,8 +105,8 @@ namespace Traker.ViewModels
                 await CanSubmit(); // check wether to enable/disbale submit button
                 BillingName = SelectedJob.ClientName;
                 BillingAddress = SelectedJob.Address;
-                BillingCity = SelectedJob.City;
                 BillingPostcode = SelectedJob.Postcode;
+                BillingCity = SelectedJob.City;
                 BillingCountry = SelectedJob.Country;
                 DueDate = SelectedJob.DueDate.AddDays(7).ToString();
                 _subtotalAmountDb = decimal.Parse(SelectedJob.Price.ToString(), NumberStyles.Currency, CultureInfo.CurrentCulture);
@@ -254,6 +253,8 @@ namespace Traker.ViewModels
                     await Database.CreateInvoice(SelectedJob.ClientId, SelectedJob.JobId, _subtotalAmountDb, result, _totalAmountDb, dueDate, BillingName.Trim(), BillingAddress.Trim(), BillingCity.Trim(), BillingPostcode.Trim(), BillingCountry.Trim(), dateTimeIssued);
                     //await _dataService.RefreshDatabase();
 
+                    _invoicesModel = await Database.GetInvoice(SelectedJob.JobId);
+
                     var invoiceId = _invoicesModel.InvoiceId;
                     var invoiceName = $"INV-{invoiceId}_{SelectedJob.ClientId}_{SelectedJob.JobId}_{dateTimeIssued.ToString("dd-MM-yyyy")}_{dateTimeIssued.ToString("HHmmss")}.pdf";
                     await Database.SetInvoiceName(invoiceId, invoiceName.Trim());
@@ -262,8 +263,6 @@ namespace Traker.ViewModels
 
 
                     await _events.PublishOnUIThreadAsync(new RefreshDatabase() { Command = "Invoice" });
-                    //await Task.Delay(5000); // 5 seconds gap to allow the creation of the file first
-                    await _events.PublishOnUIThreadAsync(new DashboardVMEvents { Command = Names.ShowInvoice });
                 });
             }
             catch (Exception ex)
@@ -352,7 +351,10 @@ namespace Traker.ViewModels
                                         billingInfo.Item().Text(text =>
                                         {
                                             text.Span("Home Address: ").Bold().FontColor(Colors.Grey.Darken2).FontSize(14);
-                                            text.Span(_clientModel.BillingAddress).FontSize(14);
+                                            text.Span(BillingAddress + ", ").FontSize(14);
+                                            text.Span(BillingPostcode + ", ").FontSize(14);
+                                            text.Span(BillingCity + ", ").FontSize(14);
+                                            text.Span(BillingCountry).FontSize(14);
                                         });
                                     });
 

@@ -795,6 +795,35 @@ namespace Traker.Database
             }
         }
         
+        public async static Task<string> GetUserName()
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_connectionString);
+                return await conn.ExecuteScalarAsync<string>("SELECT FullName FROM User LIMIT 1;") ?? "Admin";
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Get User Name";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        state.messageBoxVM.Action = Names.Close;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"Database: GetUserName() FAIL\n\t{ex.Message}");
+                throw;
+            }
+        }
+
         /// <summary>
         /// Fetch User Table
         /// </summary>
@@ -935,8 +964,8 @@ namespace Traker.Database
         {
             try
             {
-                using var conn = new SqliteConnection(_connectionString);
                 //return conn.QueryFirstAsync<InvoicesModel>("SELECT * FROM Invoices WHERE JobId IN (SELECT JobId FROM Jobs WHERE ClientId IN (SELECT ClientId FROM Clients)) LIMIT 1;");
+                using var conn = new SqliteConnection(_connectionString);
                 return await conn.QueryFirstAsync<InvoicesModel>("SELECT * FROM Invoices WHERE JobId = @jobId LIMIT 1;", 
                     new { jobId = jobId });
             }
@@ -1423,8 +1452,8 @@ namespace Traker.Database
             try
             {
                 using var conn = new SqliteConnection(_connectionString);
-                return await conn.ExecuteScalarAsync<string>("SELECT InvoiceName FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0;",
-                    new { jobId = jobId });
+                return (await conn.ExecuteScalarAsync<string>("SELECT InvoiceName FROM Invoices WHERE JobId = @jobId AND IsDeleted = 0;",
+                    new { jobId = jobId }))?.ToString() ?? string.Empty;
             }
             catch (Exception ex)
             {
@@ -1576,94 +1605,94 @@ namespace Traker.Database
             }
         }
 
-        /// <summary>
-        /// SORT: Sort by Client Name Descending
-        /// </summary>
-        public async static Task<List<DashboardModel>> SortListbyClientNameDesc(int page, int pageSize)
-        {
-            try
-            {
-                using var conn = new SqliteConnection(_connectionString);
+        ///// <summary>
+        ///// SORT: Sort by Client Name Descending
+        ///// </summary>
+        //public async static Task<List<DashboardModel>> SortListbyClientNameDesc(int page, int pageSize)
+        //{
+        //    try
+        //    {
+        //        using var conn = new SqliteConnection(_connectionString);
 
-                int offset = (page - 1) * pageSize;
+        //        int offset = (page - 1) * pageSize;
 
-                string sql = @"
-                        SELECT 
-                        c.ClientId,
-                        c.Type AS ClientType,
-                        c.FullName AS ClientName,
-                        c.CompanyName,
-                        c.Email AS ClientEmail,
-                        c.PhoneNumber AS ClientPhone,
-                        c.BillingAddress AS Address,
-                        c.City,
-                        c.Postcode,
-                        c.Country,
-                        c.IsActive,
+        //        string sql = @"
+        //                SELECT 
+        //                c.ClientId,
+        //                c.Type AS ClientType,
+        //                c.FullName AS ClientName,
+        //                c.CompanyName,
+        //                c.Email AS ClientEmail,
+        //                c.PhoneNumber AS ClientPhone,
+        //                c.BillingAddress AS Address,
+        //                c.City,
+        //                c.Postcode,
+        //                c.Country,
+        //                c.IsActive,
 
-                        j.JobId,
-                        j.Title AS JobTitle,
-                        j.Description AS JobDescription,
-                        j.FinalPrice AS Price,
-                        j.Status AS JobStatus,
-                        j.StartDate,
-                        j.DueDate,
-                        j.AmountReceived,
-                        j.CreatedDate,
+        //                j.JobId,
+        //                j.Title AS JobTitle,
+        //                j.Description AS JobDescription,
+        //                j.FinalPrice AS Price,
+        //                j.Status AS JobStatus,
+        //                j.StartDate,
+        //                j.DueDate,
+        //                j.AmountReceived,
+        //                j.CreatedDate,
 
-                        i.PaidDate,
+        //                i.PaidDate,
 
-                        CASE 
-                            WHEN i.InvoiceId IS NOT NULL AND i.IsDeleted = 0 THEN 1 
-                            ELSE 0 
-                        END AS HasInvoice,
+        //                CASE 
+        //                    WHEN i.InvoiceId IS NOT NULL AND i.IsDeleted = 0 THEN 1 
+        //                    ELSE 0 
+        //                END AS HasInvoice,
 
-                        COALESCE(NULLIF(i.Status, ''), 'Not invoiced') AS InvoiceStatus
+        //                COALESCE(NULLIF(i.Status, ''), 'Not invoiced') AS InvoiceStatus
 
-                    FROM Clients c
+        //            FROM Clients c
 
-                    LEFT JOIN Jobs j
-                        ON c.ClientId = j.ClientId
+        //            LEFT JOIN Jobs j
+        //                ON c.ClientId = j.ClientId
 
-                    LEFT JOIN Invoices i
-                        ON j.JobId = i.JobId
-                        AND i.IsDeleted = 0
+        //            LEFT JOIN Invoices i
+        //                ON j.JobId = i.JobId
+        //                AND i.IsDeleted = 0
 
-                    ORDER BY c.FullName COLLATE NOCASE ASC, j.JobId DESC
+        //            ORDER BY c.FullName COLLATE NOCASE ASC, j.JobId DESC
 
-                    LIMIT @PageSize OFFSET @Offset;
-                        ";
+        //            LIMIT @PageSize OFFSET @Offset;
+        //                ";
 
-                var dashboardData = await conn.QueryAsync<DashboardModel>(
-                                sql,
-                                new
-                                {
-                                    PageSize = pageSize,
-                                    Offset = offset
-                                });
-                return dashboardData.ToList();
-            }
-            catch (Exception ex)
-            {
-                await Execute.OnUIThreadAsync(() =>
-                {
-                    AppState state = IoC.Get<AppState>();
-                    IWindowManager windowManager = IoC.Get<IWindowManager>();
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
-                    {
-                        state.messageBoxVM.Symbol = 2;
-                        state.messageBoxVM.HeadMessage = "Sort by Client Name Desc";
-                        state.messageBoxVM.Message = ex.Message;
-                        state.messageBoxVM.ButtonStyle = Names.OK;
-                        state.messageBoxVM.Action = Names.Close;
-                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
-                    return Task.CompletedTask;
-                });
-                Logger.LogActivity(Logger.ERROR, $"Database: CheckIfInvoicedByJobId() FAIL\n\t{ex.Message}");
-                throw;
-            }
-        }
+        //        var dashboardData = await conn.QueryAsync<DashboardModel>(
+        //                        sql,
+        //                        new
+        //                        {
+        //                            PageSize = pageSize,
+        //                            Offset = offset
+        //                        });
+        //        return dashboardData.ToList();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await Execute.OnUIThreadAsync(() =>
+        //        {
+        //            AppState state = IoC.Get<AppState>();
+        //            IWindowManager windowManager = IoC.Get<IWindowManager>();
+        //            if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+        //            {
+        //                state.messageBoxVM.Symbol = 2;
+        //                state.messageBoxVM.HeadMessage = "Sort by Client Name Desc";
+        //                state.messageBoxVM.Message = ex.Message;
+        //                state.messageBoxVM.ButtonStyle = Names.OK;
+        //                state.messageBoxVM.Action = Names.Close;
+        //                windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+        //            }
+        //            return Task.CompletedTask;
+        //        });
+        //        Logger.LogActivity(Logger.ERROR, $"Database: CheckIfInvoicedByJobId() FAIL\n\t{ex.Message}");
+        //        throw;
+        //    }
+        //}
 
         public async static Task<List<DashboardModel>> GetDashboardRows(int currentPage, int pageSize, string? sortBy, string? sortDirection, string? statusFilter, string? clientTypeFilter)
         {

@@ -32,8 +32,6 @@ namespace Traker.ViewModels
         public DataService DataService { get; }
 
         #region Public View Variables
-        public List<string> JobStatusEdit { get; set; } = new List<string> { "New", "Active", "Done" };
-        public List<string> InvoiceStatusEdit { get; set; } = new List<string> { "Created", "Sent", "Paid", "Overdue" };
         public AppState State { set; get; }
         public int PageSize { get; set; } = 4000;
         public int TotalItems { get; set; } = 0; // grab from jobs count from the query
@@ -57,8 +55,10 @@ namespace Traker.ViewModels
         private ObservableCollection<DashboardModel> _dashboardData; // listo of data shown on the data grid
         public DashboardModel _selectedJob; // selected data row automatically filled on click
         private string _outstandingStatusBorder; // grey=normal, pink=overdue
+        private string _userName; // used for the bottom side panel button for user settings
         private int _currentPage;
         private string _pageInfo;
+        private ObservableCollection<bool> _paginationButtons; // 0=left, 1=right, true=enabled, false=disabled
 
         /*
          * for buttons:
@@ -70,10 +70,6 @@ namespace Traker.ViewModels
         #endregion
 
         #region Private Field Variables
-        // for filter purpose
-        private ObservableCollection<DashboardModel> _dashboardDataBackup; // backup when using filter mode
-        private ObservableCollection<DashboardModel> _dashboardDataStatusFiltered; // current status filtered list status
-        private ObservableCollection<DashboardModel> _dashboardDataTypeFiltered; // current type filtered list status
         private bool _isFilterJobStatusOn = false; // to flag wether the job status filter is on
         private bool _isFilterClientTypeOn = false; // to flag wether the client type filter is on
         private bool _isFilterClientTypeIndividual = false;
@@ -105,8 +101,10 @@ namespace Traker.ViewModels
             _outstandingStatusBorder = string.Empty;
             _dashboardData = new ObservableCollection<DashboardModel>();
             _selectedJob = new DashboardModel();
+            _userName = string.Empty;
             _currentPage = 1;
             _pageInfo = string.Empty;
+            _paginationButtons = new ObservableCollection<bool>();
 
             // private variables
             State.EditJobViewModel = new EditJobViewModel(_events, _windowManager, State);
@@ -118,9 +116,6 @@ namespace Traker.ViewModels
             State.EditClientViewModel = new EditClientViewModel(_events, _windowManager, DataService, State);
             State.UserContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager, DataService, State);
             State.EditInvoiceViewModel = new EditInvoiceViewModel(_events, _windowManager, DataService, State);
-            _dashboardDataBackup = new ObservableCollection<DashboardModel>();
-            _dashboardDataStatusFiltered = new ObservableCollection<DashboardModel>();
-            _dashboardDataTypeFiltered = new ObservableCollection<DashboardModel>();
             _cts = new CancellationTokenSource();
             _pauseEvent = new ManualResetEventSlim(true); // true = start open
 
@@ -140,8 +135,11 @@ namespace Traker.ViewModels
 
                 EnableBtns = false;
                 OpacityBtns = _halfOpacity;
+                PaginationButtons = new ObservableCollection<bool>() { false, false }; // left, right (pagination)
 
-                await SetSortList();
+                UserName = await Database.GetUserName();
+
+                await SetSortList(); //set dashboard
             }
             catch (Exception ex)
             {
@@ -584,6 +582,24 @@ namespace Traker.ViewModels
 
                 DashboardData = new ObservableCollection<DashboardModel>(data); // refresh the UI with new data
 
+                // adjust pagination buttons
+                if (CurrentPage <= 1)
+                {
+                    PaginationButtons[0] = false; // disable left button
+                }
+                else
+                {
+                    PaginationButtons[0] = true; // enable left button
+                }
+                if (CurrentPage >= TotalPages)
+                {
+                    PaginationButtons[1] = false; // disable right button
+                }
+                else
+                {
+                    PaginationButtons[1] = true; // enable right button
+                }
+
                 await ResumeLoopBG(); // resume loop (overdue check)
             }
             catch (Exception ex)
@@ -660,10 +676,6 @@ namespace Traker.ViewModels
                 TotalPages = (int)Math.Ceiling((double)TotalItems / PageSize);
 
                 NotifyOfPropertyChange(() => PageInfo);
-
-                _dashboardDataBackup = DashboardData; // backup for filtering
-                _dashboardDataStatusFiltered = DashboardData;
-                _dashboardDataTypeFiltered = DashboardData;
 
                 var moneyInfo = await Database.FetchMoneyInformation();
 
@@ -928,18 +940,6 @@ namespace Traker.ViewModels
             await RefreshDashboard();
         }
 
-        //private async Task SetFilterList(string statusFilter = null, string clientTypeFilter = null)
-        //{
-        //    /*
-        //     * New / Active / Done / Invoiced / Overdue / Paid / null (null means unselected)
-        //     *  Individual / Company / null
-        //     */
-
-        //    StatusFilter = statusFilter;
-        //    ClientTypeFilter = clientTypeFilter;
-        //    await RefreshDashboard();
-        //}
-
         private async Task SortJobs(string command)
         {
             try
@@ -1029,11 +1029,6 @@ namespace Traker.ViewModels
         {
             try
             {
-                /*
-                 * DashboardBackUp = supreme backup
-                 * DashboardFiltered = backup of current filter
-                 * Dashboard = Normal UI list
-                 */
                 CurrentPage = 1; // reset page to 1 when filter by status
 
                 if (command != Names.FilterIndividual && command != Names.FilterComapny && command != Names.AllJobStatus && command != Names.UnfilterClientType) // status
@@ -1042,138 +1037,65 @@ namespace Traker.ViewModels
                     {
                         if (_isFilterClientTypeIndividual == true)
                         {
-                            //_dashboardDataTypeFiltered = new ObservableCollection<DashboardModel>(_dashboardDataBackup.Where(j => j.ClientType == "Individual").ToList());
                             ClientTypeFilter = Names.Individual;
                             await RefreshDashboard();
                         }
                         else if (_isFilterClientTypeCompany == true)
                         {
-                            //_dashboardDataTypeFiltered = new ObservableCollection<DashboardModel>(_dashboardDataBackup.Where(j => j.ClientType == "Company").ToList());
                             ClientTypeFilter = Names.Company;
                             await RefreshDashboard();
                         }
-                        //DashboardData = _dashboardDataTypeFiltered;
                     }
                     else
                     {
                         ClientTypeFilter = string.Empty;
                         await RefreshDashboard();
-                        //DashboardData = _dashboardDataBackup;
                     }
 
                     if (command == Names.JobStatusNew)
                     {                        
                         StatusFilter = Names.New;
                         await RefreshDashboard();
-
-
-                        //DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "New").ToList());
-
-                        //if (DashboardData.Count > 0)
-                        //{
-                        //    _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
-                        //}
                     }
                     else if (command == Names.JobStatusActive)
                     {
                         StatusFilter = Names.Active;
                         await RefreshDashboard();
-
-                        //DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Active").ToList());
-
-                        //if (DashboardData.Count > 0)
-                        //{
-                        //    _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
-                        //}
                     }
                     else if (command == Names.JobStatusDone)
                     {
                         StatusFilter = Names.Done;
                         await RefreshDashboard();
-
-                        //DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Done").ToList());
-
-                        //if (DashboardData.Count > 0)
-                        //{
-                        //    _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
-                        //}
                     }
                     else if (command == Names.JobStatusInvoiced)
                     {
                         StatusFilter = Names.Invoiced;
                         await RefreshDashboard();
-
-                        //DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.JobStatus == "Invoiced").ToList());
-
-                        //if (DashboardData.Count > 0)
-                        //{
-                        //    _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
-                        //}
                     }
                     else if (command == Names.JobStatusOverdue)
                     {
                         StatusFilter = Names.Overdue;
                         await RefreshDashboard();
-
-                        //DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.InvoiceStatus == "Overdue").ToList());
-
-                        //if (DashboardData.Count > 0)
-                        //{
-                        //    _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
-                        //}
                     }
                     else if (command == Names.JobStatusPaid)
                     {
                         StatusFilter = Names.Paid;
                         await RefreshDashboard();
-
-                        //DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.InvoiceStatus == "Paid").ToList());
-
-                        //if (DashboardData.Count > 0)
-                        //{
-                        //    _dashboardDataStatusFiltered = DashboardData; // backup to filtered list
-                        //}
                     }
                     _isFilterJobStatusOn = true;
                 }
                 else if (command == Names.FilterIndividual || command == Names.FilterComapny) // cllient type
                 {
-                    //if (_isFilterJobStatusOn == true)
-                    //{
-                    //    DashboardData = _dashboardDataStatusFiltered;
-                    //}
-                    //else
-                    //{
-                    //    DashboardData = _dashboardDataBackup;
-                    //}
 
                     if (command == Names.FilterIndividual)
                     {
                         ClientTypeFilter = Names.Individual;
                         await RefreshDashboard();
-
-                        //DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.ClientType == "Individual").ToList());
-
-                        //if (DashboardData.Count > 0)
-                        //{
-                        //    _dashboardDataTypeFiltered = DashboardData;
-                        //}
-                        //_isFilterClientTypeCompany = false;
-                        //_isFilterClientTypeIndividual = true;
                     }
                     else if (command == Names.FilterComapny)
                     {
                         ClientTypeFilter = Names.Company;
                         await RefreshDashboard();
-
-                        //DashboardData = new ObservableCollection<DashboardModel>(DashboardData.Where(j => j.ClientType == "Company").ToList());
-
-                        //if (DashboardData.Count > 0)
-                        //{
-                        //    _dashboardDataTypeFiltered = DashboardData;
-                        //}
-                        //_isFilterClientTypeIndividual = false;
-                        //_isFilterClientTypeCompany = true;
                     }
                     _isFilterClientTypeOn = true;
                 }
@@ -1185,29 +1107,12 @@ namespace Traker.ViewModels
                         StatusFilter = string.Empty;
                         ClientTypeFilter = string.Empty;
                         await RefreshDashboard();
-
-                        //DashboardData = _dashboardDataBackup; // reset list
-                        //_dashboardDataStatusFiltered = DashboardData;
                     }
                     else if (_isFilterJobStatusOn == true) // deselect status (new, active, done, invoiced)
                     {
 
                         StatusFilter = string.Empty;
                         await RefreshDashboard();
-
-
-                        //DashboardData = _dashboardDataBackup;
-                        //if (_isFilterClientTypeOn == true)
-                        //{
-                        //    DashboardData = _dashboardDataTypeFiltered;
-                        //}
-                        //_isFilterJobStatusOn = false;
-
-                        // check if sort was enabled
-                        //if (string.IsNullOrEmpty(State.currentSortOption) == false)
-                        //{
-                        //    await SortJobs(State.currentSortOption);
-                        //}
                     }
                 }
                 else if (command == Names.UnfilterClientType) // reset client type
@@ -1217,26 +1122,11 @@ namespace Traker.ViewModels
                         StatusFilter = string.Empty;
                         ClientTypeFilter = string.Empty;
                         await RefreshDashboard();
-                        //DashboardData = _dashboardDataBackup; // reset list
-                        //_dashboardDataTypeFiltered = DashboardData;
                     }
                     else if (_isFilterClientTypeOn == true) // deselect type (individual, company)
                     {
                         ClientTypeFilter = string.Empty;
                         await RefreshDashboard();
-
-                        //DashboardData = _dashboardDataBackup;
-                        //if (_isFilterJobStatusOn == true)
-                        //{
-                        //    DashboardData = _dashboardDataStatusFiltered;
-                        //}
-                        //_isFilterClientTypeOn = false;
-
-                        //// check if sort was enabled
-                        //if (string.IsNullOrEmpty(State.currentSortOption) == false)
-                        //{
-                        //    SortJobs(State.currentSortOption);
-                        //}
                     }
                 }
             }
@@ -1575,6 +1465,26 @@ namespace Traker.ViewModels
             {
                 _pageInfo = value;
                 NotifyOfPropertyChange(() => PageInfo);
+            }
+        }
+
+        public string UserName
+        {
+            get => _userName;
+            set
+            {
+                _userName = value;
+                NotifyOfPropertyChange(() => UserName);
+            }
+        }
+
+        public ObservableCollection<bool> PaginationButtons
+        {
+            get => _paginationButtons;
+            set
+            {
+                _paginationButtons = value;
+                NotifyOfPropertyChange(() => PaginationButtons);
             }
         }
         #endregion

@@ -120,8 +120,8 @@ namespace Traker.ViewModels.Edit
                     if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
                     {
                         _state.messageBoxVM.Symbol = 1;
-                        _state.messageBoxVM.HeadMessage = "View Form";
-                        _state.messageBoxVM.Message = $"Could not locate the invoice file\n\n{await Database.GetInvoiceNameByJobId(SelectedJob.JobId)}";
+                        _state.messageBoxVM.HeadMessage = "View Invoice";
+                        _state.messageBoxVM.Message = $"Could not locate the invoice file\n\nPlease try open it directly";
                         _state.messageBoxVM.ButtonStyle = Names.OK;
                         _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
                     }
@@ -275,7 +275,7 @@ namespace Traker.ViewModels.Edit
                     }
                     catch (Exception ex)
                     {
-                        Execute.OnUIThreadAsync(async() =>
+                        await Execute.OnUIThreadAsync(async() =>
                         {
                             if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
                             {
@@ -308,6 +308,7 @@ namespace Traker.ViewModels.Edit
         {
             try
             {
+                await TryCloseAsync();
                 if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
                 {
                     _state.messageBoxVM.Symbol = 0;
@@ -323,8 +324,7 @@ namespace Traker.ViewModels.Edit
                     await Task.Run(async() =>
                     {
                         await Database.DeleteInvoice(Convert.ToInt32(await Database.GetInvoiceIdByJobId(SelectedJob.JobId)), SelectedJob.JobId);
-                        await _events.PublishOnUIThreadAsync(new RefreshDatabase());
-                        await TryCloseAsync();
+                        await _events.PublishOnUIThreadAsync(new RefreshDatabase());                        
                     });
                 }
             }
