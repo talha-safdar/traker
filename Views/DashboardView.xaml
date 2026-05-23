@@ -787,7 +787,24 @@
 
                                                 <!-- job status -->
                                                 <Grid Grid.Row="0">
-                                                    <TextBlock Margin="0" Text="{Binding JobStatus}" Foreground="#E0E0E0" Typography.Capitals="AllSmallCaps" conv:TextBlockSpacer.LetterSpacing="0.50" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" FontSize="32" />
+                                                    <TextBlock Margin="0" Foreground="#E0E0E0" Typography.Capitals="AllSmallCaps" conv:TextBlockSpacer.LetterSpacing="0.50" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" FontSize="32">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Text" Value="{Binding JobStatus}" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding InvoiceStatus}" Value="Invoiced">
+                                                                        <Setter Property="Text" Value="{Binding InvoiceStatus}" />
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding InvoiceStatus}" Value="Overdue">
+                                                                        <Setter Property="Text" Value="{Binding InvoiceStatus}" />
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding InvoiceStatus}" Value="Paid">
+                                                                        <Setter Property="Text" Value="{Binding InvoiceStatus}" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
                                                 </Grid>
 
                                                 <!-- spacer -->
@@ -801,13 +818,13 @@
                                                                 <Style TargetType="TextBlock">
                                                                     <Setter Property="Text" Value="Due" />
                                                                     <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding JobStatus}" Value="Invoiced">
+                                                                        <DataTrigger Binding="{Binding InvoiceStatus}" Value="Invoiced">
                                                                             <Setter Property="Text" Value="Due" />
                                                                         </DataTrigger>
-                                                                        <DataTrigger Binding="{Binding JobStatus}" Value="Overdue">
+                                                                        <DataTrigger Binding="{Binding InvoiceStatus}" Value="Overdue">
                                                                             <Setter Property="Text" Value="Due" />
                                                                         </DataTrigger>
-                                                                        <DataTrigger Binding="{Binding JobStatus}" Value="Paid">
+                                                                        <DataTrigger Binding="{Binding InvoiceStatus}" Value="Paid">
                                                                             <Setter Property="Text" Value="On" />
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
@@ -817,15 +834,18 @@
                                                         <TextBlock Margin="10,0,0,0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="TextBlock">
+                                                                     <!-- job status due date -->
                                                                     <Setter Property="Text" Value="{Binding DueDate}" />
+                                                                    
+                                                                    <!-- invoiced status due date -->
                                                                     <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding JobStatus}" Value="Invoiced">
+                                                                        <DataTrigger Binding="{Binding InvoiceStatus}" Value="Invoiced">
                                                                             <Setter Property="Text" Value="{Binding InvoiceDueDate}" />
                                                                         </DataTrigger>
-                                                                        <DataTrigger Binding="{Binding JobStatus}" Value="Overdue">
+                                                                        <DataTrigger Binding="{Binding InvoiceStatus}" Value="Overdue">
                                                                             <Setter Property="Text" Value="{Binding InvoiceDueDate}" />
                                                                         </DataTrigger>
-                                                                        <DataTrigger Binding="{Binding JobStatus}" Value="Paid">
+                                                                        <DataTrigger Binding="{Binding InvoiceStatus}" Value="Paid">
                                                                             <Setter Property="Text" Value="{Binding PaidDate}" />
                                                                         </DataTrigger>
                                                                     </Style.Triggers>

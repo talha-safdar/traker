@@ -443,6 +443,12 @@ namespace Traker.Database
                         i.PaidDate,
 
                         CASE 
+                            WHEN NULLIF(i.Status, '') IS NOT NULL THEN i.DueDate
+                            ELSE NULL
+                        END AS InvoiceDueDate,
+
+
+                        CASE 
                             WHEN i.InvoiceId IS NOT NULL AND i.IsDeleted = 0 THEN 1 
                             ELSE 0 
                         END AS HasInvoice,
