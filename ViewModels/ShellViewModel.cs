@@ -82,9 +82,9 @@ namespace Traker.ViewModels
                 await Task.Delay(1000);
                 //await _dataService.FetchDatabaseBG(); // it feteches database
 
-                State.SplashText = "Populating dashboard";
-                await Task.Delay(1000);
-                //await _dashboardViewModel.RefreshDashboard(); // Get data ready for dashboard
+                //State.SplashText = "Populating dashboard";
+                //await Task.Delay(1000);
+                ////await _dashboardViewModel.RefreshDashboard(); // Get data ready for dashboard
 
                 if (await Database.CheckUserExists() == true)
                 {

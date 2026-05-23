@@ -956,15 +956,17 @@
             
             <!-- pagination buttons -->
             <Grid Grid.Row="1" Grid.RowSpan="2">
-                <Border Background="#2A2A2A" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="25,0,30,15" Padding="10,3,10,1" CornerRadius="22">
+                <Border Background="#2A2A2A" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="25,0,0,15" Padding="10,3,10,1" CornerRadius="22">
                     <Border.Style>
                         <Style TargetType="Border">
-                            <Setter Property="Opacity" Value="0.5" />
-
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Opacity" Value="1.0" />
-                                </Trigger>
+                            <Style.Triggers>                                
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding PaginationButtons[0]}" Value="False" />
+                                        <Condition Binding="{Binding PaginationButtons[1]}" Value="False" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </MultiDataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Border.Style>

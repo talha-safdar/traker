@@ -139,7 +139,7 @@ namespace Traker.ViewModels
 
                 UserName = await Database.GetUserName();
 
-                await SetSortList(); //set dashboard
+                await RefreshDashboard(); //set dashboard
             }
             catch (Exception ex)
             {
@@ -598,6 +598,13 @@ namespace Traker.ViewModels
                 else
                 {
                     PaginationButtons[1] = true; // enable right button
+                }
+                if (TotalPages == 0 || TotalPages == 1)
+                {
+                    for (int i = 0; i < PaginationButtons.Count; i++)
+                    {
+                        PaginationButtons[i] = false;
+                    }
                 }
 
                 await ResumeLoopBG(); // resume loop (overdue check)
