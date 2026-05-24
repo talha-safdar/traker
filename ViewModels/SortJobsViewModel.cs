@@ -30,11 +30,11 @@ namespace Traker.ViewModels
         #region Private View Variables
         private ObservableCollection<double> _opacityOrderStyle; // ascending, descending
         private ObservableCollection<double> _opacityOptions; // the rest of the buttons
-        private ObservableCollection<bool> _orderStyle;
+        private ObservableCollection<bool> _orderStyleList;
         #endregion
 
         #region Private Field Variables
-        private List<bool> _sortOptions;
+        private ObservableCollection<bool> _sortOptions;
         private int _selectedOption = -1;
         private double _fullOpacity = 1.0;
         private double _halfOpacity = 0.5;
@@ -50,10 +50,10 @@ namespace Traker.ViewModels
             _state = state;
 
             _opacityOptions = new ObservableCollection<double>();
-            _orderStyle = new ObservableCollection<bool>();
+            _orderStyleList = new ObservableCollection<bool>();
             _opacityOrderStyle = new ObservableCollection<double>();
 
-            _sortOptions = new List<bool>();
+            _sortOptions = new ObservableCollection<bool>();
         }
 
         #region Caliburn Functions
@@ -76,10 +76,10 @@ namespace Traker.ViewModels
                  * 5 = created date
                  * 6 = client type
                  */
-                _sortOptions = new List<bool>() { false, false, false, false, false, false, false };
+                _sortOptions = new ObservableCollection<bool>() { false, false, false, false, false, false, false };
                 OpacityOptions = new ObservableCollection<double>() { _fullOpacity, _fullOpacity, _fullOpacity, _fullOpacity, _fullOpacity, _fullOpacity, _fullOpacity };
 
-                _orderStyle = new ObservableCollection<bool>() { false, false }; // 0=ascending, 1=descedning
+                OrderStyleList = new ObservableCollection<bool>() { false, false }; // 0=ascending, 1=descedning
                 OpacityOrderStyle = new ObservableCollection<double>() { _halfOpacity, _halfOpacity }; // 0=ascending, 1=descedning
                 _isInitialized = true; // Mark as done
             }
@@ -105,15 +105,15 @@ namespace Traker.ViewModels
             try
             {
                 _selectedOption = option;
-                if (_sortOptions[option] == true) // deselect
+                if (SortOptions[option] == true) // deselect
                 {
-                    for (int i = 0; i < _sortOptions.Count; i++)
+                    for (int i = 0; i < SortOptions.Count; i++)
                     {
-                        _sortOptions[i] = false;
+                        SortOptions[i] = false;
                     }
                     UIHelper.SetOpacityFull(_opacityOptions);
-                    _orderStyle[0] = false;
-                    _orderStyle[1] = false;
+                    OrderStyleList[0] = false;
+                    OrderStyleList[1] = false;
                     _opacityOrderStyle[0] = _halfOpacity;
                     _opacityOrderStyle[1] = _halfOpacity;
                     _selectedOption = -1;
@@ -121,19 +121,19 @@ namespace Traker.ViewModels
                 }
                 else // select
                 {
-                    _sortOptions[option] = true;
+                    SortOptions[option] = true;
                     UIHelper.InverseRadioOptionChangedOpacity(option, _opacityOptions);
-                    for(int i =0; i < _sortOptions.Count(); i++) // disable the rest of the buttons in the list
+                    for(int i =0; i < SortOptions.Count(); i++) // disable the rest of the buttons in the list
                     {
                         if (i != option)
                         {
-                            _sortOptions[i] = false;
+                            SortOptions[i] = false;
                         }
                     }
 
-                    if (_orderStyle[0] == false && _orderStyle[1] == false) // if no order style is selected, default to ascending
+                    if (OrderStyleList[0] == false && OrderStyleList[1] == false) // if no order style is selected, default to ascending
                     {
-                        _orderStyle[0] = true;
+                        OrderStyleList[0] = true;
                         _opacityOrderStyle[0] = _fullOpacity;
                     }
                     _state.IsSortInUse = true;
@@ -168,16 +168,16 @@ namespace Traker.ViewModels
                 {
                     if (orderStyle == 0)
                     {
-                        _orderStyle[1] = false;
+                        OrderStyleList[1] = false;
                         _opacityOrderStyle[1] = _halfOpacity;
-                        _orderStyle[0] = true;
+                        OrderStyleList[0] = true;
                         _opacityOrderStyle[0] = _fullOpacity;
                     }
                     else if (orderStyle == 1)
                     {
-                        _orderStyle[0] = false;
+                        OrderStyleList[0] = false;
                         _opacityOrderStyle[0] = _halfOpacity;
-                        _orderStyle[1] = true;
+                        OrderStyleList[1] = true;
                         _opacityOrderStyle[1] = _fullOpacity;
                     }
                     SelectedOption(_selectedOption);
@@ -204,9 +204,9 @@ namespace Traker.ViewModels
         {
             try
             {
-                for (int i = 0; i < _sortOptions.Count; i++)
+                for (int i = 0; i < SortOptions.Count; i++)
                 {
-                    _sortOptions[i] = false;
+                    SortOptions[i] = false;
                 }
 
                 for (int y = 0; y < OpacityOptions.Count; y++)
@@ -214,8 +214,8 @@ namespace Traker.ViewModels
                     OpacityOptions[y] = 0.5;
                 }
                 UIHelper.SetOpacityFull(_opacityOptions);
-                _orderStyle[0] = false;
-                _orderStyle[1] = false;
+                OrderStyleList[0] = false;
+                OrderStyleList[1] = false;
                 OpacityOrderStyle[0] = _halfOpacity;
                 OpacityOrderStyle[1] = _halfOpacity;
                 _selectedOption = -1;
@@ -237,7 +237,7 @@ namespace Traker.ViewModels
 
         private Task SelectedOption(int option)
         {
-            // _orderStyle: 0=ascending, 1=descedning
+            // OrderStyleList: 0=ascending, 1=descedning
             try
             {
                 // if resetitng
@@ -249,12 +249,12 @@ namespace Traker.ViewModels
 
                 if (option == 0)
                 {
-                    if (_orderStyle[0] == true)
+                    if (OrderStyleList[0] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.ClientNameAsc });
                         _state.currentSortOption = Names.ClientNameAsc;
                     }
-                    else if (_orderStyle[1] == true)
+                    else if (OrderStyleList[1] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.ClientNameDesc });
                         _state.currentSortOption = Names.ClientNameDesc;
@@ -262,12 +262,12 @@ namespace Traker.ViewModels
                 }
                 else if (option == 1)
                 {
-                    if (_orderStyle[0] == true)
+                    if (OrderStyleList[0] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobTitleAsc });
                         _state.currentSortOption = Names.JobTitleAsc;
                     }
-                    else if (_orderStyle[1] == true)
+                    else if (OrderStyleList[1] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobTitleDesc });
                         _state.currentSortOption = Names.JobTitleDesc;
@@ -275,12 +275,12 @@ namespace Traker.ViewModels
                 }
                 else if (option == 2)
                 {
-                    if (_orderStyle[0] == true)
+                    if (OrderStyleList[0] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobStatusAsc });
                         _state.currentSortOption = Names.JobStatusAsc;
                     }
-                    else if (_orderStyle[1] == true)
+                    else if (OrderStyleList[1] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobStatusDesc });
                         _state.currentSortOption = Names.JobStatusDesc;
@@ -288,12 +288,12 @@ namespace Traker.ViewModels
                 }
                 else if (option == 3)
                 {
-                    if (_orderStyle[0] == true)
+                    if (OrderStyleList[0] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobPriceAsc });
                         _state.currentSortOption = Names.JobPriceAsc;
                     }
-                    else if (_orderStyle[1] == true)
+                    else if (OrderStyleList[1] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.JobPriceDesc });
                         _state.currentSortOption = Names.JobPriceDesc;
@@ -301,12 +301,12 @@ namespace Traker.ViewModels
                 }
                 else if (option == 4)
                 {
-                    if (_orderStyle[0] == true)
+                    if (OrderStyleList[0] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.DueDateAsc });
                         _state.currentSortOption = Names.DueDateAsc;
                     }
-                    else if (_orderStyle[1] == true)
+                    else if (OrderStyleList[1] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.DueDateDesc });
                         _state.currentSortOption = Names.DueDateDesc;
@@ -314,12 +314,12 @@ namespace Traker.ViewModels
                 }
                 else if (option == 5)
                 {
-                    if (_orderStyle[0] == true)
+                    if (OrderStyleList[0] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.CreatedDateAsc });
                         _state.currentSortOption = Names.CreatedDateAsc;
                     }
-                    else if (_orderStyle[1] == true)
+                    else if (OrderStyleList[1] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.CreatedDateDesc });
                         _state.currentSortOption = Names.CreatedDateDesc;
@@ -327,12 +327,12 @@ namespace Traker.ViewModels
                 }
                 else if (option == 6)
                 {
-                    if (_orderStyle[0] == true)
+                    if (OrderStyleList[0] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.ClientTypeAsc });
                         _state.currentSortOption = Names.ClientTypeAsc;
                     }
-                    else if (_orderStyle[1] == true)
+                    else if (OrderStyleList[1] == true)
                     {
                         _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.ClientTypeDesc });
                         _state.currentSortOption = Names.ClientTypeDesc;
@@ -357,6 +357,16 @@ namespace Traker.ViewModels
         #endregion
 
         #region Public View variables
+        public ObservableCollection<bool> SortOptions
+        {
+            get { return _sortOptions; }
+            set
+            {
+                _sortOptions = value;
+                NotifyOfPropertyChange(() => SortOptions);
+            }
+        }
+
         public ObservableCollection<double> OpacityOptions
         {
             get { return _opacityOptions; }
@@ -374,6 +384,16 @@ namespace Traker.ViewModels
             {
                 _opacityOrderStyle = value;
                 NotifyOfPropertyChange(() => OpacityOrderStyle);
+            }
+        }
+
+        public ObservableCollection<bool> OrderStyleList
+        {
+            get { return _orderStyleList; }
+            set
+            {
+                _orderStyleList = value;
+                NotifyOfPropertyChange(() => OrderStyleList);
             }
         }
         #endregion

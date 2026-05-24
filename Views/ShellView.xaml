@@ -100,6 +100,9 @@ WindowStyle="None"
                 <ContentControl x:Name="ActiveItem" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
             </Grid>
             
+            <!-- overlay -->
+            <Grid Visibility="{Binding State.WindowFormOpen, Converter={StaticResource BoolToVisCollapsed}}" Grid.RowSpan="2" Background="#99000000" />
+
             <!-- loading -->
             <Grid Grid.RowSpan="2" x:Name="OverlayGrid" Background="Transparent" Visibility="{Binding State.IsBusy, Converter={StaticResource BoolToVisCollapsed}}">
                 <Border Background="Black" Opacity="0.5" />

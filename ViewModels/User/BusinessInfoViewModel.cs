@@ -42,6 +42,15 @@ namespace Traker.ViewModels.User
 
         private BusinessModel _businessModel;
         private UserModel _userModel;
+
+        // submit button
+        private bool _enableSubmitBtn;
+        private double _opacitySubmitBtn;
+        #endregion
+
+        #region Private Class Field variables
+        private double _fullOpacity = 1.0;
+        private double _halfOpacity = 0.5;
         #endregion
 
         public BusinessInfoViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
@@ -71,6 +80,10 @@ namespace Traker.ViewModels.User
         {
             try
             {
+                // submit button
+                EnableSubmitBtn = false;
+                OpacitySubmitBtn = _halfOpacity;
+
                 _businessModel = await Database.FetchBusiness();
                 _userModel = await Database.FetchUser();
 
@@ -234,6 +247,66 @@ namespace Traker.ViewModels.User
         }
         #endregion
 
+        #region Private Functions
+        private Task CanSubmit()
+        {
+            try
+            {
+                if (_businessModel.BusinessType == Names.Individual)
+                {
+                    if (BusinessName != _userModel.FullName ||
+                    Address != _businessModel.Address ||
+                    City != _businessModel.City ||
+                    Postcode != _businessModel.Postcode ||
+                    Country != _businessModel.Country ||
+                    VatNumber != _businessModel.VatNumber ||
+                    RegistrationNumber != _businessModel.RegistrationNumber)
+                    {
+                        EnableSubmitBtn = true;
+                        OpacitySubmitBtn = _fullOpacity;
+                    }
+                    else
+                    {
+                        EnableSubmitBtn = false;
+                        OpacitySubmitBtn = _halfOpacity;
+                    }
+                }
+                else if (_businessModel.BusinessType == Names.Company)
+                {
+                    if (BusinessName != _businessModel.BusinessName ||
+                    Address != _businessModel.Address ||
+                    City != _businessModel.City ||
+                    Postcode != _businessModel.Postcode ||
+                    Country != _businessModel.Country ||
+                    VatNumber != _businessModel.VatNumber ||
+                    RegistrationNumber != _businessModel.RegistrationNumber)
+                    {
+                        EnableSubmitBtn = true;
+                        OpacitySubmitBtn = _fullOpacity;
+                    }
+                    else
+                    {
+                        EnableSubmitBtn = false;
+                        OpacitySubmitBtn = _halfOpacity;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Edit User";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"UserInfoViewModel: CanSubmit() FAIL\n\t{ex.Message}");
+            }
+            return Task.CompletedTask;
+        }
+        #endregion
+
         #region Public View Variables
         public bool IndividualView
         {
@@ -262,6 +335,7 @@ namespace Traker.ViewModels.User
             {
                 _businessName = value;
                 NotifyOfPropertyChange(() => BusinessName);
+                CanSubmit();
             }
         }
 
@@ -272,6 +346,7 @@ namespace Traker.ViewModels.User
             {
                 _country = value;
                 NotifyOfPropertyChange(() => Country);
+                CanSubmit();
             }
         }
 
@@ -282,6 +357,7 @@ namespace Traker.ViewModels.User
             {
                 _city = value;
                 NotifyOfPropertyChange(() => City);
+                CanSubmit();
             }
         }
 
@@ -292,6 +368,7 @@ namespace Traker.ViewModels.User
             {
                 _address = value;
                 NotifyOfPropertyChange(() => Address);
+                CanSubmit();
             }
         }
 
@@ -302,6 +379,7 @@ namespace Traker.ViewModels.User
             {
                 _postcode = value;
                 NotifyOfPropertyChange(() => Postcode);
+                CanSubmit();
             }
         }
 
@@ -312,6 +390,7 @@ namespace Traker.ViewModels.User
             {
                 _vatNumber = value;
                 NotifyOfPropertyChange(() => VatNumber);
+                CanSubmit();
             }
         }
 
@@ -322,6 +401,7 @@ namespace Traker.ViewModels.User
             {
                 _registrationNumber = value;
                 NotifyOfPropertyChange(() => RegistrationNumber);
+                CanSubmit();
             }
         }
 
@@ -332,6 +412,26 @@ namespace Traker.ViewModels.User
             {
                 _businessNameOpacity = value;
                 NotifyOfPropertyChange(() => BusinessNameOpacity);
+            }
+        }
+
+        public bool EnableSubmitBtn
+        {
+            get { return _enableSubmitBtn; }
+            set
+            {
+                _enableSubmitBtn = value;
+                NotifyOfPropertyChange(() => EnableSubmitBtn);
+            }
+        }
+
+        public double OpacitySubmitBtn
+        {
+            get { return _opacitySubmitBtn; }
+            set
+            {
+                _opacitySubmitBtn = value;
+                NotifyOfPropertyChange(() => OpacitySubmitBtn);
             }
         }
         #endregion

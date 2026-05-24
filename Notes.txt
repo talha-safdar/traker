@@ -99,6 +99,9 @@ V1:
 #- fix outstanding border
 #- fix flag filter type buttons
 #- virtualbox for JosList
+#- make dropdown menu box list fluid too
+#-reenable global exception in app.xaml.cs
+#-check submit button for enable/disable for user settings
 
 V2:
 #- the selected not invoiced then confirmation box yes/no. that row with invoice details will be saved in a e.g. "rubbish" folder in txt. 
@@ -658,3 +661,72 @@ for icon buttons:
 | Hover    |         `#1D1D22` |     `#8FA3C7` | `#FFFFFF` |
 | Pressed  |         `#101012` |     `#A7B4CC` | `#CFCFD6` |
 | Disabled |         `#101012` |     `#1F1F25` | `#5F5F66` |
+
+pagination
+| Element                 |    Normal |     Hover |   Pressed |
+| ----------------------- | --------: | --------: | --------: |
+| Capsule background      | `#151518` | `#1D1D22` | `#101012` |
+| Capsule border          | `#34343A` | `#4A4A55` | `#5A5A64` |
+| Text                    | `#9A9AA3` | `#E0E0E0` | `#CFCFD6` |
+| Arrow circle background | `#1D1D22` | `#25252B` | `#101012` |
+| Arrow circle border     | `#4A4A55` | `#8FA3C7` | `#A7B4CC` |
+| Arrow icon              | `#CFCFD6` | `#FFFFFF` | `#CFCFD6` |
+
+textbox readonly
+Background: #121214
+Border:     #3A3A42
+Text:       #CFCFD6
+
+buttons add butons:
+| State   | Background |    Border | Icon/Text |
+| ------- | ---------: | --------: | --------: |
+| Normal  |  `#1D1D22` | `#34343A` | `#CFCFD6` |
+| Hover   |  `#25252B` | `#8FA3C7` | `#FFFFFF` |
+| Pressed |  `#101012` | `#A7B4CC` | `#CFCFD6` |
+
+Winow forms:
+| Element                 |                      Colour |
+| ----------------------- | --------------------------: |
+| Modal/window background |                   `#151518` |
+| Inner form panel        |                   `#1D1D22` |
+| Inner panel border      | gradient border / `#3A3A42` |
+| TextBox background      |                   `#080809` |
+| TextBox border normal   |                   `#2A2A2F` |
+| TextBox border hover    |                   `#4A4A55` |
+| TextBox border focused  |                   `#8FA3C7` |
+| Label text              |                   `#8E8E96` |
+| Input text              |                   `#E0E0E0` |
+| Placeholder             |                   `#5F5F66` |
+| Button background       |                   `#1D1D22` |
+| Button hover            |                   `#25252B` |
+| Button pressed          |                   `#101012` |
+| Button border hover     |                   `#8FA3C7` |
+| Close button bg         |                   `#25252B` |
+| Close hover bg          |                   `#B94A48` |
+| State   | Background |    Border |      Text | // for window form button
+| ------- | ---------: | --------: | --------: |
+| Normal  |  `#1D1D22` | `#34343A` | `#E0E0E0` |
+| Hover   |  `#25252B` | `#8FA3C7` | `#FFFFFF` |
+| Pressed |  `#101012` | `#A7B4CC` | `#CFCFD6` |
+combbox:
+| Dropdown part             |        Colour |
+| ------------------------- | ------------: |
+| Closed box background     |     `#080809` |
+| Closed box border         |     `#2A2A2F` |
+| Closed box focused border |     `#8FA3C7` |
+| Dropdown popup background |     `#101012` |
+| Dropdown border           |     `#34343A` |
+| Item normal               | `Transparent` |
+| Item hover                |     `#1D1D22` |
+| Item selected             |     `#25252B` |
+| Selected border/accent    |     `#8FA3C7` |
+| Text                      |     `#E0E0E0` |
+| Muted arrow               |     `#9A9AA3` |
+| Hover arrow               |     `#E0E0E0` |
+
+window form: 
+main border and borderthickness
+close X: margin top 1
+inner background and borderthickness
+text colour
+submit button

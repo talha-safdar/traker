@@ -8,7 +8,7 @@
              xmlns:local="clr-namespace:Traker.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Border Width="295" VerticalAlignment="Center" Background="#2A2A2F" CornerRadius="20">
+    <Border Width="295" VerticalAlignment="Center" Background="{StaticResource SortFilterMainBackground}" CornerRadius="16" BorderThickness="1.5" BorderBrush="#34343A">
         <Border.Effect>
             <DropShadowEffect BlurRadius="15" Opacity="0.3" ShadowDepth="2"/>
         </Border.Effect>
@@ -21,7 +21,7 @@
 
                 <!-- status -->
                 <Grid Grid.Row="0">
-                    <Border Background="#1E1E1E" CornerRadius="15" BorderThickness="0,1,0,0" Margin="0,0,0,10">
+                    <Border Background="{StaticResource SortFilterMainInnerBackground}" CornerRadius="11" BorderThickness="0,1,0,0" Margin="0,0,0,10">
                         <Border.BorderBrush>
                             <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.12">
                                 <GradientStop Color="#26FFFFFF" Offset="0" />
@@ -44,78 +44,358 @@
 
                             <!-- new -->
                             <Grid Grid.Column="0" Grid.Row="0">
-                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[0]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(0)]" Background="#3F3F46" CornerRadius="15" Height="30" Margin="0,0,0,5">
+                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[0]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(0)]" CornerRadius="15" Height="30" Margin="0,0,0,5">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="BorderThickness" Value="1.5"/>
+                                            <Setter Property="Background" Value="#2A2A2F"/>
+                                            <Setter Property="BorderBrush" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#34343A"/>
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
+                                                </Trigger>
+
+                                                <DataTrigger Binding="{Binding OptionsStatus[0]}" Value="True">
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
                                     </Border.Effect>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
-                                        <Border Background="{StaticResource JobStatusNew}" Height="10" Width="10" CornerRadius="20" />
-                                        <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="New" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                                        <Grid Width="90">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto" /> <!-- dot -->
+                                                <ColumnDefinition Width="*" /> <!-- text -->
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <!-- dot -->
+                                            <Grid Grid.Column="0">
+                                                <Border Background="{StaticResource JobStatusNew}" Height="10" Width="10" CornerRadius="20" />
+                                            </Grid>                                            
+
+                                            <!-- text -->
+                                            <Grid Grid.Column="2">
+                                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="New" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" FontSize="14">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="#D0D0D6"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Border}}" Value="True">
+                                                                    <Setter Property="Foreground" Value="White"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding OptionsStatus[0]}" Value="True">
+                                                                    <Setter Property="Foreground" Value="White" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Grid>
+                                        </Grid>
                                     </StackPanel>
                                 </Border>
                             </Grid>
 
                             <!-- active -->
                             <Grid Grid.Column="2" Grid.Row="0">
-                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[1]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(1)]" Background="#3F3F46" CornerRadius="15" Height="30" Margin="0,0,0,5">
+                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[1]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(1)]" CornerRadius="15" Height="30" Margin="0,0,0,5">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="BorderThickness" Value="1.5"/>
+                                            <Setter Property="Background" Value="#2A2A2F"/>
+                                            <Setter Property="BorderBrush" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#34343A"/>
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
+                                                </Trigger>
+
+                                                <DataTrigger Binding="{Binding OptionsStatus[1]}" Value="True">
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
                                     </Border.Effect>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
-                                        <Border Background="{StaticResource JobStatusActive}" Height="10" Width="10" CornerRadius="20" />
-                                        <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Active" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                                        <Grid Width="90">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto" />
+                                                <!-- dot -->
+                                                <ColumnDefinition Width="*" />
+                                                <!-- text -->
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- dot -->
+                                            <Grid Grid.Column="0">
+                                                <Border Background="{StaticResource JobStatusActive}" Height="10" Width="10" CornerRadius="20" />
+                                            </Grid>
+
+                                            <!-- text -->
+                                            <Grid Grid.Column="2">
+                                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="Active" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" FontSize="14">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="#D0D0D6"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Border}}" Value="True">
+                                                                    <Setter Property="Foreground" Value="White"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding OptionsStatus[0]}" Value="True">
+                                                                    <Setter Property="Foreground" Value="White" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Grid>
+                                        </Grid>
                                     </StackPanel>
                                 </Border>
                             </Grid>
 
                             <!-- done -->
                             <Grid Grid.Column="0" Grid.Row="1">
-                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[2]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(2)]" Background="#3F3F46" CornerRadius="15" Height="30" Margin="0,0,0,5">
+                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[2]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(2)]" CornerRadius="15" Height="30" Margin="0,0,0,5">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="BorderThickness" Value="1.5"/>
+                                            <Setter Property="Background" Value="#2A2A2F"/>
+                                            <Setter Property="BorderBrush" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#34343A"/>
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
+                                                </Trigger>
+
+                                                <DataTrigger Binding="{Binding OptionsStatus[2]}" Value="True">
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
                                     </Border.Effect>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
-                                        <Border Background="{StaticResource JobStatusDone}" Height="10" Width="10" CornerRadius="20" />
-                                        <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Done" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                                        <Grid Width="90">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto" />
+                                                <!-- dot -->
+                                                <ColumnDefinition Width="*" />
+                                                <!-- text -->
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- dot -->
+                                            <Grid Grid.Column="0">
+                                                <Border Background="{StaticResource JobStatusDone}" Height="10" Width="10" CornerRadius="20" />
+                                            </Grid>
+
+                                            <!-- text -->
+                                            <Grid Grid.Column="2">
+                                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="Done" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" FontSize="14">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="#D0D0D6"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Border}}" Value="True">
+                                                                    <Setter Property="Foreground" Value="White"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding OptionsStatus[0]}" Value="True">
+                                                                    <Setter Property="Foreground" Value="White" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Grid>
+                                        </Grid>
                                     </StackPanel>
                                 </Border>
                             </Grid>
 
                             <!-- invoiced -->
                             <Grid Grid.Column="2" Grid.Row="1">
-                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[3]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(3)]" Background="#3F3F46" CornerRadius="15" Height="30" Margin="0,0,0,5">
+                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[3]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(3)]" CornerRadius="15" Height="30" Margin="0,0,0,5">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="BorderThickness" Value="1.5"/>
+                                            <Setter Property="Background" Value="#2A2A2F"/>
+                                            <Setter Property="BorderBrush" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#34343A"/>
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
+                                                </Trigger>
+
+                                                <DataTrigger Binding="{Binding OptionsStatus[3]}" Value="True">
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
                                     </Border.Effect>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
-                                        <Border Background="{StaticResource JobStatusInvoiced}" Height="10" Width="10" CornerRadius="20" />
-                                        <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Invoiced" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                                        <Grid Width="90">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto" />
+                                                <!-- dot -->
+                                                <ColumnDefinition Width="*" />
+                                                <!-- text -->
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- dot -->
+                                            <Grid Grid.Column="0">
+                                                <Border Background="{StaticResource JobStatusInvoiced}" Height="10" Width="10" CornerRadius="20" />
+                                            </Grid>
+
+                                            <!-- text -->
+                                            <Grid Grid.Column="2">
+                                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="Invoiced" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" FontSize="14">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="#D0D0D6"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Border}}" Value="True">
+                                                                    <Setter Property="Foreground" Value="White"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding OptionsStatus[0]}" Value="True">
+                                                                    <Setter Property="Foreground" Value="White" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Grid>
+                                        </Grid>
                                     </StackPanel>
                                 </Border>
                             </Grid>
 
                             <!-- overdue -->
                             <Grid Grid.Column="0" Grid.Row="2">
-                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[4]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(4)]" Background="#3F3F46" CornerRadius="15" Height="30">
+                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[4]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(4)]" CornerRadius="15" Height="30">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="BorderThickness" Value="1.5"/>
+                                            <Setter Property="Background" Value="#2A2A2F"/>
+                                            <Setter Property="BorderBrush" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#34343A"/>
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
+                                                </Trigger>
+
+                                                <DataTrigger Binding="{Binding OptionsStatus[4]}" Value="True">
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
                                     </Border.Effect>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
-                                        <Border Background="{StaticResource JobStatusOverdue}" Height="10" Width="10" CornerRadius="20" />
-                                        <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Overdue" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                                        <Grid Width="90">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto" />
+                                                <!-- dot -->
+                                                <ColumnDefinition Width="*" />
+                                                <!-- text -->
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- dot -->
+                                            <Grid Grid.Column="0">
+                                                <Border Background="{StaticResource JobStatusOverdue}" Height="10" Width="10" CornerRadius="20" />
+                                            </Grid>
+
+                                            <!-- text -->
+                                            <Grid Grid.Column="2">
+                                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="Overdue" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" FontSize="14">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="#D0D0D6"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Border}}" Value="True">
+                                                                    <Setter Property="Foreground" Value="White"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding OptionsStatus[0]}" Value="True">
+                                                                    <Setter Property="Foreground" Value="White" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Grid>
+                                        </Grid>
                                     </StackPanel>
                                 </Border>
                             </Grid>
 
                             <!-- paid -->
                             <Grid Grid.Column="2" Grid.Row="2">
-                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[5]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(5)]" Background="#3F3F46" CornerRadius="15" Height="30">
+                                <Border Cursor="Hand" Opacity="{Binding OpacityStatus[5]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterStatusOption(5)]" CornerRadius="15" Height="30">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="BorderThickness" Value="1.5"/>
+                                            <Setter Property="Background" Value="#2A2A2F"/>
+                                            <Setter Property="BorderBrush" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#34343A"/>
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
+                                                </Trigger>
+
+                                                <DataTrigger Binding="{Binding OptionsStatus[5]}" Value="True">
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
                                     </Border.Effect>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
-                                        <Border Background="{StaticResource JobStatusPaid}" Height="10" Width="10" CornerRadius="20" />
-                                        <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Paid" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                                        <Grid Width="90">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto" />
+                                                <!-- dot -->
+                                                <ColumnDefinition Width="*" />
+                                                <!-- text -->
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- dot -->
+                                            <Grid Grid.Column="0">
+                                                <Border Background="{StaticResource JobStatusPaid}" Height="10" Width="10" CornerRadius="20" />
+                                            </Grid>
+
+                                            <!-- text -->
+                                            <Grid Grid.Column="2">
+                                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="Paid" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" FontSize="14">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="#D0D0D6"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Border}}" Value="True">
+                                                                    <Setter Property="Foreground" Value="White"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding OptionsStatus[0]}" Value="True">
+                                                                    <Setter Property="Foreground" Value="White" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Grid>
+                                        </Grid>
                                     </StackPanel>
                                 </Border>
                             </Grid>
@@ -125,7 +405,7 @@
 
                 <!-- client type -->
                 <Grid Grid.Row="1">
-                    <Border Background="#1E1E1E" CornerRadius="15" BorderThickness="1" VerticalAlignment="Center">
+                    <Border Background="{StaticResource SortFilterMainInnerBackground}" CornerRadius="11" BorderThickness="1" VerticalAlignment="Center">
                         <Border.BorderBrush>
                             <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.12">
                                 <GradientStop Color="#26FFFFFF" Offset="0" />
@@ -140,9 +420,26 @@
                                 <ColumnDefinition Width="*" />                                <!-- company-->
                             </Grid.ColumnDefinitions>
 
-                            <!-- client name -->
+                            <!-- individual -->
                             <Grid Grid.Column="0" Height="50">
-                                <Border Cursor="Hand" Opacity="{Binding OpacityClientType[0]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterClientType(0)]" Background="#3F3F46" CornerRadius="17" Height="35">
+                                <Border Cursor="Hand" Opacity="{Binding OpacityClientType[0]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterClientType(0)]" CornerRadius="17" Height="35">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="BorderThickness" Value="1.5"/>
+                                            <Setter Property="Background" Value="#2A2A2F"/>
+                                            <Setter Property="BorderBrush" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#34343A"/>
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
+                                                </Trigger>
+
+                                                <DataTrigger Binding="{Binding ClientType[0]}" Value="True">
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
                                     </Border.Effect>
@@ -151,7 +448,21 @@
                                         RenderOptions.BitmapScalingMode="HighQuality"
                                         SnapsToDevicePixels="True"
                                         Source="/Resources/Media/Images/Icons/Lucide/user-round.svg" Width="15" Height="15"/>
-                                        <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Individual" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                                        <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Individual" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" FontSize="14">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="#D0D0D6"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Border}}" Value="True">
+                                                            <Setter Property="Foreground" Value="White"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding ClientType[0]}" Value="True">
+                                                            <Setter Property="Foreground" Value="White" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
                                     </StackPanel>
                                 </Border>
                             </Grid>
@@ -159,9 +470,26 @@
                             <!-- spacer -->
                             <Grid Grid.Column="1" />
 
-                            <!-- job name -->
+                            <!-- company -->
                             <Grid Grid.Column="2" Height="50">
-                                <Border Cursor="Hand" Opacity="{Binding OpacityClientType[1]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterClientType(1)]" Background="#3F3F46" CornerRadius="17" Height="35">
+                                <Border Cursor="Hand" Opacity="{Binding OpacityClientType[1]}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action FilterClientType(1)]" CornerRadius="17" Height="35">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="BorderThickness" Value="1.5"/>
+                                            <Setter Property="Background" Value="#2A2A2F"/>
+                                            <Setter Property="BorderBrush" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#34343A"/>
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
+                                                </Trigger>
+
+                                                <DataTrigger Binding="{Binding ClientType[1]}" Value="True">
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
                                     </Border.Effect>
@@ -170,7 +498,21 @@
                                         RenderOptions.BitmapScalingMode="HighQuality"
                                         SnapsToDevicePixels="True"
                                         Source="/Resources/Media/Images/Icons/Lucide/building.svg" Width="15" Height="15"/>
-                                        <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Comapny" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                                        <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Comapny" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" FontSize="14">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="#D0D0D6"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Border}}" Value="True">
+                                                            <Setter Property="Foreground" Value="White"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding ClientType[1]}" Value="True">
+                                                            <Setter Property="Foreground" Value="White" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
                                     </StackPanel>
                                 </Border>
                             </Grid>

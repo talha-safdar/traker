@@ -4,6 +4,7 @@ using Traker.Services;
 namespace Traker.ViewModels.User
 {
     using Database;
+    using System.Net;
     using System.Windows;
     using System.Windows.Input;
     using Traker.Events.DashboardVM;
@@ -29,6 +30,15 @@ namespace Traker.ViewModels.User
         private string _BIC;
 
         private BankModel _bankModel;
+
+        // submit button
+        private bool _enableSubmitBtn;
+        private double _opacitySubmitBtn;
+        #endregion
+
+        #region Private Class Field variables
+        private double _fullOpacity = 1.0;
+        private double _halfOpacity = 0.5;
         #endregion
 
         public BankInfoViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
@@ -53,6 +63,10 @@ namespace Traker.ViewModels.User
         {
             try
             {
+                // submit button
+                EnableSubmitBtn = false;
+                OpacitySubmitBtn = _halfOpacity;
+
                 _bankModel = await Database.FetchBank();
 
                 BankName = _bankModel.BankName;
@@ -206,6 +220,43 @@ namespace Traker.ViewModels.User
         }
         #endregion
 
+        #region Private Functions
+        private Task CanSubmit()
+        {
+            try
+            {
+                if (BankName != _bankModel.BankName ||
+                AccountName != _bankModel.AccountName ||
+                AccountNumber != _bankModel.AccountNumber ||
+                Sortcode != _bankModel.SortCode ||
+                IBAN != _bankModel.IBAN ||
+                BIC != _bankModel.BIC)
+                {
+                    EnableSubmitBtn = true;
+                    OpacitySubmitBtn = _fullOpacity;
+                }
+                else
+                {
+                    EnableSubmitBtn = false;
+                    OpacitySubmitBtn = _halfOpacity;
+                }               
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Edit User";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"UserInfoViewModel: CanSubmit() FAIL\n\t{ex.Message}");
+            }
+            return Task.CompletedTask;
+        }
+        #endregion
+
         #region Public View Variables
         public string BankName
         {
@@ -214,6 +265,7 @@ namespace Traker.ViewModels.User
             {
                 _bankName = value;
                 NotifyOfPropertyChange(() => BankName);
+                CanSubmit();
             }
         }
 
@@ -224,6 +276,7 @@ namespace Traker.ViewModels.User
             {
                 _accountName = value;
                 NotifyOfPropertyChange(() => AccountName);
+                CanSubmit();
             }
         }
 
@@ -234,6 +287,7 @@ namespace Traker.ViewModels.User
             {
                 _accountNumber = value;
                 NotifyOfPropertyChange(() => AccountNumber);
+                CanSubmit();
             }
         }
 
@@ -244,6 +298,7 @@ namespace Traker.ViewModels.User
             {
                 _sortcode = value;
                 NotifyOfPropertyChange(() => Sortcode);
+                CanSubmit();
             }
         }
 
@@ -254,6 +309,7 @@ namespace Traker.ViewModels.User
             {
                 _IBAN = value;
                 NotifyOfPropertyChange(() => IBAN);
+                CanSubmit();
             }
         }
 
@@ -264,6 +320,27 @@ namespace Traker.ViewModels.User
             {
                 _BIC = value;
                 NotifyOfPropertyChange(() => BIC);
+                CanSubmit();
+            }
+        }
+
+        public bool EnableSubmitBtn
+        {
+            get { return _enableSubmitBtn; }
+            set
+            {
+                _enableSubmitBtn = value;
+                NotifyOfPropertyChange(() => EnableSubmitBtn);
+            }
+        }
+
+        public double OpacitySubmitBtn
+        {
+            get { return _opacitySubmitBtn; }
+            set
+            {
+                _opacitySubmitBtn = value;
+                NotifyOfPropertyChange(() => OpacitySubmitBtn);
             }
         }
         #endregion

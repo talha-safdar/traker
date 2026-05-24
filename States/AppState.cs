@@ -18,6 +18,9 @@ namespace Traker.States
     /// </summary>
     public class AppState : PropertyChangedBase
     {
+        // window form background overlay
+        private bool _windowFormOpen = false;
+
         // splash screen
         public string _splashText = string.Empty;
 
@@ -93,6 +96,16 @@ namespace Traker.States
             {
                 _isFilterInUse = value;
                 NotifyOfPropertyChange(() => IsFilterInUse);
+            }
+        }
+
+        public bool WindowFormOpen
+        {
+            get => _windowFormOpen;
+            set
+            {
+                _windowFormOpen = value;
+                NotifyOfPropertyChange(() => WindowFormOpen);
             }
         }
     }

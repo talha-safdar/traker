@@ -8,34 +8,27 @@
              xmlns:local="clr-namespace:Traker.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Border Background="#1E1E1E" CornerRadius="15" BorderThickness="1" HorizontalAlignment="Left" Margin="20,0,0,0" Height="190" VerticalAlignment="Center">
-        <Border.BorderBrush>
-            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.12">
-                <GradientStop Color="#26FFFFFF" Offset="0" />
-                <GradientStop Color="Transparent" Offset="1" />
-            </LinearGradientBrush>
-        </Border.BorderBrush>
+    <Border Background="#101012" CornerRadius="15" BorderThickness="1.5" BorderBrush="#34343A" HorizontalAlignment="Left" Margin="20,0,0,0" Height="190" VerticalAlignment="Center">
         <Border.Effect>
-            <DropShadowEffect BlurRadius="15" Opacity="0.3" ShadowDepth="2"/>
+            <DropShadowEffect Color="Black" BlurRadius="15" Opacity="0.8" ShadowDepth="2" />
         </Border.Effect>
 
         <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="10,10,10,0" Width="150">
             <!-- user -->
-            <Border Cursor="Hand" x:Name="UserBorder" MouseLeave="UserBorder_MouseLeave" MouseLeftButtonUp="UserBorder_MouseLeftButtonUp" MouseLeftButtonDown="UserBorder_MouseLeftButtonDown" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenOption('user')]" CornerRadius="20" Height="40" Margin="5,0,5,15" Background="#242424" BorderThickness="1">
+            <Border Cursor="Hand" x:Name="UserBorder" MouseLeave="UserBorder_MouseLeave" MouseLeftButtonUp="UserBorder_MouseLeftButtonUp" MouseLeftButtonDown="UserBorder_MouseLeftButtonDown" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenOption('user')]" CornerRadius="20" Height="40" Margin="5,0,5,15">
                 <Border.Style>
                     <Style TargetType="Border">
-                        <Setter Property="BorderBrush" Value="#242424"/>
+                        <Setter Property="BorderThickness" Value="1.5"/>
+                        <Setter Property="Background" Value="#151518"/>
+                        <Setter Property="BorderBrush" Value="Transparent"/>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="BorderBrush" Value="#80D3D3D3"/>
-                                <Setter Property="BorderThickness" Value="1"/>
+                                <Setter Property="Background" Value="#1D1D22"/>
+                                <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
                 </Border.Style>
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
-                </Border.Effect>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0,0,0">
                     <Border Opacity="0.5" Background="Transparent"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="28" Width="28">
@@ -44,26 +37,38 @@
                             SnapsToDevicePixels="True"
                             Source="/Resources/Media/Images/Icons/Lucide/user-round.svg" Width="15" Height="15"/>
                     </Border>
-                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" Text="User" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" Text="User" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" FontSize="14">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="#CFCFD6"/>
+
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Border}}" Value="True">
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
                 </StackPanel>
             </Border>
 
             <!-- business -->
-            <Border Cursor="Hand" x:Name="BusinessBorder" MouseLeave="BusinessBorder_MouseLeave" MouseLeftButtonUp="BusinessBorder_MouseLeftButtonUp" MouseLeftButtonDown="BusinessBorder_MouseLeftButtonDown" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenOption('business')]" CornerRadius="20" Height="40" Margin="5,0,5,15" Background="#242424" BorderThickness="1">
+            <Border Cursor="Hand" x:Name="BusinessBorder" MouseLeave="BusinessBorder_MouseLeave" MouseLeftButtonUp="BusinessBorder_MouseLeftButtonUp" MouseLeftButtonDown="BusinessBorder_MouseLeftButtonDown" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenOption('business')]" CornerRadius="20" Height="40" Margin="5,0,5,15">
                 <Border.Style>
                     <Style TargetType="Border">
-                        <Setter Property="BorderBrush" Value="#242424"/>
+                        <Setter Property="BorderThickness" Value="1.5"/>
+                        <Setter Property="Background" Value="#151518"/>
+                        <Setter Property="BorderBrush" Value="Transparent"/>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="BorderBrush" Value="#80D3D3D3"/>
-                                <Setter Property="BorderThickness" Value="1"/>
+                                <Setter Property="Background" Value="#1D1D22"/>
+                                <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
                 </Border.Style>
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
-                </Border.Effect>
+
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0,0,0">
                     <Border Opacity="0.5" Background="Transparent"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="28" Width="28">
@@ -72,26 +77,38 @@
                             SnapsToDevicePixels="True"
                             Source="/Resources/Media/Images/Icons/Lucide/briefcase-business.svg" Width="15" Height="15"/>
                     </Border>
-                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" Text="Business" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" Text="Business" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" FontSize="14">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="#CFCFD6"/>
+
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Border}}" Value="True">
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
                 </StackPanel>
             </Border>
             
             <!-- bank -->
-            <Border Cursor="Hand" x:Name="BankBorder" MouseLeave="BankBorder_MouseLeave" MouseLeftButtonUp="BankBorder_MouseLeftButtonUp" MouseLeftButtonDown="BankBorder_MouseLeftButtonDown" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenOption('bank')]" CornerRadius="20" Height="40" Margin="5,0,5,15" Background="#242424" BorderThickness="1">
+            <Border Cursor="Hand" x:Name="BankBorder" MouseLeave="BankBorder_MouseLeave" MouseLeftButtonUp="BankBorder_MouseLeftButtonUp" MouseLeftButtonDown="BankBorder_MouseLeftButtonDown" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenOption('bank')]" CornerRadius="20" Height="40" Margin="5,0,5,15">
                 <Border.Style>
                     <Style TargetType="Border">
-                        <Setter Property="BorderBrush" Value="#242424"/>
+                        <Setter Property="BorderThickness" Value="1.5"/>
+                        <Setter Property="Background" Value="#151518"/>
+                        <Setter Property="BorderBrush" Value="Transparent"/>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="BorderBrush" Value="#80D3D3D3"/>
-                                <Setter Property="BorderThickness" Value="1"/>
+                                <Setter Property="Background" Value="#1D1D22"/>
+                                <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
                 </Border.Style>
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="20" Opacity="0.5" ShadowDepth="8" Direction="270"/>
-                </Border.Effect>
+
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0,0,0">
                     <Border Opacity="0.5" Background="Transparent"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="28" Width="28">
@@ -100,7 +117,19 @@
                             SnapsToDevicePixels="True"
                             Source="/Resources/Media/Images/Icons/Lucide/landmark.svg" Width="15" Height="15"/>
                     </Border>
-                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" Text="Bank" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" Text="Bank" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" FontSize="14">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="#CFCFD6"/>
+
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Border}}" Value="True">
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
                 </StackPanel>
             </Border>
         </StackPanel>

@@ -32,7 +32,7 @@ namespace Traker.ViewModels
         #endregion
 
         #region Private Field Variables
-        private List<bool> _optionsStatus;
+        private ObservableCollection<bool> _optionsStatus;
         private int _selectedOption = -1;
         private double _fullOpacity = 1.0;
 
@@ -46,7 +46,7 @@ namespace Traker.ViewModels
             _dataService = dataService;
             _state = state;
 
-            _optionsStatus = new List<bool>();
+            _optionsStatus = new ObservableCollection<bool>();
             _opacityStatus = new ObservableCollection<double>();
             _clientType = new ObservableCollection<bool>();
             _opacityClientType = new ObservableCollection<double>();
@@ -71,7 +71,7 @@ namespace Traker.ViewModels
                  * 4 = overdue
                  * 5 = paid
                  */
-                _optionsStatus = new List<bool>() { false, false, false, false, false, false };
+                _optionsStatus = new ObservableCollection<bool>() { false, false, false, false, false, false };
                 _opacityStatus = new ObservableCollection<double>() { _fullOpacity, _fullOpacity, _fullOpacity, _fullOpacity, _fullOpacity, _fullOpacity };
 
                 _clientType = new ObservableCollection<bool>() { false, false }; // 0=individual, 1=company
@@ -100,11 +100,11 @@ namespace Traker.ViewModels
             try
             {
                 _selectedOption = option;
-                if (_optionsStatus[option] == true) // deselect
+                if (OptionsStatus[option] == true) // deselect
                 {
-                    for (int i = 0; i < _optionsStatus.Count; i++)
+                    for (int i = 0; i < OptionsStatus.Count; i++)
                     {
-                        _optionsStatus[i] = false;
+                        OptionsStatus[i] = false;
                     }
                     UIHelper.SetOpacityFull(_opacityStatus);
                     await _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.AllJobStatus });
@@ -112,7 +112,7 @@ namespace Traker.ViewModels
                 }
                 else // select
                 {
-                    UIHelper.SetOptionTrue(option, _optionsStatus);
+                    UIHelper.SetOptionTrue(option, OptionsStatus);
                     //_optionsStatus[option] = true;
                     UIHelper.InverseRadioOptionChangedOpacity(option, _opacityStatus);
                     await SelectedOption(option);
@@ -180,9 +180,9 @@ namespace Traker.ViewModels
         {
             try
             {
-                for (int i = 0; i < _optionsStatus.Count; i++)
+                for (int i = 0; i < OptionsStatus.Count; i++)
                 {
-                    _optionsStatus[i] = false;
+                    OptionsStatus[i] = false;
                 }
                 UIHelper.SetOpacityFull(_opacityStatus);
 
@@ -253,6 +253,17 @@ namespace Traker.ViewModels
         #endregion
 
         #region Public View Variables
+
+        public ObservableCollection<bool> OptionsStatus
+        {
+            get { return _optionsStatus; }
+            set
+            {
+                _optionsStatus = value;
+                NotifyOfPropertyChange(() => OptionsStatus);
+            }
+        }
+
         public ObservableCollection<double> OpacityStatus
         {
             get { return _opacityStatus; }

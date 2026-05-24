@@ -32,16 +32,23 @@ namespace Traker.ViewModels.User
         private ObservableCollection<bool> _toggleButtons;
         private ObservableCollection<Brush> _backgroundButtons; // active=#333333. inactive=#1A1A1A
         private ObservableCollection<Brush> _foregroundText; // active=#FFFFFF. inactive=#888888
+
+        // submit button
+        private bool _enableSubmitBtn;
+        private double _opacitySubmitBtn;
         #endregion
 
         #region Private Class Field Variables
-        private string _activeButonColour = "#333333";
-        private string _inactiveButonColour = "#1A1A1A";
+        private string _activeButonColour = "#34343A";
+        private string _inactiveButonColour = "#24242A";
         private string _activeTextColour = "#FFFFFF";
         private string _inactiveTextColour = "#888888";
 
         private UserModel _userModel;
         private BusinessModel _businessModel;
+
+        private double _fullOpacity = 1.0;
+        private double _halfOpacity = 0.5;
         #endregion
 
         public UserInfoViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
@@ -68,6 +75,10 @@ namespace Traker.ViewModels.User
         {
             try
             {
+                // submit button
+                EnableSubmitBtn = false;
+                OpacitySubmitBtn = _halfOpacity;
+
                 _userModel = await Database.FetchUser();
                 _businessModel = await Database.FetchBusiness();
 
@@ -257,6 +268,42 @@ namespace Traker.ViewModels.User
         }
         #endregion
 
+        #region Private Functions
+        private Task CanSubmit()
+        {
+            try
+            {
+                if (FullName != _userModel.FullName ||
+                    Email != _userModel.Email ||
+                    Phone != _userModel.Phone ||
+                    BusinessType != _businessModel.BusinessType)
+                {
+                    EnableSubmitBtn = true;
+                    OpacitySubmitBtn = _fullOpacity;
+                }
+                else
+                {
+                    EnableSubmitBtn = false;
+                    OpacitySubmitBtn = _halfOpacity;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Edit User";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"UserInfoViewModel: CanSubmit() FAIL\n\t{ex.Message}");
+            }
+            return Task.CompletedTask;
+        }
+        #endregion
+
         #region Public View Variables
         public string FullName
         {
@@ -265,6 +312,7 @@ namespace Traker.ViewModels.User
             {
                 _fullName = value;
                 NotifyOfPropertyChange(() => FullName);
+                CanSubmit();
             }
         }
 
@@ -275,6 +323,7 @@ namespace Traker.ViewModels.User
             {
                 _email = value;
                 NotifyOfPropertyChange(() => Email);
+                CanSubmit();
             }
         }
 
@@ -285,6 +334,7 @@ namespace Traker.ViewModels.User
             {
                 _phone = value;
                 NotifyOfPropertyChange(() => Phone);
+                CanSubmit();
             }
         }
 
@@ -295,6 +345,7 @@ namespace Traker.ViewModels.User
             {
                 _businessType = value;
                 NotifyOfPropertyChange(() => BusinessType);
+                CanSubmit();
             }
         }
 
@@ -325,6 +376,26 @@ namespace Traker.ViewModels.User
             {
                 _foregroundText = value;
                 NotifyOfPropertyChange(() => ForegroundText);
+            }
+        }
+
+        public bool EnableSubmitBtn
+        {
+            get { return _enableSubmitBtn; }
+            set
+            {
+                _enableSubmitBtn = value;
+                NotifyOfPropertyChange(() => EnableSubmitBtn);
+            }
+        }
+
+        public double OpacitySubmitBtn
+        {
+            get { return _opacitySubmitBtn; }
+            set
+            {
+                _opacitySubmitBtn = value;
+                NotifyOfPropertyChange(() => OpacitySubmitBtn);
             }
         }
         #endregion

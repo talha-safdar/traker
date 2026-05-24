@@ -471,7 +471,8 @@ namespace Traker.ViewModels
             try
             {
                 State.AddClientViewModel = new AddClientViewModel(_events, _windowManager, DataService, State);
-                await _windowManager.ShowDialogAsync(State.AddClientViewModel, null, CustomWindow.SettingsForDialog(790, 600, false));
+                await _windowManager.ShowWindowAsync(State.AddClientViewModel, null, CustomWindow.SettingsForDialog(790, 600, false));
+                State.WindowFormOpen = true;
             }
             catch (Exception ex)
             {
