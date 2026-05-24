@@ -18,33 +18,36 @@
     <SolidColorBrush x:Key="MessageBoxErrorText" Color="#FCF8F8" />
     <SolidColorBrush x:Key="MessageBoxText" Color="#A0A0A0" />
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    <!-- buttons -->
+    <SolidColorBrush x:Key="AccentColour" Color="#8FA3C7" /> <!-- signature accent colour for borders -->
+    <SolidColorBrush x:Key="NormalButton" Color="#151518" />
+    <SolidColorBrush x:Key="HoverButton" Color="#1D1D22" />
+    <SolidColorBrush x:Key="ClickedButton" Color="#202027" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <SolidColorBrush x:Key="MainBackgroundBrush" Color="#1A1A1A" />
     <SolidColorBrush x:Key="PanelBrush" Color="#252525" />
@@ -307,8 +310,8 @@
     <!-- TextBox -->
     <Style TargetType="TextBox" x:Key="TextBoxNormal">
     <Setter Property="Foreground" Value="#E6E6E6"/>
-    <Setter Property="Background" Value="#2A2A2A"/>
-    <Setter Property="BorderBrush" Value="#333333"/>
+    <Setter Property="Background" Value="#121214"/>
+    <Setter Property="BorderBrush" Value="#2A2A2F"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Padding" Value="8,6"/>
     <Setter Property="CaretBrush" Value="White"/>
@@ -317,7 +320,7 @@
         <Setter.Value>
             <ControlTemplate TargetType="TextBox">
                 <Border x:Name="Border"
-                        Background="#121212"
+                        Background="#0A0A0B"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="7.5"
                         SnapsToDevicePixels="True">
@@ -335,7 +338,7 @@
                 <ControlTemplate.Triggers>
                     <!-- focus glow -->
                     <Trigger Property="IsFocused" Value="True">
-                            <Setter TargetName="Border" Property="BorderBrush" Value="#66D3D3D3"/>
+                            <Setter TargetName="Border" Property="BorderBrush" Value="#5A5A64"/>
                     </Trigger>
 
                     <!-- disabled -->
@@ -370,7 +373,7 @@
     <!-- ComboBox -->
     <Style TargetType="ComboBox" x:Key="ComboBoxNormal">
     <Setter Property="Foreground" Value="#EAEAEA"/>
-    <Setter Property="Background" Value="#2A2A2A"/>
+    <Setter Property="Background" Value="#0A0A0B"/>
     <Setter Property="BorderBrush" Value="#3F4554"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Height" Value="50"/>

@@ -22,8 +22,8 @@
     and dyanmicresource for theme changing
     
     -->
-    
-    <Grid Background="{StaticResource MainBackgroundBrush}" cal:Message.Attach="[Event PreviewMouseDown] = [Action OnMouseDownEvent($source)]">
+
+    <Grid Background="#080808" cal:Message.Attach="[Event PreviewMouseDown] = [Action OnMouseDownEvent($source)]">
         <Grid.ColumnDefinitions>
             <!--<ColumnDefinition Width="0.235*" /> --><!-- side panel -->
             <ColumnDefinition Width="auto" MinWidth="400" /> <!-- side panel -->
@@ -41,12 +41,12 @@
                 <!-- buttons -->
                 <Grid Grid.Row="0" Margin="0,0,0,10">
                     <!-- panel container -->
-                    <Border SnapsToDevicePixels="True" Background="#242424" CornerRadius="20" BorderThickness="1.5">
+                    <Border SnapsToDevicePixels="True" Background="#111113" CornerRadius="20" BorderThickness="1.5">
                         <Border.BorderBrush>
-                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
-                                <!-- This whole gradient is now at 50% of its original opacity -->
-                                <GradientStop Color="LightGray" Offset="0" />
-                                <GradientStop Color="Transparent" Offset="1" />
+                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                <GradientStop Color="#5A5A64" Offset="0"/>
+                                <GradientStop Color="#2A2A2F" Offset="0.45"/>
+                                <GradientStop Color="#17171A" Offset="1"/>
                             </LinearGradientBrush>
                         </Border.BorderBrush>
 
@@ -110,7 +110,7 @@
                                         SnapsToDevicePixels="True"
                                         Source="/Resources/Media/Images/Icons/Lucide/user-round-plus.svg" Width="25" Height="25"/>
                                     </Border>
-                                        <TextBlock VerticalAlignment="Center" Margin="15,0,0,0" Text="Add Client" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="12">
+                                        <TextBlock VerticalAlignment="Center" Margin="15,0,0,0" Text="Add Client" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="13">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="Foreground" Value="#888888"/>
@@ -199,7 +199,7 @@
                                             SnapsToDevicePixels="True"
                                             Source="/Resources/Media/Images/Icons/Lucide/briefcase-business.svg" Width="25" Height="25"/>
                                         </Border>
-                                            <TextBlock VerticalAlignment="Center" Margin="15,0,0,0" Text="Add Job" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="12">
+                                            <TextBlock VerticalAlignment="Center" Margin="15,0,0,0" Text="Add Job" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="13">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="Foreground" Value="#888888"/>
@@ -222,12 +222,12 @@
                 <!-- infromation status -->
                 <Grid Grid.Row="1" Margin="0,10,0,0">
                     <!-- panel container -->
-                    <Border Background="#242424" CornerRadius="20" BorderThickness="1.5">
+                    <Border Background="#101012" CornerRadius="20" BorderThickness="1.5">
                         <Border.BorderBrush>
-                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
-                                <!-- This whole gradient is now at 50% of its original opacity -->
-                                <GradientStop Color="LightGray" Offset="0" />
-                                <GradientStop Color="Transparent" Offset="1" />
+                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                <GradientStop Color="#46464F" Offset="0"/>
+                                <GradientStop Color="#29292F" Offset="0.45"/>
+                                <GradientStop Color="#151518" Offset="1"/>
                             </LinearGradientBrush>
                         </Border.BorderBrush>
                         <Grid Margin="20">
@@ -344,8 +344,7 @@
                                         </Border>
                                     </StackPanel>
                                 </Grid>
-                            
-                            
+                                                        
                                 <!-- outstanding payment -->
                                 <Grid Grid.Row="1">
                                     <StackPanel Orientation="Vertical" Margin="10,10,10,30">
@@ -393,8 +392,7 @@
                                             <!-- Left: Transparent -->
                                             <GradientStop Color="#00555555" Offset="0" />
                                             <!-- Middle: Your #555555 color -->
-                                            <GradientStop Color="#FF555555" Offset="0.8" />
-                                            <GradientStop Color="#FF555555" Offset="0.2" />
+                                            <GradientStop Color="#1F1F25" Offset="0.5" />
                                             <!-- Right: Transparent -->
                                             <GradientStop Color="#00555555" Offset="1" />
                                         </LinearGradientBrush>
@@ -404,20 +402,16 @@
 
                             <!-- profile / account -->
                             <Grid Grid.Row="4">
-                                <Border x:Name="SubmitUserBorder" MouseLeave="SubmitUserBorder_MouseLeave" MouseLeftButtonUp="SubmitUserBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitUserBorder_MouseLeftButtonDown" ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenUserContenxtMenu($source)]" CornerRadius="30" Height="65" Padding="5,0" BorderThickness="1">
-                                    <Border.BorderBrush>
-                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
-                                            <GradientStop Color="LightGray" Offset="0" />
-                                            <GradientStop Color="Transparent" Offset="1" />
-                                        </LinearGradientBrush>
-                                    </Border.BorderBrush>
+                                <Border x:Name="SubmitUserBorder" MouseLeave="SubmitUserBorder_MouseLeave" MouseLeftButtonUp="SubmitUserBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitUserBorder_MouseLeftButtonDown" ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenUserContenxtMenu($source)]" CornerRadius="30" Height="65" Padding="5,0" BorderThickness="1.5">
                                     <Border.Style>
                                         <Style TargetType="Border">
-                                            <Setter Property="Background" Value="#121212"/>
+                                            <Setter Property="Background" Value="#151518"/>
+                                            <Setter Property="BorderBrush" Value="#2A2A2F" />
 
                                             <Style.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Background" Value="#2C2C2C"/>
+                                                    <Setter Property="Background" Value="#1D1D22"/>
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>
@@ -489,6 +483,15 @@
                         </TextBlock>
                     </Grid>
 
+                    <!--<Border Margin="20,0">
+                        <Grid>
+                            --><!-- dark cut --><!--
+                            <Border Height="1" VerticalAlignment="Top" Background="#050506"/>
+                            --><!-- subtle lower highlight --><!--
+                            <Border Height="1" VerticalAlignment="Top" Margin="0,1,0,0" Background="#1F1F25"/>
+                        </Grid>
+                    </Border>-->
+
                     <!-- line spacer -->
                     <Grid Grid.Column="1" VerticalAlignment="Center">
                         <Border Margin="30,0" Height="1" SnapsToDevicePixels="True">
@@ -497,7 +500,7 @@
                                     <!-- Left: Transparent -->
                                     <GradientStop Color="#00555555" Offset="0" />
                                     <!-- Middle: Your #555555 color -->
-                                    <GradientStop Color="#FF555555" Offset="0.5" />
+                                    <GradientStop Color="#1F1F25" Offset="0.5" />
                                     <!-- Right: Transparent -->
                                     <GradientStop Color="#00555555" Offset="1" />
                                 </LinearGradientBrush>
@@ -508,14 +511,22 @@
                     <!-- filter/sort -->
                     <Grid Grid.Column="2" VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,0">
-                            <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" x:Name="SubmitFilterBorder" MouseLeave="SubmitFilterBorder_MouseLeave" MouseLeftButtonUp="SubmitFilterBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitFilterBorder_MouseLeftButtonDown" Cursor="Hand" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" Margin="0,0,10,0" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFilterContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="#E0E0E0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                            
+                            <!-- filter -->
+                            <Border ToolTipService.InitialShowDelay="0" BorderThickness="1.5" ToolTipService.ShowDuration="1000" x:Name="SubmitFilterBorder" MouseLeave="SubmitFilterBorder_MouseLeave" MouseLeftButtonUp="SubmitFilterBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitFilterBorder_MouseLeftButtonDown" Cursor="Hand" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" Margin="0,0,10,0" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFilterContextMenu($source)]" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="Background" Value="#151518"/>
+                                        <Setter Property="BorderBrush" Value="#2A2A2F"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding State.IsFilterInUse}" Value="True">
                                                 <Setter Property="BorderThickness" Value="1" />
                                             </DataTrigger>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#1D1D22" />
+                                                <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
+                                            </Trigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Border.Style>
@@ -526,18 +537,27 @@
                                     </ToolTip>
                                 </Border.ToolTip>
                                 <svg:SvgViewbox                         
+                                    Margin="0,4,0,0"
                                     RenderOptions.BitmapScalingMode="HighQuality"
                                     SnapsToDevicePixels="True"
                                     Source="/Resources/Media/Images/Icons/Lucide/list-filter.svg" Width="15" Height="15"/>
                             </Border>
-                            <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" x:Name="SubmitSortBorder" MouseLeave="SubmitSortBorder_MouseLeave" MouseLeftButtonUp="SubmitSortBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitSortBorder_MouseLeftButtonDown" Cursor="Hand" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenSortContextMenu($source)]" Background="{StaticResource SidePanelBackgroundBrush}" BorderBrush="#E0E0E0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                            
+                            <!-- sort -->
+                            <Border ToolTipService.InitialShowDelay="0" BorderThickness="1.5" ToolTipService.ShowDuration="1000" x:Name="SubmitSortBorder" MouseLeave="SubmitSortBorder_MouseLeave" MouseLeftButtonUp="SubmitSortBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitSortBorder_MouseLeftButtonDown" Cursor="Hand" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenSortContextMenu($source)]" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="Background" Value="#151518"/>
+                                        <Setter Property="BorderBrush" Value="#2A2A2F"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding State.IsSortInUse}" Value="True">
+                                            <DataTrigger Binding="{Binding State.IsFilterInUse}" Value="True">
                                                 <Setter Property="BorderThickness" Value="1" />
                                             </DataTrigger>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#1D1D22" />
+                                                <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
+                                            </Trigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Border.Style>
@@ -546,7 +566,8 @@
                                         <TextBlock Text="Sort Jobs" />
                                     </ToolTip>
                                 </Border.ToolTip>
-                                <svg:SvgViewbox                         
+                                <svg:SvgViewbox         
+                                    Margin="0,3,0,0"
                                     RenderOptions.BitmapScalingMode="HighQuality"
                                     SnapsToDevicePixels="True"
                                     Source="/Resources/Media/Images/Icons/Lucide/arrow-up-down.svg" Width="15" Height="15"/>
@@ -558,14 +579,7 @@
 
             <!-- job cards -->
             <Grid Grid.Row="1" Margin="0,10,0,0">
-                <Border Background="#242424" CornerRadius="20" BorderThickness="1.5" SnapsToDevicePixels="True">
-                    <Border.BorderBrush>
-                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
-                            <!-- This whole gradient is now at 50% of its original opacity -->
-                            <GradientStop Color="LightGray" Offset="0" />
-                            <GradientStop Color="Transparent" Offset="1" />
-                        </LinearGradientBrush>
-                    </Border.BorderBrush>
+                <Border Background="#0C0C0E" BorderBrush="#24242A" BorderThickness="1.5" CornerRadius="20" SnapsToDevicePixels="True">
                     <Grid>
 
                         <!--<ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10,20,10,10" Padding="0,0,10,0" CanContentScroll="True">-->
@@ -607,13 +621,12 @@
                                 </Style>
                             </ListBox.ItemContainerStyle>
 
-
-
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Border 
+                                        SnapsToDevicePixels="True"
+                                        BorderThickness="1.5"
                                         ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="2000" 
-                                        Background="#242424"
                                         Height="135"
                                         CornerRadius="20" 
                                         Margin="20,10,20,10" 
@@ -624,6 +637,7 @@
                                                             [Event MouseRightButtonUp] = [Action OpenContextMenu($dataContext)];"
                                             Cursor="Hand"
                                         MouseLeftButtonDown="EditJob">
+
                                         <Border.ToolTip>
                                             <ToolTip Style="{StaticResource DarkToolTip}">
                                                 <TextBlock>
@@ -646,15 +660,20 @@
                                                 </TextBlock>
                                             </ToolTip>
                                         </Border.ToolTip>
-
-                                        <Border.BorderThickness>0,1,0,0</Border.BorderThickness>
-                                        <!-- Only top edge! -->
                                         
                                         <Border.Style>
                                             <Style TargetType="Border">
                                                 <!-- 1. Default BorderBrush -->
-                                                <Setter Property="BorderBrush" Value="#121212"/>
-
+                                                <Setter Property="Background" Value="#151518"/>
+                                                <Setter Property="BorderBrush">
+                                                    <Setter.Value>
+                                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                                            <GradientStop Color="#4A4A55" Offset="0"/>
+                                                            <GradientStop Color="#2D2D34" Offset="0.45"/>
+                                                            <GradientStop Color="#1F1F25" Offset="1"/>
+                                                        </LinearGradientBrush>
+                                                    </Setter.Value>
+                                                </Setter>
                                                 <!-- 2. Default Shadow (Moved from local to Style) -->
                                                 <Setter Property="Effect">
                                                     <Setter.Value>
@@ -669,7 +688,12 @@
 
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="BorderBrush" Value="#80404040"/>
+                                                        <Setter Property="Background" Value="#1D1D22"/>
+                                                        <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
+                                                        <!-- on pressed:
+                                                        Background: #202027
+                                                        Border:     #A7B4CC-->
+
 
                                                         <!-- 3. Increased Blur Shadow on Hover -->
                                                         <Setter Property="Effect">

@@ -260,16 +260,17 @@ namespace Traker.Database
                         END), 0) AS OutstandingAmount,
 
                         COALESCE(SUM(CASE 
-                            WHEN j.Status = @Invoiced
-                            AND EXISTS (
-                                SELECT 1
-                                FROM Invoices i
-                                WHERE i.JobId = j.JobId
-                                  AND i.DueDate < @Today
-                                  AND i.Status <> @Paid
-                            )
-                            THEN j.FinalPrice ELSE 0 
-                        END), 0) AS OverdueAmount
+                        WHEN EXISTS (
+                            SELECT 1
+                            FROM Invoices i
+                            WHERE i.JobId = j.JobId
+                              AND i.Status = @Overdue
+                              AND i.DueDate < @Today
+                              AND i.IsDeleted = 0
+                        )
+                        THEN j.FinalPrice 
+                        ELSE 0 
+                    END), 0) AS OverdueAmount
 
                     FROM Jobs j;
                 ";

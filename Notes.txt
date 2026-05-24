@@ -96,6 +96,9 @@ V1:
 #- rethink about colours (maybe scifi)
 - hide pagination if less than one page
 - convert the rest of the queries to Dapper
+#- fix outstanding border
+#- fix flag filter type buttons
+#- virtualbox for JosList
 
 V2:
 #- the selected not invoiced then confirmation box yes/no. that row with invoice details will be saved in a e.g. "rubbish" folder in txt. 
@@ -373,3 +376,285 @@ Dapper
 | DB writes         | Wrap multiple inserts/updates in a transaction         |
 | Dates/prices      | Store clean values, format only in UI                  |
 | Diagnostics       | Use `EXPLAIN QUERY PLAN` to check if indexes are used  |
+
+
+COLOR SCHEME
+| Purpose              |         Colour Name |       Hex | Use                                           |
+| -------------------- | ------------------: | --------: | --------------------------------------------- |
+| Main app background  |       Deep Charcoal | `#1A1A1A` | Main window background                        |
+| Secondary background |         Night Panel | `#20242C` | Side panels / main containers                 |
+| Card background      |  Soft Space Surface | `#252A33` | Cards, list items, grouped sections           |
+| Card hover           | Blue Charcoal Hover | `#2D3542` | Hovered cards/buttons                         |
+| Border subtle        |        Steel Border | `#3A3F4B` | Borders, separators                           |
+| Main brand blue      |          Lunar Navy | `#1E3A5F` | Main brand colour / selected states           |
+| Strong accent blue   |           Star Blue | `#2563EB` | Primary buttons / active highlights           |
+| Soft accent blue     |        Moonlit Blue | `#60A5FA` | Icons, small highlights, links                |
+| Logo / main text     |          Moon White | `#DCDCDC` | Logo text, main text                          |
+| Brighter text        |          Star White | `#E6EAF2` | Headings / important labels                   |
+| Muted text           |           Dust Grey | `#9CA3AF` | Secondary text                                |
+| Warm accent          |        Bazaar Amber | `#C47A2C` | Small premium highlights, warning-ish accents |
+| Warm dark accent     |        Burnt Bronze | `#7A4A24` | Subtle brown details / section accents        |
+| Paid / success       |          Deep Green | `#16A34A` | Paid status                                   |
+| Paid hover           |         Green Hover | `#15803D` | Paid hover                                    |
+| Not paid / pending   |               Amber | `#F59E0B` | Not paid / pending                            |
+| Overdue / danger     |                 Red | `#DC2626` | Overdue / delete / danger                     |
+| Error hover          |            Dark Red | `#B91C1C` | Danger hover                                  |
+
+Style 1:
+| Area                 | Use       |
+| -------------------- | --------- |
+| Main background      | `#1A1A1A` |
+| Cards                | `#252A33` |
+| Main accent          | `#1E3A5F` |
+| Strong button accent | `#2563EB` |
+| Logo/text            | `#DCDCDC` |
+| Small unique warmth  | `#C47A2C` |
+Main background: #1A1A1A
+Top bar:         #20242C
+Bottom border:   #2D3542
+Logo text:       #DCDCDC
+Accent:          #60A5FA or #C47A2C very sparingly
+Background: #151821
+Cards:      #242B3A
+Accent:     #3B82F6
+Logo:       #DCDCDC
+Tiny warmth:#C47A2C
+| Layer                     | Current problem  | Better colour |
+| ------------------------- | ---------------- | ------------: |
+| App background            | darkest base     |     `#141414` |
+| Main page panel           | slightly lifted  |     `#1A1B1F` |
+| Side panel/card container | more visible     |     `#20222A` |
+| Inner cards               | clearly lifted   |     `#262A33` |
+| Hover / active card       | noticeable       |     `#303747` |
+| Border normal             | visible but soft |     `#3A3F4B` |
+| Border strong/focus       | accent edge      |     `#7C8DB5` |
+Top:    #4A5060
+Middle: #2A2D35
+Bottom: #343842
+
+
+
+
+
+
+
+
+
+
+
+
+| Element                       |                  Colour | Hex       |
+| ----------------------------- | ----------------------: | --------- |
+| App background                |           Deep graphite | `#121417` |
+| Top bar background            |        Dark command bar | `#171A20` |
+| Main cards panel              |            Main surface | `#181B22` |
+| Left/action panel             | Slightly raised surface | `#1B1E26` |
+| Right info panel              |            Info surface | `#1A1D24` |
+| Card background               |             Raised card | `#222631` |
+| Card hover                    |              Soft hover | `#2A3040` |
+| Inner input/button background |           Inner control | `#181B22` |
+| Disabled/quiet surface        |              Muted dark | `#16181D` |
+| Main border                   |              Soft steel | `#343A46` |
+| Strong border/focus           |         Cold steel blue | `#64748B` |
+| Top border highlight          |         Faint moon edge | `#4B5565` |
+| Bottom border                 |      Subtle bottom edge | `#252A33` |
+| Main text / logo              |              Moon white | `#DCDCDC` |
+| Headings                      |             Clean white | `#E8EAEE` |
+| Normal text                   |              Soft white | `#C9CDD6` |
+| Muted text                    |              Steel grey | `#8B93A3` |
+| Placeholder text              |              Quiet grey | `#6F7787` |
+| Primary accent                |      Quiet orbital blue | `#7C8DB5` |
+| Primary hover                 |   Brighter orbital blue | `#93A4CC` |
+| Primary pressed               |       Deep orbital blue | `#5F6F94` |
+| Signature accent              |             Solar amber | `#C89455` |
+| Signature hover               |        Warm amber hover | `#D6A66B` |
+| Success / paid                |                   Green | `#16A34A` |
+| Pending / not paid            |                   Amber | `#D9963A` |
+| Danger / overdue              |               Muted red | `#B94A48` |
+| Danger hover                  |              Strong red | `#DC2626` |
+| Area                   |       Hex |
+| ---------------------- | --------: |
+| App background         | `#121417` |
+| Top bar                | `#171A20` |
+| Left column background | `#151820` |
+| Add buttons panel      | `#1B1E26` |
+| Info panel             | `#181B22` |
+| Right main panel       | `#181B22` |
+| Cards                  | `#222631` |
+| Card hover             | `#2A3040` |
+| Border gradient top    | `#4B5565` |
+| Border gradient middle | `#343A46` |
+| Border gradient bottom | `#252A33` |
+| Main text/logo         | `#DCDCDC` |
+| Muted text             | `#8B93A3` |
+| Main accent            | `#7C8DB5` |
+| Signature accent       | `#C89455` |
+
+FOR MAIN PANELS/CARDS:
+<Border.BorderBrush>
+    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+        <GradientStop Color="#4B5565" Offset="0"/>
+        <GradientStop Color="#343A46" Offset="0.45"/>
+        <GradientStop Color="#252A33" Offset="1"/>
+    </LinearGradientBrush>
+</Border.BorderBrush>
+| Button state    | Background |    Border |      Text |
+| --------------- | ---------: | --------: | --------: |
+| Normal          |  `#1B1E26` | `#343A46` | `#DCDCDC` |
+| Hover           |  `#252B38` | `#64748B` | `#E8EAEE` |
+| Pressed         |  `#151820` | `#7C8DB5` | `#FFFFFF` |
+| Active/selected |  `#263044` | `#7C8DB5` | `#E8EAEE` |
+
+For important primary actions like Add Job, use the accent carefully:
+| Button           | Background |     Hover |      Text |
+| ---------------- | ---------: | --------: | --------: |
+| Primary action   |  `#263044` | `#2F3A52` | `#E8EAEE` |
+| Accent line/icon |  `#C89455` | `#D6A66B` |         — |
+Do not fill huge buttons with amber. Use amber as icon/left stripe/small glow.
+
+Card style:
+| Part                   |                Colour |
+| ---------------------- | --------------------: |
+| Card background        |             `#222631` |
+| Card hover             |             `#2A3040` |
+| Card border            | gradient border above |
+| Card title             |             `#E8EAEE` |
+| Card secondary text    |             `#8B93A3` |
+| Card ID text           |             `#6F7787` |
+| Important amount       |             `#DCDCDC` |
+| Small highlight/accent |             `#C89455` |
+
+Status color:
+| Status   |                   Colour |
+| -------- | -----------------------: |
+| New      |                `#7C8DB5` |
+| Active   | `#60A5FA` but use softly |
+| Done     |                `#16A34A` |
+| Invoiced |                `#C89455` |
+| Overdue  |                `#B94A48` |
+| Paid     |                `#16A34A` |
+Background: #121417
+Panels:     #181B22 / #1B1E26
+Cards:      #222631
+Borders:    #4B5565 → #252A33 gradient
+Text:       #DCDCDC
+Accent:     #7C8DB5
+Signature:  #C89455
+
+
+
+| Element          |       Hex |
+| ---------------- | --------: |
+| App background   | `#080808` |
+| Top bar          | `#0D0D0F` |
+| Add block        | `#111113` |
+| Info block       | `#101012` |
+| Main cards block | `#0C0C0E` |
+| Card background  | `#151518` |
+| Card hover       | `#1D1D22` |
+| Input background | `#0A0A0B` |
+| Border normal    | `#2A2A2F` |
+| Border highlight | `#5A5A64` |
+| Main text/logo   | `#E0E0E0` |
+| Strong text      | `#F2F2F2` |
+| Muted text       | `#8E8E96` |
+| Quiet text       | `#5F5F66` |
+| Main accent      | `#D6D6D6` |
+| Accent pressed   | `#B8B8C0` |
+<Border Background="#151518"
+        BorderThickness="1"
+        CornerRadius="14"
+        SnapsToDevicePixels="True">
+
+    <Border.BorderBrush>
+        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+            <GradientStop Color="#5A5A64" Offset="0"/>
+            <GradientStop Color="#2A2A2F" Offset="0.45"/>
+            <GradientStop Color="#141416" Offset="1"/>
+        </LinearGradientBrush>
+    </Border.BorderBrush>
+
+</Border>
+
+
+
+
+
+| Area             | BorderThickness | Border style               | Why                      |
+| ---------------- | --------------: | -------------------------- | ------------------------ |
+| Top bar          |       `0,0,0,1` | solid subtle bottom border | separates header cleanly |
+| Side Add block   |             `1` | gradient border            | important action panel   |
+| Side Info block  |             `1` | gradient border but darker | supportive panel         |
+| Main Cards block |             `1` | subtle solid/gradient      | frames the main area     |
+| Cards            |             `1` | soft gradient border       | lifted from main panel   |
+| Inputs           |             `1` | solid border               | cleaner, less noisy      |
+top bar:
+<Border Background="#0D0D0F"
+        BorderThickness="0,0,0,1"
+        BorderBrush="#24242A">
+</Border>
+add block:
+<Border Background="#111113"
+        BorderThickness="1"
+        CornerRadius="18"
+        SnapsToDevicePixels="True">
+
+    <Border.BorderBrush>
+        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+            <GradientStop Color="#5A5A64" Offset="0"/>
+            <GradientStop Color="#2A2A2F" Offset="0.45"/>
+            <GradientStop Color="#17171A" Offset="1"/>
+        </LinearGradientBrush>
+    </Border.BorderBrush>
+
+</Border>
+info block:
+<Border Background="#101012"
+        BorderThickness="1"
+        CornerRadius="18"
+        SnapsToDevicePixels="True">
+
+    <Border.BorderBrush>
+        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+            <GradientStop Color="#46464F" Offset="0"/>
+            <GradientStop Color="#29292F" Offset="0.45"/>
+            <GradientStop Color="#151518" Offset="1"/>
+        </LinearGradientBrush>
+    </Border.BorderBrush>
+
+</Border>
+
+cards block:
+<Border Background="#0C0C0E"
+        BorderThickness="1"
+        CornerRadius="20"
+        BorderBrush="#24242A"
+        SnapsToDevicePixels="True">
+</Border>
+
+cards:
+<Border Background="#151518"
+        BorderThickness="1"
+        CornerRadius="14"
+        SnapsToDevicePixels="True">
+
+    <Border.BorderBrush>
+        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+            <GradientStop Color="#4A4A55" Offset="0"/>
+            <GradientStop Color="#2A2A2F" Offset="0.45"/>
+            <GradientStop Color="#18181C" Offset="1"/>
+        </LinearGradientBrush>
+    </Border.BorderBrush>
+
+</Border>
+hover
+Background="#1D1D22"
+BorderBrush="#5A5A64"
+
+for icon buttons:
+| State    | Circle Background | Circle Border |      Icon |
+| -------- | ----------------: | ------------: | --------: |
+| Normal   |         `#151518` |     `#2A2A2F` | `#E0E0E0` |
+| Hover    |         `#1D1D22` |     `#8FA3C7` | `#FFFFFF` |
+| Pressed  |         `#101012` |     `#A7B4CC` | `#CFCFD6` |
+| Disabled |         `#101012` |     `#1F1F25` | `#5F5F66` |
