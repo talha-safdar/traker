@@ -328,7 +328,7 @@
                     <!-- next -->
                     <Grid Grid.Column="2" Opacity="{Binding OpacityBtn}">
                         <!-- next -->
-                        <Border x:Name="SubmitBorder1" MouseLeave="SubmitBorder1_MouseLeave" IsEnabled="{Binding EnableNextBtn}" HorizontalAlignment="Right" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmUserSetup()]" CornerRadius="25" Height="50" Width="50" BorderThickness="1.5">
+                        <Border x:Name="SubmitBorder1" IsEnabled="{Binding EnableNextBtn}" HorizontalAlignment="Right" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmUserSetup()]" CornerRadius="25" Height="50" Width="50" BorderThickness="1.5">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <Setter Property="BorderThickness" Value="1.5" />

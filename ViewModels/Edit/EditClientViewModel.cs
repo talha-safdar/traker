@@ -159,8 +159,24 @@ namespace Traker.ViewModels.Edit
                 SelectedJob.Postcode != Postcode ||
                 SelectedJob.Country != Country)
                 {
+
+                    bool clientNameChanged = false;
+
+                    if (ClientType != SelectedJob.ClientType)
+                    {
+                        clientNameChanged = true;
+                    }
+                    if (ClientType == Names.Individual && ClientName != SelectedJob.ClientName)
+                    {
+                        clientNameChanged = true;
+                    }
+                    if (ClientType == Names.Company && CompanyName != SelectedJob.CompanyName)
+                    {
+                        clientNameChanged = true;
+                    }
+
                     // check if name changes for folder naming purpose
-                    if ((SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName) != ClientName && (SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName) != CompanyName)
+                    if (clientNameChanged == true)
                     {
                         // if it returns true then the folder was successfully renamed
                         if (await FileStore.UpdateClientFolderName(SelectedJob.ClientId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim(), ClientType == Names.Individual ? ClientName.Trim() : CompanyName.Trim()) == true)
@@ -201,28 +217,28 @@ namespace Traker.ViewModels.Edit
         {
             try
             {
-                await Task.Run(async () => {
-                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
-                    {
-                        _state.messageBoxVM.Symbol = 0;
-                        _state.messageBoxVM.HeadMessage = "Delete Client";
-                        _state.messageBoxVM.Message = Names.DeleteClientConfirmation;
-                        _state.messageBoxVM.ButtonStyle = Names.NoYes;
-                        await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                    }
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 0;
+                    _state.messageBoxVM.HeadMessage = "Delete Client";
+                    _state.messageBoxVM.Message = Names.DeleteClientConfirmation;
+                    _state.messageBoxVM.ButtonStyle = Names.NoYes;
+                    await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
 
-                    // if clicked yes
-                    if (_state.messageBoxVM.Output == true)
-                    {
-                        // delete client folder
-                        await FileStore.DeleteClientFolder(SelectedJob.ClientId, SelectedJob.ClientName.Trim());
+                // if clicked yes
+                if (_state.messageBoxVM.Output == true)
+                {
+                    await TryCloseAsync();
+                    _state.WindowFormOpen = false;
 
-                        // delete client database row
-                        await Database.DeleteClient(SelectedJob.ClientId);
-                        await _events.PublishOnUIThreadAsync(new RefreshDatabase());
-                        await TryCloseAsync();
-                    }
-                });
+                    // delete client folder
+                    await FileStore.DeleteClientFolder(SelectedJob.ClientId, SelectedJob.ClientName.Trim());
+
+                    // delete client database row
+                    await Database.DeleteClient(SelectedJob.ClientId);
+                    await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+                }
             }
             catch (Exception ex)
             {
