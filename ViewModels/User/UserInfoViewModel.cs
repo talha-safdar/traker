@@ -124,31 +124,7 @@ namespace Traker.ViewModels.User
             {
                 if (e.Key == Key.Escape)
                 {
-                    if (_userModel.FullName != FullName ||
-                        _userModel.Email != Email ||
-                        _userModel.Phone != Phone ||
-                        _businessModel.BusinessType != BusinessType
-                        )
-                    {
-                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
-                        {
-                            _state.messageBoxVM.Symbol = 0;
-                            _state.messageBoxVM.HeadMessage = "Discard changes?";
-                            _state.messageBoxVM.Message = Names.DiscardEsc;
-                            _state.messageBoxVM.ButtonStyle = Names.NoYes;
-                            await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                        }
-
-                        // if clicked yes
-                        if (_state.messageBoxVM.Output == true)
-                        {
-                            await TryCloseAsync();
-                        }
-                    }
-                    else
-                    {
-                        await TryCloseAsync();
-                    }
+                    await Exit();
                 }
             }
             catch (Exception ex)

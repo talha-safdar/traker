@@ -872,7 +872,10 @@ namespace Traker.Database
         /// </summary>
         public async static Task<bool> CheckUserDatabase()
         {
-            bool isSuccessful = false;
+            bool isSuccessful = false; // when the database file exists but broken
+            int countUser = 0;
+            int countBusiness = 0;
+            int countBank = 0;
 
             try
             {
@@ -880,31 +883,50 @@ namespace Traker.Database
                 {
                     // set directory and database name
                     var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Traker");
-                    if (Directory.Exists(folder) == false)
-                    {
-                        // to test
-                        isSuccessful = false;
-                        return;
-                    }
-
                     var dbPath = Path.Combine(folder, "traker.db");
                      _connectionString = $"Data Source={dbPath}";
-
 
                     using (var conn = new SqliteConnection(_connectionString))
                     {
                         // query database
-                        int countUser = await conn.ExecuteScalarAsync<int>(
-                        @"SELECT COUNT(*) FROM 'User'"
-                        );
+                        try
+                        {
+                            countUser = await conn.ExecuteScalarAsync<int>(
+                            @"SELECT COUNT(*) FROM 'User'"
+                            );
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogActivity(Logger.ERROR, $"Database: CheckUserDatabase() - User table check failed\n\t{ex.Message}");
+                            isSuccessful = false;
+                            return;
+                        }
 
-                        int countBusiness = await conn.ExecuteScalarAsync<int>(
-                        @"SELECT COUNT(*) FROM 'Business'"
-                        );
+                        try
+                        {
+                            countBusiness = await conn.ExecuteScalarAsync<int>(
+                            @"SELECT COUNT(*) FROM 'Business'"
+                            );
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogActivity(Logger.ERROR, $"Database: CheckUserDatabase() - Business table check failed\n\t{ex.Message}");
+                            isSuccessful = false;
+                            return;
+                        }
 
-                        int countBank = await conn.ExecuteScalarAsync<int>(
-                        @"SELECT COUNT(*) FROM 'bank'"
-                        );
+                        try
+                        {
+                            countBank = await conn.ExecuteScalarAsync<int>(
+                            @"SELECT COUNT(*) FROM 'Bank'"
+                            );
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogActivity(Logger.ERROR, $"Database: CheckUserDatabase() - Bank table check failed\n\t{ex.Message}");
+                            isSuccessful = false;
+                            return;
+                        }
 
                         // if any table is empty delete database file to trigger setup window
                         if (countUser == 0 || countBusiness == 0 || countBank == 0)
@@ -913,8 +935,6 @@ namespace Traker.Database
 
                             GC.Collect();
                             GC.WaitForPendingFinalizers();
-
-                            //File.Delete(dbPath);
 
                             isSuccessful = false;
                         }
@@ -932,7 +952,7 @@ namespace Traker.Database
                 if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
                 {
                     state.messageBoxVM.Symbol = 2;
-                    state.messageBoxVM.HeadMessage = "Fetch Clients Tables";
+                    state.messageBoxVM.HeadMessage = "Check User Table";
                     state.messageBoxVM.Message = ex.Message;
                     state.messageBoxVM.ButtonStyle = Names.OK;
                     state.messageBoxVM.Action = Names.Close;
@@ -940,6 +960,16 @@ namespace Traker.Database
                 }
                 isSuccessful = false;
                 Logger.LogActivity(Logger.ERROR, $"Database: CheckUserDatabase() FAIL\n\t{ex.Message}");
+            }
+            finally
+            {
+                if (isSuccessful == false)
+                {
+                    SqliteConnection.ClearAllPools();
+
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                }
             }
             return isSuccessful;
         }

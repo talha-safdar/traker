@@ -73,7 +73,7 @@ namespace Traker.ViewModels.Add
 
                 BusinessName = "ABC";
                 JobTitle = "Count";
-                Price = "12.45";
+                Price = "500.45";
                 DueDate = "12/12/2026";
             }
             catch (Exception ex)
@@ -152,14 +152,14 @@ namespace Traker.ViewModels.Add
                     // if clicked yes
                     if (_state.messageBoxVM.Output == true)
                     {
-                        _state.WindowFormOpen = false;
                         await TryCloseAsync();
+                        _state.WindowFormOpen = false;
                     }
                 }
                 else
                 {
-                    _state.WindowFormOpen = false;
                     await TryCloseAsync();
+                    _state.WindowFormOpen = false;
                 }
             }
             catch (Exception ex)
@@ -184,11 +184,8 @@ namespace Traker.ViewModels.Add
             try
             {
                 await Task.Run(async() => {
-                    _state.WindowFormOpen = false;
                     await TryCloseAsync();
-
-                    //while (1 == 1)
-                    {
+                    _state.WindowFormOpen = false;
 
                         var dueDate = DateOnly.MinValue;
                         decimal amount = 0;
@@ -206,9 +203,9 @@ namespace Traker.ViewModels.Add
                         }
 
                         /*
-                         * 0 = clientId
-                         * 1 = jobId
-                         */
+                            * 0 = clientId
+                            * 1 = jobId
+                            */
                         List<int> clientJobIds = new List<int>();
 
                         if (ClientType == Names.Individual)
@@ -235,10 +232,6 @@ namespace Traker.ViewModels.Add
 
                         // refresh database
                         await _events.PublishOnUIThreadAsync(new RefreshDatabase());
-
-
-                        await Task.Delay(10);
-                    }
                 });
             }
             catch (Exception ex)

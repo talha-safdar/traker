@@ -215,6 +215,7 @@ namespace Traker.ViewModels.Edit
             try
             {
                 await TryCloseAsync();
+                _state.WindowFormOpen = false;
                 // price
                 decimal.TryParse(Price,
                 NumberStyles.Currency,
@@ -291,34 +292,7 @@ namespace Traker.ViewModels.Edit
             {
                 if (e.Key == Key.Escape)
                 {
-                    string startDate = SelectedJob.StartDate.ToString() == "01/01/0001" ? string.Empty : SelectedJob.StartDate.ToString();
-                    if (SelectedJob.JobTitle != JobTitle ||
-                        SelectedJob.JobDescription != JobDescription ||
-                        SelectedJob.JobStatus != Status ||
-                        SelectedJob.Price.ToString("C") != Price.ToString() ||
-                        SelectedJob.AmountReceived.ToString("C") != AmountReceived.ToString() ||
-                        (SelectedJob.StartDate.ToString() == "01/01/0001" ? string.Empty : SelectedJob.StartDate.ToString()) != StartDate.ToString() ||
-                        SelectedJob.DueDate.ToString() != DueDate.ToString())
-                    {
-                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
-                        {
-                            _state.messageBoxVM.Symbol = 0;
-                            _state.messageBoxVM.HeadMessage = "Discard changes?";
-                            _state.messageBoxVM.Message = Names.DiscardEsc;
-                            _state.messageBoxVM.ButtonStyle = Names.NoYes;
-                            await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                        }
-
-                        // if clicked yes
-                        if (_state.messageBoxVM.Output == true)
-                        {
-                            await TryCloseAsync();
-                        }
-                    }
-                    else
-                    {
-                        await TryCloseAsync();
-                    }
+                    await Exit();
                 }
             }
             catch (Exception ex)
@@ -413,11 +387,13 @@ namespace Traker.ViewModels.Edit
                     if (_state.messageBoxVM.Output == true)
                     {
                         await TryCloseAsync();
+                        _state.WindowFormOpen = false;
                     }
                 }
                 else
                 {
                     await TryCloseAsync();
+                    _state.WindowFormOpen = false;
                 }
             }
             catch (Exception ex)

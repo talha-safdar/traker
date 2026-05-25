@@ -1,4 +1,4 @@
-﻿C:\Users\Safda\AppData\Local\Traker
+C:\Users\Safda\AppData\Local\Traker
 
 Fonts: {
 	Headers/Titles:		Montserrat	700 (Bold)
@@ -92,16 +92,18 @@ V1:
 - check warnings in error list
 - remove local database and use purely SQL
 - ask about wewther i should use Task<List<Stuff> in database or keep List<Stuff>
--add border flag if filter sort is enabled so user knows
-#- rethink about colours (maybe scifi)
+- add border flag if filter sort is enabled so user knows
+- rethink about colours (maybe scifi)
 - hide pagination if less than one page
 - convert the rest of the queries to Dapper
-#- fix outstanding border
-#- fix flag filter type buttons
-#- virtualbox for JosList
-#- make dropdown menu box list fluid too
-#-reenable global exception in app.xaml.cs
-#-check submit button for enable/disable for user settings
+- fix outstanding border
+- fix flag filter type buttons
+- virtualbox for JosList
+- make dropdown menu box list fluid too
+- reenable global exception in app.xaml.cs
+- check submit button for enable/disable for user settings
+#- fix button on disable in forms to become opacity low
+#- redsign the job context menu
 
 V2:
 #- the selected not invoiced then confirmation box yes/no. that row with invoice details will be saved in a e.g. "rubbish" folder in txt. 
@@ -724,9 +726,44 @@ combbox:
 | Muted arrow               |     `#9A9AA3` |
 | Hover arrow               |     `#E0E0E0` |
 
+inner inner background
+| Layer                      |    Colour |
+| -------------------------- | --------: |
+| Modal outer background     | `#101012` |
+| Inner form panel           | `#151518` |
+| Panel inside inner panel   | `#1A1A1F` |
+| Input background inside it | `#080809` |
+| Border                     | `#2A2A2F` |
+| Hover/focus border         | `#8FA3C7` |
+
+radio buttons:
+| State    | Outer Circle Border |   Inner Dot |      Text |
+| -------- | ------------------: | ----------: | --------: |
+| Normal   |           `#34343A` | Transparent | `#CFCFD6` |
+| Hover    |           `#8FA3C7` | Transparent | `#E0E0E0` |
+| Checked  |           `#8FA3C7` |   `#8FA3C7` | `#E0E0E0` |
+| Pressed  |           `#A7B4CC` |   `#A7B4CC` | `#FFFFFF` |
+| Disabled |           `#24242A` |   `#5F5F66` | `#5F5F66` |
+
+
 window form: 
 main border and borderthickness
 close X: margin top 1
 inner background and borderthickness
 text colour
 submit button
+
+User context menu:
+| Element           |                     Colour |
+| ----------------- | -------------------------: |
+| Menu background   |                  `#101012` |
+| Menu border       |                  `#34343A` |
+| Menu shadow       |              black, subtle |
+| Item normal bg    | `Transparent` or `#151518` |
+| Item hover bg     |                  `#1D1D22` |
+| Item active bg    |                  `#202027` |
+| Item hover border |                  `#8FA3C7` |
+| Icon normal       |                  `#8E8E96` |
+| Icon hover        |                  `#E0E0E0` |
+| Text normal       |                  `#CFCFD6` |
+| Text hover        |                  `#FFFFFF` |

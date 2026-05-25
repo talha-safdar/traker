@@ -59,8 +59,8 @@ namespace Traker.ViewModels
         #endregion
 
         #region Private Class Field Variables
-        private string _activeButonColour = "#333333";
-        private string _inactiveButonColour = "#1A1A1A";
+        private string _activeButonColour = "#34343A";
+        private string _inactiveButonColour = "#24242A";
         private string _activeTextColour = "#FFFFFF";
         private string _inactiveTextColour = "#888888";
 

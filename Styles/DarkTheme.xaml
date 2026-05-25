@@ -7,7 +7,7 @@
     <SolidColorBrush x:Key="JobStatusDone" Color="#16A34A" />
     <SolidColorBrush x:Key="JobStatusInvoiced" Color="#C89455" />
     <SolidColorBrush x:Key="JobStatusOverdue" Color="#B94A48" />
-    <SolidColorBrush x:Key="JobStatusPaid" Color="#22C55E" />
+    <SolidColorBrush x:Key="JobStatusPaid" Color="lime" />
     
     <!-- message box icon colours -->
     <SolidColorBrush x:Key="MessageBoxInfo" Color="#88B0D0" />

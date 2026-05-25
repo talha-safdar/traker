@@ -533,6 +533,37 @@ namespace Traker.Data
         #endregion
 
         #region File/Folder Access Functions
+        public static Task<bool> CheckIfDatabaseExists()
+        {
+            bool exists = false;
+            try
+            {
+                var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Traker");
+                var dbPath = Path.Combine(folder, "traker.db");
+                exists = File.Exists(dbPath);
+            }
+            catch (Exception ex)
+            {
+                Execute.OnUIThreadAsync(() =>
+                {
+                    AppState state = IoC.Get<AppState>();
+                    IWindowManager windowManager = IoC.Get<IWindowManager>();
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == state.messageBoxVM) == false)
+                    {
+                        state.messageBoxVM.Symbol = 2;
+                        state.messageBoxVM.HeadMessage = "Check Database";
+                        state.messageBoxVM.Message = ex.Message;
+                        state.messageBoxVM.ButtonStyle = Names.OK;
+                        windowManager.ShowDialogAsync(state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                    return Task.CompletedTask;
+                });
+                Logger.LogActivity(Logger.ERROR, $"FileStore: CheckIfDatabaseExists() FAIL\n\t{ex.Message}");
+                throw;
+            }
+            return Task.FromResult(exists);
+        }
+
         /// <summary>
         /// Locate job directory
         /// </summary>

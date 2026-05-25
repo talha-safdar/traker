@@ -130,7 +130,7 @@
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                                 <Setter Property="VerticalContentAlignment" Value="Stretch"/>
                                 <Setter Property="Padding" Value="0"/>
-                                <Setter Property="Margin" Value="0,0,0,10"/>
+                                <Setter Property="Margin" Value="0,20,0,10"/>
                                 <Setter Property="Background" Value="Transparent"/>
                                 <Setter Property="BorderThickness" Value="0"/>
                                 <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
@@ -156,7 +156,7 @@
                                         ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="2000" 
                                         Height="135"
                                         CornerRadius="20" 
-                                        Margin="20,20,20,0" 
+                                        Margin="20,0,20,0" 
                                         Padding="10"
                                         cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SelectJob($dataContext)];
                                                             [Event MouseRightButtonUp] = [Action OpenContextMenu($dataContext)];"

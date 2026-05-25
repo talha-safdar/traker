@@ -10,6 +10,7 @@
         xmlns:lottie="clr-namespace:LottieSharp.WPF;assembly=LottieSharp"
         mc:Ignorable="d"
     WindowState="Maximized"
+        WindowStartupLocation="CenterScreen"
     Title="Traker" 
     MinHeight="600" MinWidth="1200"
 
@@ -37,6 +38,32 @@ WindowStyle="None"
                 <RowDefinition Height="auto"/> <!-- top bar-->
                 <RowDefinition Height="*"/> <!-- body -->
             </Grid.RowDefinitions>
+
+            <!-- it only shows while setting up -->
+            <Border Grid.RowSpan="2" Opacity="0.5" Visibility="{Binding SetupOpen, Converter={StaticResource BoolToVisCollapsed}}">
+                <Image
+                        Opacity="0"
+                        Source="/Resources/Media/Images/Wallpapers/setup.jpg"
+                        Stretch="UniformToFill"
+                        SnapsToDevicePixels="True"
+                        RenderOptions.BitmapScalingMode="HighQuality">
+                    <Image.Triggers>
+                        <EventTrigger RoutedEvent="Loaded">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetProperty="Opacity"
+                                        From="0"
+                                        To="1"
+                                        BeginTime="0:0:2"
+                                        Duration="0:0:1.0"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Image.Triggers>
+                </Image>                
+            </Border>
+            
 
             <!-- top bar -->
             <Grid Grid.Row="0">

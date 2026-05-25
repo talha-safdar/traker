@@ -113,7 +113,7 @@ namespace Traker.ViewModels
                 BillingPostcode = SelectedJob.Postcode;
                 BillingCity = SelectedJob.City;
                 BillingCountry = SelectedJob.Country;
-                DueDate = SelectedJob.DueDate.AddDays(7).ToString();
+                DueDate = DateOnly.FromDateTime(DateTime.Now.Date.Add(TimeSpan.FromDays(7))).ToString();
                 _subtotalAmountDb = decimal.Parse(SelectedJob.Price.ToString(), NumberStyles.Currency, CultureInfo.CurrentCulture);
                 Subtotal = (decimal.Parse(SelectedJob.Price.ToString(), NumberStyles.Currency, CultureInfo.CurrentCulture)).ToString("C");
             }
@@ -146,34 +146,7 @@ namespace Traker.ViewModels
             {
                 if (e.Key == Key.Escape)
                 {
-                    if (
-                        (string.IsNullOrEmpty(BillingName) == false) && SelectedJob.ClientName != BillingName ||
-                        (string.IsNullOrEmpty(BillingAddress) == false) && SelectedJob.Address != BillingAddress ||
-                        (string.IsNullOrEmpty(BillingCity) == false) && SelectedJob.City != BillingCity ||
-                        (string.IsNullOrEmpty(BillingCountry) == false) && SelectedJob.Country != BillingCountry ||
-                        (string.IsNullOrEmpty(BillingPostcode) == false) && SelectedJob.Postcode != BillingPostcode ||
-                        (string.IsNullOrEmpty(DueDate) == false) && SelectedJob.DueDate.AddDays(7).ToString() != DueDate
-                        )
-                    {
-                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
-                        {
-                            _state.messageBoxVM.Symbol = 0;
-                            _state.messageBoxVM.HeadMessage = "Discard changes?";
-                            _state.messageBoxVM.Message = Names.DiscardEsc;
-                            _state.messageBoxVM.ButtonStyle = Names.NoYes;
-                            await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                        }
-
-                        // if clicked yes
-                        if (_state.messageBoxVM.Output == true)
-                        {
-                            await TryCloseAsync();
-                        }
-                    }
-                    else
-                    {
-                        await TryCloseAsync();
-                    }
+                    await Exit();
                 }
             }
             catch (Exception ex)

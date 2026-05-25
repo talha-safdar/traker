@@ -200,6 +200,7 @@ namespace Traker.ViewModels.Edit
             try
             {
                 await TryCloseAsync();
+                _state.WindowFormOpen = false;
                 // Invoice status: Created, Paid
                 if (await Database.GetInvoiceStatusByJobId(SelectedJob.JobId) == Names.Invoiced || await Database.GetInvoiceStatusByJobId(SelectedJob.JobId) == Names.Overdue)
                 {
@@ -309,6 +310,7 @@ namespace Traker.ViewModels.Edit
             try
             {
                 await TryCloseAsync();
+                _state.WindowFormOpen = false;
                 if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
                 {
                     _state.messageBoxVM.Symbol = 0;
@@ -347,6 +349,7 @@ namespace Traker.ViewModels.Edit
             try
             {
                 await TryCloseAsync();
+                _state.WindowFormOpen = false;
             }
             catch (Exception ex)
             {

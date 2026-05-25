@@ -126,35 +126,7 @@ namespace Traker.ViewModels.Edit
             {
                 if (e.Key == Key.Escape)
                 {
-                    if (SelectedJob.ClientType != ClientType ||
-                        SelectedJob.CompanyName != CompanyName ||
-                        SelectedJob.ClientName != ClientName ||
-                        SelectedJob.ClientEmail != ClientEmail ||
-                        SelectedJob.ClientPhone != PhoneNumber ||
-                        SelectedJob.Address != BillingAddress ||
-                        SelectedJob.City != City ||
-                        SelectedJob.Postcode != Postcode ||
-                        SelectedJob.Country != Country)
-                    {
-                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
-                        {
-                            _state.messageBoxVM.Symbol = 0;
-                            _state.messageBoxVM.HeadMessage = "Discard changes?";
-                            _state.messageBoxVM.Message = Names.DiscardEsc;
-                            _state.messageBoxVM.ButtonStyle = Names.NoYes;
-                            await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                        }
-
-                        // if clicked yes
-                        if (_state.messageBoxVM.Output == true)
-                        {
-                            await TryCloseAsync();
-                        }
-                    }
-                    else
-                    {
-                        await TryCloseAsync();
-                    }
+                    await Exit();
                 }
             }
             catch (Exception ex)
@@ -176,6 +148,7 @@ namespace Traker.ViewModels.Edit
             try
             {
                 await TryCloseAsync();
+                _state.WindowFormOpen = false;
                 if (SelectedJob.ClientType != ClientType ||
                 SelectedJob.CompanyName != CompanyName ||
                 SelectedJob.ClientName != ClientName ||
@@ -292,11 +265,13 @@ namespace Traker.ViewModels.Edit
                     if (_state.messageBoxVM.Output == true)
                     {
                         await TryCloseAsync();
+                        _state.WindowFormOpen = false;
                     }
                 }
                 else
                 {
                     await TryCloseAsync();
+                    _state.WindowFormOpen = false;
                 }
             }
             catch (Exception ex)

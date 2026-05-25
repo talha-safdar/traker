@@ -15,9 +15,17 @@
         Background="Transparent" Width="450" Height="300">
     <Border Margin="10" CornerRadius="25">
         <Border.Background>
-            <LinearGradientBrush x:Name="AnimatedGradient" StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="#1A1A1A" Offset="0"/>
-                <GradientStop Color="#1E1E1E" Offset="1"/>
+            <LinearGradientBrush x:Name="AnimatedGradient" StartPoint="-0.2,-0.2" EndPoint="1.2,1.2">
+
+                <GradientStop Color="#101012" Offset="0.00"/>
+                <GradientStop Color="#111114" Offset="0.12"/>
+                <GradientStop Color="#121216" Offset="0.24"/>
+                <GradientStop Color="#131318" Offset="0.36"/>
+                <GradientStop Color="#14141A" Offset="0.48"/>
+                <GradientStop Color="#15151B" Offset="0.60"/>
+                <GradientStop Color="#17171D" Offset="0.72"/>
+                <GradientStop Color="#18181E" Offset="0.84"/>
+                <GradientStop Color="#1A1A1F" Offset="1.00"/>
                 <LinearGradientBrush.RelativeTransform>
                     <TranslateTransform x:Name="GradientMove"/>
                 </LinearGradientBrush.RelativeTransform>
@@ -30,16 +38,16 @@
                             <DoubleAnimation
                         Storyboard.TargetName="GradientMove"
                         Storyboard.TargetProperty="X"
-                        From="-0.2"
-                        To="0.2"
-                        Duration="0:0:4"/>
+                        From="-0.8"
+                        To="0.8"
+                        Duration="0:0:6"/>
 
                             <DoubleAnimation
                         Storyboard.TargetName="GradientMove"
                         Storyboard.TargetProperty="Y"
-                        From="-0.2"
-                        To="0.2"
-                        Duration="0:0:4"/>
+                        From="-0.8"
+                        To="0.8"
+                        Duration="0:0:6"/>
 
                         </Storyboard>
                     </BeginStoryboard>
@@ -67,15 +75,12 @@
                     <TextBlock.Triggers>
                         <EventTrigger RoutedEvent="Loaded">
                             <BeginStoryboard>
-                                <Storyboard RepeatBehavior="Forever"
-                            AutoReverse="True">
-
+                                <Storyboard RepeatBehavior="Forever" AutoReverse="True">
                                     <DoubleAnimation
                                         Storyboard.TargetProperty="Effect.BlurRadius"
-                                        From="5"
-                                        To="10"
+                                        From="2"
+                                        To="5"
                                         Duration="0:0:1"/>
-
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>
@@ -86,11 +91,11 @@
             <!-- text -->
             <Grid Grid.Row="1">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding State.SplashText}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#888888" FontSize="18" />
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding State.SplashText}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#9A9AA3" FontSize="18" />
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
-                        <TextBlock x:Name="Dot1" Text="." FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#888888" FontSize="18" />
-                        <TextBlock x:Name="Dot2" Text="." FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#888888" FontSize="18" />
-                        <TextBlock x:Name="Dot3" Text="." FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#888888" FontSize="18" />
+                        <TextBlock x:Name="Dot1" Text="." FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#9A9AA3" FontSize="18" />
+                        <TextBlock x:Name="Dot2" Text="." FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#9A9AA3" FontSize="18" />
+                        <TextBlock x:Name="Dot3" Text="." FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#9A9AA3" FontSize="18" />
                     </StackPanel>
 
                     <StackPanel.Triggers>

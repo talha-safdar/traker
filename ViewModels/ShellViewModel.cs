@@ -27,6 +27,8 @@ namespace Traker.ViewModels
 
         #region Public View Variables
         public AppState State { get; set; }
+
+        private bool _setupOpen;
         #endregion
 
         public ShellViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state, DashboardViewModel dashboardViewModel)
@@ -37,6 +39,8 @@ namespace Traker.ViewModels
             State = state;
             _dashboardViewModel = dashboardViewModel;
 
+            _setupOpen = false;
+
             _events.SubscribeOnPublishedThread(this);
         }
 
@@ -45,48 +49,59 @@ namespace Traker.ViewModels
         {
             try
             {
-                // check if all user data is present, if not open the setup window
-                if (await Database.CheckUserDatabase() == false) // if false it means ds exists but check failed
+                // first check if database exsits
+                // if not = new launch
+                // if yes = then check for user tables
+
+                // check if database file exsits
+                if (await FileStore.CheckIfDatabaseExists() == false) // database file does not exist
                 {
-                    // No database found
-                    State.SplashText = "Database is corrupted";
-
-                    await Task.Delay(1000);
-
-                    // Delete current db
-                    State.SplashText = "Deleting current database...";
-
-                    await Task.Delay(1000);
-
-                    if (await FileStore.DeleteDatabase() == true)
-                    {
-                        State.SplashText = "Current Database Deleted";
-                        Logger.LogActivity(Logger.INFO, "ShellViewModel: Deleted Corrupted Database");
-                    }
-                    else
-                    {
-                        State.SplashText = "Cannot access the database";
-                        await Task.Delay(1000);
-                        Environment.Exit(1); // close app
-                        Logger.LogActivity(Logger.WARNING, "ShellViewModel: Failed to Delete Corrupted Database");
-                    }
-
                     // Creating database
-                    await Task.Delay(1000);
-                    State.SplashText = "Creating a new database...";
+                    State.SplashText = "Creating a new database";
                     await Task.Delay(1000);
                     await Database.SetUpDatabaseBG(); // it creates the database if it does not exist
+                }
+                else if (await FileStore.CheckIfDatabaseExists() == true) // database file exists
+                {
+                    State.SplashText = "Checking database";
+                    await Task.Delay(1000);
+
+                    if (await Database.CheckUserDatabase() == true) // database file exists and check passed
+                    {
+                        State.SplashText = "Database is ready";
+                        await Task.Delay(1000);
+                    }
+                    else // database file exists but check failed
+                    {
+                        State.SplashText = "Database is corrupted";
+                        await Task.Delay(1000);
+                        // Delete current db
+                        State.SplashText = "Deleting current database";
+                        await Task.Delay(1000);
+                        if (await FileStore.DeleteDatabase() == true)
+                        {
+                            State.SplashText = "Current database deleted";
+                            Logger.LogActivity(Logger.INFO, "ShellViewModel: Deleted Corrupted Database");
+                        }
+                        else
+                        {
+                            State.SplashText = "Cannot access the database";
+                            await Task.Delay(1000);
+                            Environment.Exit(1); // close app
+                            Logger.LogActivity(Logger.WARNING, "ShellViewModel: Failed to Delete Corrupted Database");
+                        }
+                        // Creating database
+                        await Task.Delay(1000);
+                        State.SplashText = "Creating a new database";
+                        await Task.Delay(1000);
+                        await Database.SetUpDatabaseBG(); // it creates the database if it does not exist
+                    }
                 }
 
                 State.SplashText = "Initialising database";
                 await Task.Delay(1000);
-                //await _dataService.FetchDatabaseBG(); // it feteches database
 
-                //State.SplashText = "Populating dashboard";
-                //await Task.Delay(1000);
-                ////await _dashboardViewModel.RefreshDashboard(); // Get data ready for dashboard
-
-                if (await Database.CheckUserExists() == true)
+                if (await Database.CheckUserExists() == true) // ONLY if user table exists then show Dashboard
                 {
                     await ActivateItemAsync(_dashboardViewModel);
                 }
@@ -118,6 +133,7 @@ namespace Traker.ViewModels
                 // else ignore
                 if (await Database.CheckUserExists() == false)
                 {
+                    SetupOpen = true; // show background
                     // open the setup window
                     await Task.Delay(1000);
                     SetupViewModel setupViewModel = new SetupViewModel(_events, _windowManager, _dataService, State);
@@ -269,11 +285,23 @@ namespace Traker.ViewModels
             {
                 if (message.Command == Names.SetupCompleted)
                 {
-                    DashboardViewModel dashboardViewModel = new DashboardViewModel(_events, _windowManager, _dataService, State);
-                    ActivateItemAsync(dashboardViewModel, cancellationToken);
+                    SetupOpen = false; // collapse background
+                    ActivateItemAsync(_dashboardViewModel, cancellationToken);
                 }
             }
             return Task.CompletedTask;
+        }
+        #endregion
+
+        #region Public View Variables
+        public bool SetupOpen
+        {
+            get => _setupOpen;
+            set
+            {
+                _setupOpen = value;
+                NotifyOfPropertyChange(() => SetupOpen);
+            }
         }
         #endregion
     }

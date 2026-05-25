@@ -27,6 +27,23 @@ namespace Traker.Views
             InitializeComponent();
         }
 
+        #region submit add client on startup button animation
+        private void SubmitAddClientEmptyBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            SubmitAddClientEmptyBorder.Opacity = 0.8;
+        }
+
+        private void SubmitAddClientEmptyBorder_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            SubmitAddClientEmptyBorder.Opacity = 1.0;
+        }
+
+        private void SubmitAddClientEmptyBorder_MouseLeave(object sender, MouseEventArgs e)
+        {
+            SubmitAddClientEmptyBorder.Opacity = 1.0;
+        }
+        #endregion
+
         #region submit filter button animation
         private void SubmitFilterBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

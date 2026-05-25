@@ -55,6 +55,9 @@
     <None Remove="Resources\Media\Images\Icons\Lucide\user-round.svg" />
     <None Remove="Resources\Media\Images\Icons\Lucide\x.svg" />
     <None Remove="Resources\Media\Images\Icons\minimise-button.png" />
+    <None Remove="Resources\Media\Images\Wallpapers\setup.jpg" />
+    <None Remove="Resources\Media\Images\Wallpapers\setup1.jpg" />
+    <None Remove="Resources\Media\Images\Wallpapers\setup2.jpg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -130,6 +133,15 @@
     <Resource Include="Resources\Media\Images\Icons\Lucide\MessageBox\circle-x.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\MessageBox\info.svg" />
     <Resource Include="Resources\Media\Images\Icons\Lucide\MessageBox\triangle-alert.svg" />
+    <Resource Include="Resources\Media\Images\Wallpapers\setup.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Media\Images\Wallpapers\setup1.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Media\Images\Wallpapers\setup2.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

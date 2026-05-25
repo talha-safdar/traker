@@ -110,31 +110,7 @@ namespace Traker.ViewModels.Add
             {
                 if (e.Key == Key.Escape)
                 {
-                    if (
-                        string.IsNullOrEmpty(JobTitle) == false ||
-                        string.IsNullOrEmpty(Price) == false ||
-                        string.IsNullOrEmpty(DueDate) == false
-                        )
-                    {
-                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
-                        {
-                            _state.messageBoxVM.Symbol = 0;
-                            _state.messageBoxVM.HeadMessage = "Discard changes?";
-                            _state.messageBoxVM.Message = Names.DiscardEsc;
-                            _state.messageBoxVM.ButtonStyle = Names.NoYes;
-                            await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
-                        }
-
-                        // if clicked yes
-                        if (_state.messageBoxVM.Output == true)
-                        {
-                            await TryCloseAsync();
-                        }
-                    }
-                    else
-                    {
-                        await TryCloseAsync();
-                    }
+                    await Exit();
                 }
             }
             catch (Exception ex)
@@ -156,6 +132,7 @@ namespace Traker.ViewModels.Add
             try
             {
                 await TryCloseAsync();
+                _state.WindowFormOpen = false;
                 var dueDate = DateOnly.MinValue;
                 decimal amount = 0;
 
@@ -222,11 +199,13 @@ namespace Traker.ViewModels.Add
                     if (_state.messageBoxVM.Output == true)
                     {
                         await TryCloseAsync();
+                        _state.WindowFormOpen = false;
                     }
                 }
                 else
                 {
                     await TryCloseAsync();
+                    _state.WindowFormOpen = false;
                 }
             }
             catch (Exception ex)

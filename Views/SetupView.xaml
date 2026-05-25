@@ -17,7 +17,7 @@
 
     <Grid>
         <!--#region user setup-->
-        <Border Height="800" Width="1000" Visibility="{Binding SetupWindows[0], Converter={StaticResource BoolToVisCollapsed}}" Background="#1E1E1E" CornerRadius="20" BorderThickness="1" SnapsToDevicePixels="True">
+        <Border Height="800" Width="1000" Visibility="{Binding SetupWindows[0], Converter={StaticResource BoolToVisCollapsed}}" Background="{StaticResource FormMainBackground}" CornerRadius="20" BorderThickness="1.5" SnapsToDevicePixels="True">
             <Border.BorderBrush>
                 <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
                     <GradientStop Color="LightGray" Offset="0" />
@@ -35,14 +35,17 @@
                 <!-- top bar -->
                 <Grid Grid.Row="0">
                     <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Welcome to TRAKER" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" FontSize="58">
+
+                        <TextBlock.OpacityMask>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="White" Offset="0"/>
+                                <GradientStop x:Name="RevealStop" Color="White" Offset="0"/>
+                                <GradientStop x:Name="FadeStop" Color="Transparent" Offset="0.18"/>
+                                <GradientStop Color="Transparent" Offset="1"/>
+                            </LinearGradientBrush>
+                        </TextBlock.OpacityMask>
+
                         <TextBlock.Foreground>
-                            <!--<LinearGradientBrush StartPoint="0.5,1"
-                             EndPoint="0.5,0">
-
-                                <GradientStop Color="#666666" Offset="0"/>
-                                <GradientStop Color="#FFFFFF" Offset="1"/>
-
-                            </LinearGradientBrush>-->
                             <LinearGradientBrush x:Name="TextBrush" StartPoint="0,1" EndPoint="0,0">
                                 <GradientStop Color="#666666" Offset="0"/>
                                 <GradientStop Color="#FFFFFF" Offset="0.6"/>
@@ -52,6 +55,38 @@
                             </LinearGradientBrush>
                         </TextBlock.Foreground>
                         <TextBlock.Triggers>
+
+
+
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+
+                                        <DoubleAnimation
+                        Storyboard.TargetName="RevealStop"
+                        Storyboard.TargetProperty="Offset"
+                        From="0"
+                        To="1"
+                        Duration="0:0:3"/>
+
+                                        <DoubleAnimation
+                        Storyboard.TargetName="FadeStop"
+                        Storyboard.TargetProperty="Offset"
+                        From="0.18"
+                        To="1.18"
+                        Duration="0:0:3"/>
+
+                                        <ObjectAnimationUsingKeyFrames
+    Storyboard.TargetProperty="OpacityMask"
+    BeginTime="0:0:3">
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Null}"/>
+                                        </ObjectAnimationUsingKeyFrames>
+
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+
                             <EventTrigger RoutedEvent="Loaded">
                                 <BeginStoryboard>
                                     <Storyboard RepeatBehavior="Forever" AutoReverse="True">
@@ -85,10 +120,14 @@
 
                             <!-- user info -->
                             <Grid Grid.Row="0">
-                                <Border Background="#242424" CornerRadius="15" BorderThickness="1.5" Margin="40,20" SnapsToDevicePixels="True">
+                                <Border Background="{StaticResource FormInnerBackground}" CornerRadius="15" BorderThickness="1.5" Margin="40,20" SnapsToDevicePixels="True">
                                     <Border.BorderBrush>
-                                        <SolidColorBrush Color="LightGray" Opacity="0.25" />
+                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                                            <GradientStop Color="#3A3A42" Offset="0" />
+                                            <GradientStop Color="Transparent" Offset="1" />
+                                        </LinearGradientBrush>
                                     </Border.BorderBrush>
+                                    
                                     <Grid Margin="30">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="auto" />                                            <!-- name -->
@@ -100,7 +139,7 @@
                                         <!-- name -->
                                         <Grid Grid.Row="1" Margin="0,0,0,25">
                                             <StackPanel Orientation="Vertical">
-                                                <TextBlock Margin="5,0,0,5" Text="Full Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                                <TextBlock Margin="5,0,0,5" Text="Full Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                                 <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding FullName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                                 behaviours:TextboxFilter.EnableFilter="True"
                                                 behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
@@ -110,7 +149,7 @@
                                         <!-- email -->
                                         <Grid Grid.Row="2" Margin="0,0,0,25">
                                             <StackPanel Orientation="Vertical">
-                                                <TextBlock Margin="5,0,0,5" Text="Email" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                                <TextBlock Margin="5,0,0,5" Text="Email" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                                 <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                                 behaviours:TextboxFilter.EnableFilter="True"
                                                 behaviours:TextboxFilter.FilterMode="Email" />
@@ -120,7 +159,7 @@
                                         <!-- phone -->
                                         <Grid Grid.Row="3">
                                             <StackPanel Orientation="Vertical">
-                                                <TextBlock Margin="5,0,0,5" Text="Phone" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                                <TextBlock Margin="5,0,0,5" Text="Phone" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                                 <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Phone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                                 behaviours:TextboxFilter.EnableFilter="True"
                                                 behaviours:TextboxFilter.FilterMode="DigitsOnly" />
@@ -132,10 +171,14 @@
 
                             <!-- type -->
                             <Grid Grid.Row="1">
-                                <Border Background="#242424" CornerRadius="15" BorderThickness="1.5" Margin="40,20" SnapsToDevicePixels="True">
+                                <Border Background="{StaticResource FormInnerBackground}" CornerRadius="15" BorderThickness="1.5" Margin="40,20" SnapsToDevicePixels="True">
                                     <Border.BorderBrush>
-                                        <SolidColorBrush Color="LightGray" Opacity="0.25" />
+                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                                            <GradientStop Color="#3A3A42" Offset="0" />
+                                            <GradientStop Color="Transparent" Offset="1" />
+                                        </LinearGradientBrush>
                                     </Border.BorderBrush>
+                                    
                                     <Grid Margin="30">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="auto" />
@@ -152,17 +195,40 @@
                                         <Grid Grid.Row="1" />
 
                                         <Grid Grid.Row="2" HorizontalAlignment="Center">
-                                            <Border Background="#1A1A1A" CornerRadius="25" BorderThickness="1.5" VerticalAlignment="Center" SnapsToDevicePixels="True">
+                                            <Border Background="{StaticResource FormInnerInnerBackground}" CornerRadius="25" BorderThickness="1.5" VerticalAlignment="Center" SnapsToDevicePixels="True">
 
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                     <!-- indiviudal -->
-                                                    <Border IsEnabled="{Binding ToggleButtons[0]}" x:Name="Indvidualbtn" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetBusinessType('Individual')]" Background="{Binding BackgroundButtons[0]}" CornerRadius="25" Height="45" Width="200" Margin="0,0,100,0" BorderThickness="1">
-                                                        <Border.BorderBrush>
-                                                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
-                                                                <GradientStop Color="#FFFFFF" Offset="0" />
-                                                                <GradientStop Color="Transparent" Offset="1" />
-                                                            </LinearGradientBrush>
-                                                        </Border.BorderBrush>
+                                                    <Border IsEnabled="{Binding ToggleButtons[0]}" x:Name="Indvidualbtn" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetBusinessType('Individual')]" CornerRadius="25" Height="45" Width="200" Margin="0,0,100,0">
+
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                
+                                                                <Setter Property="Background" Value="{Binding BackgroundButtons[0]}" />
+                                                                <Setter Property="BorderThickness" Value="1.5" />
+
+                                                                <!-- Default BorderBrush -->
+                                                                <Setter Property="BorderBrush">
+                                                                    <Setter.Value>
+                                                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                                                                            <GradientStop Color="#FFFFFF" Offset="0" />
+                                                                            <GradientStop Color="Transparent" Offset="1" />
+                                                                        </LinearGradientBrush>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                                
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding ToggleButtons[0]}" Value="True">
+                                                                        <Setter Property="Opacity" Value="0.5"/>
+                                                                    </DataTrigger>
+
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <!-- Increase opacity to rgba 255,255,255, 0.1 -->
+                                                                        <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
+                                                                    </Trigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Border.Style>
                                                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Individual" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Medium" FontSize="16">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="TextBlock">
@@ -181,13 +247,36 @@
                                                     </Border>
 
                                                     <!-- company -->
-                                                    <Border IsEnabled="{Binding ToggleButtons[1]}" x:Name="Companybtn" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetBusinessType('Company')]" Background="{Binding BackgroundButtons[1]}" CornerRadius="20" Height="45" Width="200" Margin="0,0,0,0" BorderThickness="1">
-                                                        <Border.BorderBrush>
-                                                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
-                                                                <GradientStop Color="#FFFFFF" Offset="0" />
-                                                                <GradientStop Color="Transparent" Offset="1" />
-                                                            </LinearGradientBrush>
-                                                        </Border.BorderBrush>
+                                                    <Border IsEnabled="{Binding ToggleButtons[1]}" x:Name="Companybtn" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetBusinessType('Company')]" CornerRadius="25" Height="45" Width="200" Margin="0,0,0,0">
+
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+
+                                                                <Setter Property="Background" Value="{Binding BackgroundButtons[1]}" />
+                                                                <Setter Property="BorderThickness" Value="1.5" />
+
+                                                                <!-- Default BorderBrush -->
+                                                                <Setter Property="BorderBrush">
+                                                                    <Setter.Value>
+                                                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                                                                            <GradientStop Color="#FFFFFF" Offset="0" />
+                                                                            <GradientStop Color="Transparent" Offset="1" />
+                                                                        </LinearGradientBrush>
+                                                                    </Setter.Value>
+                                                                </Setter>
+
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding ToggleButtons[1]}" Value="True">
+                                                                        <Setter Property="Opacity" Value="0.5"/>
+                                                                    </DataTrigger>
+
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <!-- Increase opacity to rgba 255,255,255, 0.1 -->
+                                                                        <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
+                                                                    </Trigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Border.Style>
                                                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Company" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Medium" FontSize="16">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="TextBlock">
@@ -239,9 +328,12 @@
                     <!-- next -->
                     <Grid Grid.Column="2">
                         <!-- next -->
-                        <Border x:Name="SubmitBorder1" MouseLeave="SubmitBorder1_MouseLeave" MouseLeftButtonUp="SubmitBorder1_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder1_MouseLeftButtonDown" IsEnabled="{Binding EnableNextBtn}" Opacity="{Binding OpacityBtn}" HorizontalAlignment="Right" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmUserSetup()]" Background="#333333" CornerRadius="25" Height="50" Width="50" BorderThickness="1">
+                        <Border x:Name="SubmitBorder1" MouseLeave="SubmitBorder1_MouseLeave" MouseLeftButtonUp="SubmitBorder1_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder1_MouseLeftButtonDown" IsEnabled="{Binding EnableNextBtn}" Opacity="{Binding OpacityBtn}" HorizontalAlignment="Right" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmUserSetup()]" CornerRadius="25" Height="50" Width="50" BorderThickness="1.5">
                             <Border.Style>
                                 <Style TargetType="Border">
+                                    <Setter Property="BorderThickness" Value="1.5" />
+                                    <Setter Property="Background" Value="#1D1D22" />
+
                                     <!-- DEFAULT STATE -->
                                     <Setter Property="BorderBrush">
                                         <Setter.Value>
@@ -255,8 +347,8 @@
                                     <!-- HOVER STATE -->
                                     <Style.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="BorderBrush" Value="#80D3D3D3"/>
-                                            <Setter Property="BorderThickness" Value="1"/>
+                                            <Setter Property="Background" Value="#25252B"/>
+                                            <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
@@ -271,7 +363,7 @@
 
         <!--#region business setup -->
         <!--#region individual-->
-        <Border Height="800" Width="1000" Visibility="{Binding SetupWindows[1], Converter={StaticResource BoolToVisCollapsed}}" Background="#1E1E1E" CornerRadius="20" BorderThickness="1" SnapsToDevicePixels="True">
+        <Border Height="800" Width="1000" Visibility="{Binding SetupWindows[1], Converter={StaticResource BoolToVisCollapsed}}" Background="{StaticResource FormMainBackground}" CornerRadius="20" BorderThickness="1.5" SnapsToDevicePixels="True">
             <Border.BorderBrush>
                 <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
                     <GradientStop Color="LightGray" Offset="0" />
@@ -312,9 +404,12 @@
 
                 <!-- main contents -->
                 <Grid Grid.Row="1" VerticalAlignment="Center" Margin="80,30,80,30">
-                    <Border Background="#242424" CornerRadius="15" BorderThickness="1.5"  Margin="70,0" SnapsToDevicePixels="True">
+                    <Border Background="{StaticResource FormInnerBackground}" CornerRadius="15" BorderThickness="1.5"  Margin="70,0" SnapsToDevicePixels="True">
                         <Border.BorderBrush>
-                            <SolidColorBrush Color="LightGray" Opacity="0.25" />
+                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                                <GradientStop Color="#3A3A42" Offset="0" />
+                                <GradientStop Color="Transparent" Offset="1" />
+                            </LinearGradientBrush>
                         </Border.BorderBrush>
 
                         <Grid Margin="30,20,30,0">
@@ -329,7 +424,7 @@
                             <!-- name -->
                             <Grid Grid.Row="0" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Margin="5,0,0,5" Text="Business Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                    <TextBlock Margin="5,0,0,5" Text="Business Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                     <TextBox Opacity="0.6" IsHitTestVisible="False" Focusable="False" Style="{DynamicResource TextBoxNormal}" Text="{Binding BusinessName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                     behaviours:TextboxFilter.EnableFilter="True"
                                     behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
@@ -339,7 +434,7 @@
                             <!-- country -->
                             <Grid Grid.Row="1" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Margin="5,0,0,5" Text="Country" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                    <TextBlock Margin="5,0,0,5" Text="Country" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                     <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Country, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                     behaviours:TextboxFilter.EnableFilter="True"
                                     behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
@@ -349,7 +444,7 @@
                             <!-- city -->
                             <Grid Grid.Row="2" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Margin="5,0,0,5" Text="City" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                    <TextBlock Margin="5,0,0,5" Text="City" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                     <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding City, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                     behaviours:TextboxFilter.EnableFilter="True"
                                     behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
@@ -359,7 +454,7 @@
                             <!-- address -->
                             <Grid Grid.Row="3" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Margin="5,0,0,5" Text="Address" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                    <TextBlock Margin="5,0,0,5" Text="Address" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                     <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                     behaviours:TextboxFilter.EnableFilter="True"
                                     behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
@@ -369,7 +464,7 @@
                             <!-- postcode -->
                             <Grid Grid.Row="4" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Margin="5,0,0,5" Text="Postcode" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                    <TextBlock Margin="5,0,0,5" Text="Postcode" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                     <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Postcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                     behaviours:TextboxFilter.EnableFilter="True"
                                     behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
@@ -406,9 +501,12 @@
 
                     <!-- next -->
                     <Grid Grid.Column="2">
-                        <Border x:Name="SubmitBorder2" MouseLeave="SubmitBorder2_MouseLeave" MouseLeftButtonUp="SubmitBorder2_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder2_MouseLeftButtonDown" IsEnabled="{Binding EnableNextBtn}" Opacity="{Binding OpacityBtn}" HorizontalAlignment="Right" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBusinessSetup()]" Background="#333333" CornerRadius="25" Height="50" Width="50" BorderThickness="1">
+                        <Border x:Name="SubmitBorder2" MouseLeave="SubmitBorder2_MouseLeave" MouseLeftButtonUp="SubmitBorder2_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder2_MouseLeftButtonDown" IsEnabled="{Binding EnableNextBtn}" Opacity="{Binding OpacityBtn}" HorizontalAlignment="Right" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBusinessSetup()]" CornerRadius="25" Height="50" Width="50" BorderThickness="1.5">
                             <Border.Style>
                                 <Style TargetType="Border">
+                                    <Setter Property="BorderThickness" Value="1.5" />
+                                    <Setter Property="Background" Value="#1D1D22" />
+
                                     <!-- DEFAULT STATE -->
                                     <Setter Property="BorderBrush">
                                         <Setter.Value>
@@ -422,8 +520,8 @@
                                     <!-- HOVER STATE -->
                                     <Style.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="BorderBrush" Value="#80D3D3D3"/>
-                                            <Setter Property="BorderThickness" Value="1"/>
+                                            <Setter Property="Background" Value="#25252B"/>
+                                            <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
@@ -437,7 +535,7 @@
         <!--#endregion-->
 
         <!--#region company -->
-        <Border Height="800" Width="1000" Visibility="{Binding SetupWindows[2], Converter={StaticResource BoolToVisCollapsed}}" Background="#1E1E1E" CornerRadius="20" BorderThickness="1" SnapsToDevicePixels="True">
+        <Border Height="800" Width="1000" Visibility="{Binding SetupWindows[2], Converter={StaticResource BoolToVisCollapsed}}" Background="{StaticResource FormMainBackground}" CornerRadius="20" BorderThickness="1.5" SnapsToDevicePixels="True">
             <Border.BorderBrush>
                 <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
                     <GradientStop Color="LightGray" Offset="0" />
@@ -478,9 +576,12 @@
 
                 <!-- main contents -->
                 <Grid Grid.Row="1" VerticalAlignment="Center" Margin="80,30,80,30">
-                    <Border Background="#242424" CornerRadius="15" BorderThickness="1.5"  Margin="70,0" SnapsToDevicePixels="True">
+                    <Border Background="{StaticResource FormInnerBackground}" CornerRadius="15" BorderThickness="1.5"  Margin="70,0" SnapsToDevicePixels="True">
                         <Border.BorderBrush>
-                            <SolidColorBrush Color="LightGray" Opacity="0.25" />
+                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                                <GradientStop Color="#3A3A42" Offset="0" />
+                                <GradientStop Color="Transparent" Offset="1" />
+                            </LinearGradientBrush>
                         </Border.BorderBrush>
 
                         <Grid Margin="30,20,30,20">
@@ -495,7 +596,7 @@
                             <!-- name -->
                             <Grid Grid.Row="0" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Margin="5,0,0,5" Text="Business Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                    <TextBlock Margin="5,0,0,5" Text="Business Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                     <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BusinessName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                         behaviours:TextboxFilter.EnableFilter="True"
                                         behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
@@ -512,7 +613,7 @@
                                 <!-- country -->
                                 <Grid Grid.Column="0" Margin="0,0,5,0">
                                     <StackPanel Orientation="Vertical">
-                                        <TextBlock Margin="5,0,0,5" Text="Country" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                        <TextBlock Margin="5,0,0,5" Text="Country" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                         <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Country, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                             behaviours:TextboxFilter.EnableFilter="True"
                                             behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
@@ -522,7 +623,7 @@
                                 <!-- city -->
                                 <Grid Grid.Column="1" Margin="5,0,0,0">
                                     <StackPanel Orientation="Vertical">
-                                        <TextBlock Margin="5,0,0,5" Text="City" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                        <TextBlock Margin="5,0,0,5" Text="City" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                         <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding City, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                             behaviours:TextboxFilter.EnableFilter="True"
                                             behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
@@ -533,7 +634,7 @@
                             <!-- address -->
                             <Grid Grid.Row="2" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Margin="5,0,0,5" Text="Address" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                    <TextBlock Margin="5,0,0,5" Text="Address" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                     <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                         behaviours:TextboxFilter.EnableFilter="True"
                                         behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
@@ -543,7 +644,7 @@
                             <!-- postcode -->
                             <Grid Grid.Row="3" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Margin="5,0,0,5" Text="Postcode" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                    <TextBlock Margin="5,0,0,5" Text="Postcode" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                     <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Postcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                         behaviours:TextboxFilter.EnableFilter="True"
                                         behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
@@ -560,7 +661,7 @@
                                 <!-- vat -->
                                 <Grid Grid.Column="0">
                                     <StackPanel Orientation="Vertical" Margin="0,0,5,0">
-                                        <TextBlock Margin="5,0,0,5" Text="VAT Number" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                        <TextBlock Margin="5,0,0,5" Text="VAT Number" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                         <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding VatNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                         behaviours:TextboxFilter.EnableFilter="True"
                                         behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
@@ -570,7 +671,7 @@
                                 <!-- reg -->
                                 <Grid Grid.Column="1">
                                     <StackPanel Orientation="Vertical" Margin="5,0,0,0">
-                                        <TextBlock Margin="5,0,0,5" Text="Registration Number" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                        <TextBlock Margin="5,0,0,5" Text="Registration Number" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                         <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding RegistrationNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                             behaviours:TextboxFilter.EnableFilter="True"
                                             behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
@@ -609,9 +710,12 @@
                     <!-- next -->
                     <Grid Grid.Column="2">
                         <!-- next -->
-                        <Border x:Name="SubmitBorder22" MouseLeave="SubmitBorder22_MouseLeave" MouseLeftButtonUp="SubmitBorder22_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder22_MouseLeftButtonDown" IsEnabled="{Binding EnableNextBtn}" Opacity="{Binding OpacityBtn}" HorizontalAlignment="Right" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBusinessSetup()]" Background="#333333" CornerRadius="25" Height="50" Width="50" BorderThickness="1">
+                        <Border x:Name="SubmitBorder22" MouseLeave="SubmitBorder22_MouseLeave" MouseLeftButtonUp="SubmitBorder22_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder22_MouseLeftButtonDown" IsEnabled="{Binding EnableNextBtn}" Opacity="{Binding OpacityBtn}" HorizontalAlignment="Right" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBusinessSetup()]" CornerRadius="25" Height="50" Width="50" BorderThickness="1.5">
                             <Border.Style>
                                 <Style TargetType="Border">
+                                    <Setter Property="BorderThickness" Value="1.5" />
+                                    <Setter Property="Background" Value="#1D1D22" />
+
                                     <!-- DEFAULT STATE -->
                                     <Setter Property="BorderBrush">
                                         <Setter.Value>
@@ -625,8 +729,8 @@
                                     <!-- HOVER STATE -->
                                     <Style.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="BorderBrush" Value="#80D3D3D3"/>
-                                            <Setter Property="BorderThickness" Value="1"/>
+                                            <Setter Property="Background" Value="#25252B"/>
+                                            <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
@@ -641,14 +745,13 @@
         <!--#endregion-->
 
         <!--#region bank setup -->
-        <Border Height="800" Width="1000" Visibility="{Binding SetupWindows[3], Converter={StaticResource BoolToVisCollapsed}}" Background="#1E1E1E" CornerRadius="20" BorderThickness="1" SnapsToDevicePixels="True">
+        <Border Height="800" Width="1000" Visibility="{Binding SetupWindows[3], Converter={StaticResource BoolToVisCollapsed}}" Background="{StaticResource FormMainBackground}" CornerRadius="20" BorderThickness="1.5" SnapsToDevicePixels="True">
             <Border.BorderBrush>
                 <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
                     <GradientStop Color="LightGray" Offset="0" />
                     <GradientStop Color="Transparent" Offset="1" />
                 </LinearGradientBrush>
             </Border.BorderBrush>
-
 
             <Grid Margin="30,20,30,20">
                 <Grid.RowDefinitions>
@@ -683,9 +786,12 @@
 
                 <!-- main contents -->
                 <Grid Grid.Row="1" VerticalAlignment="Center" Margin="80,30,80,30">
-                    <Border Background="#242424" CornerRadius="15" BorderThickness="1.5" Margin="70,0" SnapsToDevicePixels="True">
+                    <Border Background="{StaticResource FormInnerBackground}" CornerRadius="15" BorderThickness="1.5" Margin="70,0" SnapsToDevicePixels="True">
                         <Border.BorderBrush>
-                            <SolidColorBrush Color="LightGray" Opacity="0.25" />
+                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                                <GradientStop Color="#3A3A42" Offset="0" />
+                                <GradientStop Color="Transparent" Offset="1" />
+                            </LinearGradientBrush>
                         </Border.BorderBrush>
 
                         <Grid Margin="30,20,30,20">
@@ -700,7 +806,7 @@
                             <!-- name -->
                             <Grid Grid.Row="0" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Margin="5,0,0,5" Text="Bank Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                    <TextBlock Margin="5,0,0,5" Text="Bank Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                     <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BankName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" 
                                         behaviours:TextboxFilter.EnableFilter="True"
                                         behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
@@ -710,7 +816,7 @@
                             <!-- account -->
                             <Grid Grid.Row="1" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Margin="5,0,0,5" Text="Account Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                    <TextBlock Margin="5,0,0,5" Text="Account Name" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                     <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding AccountName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                         behaviours:TextboxFilter.EnableFilter="True"
                                         behaviours:TextboxFilter.FilterMode="LettersAndSpacesOnly" />
@@ -727,7 +833,7 @@
                                 <!-- number -->
                                 <Grid Grid.Column="0" Margin="0,0,5,0">
                                     <StackPanel Orientation="Vertical">
-                                        <TextBlock Margin="5,0,0,5" Text="Account Number" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                        <TextBlock Margin="5,0,0,5" Text="Account Number" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                         <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding AccountNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                             behaviours:TextboxFilter.EnableFilter="True"
                                             behaviours:TextboxFilter.FilterMode="DigitsOnly" />
@@ -737,7 +843,7 @@
                                 <!-- sortcode -->
                                 <Grid Grid.Column="1">
                                     <StackPanel Orientation="Vertical" Margin="5,0,0,0">
-                                        <TextBlock Margin="5,0,0,5" Text="Sort code" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                        <TextBlock Margin="5,0,0,5" Text="Sort code" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                         <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Sortcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="8" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                         behaviours:TextboxFilter.EnableFilter="True"
                                         behaviours:TextboxFilter.FilterMode="DigitsWithSpaces" />
@@ -748,7 +854,7 @@
                             <!-- iban -->
                             <Grid Grid.Row="3" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Margin="5,0,0,5" Text="IBAN" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                    <TextBlock Margin="5,0,0,5" Text="IBAN" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                     <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding IBAN, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                         behaviours:TextboxFilter.EnableFilter="True"
                                         behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
@@ -758,7 +864,7 @@
                             <!-- bic -->
                             <Grid Grid.Row="4" Margin="0,0,0,0">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Margin="5,0,0,5" Text="BIC" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                    <TextBlock Margin="5,0,0,5" Text="BIC" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                     <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding BIC, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                         behaviours:TextboxFilter.EnableFilter="True"
                                         behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
@@ -793,9 +899,12 @@
                     <!-- next -->
                     <Grid Grid.Column="2">
                         <!-- next -->
-                        <Border x:Name="SubmitBorder3" MouseLeave="SubmitBorder3_MouseLeave" MouseLeftButtonUp="SubmitBorder3_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder3_MouseLeftButtonDown" IsEnabled="{Binding EnableNextBtn}" Opacity="{Binding OpacityBtn}" HorizontalAlignment="Right" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBankSetup()]" Background="#333333" CornerRadius="25" Height="50" Width="50" BorderThickness="1">
+                        <Border x:Name="SubmitBorder3" MouseLeave="SubmitBorder3_MouseLeave" MouseLeftButtonUp="SubmitBorder3_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder3_MouseLeftButtonDown" IsEnabled="{Binding EnableNextBtn}" Opacity="{Binding OpacityBtn}" HorizontalAlignment="Right" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBankSetup()]" CornerRadius="25" Height="50" Width="50" BorderThickness="1.5">
                             <Border.Style>
                                 <Style TargetType="Border">
+                                    <Setter Property="BorderThickness" Value="1.5" />
+                                    <Setter Property="Background" Value="#1D1D22" />
+
                                     <!-- DEFAULT STATE -->
                                     <Setter Property="BorderBrush">
                                         <Setter.Value>
@@ -809,8 +918,8 @@
                                     <!-- HOVER STATE -->
                                     <Style.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="BorderBrush" Value="#80D3D3D3"/>
-                                            <Setter Property="BorderThickness" Value="1"/>
+                                            <Setter Property="Background" Value="#25252B"/>
+                                            <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>

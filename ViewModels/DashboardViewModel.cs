@@ -8,6 +8,7 @@ namespace Traker.ViewModels
     using System.Diagnostics;
     using System.DirectoryServices;
     using System.Globalization;
+    using System.Security.Policy;
     using System.Windows;
     using System.Windows.Controls;
     using Traker.Data;
@@ -140,8 +141,8 @@ namespace Traker.ViewModels
 
                 UserName = await Database.GetUserName();
 
-                await RefreshDashboard(); //set dashboard
                 StartLoopBG(); // start background check for overdue
+                await RefreshDashboard(); //set dashboard
             }
             catch (Exception ex)
             {
@@ -351,6 +352,7 @@ namespace Traker.ViewModels
             {
                  // if already invoiced
                  // double-click
+                State.WindowFormOpen = true;
                 if (jobSelected != null && await Database.CheckIfJobHasInvoice(jobSelected.JobId) == true)
                 {
                     State.EditInvoiceViewModel = new EditInvoiceViewModel(_events, _windowManager, DataService, State);
@@ -397,6 +399,7 @@ namespace Traker.ViewModels
         {
             try
             {
+                State.WindowFormOpen = true;
                 State.EditClientViewModel = new EditClientViewModel(_events, _windowManager, DataService, State);
                 State.EditClientViewModel.SelectedJob = SelectedJob ?? SetDashboardModelDefault(); // pass selected row to EditClientViewModel
                 await _windowManager.ShowDialogAsync(State.EditClientViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
@@ -470,9 +473,9 @@ namespace Traker.ViewModels
         {
             try
             {
+                State.WindowFormOpen = true;
                 State.AddClientViewModel = new AddClientViewModel(_events, _windowManager, DataService, State);
                 await _windowManager.ShowWindowAsync(State.AddClientViewModel, null, CustomWindow.SettingsForDialog(790, 600, false));
-                State.WindowFormOpen = true;
             }
             catch (Exception ex)
             {
@@ -492,6 +495,7 @@ namespace Traker.ViewModels
         {
             try
             {
+                State.WindowFormOpen = true;
                 State.AddJobViewModel = new AddJobViewModel(_events, _windowManager, State);
                 State.AddJobViewModel.dashboardData = _dashboardData; // pass dashboard data to AddJob
                 await _windowManager.ShowDialogAsync(State.AddJobViewModel, null, CustomWindow.SettingsForDialog(700, 550, false));
