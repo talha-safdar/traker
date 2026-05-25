@@ -126,11 +126,11 @@ namespace Traker.ViewModels.User
         {
             try
             {
+                await TryCloseAsync();
+                _state.WindowFormOpen = false;
                 await Task.Run(async() =>
                 {
-                    await TryCloseAsync();
                     await Database.EditBank(await Database.GetUserId(), BankName.Trim(), AccountName.Trim(), AccountNumber.Trim(), Sortcode.Trim(), IBAN.Trim(), BIC.Trim());
-                    await _events.PublishOnUIThreadAsync(new RefreshDatabase());
                 });
             }
             catch (Exception ex)
@@ -172,11 +172,13 @@ namespace Traker.ViewModels.User
                     if (_state.messageBoxVM.Output == true)
                     {
                         await TryCloseAsync();
+                        _state.WindowFormOpen = false;
                     }
                 }
                 else
                 {
                     await TryCloseAsync();
+                    _state.WindowFormOpen = false;
                 }
             }
             catch (Exception ex)

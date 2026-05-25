@@ -153,11 +153,11 @@ namespace Traker.ViewModels.User
         {
             try
             {
+                await TryCloseAsync();
+                _state.WindowFormOpen = false;
                 await Task.Run(async() => 
                 {
-                    await TryCloseAsync();
                     await Database.EditBusiness(_userModel.UserId, BusinessName.Trim(), Country.Trim(), City.Trim(), Address.Trim(), Postcode.Trim(), VatNumber.Trim(), RegistrationNumber.Trim());
-                    await _events.PublishOnUIThreadAsync(new RefreshDatabase());
                 });
             }
             catch (Exception ex)
@@ -199,11 +199,13 @@ namespace Traker.ViewModels.User
                     if (_state.messageBoxVM.Output == true)
                     {
                         await TryCloseAsync();
+                        _state.WindowFormOpen = false;
                     }
                 }
                 else
                 {
                     await TryCloseAsync();
+                    _state.WindowFormOpen = false;
                 }
             }
             catch (Exception ex)

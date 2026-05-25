@@ -102,10 +102,11 @@ V1:
 - make dropdown menu box list fluid too
 - reenable global exception in app.xaml.cs
 - check submit button for enable/disable for user settings
-#- fix button on disable in forms to become opacity low
-#- redsign the job context menu
+- fix button on disable in forms to become opacity low
+- redsign the job context menu
 #- do text length test everywhere
-#- refres jobslist on change done?
+- refres jobslist on change done?
+#- for view invoice warning try provide path
 
 V2:
 #- the selected not invoiced then confirmation box yes/no. that row with invoice details will be saved in a e.g. "rubbish" folder in txt. 

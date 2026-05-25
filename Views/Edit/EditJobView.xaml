@@ -218,10 +218,10 @@
                                 <!-- remeaning -->
                                 <Grid Grid.Row="3">
                                     <StackPanel Orientation="Vertical">
-                                        <TextBlock Margin="5,0,0,0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22">
-                                            <Run Text="Remeaning: " />
-                                            <Run Text="{Binding RemainingAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" FontWeight="SemiBold" FontSize="26" />
-                                        </TextBlock>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Remeaning: " Margin="5,0,0,0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22" />
+                                            <TextBox Width="200" Padding="0,0,10,0" Background="Transparent" BorderThickness="0" IsReadOnly="True" AcceptsReturn="False" TextWrapping="NoWrap" Text="{Binding RemainingAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Roboto Mono" FontWeight="SemiBold" FontSize="26" Foreground="{StaticResource FormFontColour}" />
+                                        </StackPanel>
                                     </StackPanel>
                                 </Grid>
 

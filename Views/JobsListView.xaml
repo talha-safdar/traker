@@ -237,28 +237,24 @@
 
 
 
-                                    <Grid IsHitTestVisible="False">
+                                    <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />                                                <!-- job title -->
-                                                <ColumnDefinition Width="0.2*" />                                                <!-- spacer -->
+                                                <ColumnDefinition Width="0.1*" />                                                <!-- spacer -->
                                                 <ColumnDefinition Width="*" />                                                <!-- job status / due date -->
-                                                <ColumnDefinition Width="0.2*" />                                                <!-- spacer -->
+                                                <ColumnDefinition Width="0.1*" />                                                <!-- spacer -->
                                                 <ColumnDefinition Width="*" />                                                <!-- job price -->
                                             </Grid.ColumnDefinitions>
 
-                                            <!-- full name / job title -->
+                                            <!-- job title -->
                                             <Grid Margin="30,0,0,0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                                <!-- job title -->
-                                                <Grid Grid.Row="2">
-                                                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="{Binding JobTitle}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />                                                    
-                                                </Grid>
-                                            </Grid>
+                                            <TextBox HorizontalAlignment="Left" Background="Transparent" BorderThickness="0" IsReadOnly="True" AcceptsReturn="False" TextWrapping="NoWrap" Width="200" Margin="5,0,0,0" Opacity="0.8" Text="{Binding JobTitle}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />
+                                        </Grid>
 
                                             <!-- spacer-->
-                                            <Grid Grid.Column="1">
-                                            </Grid>
+                                        <Grid Grid.Column="1" />
 
-                                            <!-- job status / due date -->
+                                        <!-- job status / due date -->
                                             <Grid Grid.Column="2" HorizontalAlignment="Center">
                                                 <Grid Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center">
                                                     <Grid.RowDefinitions>
@@ -286,13 +282,12 @@
                                             </Grid>
 
                                             <!-- spacer -->
-                                            <Grid Grid.Column="3">
-                                            </Grid>
+                                        <Grid Grid.Column="3" />
 
-                                            <!-- job price -->
+                                        <!-- job price -->
                                             <Grid Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                <TextBlock Margin="0" Text="{Binding Price, StringFormat={}{0:C}}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="SemiBold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32" />
-                                            </Grid>
+                                            <TextBox HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0" Text="{Binding Price, StringFormat={}{0:C}}" Background="Transparent" BorderThickness="0" IsReadOnly="True" AcceptsReturn="False" TextWrapping="NoWrap" Width="200" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="#E0E0E0" FontSize="32" />
+                                        </Grid>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>

@@ -145,11 +145,14 @@ namespace Traker.ViewModels.User
         {
             try
             {
+                await TryCloseAsync();
+                _state.WindowFormOpen = false;
                 await Task.Run(async () =>
                 {
-                    await TryCloseAsync();
                     await Database.EditUser(_userModel.UserId, FullName.Trim(), Email.Trim(), Phone.Trim(), BusinessType.Trim());
-                    await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+
+                    // only refresh the name as the whole table is unecessary
+                    await _events.PublishOnUIThreadAsync(new DashboardVMEvents() { Command = Names.RefreshUserDatabase });
                 });
             }
             catch (Exception ex)
@@ -222,11 +225,13 @@ namespace Traker.ViewModels.User
                     if (_state.messageBoxVM.Output == true)
                     {
                         await TryCloseAsync();
+                        _state.WindowFormOpen = false;
                     }
                 }
                 else
                 {
                     await TryCloseAsync();
+                    _state.WindowFormOpen = false;
                 }
             }
             catch (Exception ex)

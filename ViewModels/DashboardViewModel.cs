@@ -1227,6 +1227,11 @@ namespace Traker.ViewModels
                 TypeIcon = string.Empty
             };
         }
+
+        private async Task RefreshUserDatabase()
+        {
+            UserName = await Database.GetUserName();
+        }
         #endregion
 
         #region Event Handlers
@@ -1236,6 +1241,10 @@ namespace Traker.ViewModels
             {
                 if (message != null)
                 {
+                    if (message.Command == Names.RefreshUserDatabase)
+                    {
+                        await RefreshUserDatabase();
+                    }
                     if (message.Command == "EditClient")
                     {
                         await EditClient();

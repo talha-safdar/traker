@@ -48,6 +48,7 @@ namespace Traker.ViewModels.User
                 //window?.Close();
                 //window?.Activate(); // bring to front
                 await TryCloseAsync();
+                _state.WindowFormOpen = true;
 
                 if (option == "user")
                 {

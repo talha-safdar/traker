@@ -73,7 +73,7 @@ namespace Traker.ViewModels
                     }
                     else // database file exists but check failed
                     {
-                        State.SplashText = "Database is corrupted";
+                        State.SplashText = "Database is unreadable";
                         await Task.Delay(1000);
                         // Delete current db
                         State.SplashText = "Deleting current database";
@@ -98,7 +98,7 @@ namespace Traker.ViewModels
                     }
                 }
 
-                State.SplashText = "Initialising database";
+                State.SplashText = "Initialising";
                 await Task.Delay(1000);
 
                 if (await Database.CheckUserExists() == true) // ONLY if user table exists then show Dashboard

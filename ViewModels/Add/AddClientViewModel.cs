@@ -187,51 +187,51 @@ namespace Traker.ViewModels.Add
                     await TryCloseAsync();
                     _state.WindowFormOpen = false;
 
-                        var dueDate = DateOnly.MinValue;
-                        decimal amount = 0;
+                    var dueDate = DateOnly.MinValue;
+                    decimal amount = 0;
 
-                        // due date conversion
-                        if (DueDate != string.Empty)
-                        {
-                            dueDate = DateOnly.ParseExact(DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
-                        }
+                    // due date conversion
+                    if (DueDate != string.Empty)
+                    {
+                        dueDate = DateOnly.ParseExact(DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                    }
 
-                        // money conversion
-                        if (Price != string.Empty)
-                        {
-                            amount = decimal.Parse(Price, CultureInfo.InvariantCulture);
-                        }
+                    // money conversion
+                    if (Price != string.Empty)
+                    {
+                        amount = decimal.Parse(Price, CultureInfo.InvariantCulture);
+                    }
 
-                        /*
-                            * 0 = clientId
-                            * 1 = jobId
-                            */
-                        List<int> clientJobIds = new List<int>();
+                    /*
+                        * 0 = clientId
+                        * 1 = jobId
+                        */
+                    List<int> clientJobIds = new List<int>();
 
-                        if (ClientType == Names.Individual)
-                        {
-                            clientJobIds = await Database.AddIndividualClient(BusinessName.Trim(), ClientType.Trim(), JobTitle.Trim(), amount, dueDate);
-                        }
-                        else if (ClientType == Names.Company)
-                        {
-                            clientJobIds = await Database.AddCompanyClient(BusinessName.Trim(), ClientType.Trim(), JobTitle.Trim(), amount, dueDate);
-                        }
+                    if (ClientType == Names.Individual)
+                    {
+                        clientJobIds = await Database.AddIndividualClient(BusinessName.Trim(), ClientType.Trim(), JobTitle.Trim(), amount, dueDate);
+                    }
+                    else if (ClientType == Names.Company)
+                    {
+                        clientJobIds = await Database.AddCompanyClient(BusinessName.Trim(), ClientType.Trim(), JobTitle.Trim(), amount, dueDate);
+                    }
 
-                        // refresh database
-                        //await _dataService.RefreshDatabase();
+                    // refresh database
+                    //await _dataService.RefreshDatabase();
 
-                        // create Client folder in file store and get its name
-                        string clientFolderName = await FileStore.CreateClientFolder(await Database.GetLastClientlastRowId(), BusinessName.Trim());
+                    // create Client folder in file store and get its name
+                    string clientFolderName = await FileStore.CreateClientFolder(await Database.GetLastClientlastRowId(), BusinessName.Trim());
 
-                        // create Job folder in file store and get its name
-                        string jobFolderName = await FileStore.CreateJobFolder(clientJobIds[0], clientJobIds[1], BusinessName.Trim(), JobTitle.Trim());
+                    // create Job folder in file store and get its name
+                    string jobFolderName = await FileStore.CreateJobFolder(clientJobIds[0], clientJobIds[1], BusinessName.Trim(), JobTitle.Trim());
 
-                        // update client and job databases with their fodler names
-                        await Database.SetClientFolderName(clientJobIds[0], clientFolderName.Trim());
-                        await Database.SetJobFolderName(clientJobIds[1], jobFolderName.Trim());
+                    // update client and job databases with their fodler names
+                    await Database.SetClientFolderName(clientJobIds[0], clientFolderName.Trim());
+                    await Database.SetJobFolderName(clientJobIds[1], jobFolderName.Trim());
 
-                        // refresh database
-                        await _events.PublishOnUIThreadAsync(new RefreshDatabase());
+                    // refresh database
+                    await _events.PublishOnUIThreadAsync(new RefreshDatabase());
                 });
             }
             catch (Exception ex)

@@ -367,40 +367,40 @@
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="FontSize" Value="42"/>
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="5">
+                                                            <DataTrigger Binding="{Binding ActiveJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="5">
                                                                 <Setter Property="FontSize" Value="34"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="6">
+                                                            <DataTrigger Binding="{Binding ActiveJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="6">
                                                                 <Setter Property="FontSize" Value="28"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="7">
+                                                            <DataTrigger Binding="{Binding ActiveJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="7">
                                                                 <Setter Property="FontSize" Value="24"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="8">
+                                                            <DataTrigger Binding="{Binding ActiveJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="8">
                                                                 <Setter Property="FontSize" Value="21"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="9">
+                                                            <DataTrigger Binding="{Binding ActiveJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="9">
                                                                 <Setter Property="FontSize" Value="19"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="10">
+                                                            <DataTrigger Binding="{Binding ActiveJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="10">
                                                                 <Setter Property="FontSize" Value="17"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="11">
+                                                            <DataTrigger Binding="{Binding ActiveJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="11">
                                                                 <Setter Property="FontSize" Value="15"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="12">
+                                                            <DataTrigger Binding="{Binding ActiveJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="12">
                                                                 <Setter Property="FontSize" Value="14"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="13">
+                                                            <DataTrigger Binding="{Binding ActiveJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="13">
                                                                 <Setter Property="FontSize" Value="13"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="14">
+                                                            <DataTrigger Binding="{Binding ActiveJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="14">
                                                                 <Setter Property="FontSize" Value="12"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="15">
+                                                            <DataTrigger Binding="{Binding ActiveJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="15">
                                                                 <Setter Property="FontSize" Value="11"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="16">
+                                                            <DataTrigger Binding="{Binding ActiveJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="16">
                                                                 <Setter Property="FontSize" Value="10"/>
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -428,40 +428,40 @@
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="FontSize" Value="42"/>
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="5">
+                                                            <DataTrigger Binding="{Binding DoneJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="5">
                                                                 <Setter Property="FontSize" Value="34"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="6">
+                                                            <DataTrigger Binding="{Binding DoneJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="6">
                                                                 <Setter Property="FontSize" Value="28"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="7">
+                                                            <DataTrigger Binding="{Binding DoneJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="7">
                                                                 <Setter Property="FontSize" Value="24"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="8">
+                                                            <DataTrigger Binding="{Binding DoneJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="8">
                                                                 <Setter Property="FontSize" Value="21"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="9">
+                                                            <DataTrigger Binding="{Binding DoneJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="9">
                                                                 <Setter Property="FontSize" Value="19"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="10">
+                                                            <DataTrigger Binding="{Binding DoneJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="10">
                                                                 <Setter Property="FontSize" Value="17"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="11">
+                                                            <DataTrigger Binding="{Binding DoneJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="11">
                                                                 <Setter Property="FontSize" Value="15"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="12">
+                                                            <DataTrigger Binding="{Binding DoneJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="12">
                                                                 <Setter Property="FontSize" Value="14"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="13">
+                                                            <DataTrigger Binding="{Binding DoneJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="13">
                                                                 <Setter Property="FontSize" Value="13"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="14">
+                                                            <DataTrigger Binding="{Binding DoneJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="14">
                                                                 <Setter Property="FontSize" Value="12"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="15">
+                                                            <DataTrigger Binding="{Binding DoneJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="15">
                                                                 <Setter Property="FontSize" Value="11"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="16">
+                                                            <DataTrigger Binding="{Binding DoneJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="16">
                                                                 <Setter Property="FontSize" Value="10"/>
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -489,40 +489,40 @@
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="FontSize" Value="42"/>
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="5">
+                                                            <DataTrigger Binding="{Binding InvoicedJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="5">
                                                                 <Setter Property="FontSize" Value="34"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="6">
+                                                            <DataTrigger Binding="{Binding InvoicedJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="6">
                                                                 <Setter Property="FontSize" Value="28"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="7">
+                                                            <DataTrigger Binding="{Binding InvoicedJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="7">
                                                                 <Setter Property="FontSize" Value="24"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="8">
+                                                            <DataTrigger Binding="{Binding InvoicedJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="8">
                                                                 <Setter Property="FontSize" Value="21"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="9">
+                                                            <DataTrigger Binding="{Binding InvoicedJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="9">
                                                                 <Setter Property="FontSize" Value="19"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="10">
+                                                            <DataTrigger Binding="{Binding InvoicedJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="10">
                                                                 <Setter Property="FontSize" Value="17"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="11">
+                                                            <DataTrigger Binding="{Binding InvoicedJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="11">
                                                                 <Setter Property="FontSize" Value="15"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="12">
+                                                            <DataTrigger Binding="{Binding InvoicedJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="12">
                                                                 <Setter Property="FontSize" Value="14"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="13">
+                                                            <DataTrigger Binding="{Binding InvoicedJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="13">
                                                                 <Setter Property="FontSize" Value="13"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="14">
+                                                            <DataTrigger Binding="{Binding InvoicedJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="14">
                                                                 <Setter Property="FontSize" Value="12"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="15">
+                                                            <DataTrigger Binding="{Binding InvoicedJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="15">
                                                                 <Setter Property="FontSize" Value="11"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding NewJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="16">
+                                                            <DataTrigger Binding="{Binding InvoicedJobsCount, Converter={StaticResource DigitLengthConverter}}" Value="16">
                                                                 <Setter Property="FontSize" Value="10"/>
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -676,7 +676,7 @@
                                                     RenderOptions.BitmapScalingMode="HighQuality"
                                                     SnapsToDevicePixels="True"
                                                     Source="/Resources/Media/Images/Icons/Lucide/user-round-cog.svg" Width="25" Height="25"/>
-                                                <TextBlock VerticalAlignment="Center" Margin="15,4,0,0" Text="{Binding UserName}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="22" />
+                                                <TextBox VerticalAlignment="Center" HorizontalAlignment="Left" Background="Transparent" BorderThickness="0" IsReadOnly="True" AcceptsReturn="False" TextWrapping="NoWrap" Margin="15,4,0,0" Text="{Binding UserName}" Width="200" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="22" />
                                             </StackPanel>    
                                         </Grid>
 
@@ -1059,9 +1059,9 @@
 
                                                 <!-- full name -->
                                                 <Grid Grid.Row="0">
-                                                    <TextBlock Margin="5,0,0,0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Black" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32">
-                                                        <TextBlock.Style>
-                                                            <Style TargetType="TextBlock">
+                                                    <TextBox HorizontalAlignment="Left" Background="Transparent" BorderThickness="0" IsReadOnly="True" AcceptsReturn="False" TextWrapping="NoWrap" Width="400" Margin="5,0,0,0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Black" Foreground="{StaticResource FontPrimaryBrush}" FontSize="32">
+                                                        <TextBox.Style>
+                                                            <Style TargetType="TextBox">
                                                                 <!-- Default Value client name -->
                                                                 <Setter Property="Text" Value="{Binding ClientName}" />
                                                                 <Style.Triggers>
@@ -1071,8 +1071,8 @@
                                                                     </DataTrigger>
                                                                 </Style.Triggers>
                                                             </Style>
-                                                        </TextBlock.Style>
-                                                    </TextBlock>
+                                                        </TextBox.Style>
+                                                    </TextBox>
                                                 </Grid>
 
                                                 <!-- spacer -->
@@ -1080,7 +1080,7 @@
 
                                                 <!-- job title -->
                                                 <Grid Grid.Row="2">
-                                                    <TextBlock Margin="5,0,0,0" Opacity="0.8" Text="{Binding JobTitle}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="24" />
+                                                    <TextBox HorizontalAlignment="Left" Background="Transparent" BorderThickness="0" IsReadOnly="True" AcceptsReturn="False" TextWrapping="NoWrap" Width="400" Margin="5,0,0,0" Opacity="0.8" Text="{Binding JobTitle}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="24" />
                                                 </Grid>
                                             </Grid>
 
@@ -1172,7 +1172,7 @@
 
                                             <!-- job price -->
                                             <Grid Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                <TextBlock Margin="0" Text="{Binding Price, StringFormat={}{0:C}}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="#E0E0E0" FontSize="32" />
+                                                <TextBox HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0" Text="{Binding Price, StringFormat={}{0:C}}" Background="Transparent" BorderThickness="0" IsReadOnly="True" AcceptsReturn="False" TextWrapping="NoWrap" Width="300" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="#E0E0E0" FontSize="32" />
                                             </Grid>
                                             
                                             <!-- buttons -->

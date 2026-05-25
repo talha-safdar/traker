@@ -43,7 +43,7 @@ WindowStyle="None"
             <Border Grid.RowSpan="2" Opacity="0.5" Visibility="{Binding SetupOpen, Converter={StaticResource BoolToVisCollapsed}}">
                 <Image
                         Opacity="0"
-                        Source="/Resources/Media/Images/Wallpapers/setup.jpg"
+                        Source="/Resources/Media/Images/Wallpapers/setup.png"
                         Stretch="UniformToFill"
                         SnapsToDevicePixels="True"
                         RenderOptions.BitmapScalingMode="HighQuality">

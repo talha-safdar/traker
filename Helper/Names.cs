@@ -28,6 +28,7 @@ namespace Traker.Helper
         // events
         public const string SetupCompleted = "SetupCompleted"; // for the user setup completion
         public const string ShowInvoice = "ShowInvoice"; // after invoice created open edit invoice
+        public const string RefreshUserDatabase = "RefreshUserDatabase"; // after invoice created open edit invoice
 
         // sort/filter
         public const string ClientNameAsc = "ClientNameAsc";
