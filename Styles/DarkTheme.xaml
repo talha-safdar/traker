@@ -1,4 +1,5 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
     <!-- job status -->
@@ -25,8 +26,8 @@
     <SolidColorBrush x:Key="ClickedButton" Color="#202027" />
 
     <!-- window forms -->
-    <SolidColorBrush x:Key="FormFontColour" Color="#8E8E96" />
     <SolidColorBrush x:Key="FormMainBackground" Color="#151518" />
+    <SolidColorBrush x:Key="FormFontColour" Color="#8E8E96" />
     <SolidColorBrush x:Key="FormInnerBackground" Color="#1D1D22" />
     <SolidColorBrush x:Key="FormInnerInnerBackground" Color="#1A1A1F" />
     <SolidColorBrush x:Key="FormInnerBorder" Color="#3A3A42" /> <!-- gradient -->
@@ -35,8 +36,13 @@
     <SolidColorBrush x:Key="SortFilterMainBackground" Color="#101012" /> <!-- gradient -->
     <SolidColorBrush x:Key="SortFilterMainInnerBackground" Color="#1E1E1E" /> <!-- gradient -->
 
+    <!-- context menu -->
+    <SolidColorBrush x:Key="ContextMneuMainBackground" Color="#101012" />
+    <SolidColorBrush x:Key="ContextMneuMainBorder" Color="#34343A" />
 
 
+    <!-- click animations -->
+    <sys:Double x:Key="ClickOpacity">0.5</sys:Double>
 
 
 

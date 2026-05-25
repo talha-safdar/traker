@@ -41,59 +41,62 @@
                 <!-- button -->
                 <Grid Grid.Column="0">
                     <StackPanel Orientation="Horizontal">
-                        <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="5000" SnapsToDevicePixels="True" BorderThickness="1" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenJobsList()]" Background="#444444"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="45" Width="45">
+                        <Border Cursor="Hand" x:Name="SubmitOpenJobsBorder" ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="5000" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenJobsList()]" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="45" Width="45">
                             <Border.ToolTip>
                                 <ToolTip Style="{StaticResource DarkToolTip}"
                                     Content="Open Client's job list"/>
                             </Border.ToolTip>
                             <Border.Style>
                                 <Style TargetType="Border">
-                                    <!-- 1. Base Background (rgba 255,255,255, 0.05) -->
-                                    <Setter Property="Background" Value="#0DFFFFFF" />
-
-                                    <!-- 2. The 1px Gradient Border -->
-                                    <Setter Property="BorderThickness" Value="1" />
-                                    <Setter Property="BorderBrush">
-                                        <Setter.Value>
-                                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-                                                <!-- Top Highlight -->
-                                                <GradientStop Color="#40FFFFFF" Offset="0" />
-                                                <!-- Bottom Fade -->
-                                                <GradientStop Color="#05FFFFFF" Offset="1" />
-                                            </LinearGradientBrush>
-                                        </Setter.Value>
-                                    </Setter>
-
+                                    <Setter Property="BorderThickness" Value="1.5"/>
+                                    <Setter Property="Background" Value="#18181C"/>
+                                    <Setter Property="BorderBrush" Value="#2A2A2F"/>
                                     <Style.Triggers>
-                                        <!-- 3. Hover State -->
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <!-- Increase opacity to rgba 255,255,255, 0.1 -->
-                                            <Setter Property="Background" Value="#1AFFFFFF" />
-                                            <Setter Property="Cursor" Value="Hand" />
-
-                                            <!-- 4. Subtle Glow -->
-                                            <Setter Property="Effect">
-                                                <Setter.Value>
-                                                    <DropShadowEffect BlurRadius="10" 
-                                                  Color="LightGray" 
-                                                  Opacity="0.15" 
-                                                  ShadowDepth="0" />
-                                                </Setter.Value>
-                                            </Setter>
+                                            <Setter Property="Background" Value="#25252B"/>
+                                            <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>
+
+                            <Border.Triggers>
+                                <!-- click animation -->
+                                <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+
+                                <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Border.Triggers>
+
                             <Canvas>
                                 <svg:SvgViewbox Canvas.Left="10" Canvas.Top="10" RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" Source="/Resources/Media/Images/Icons/Lucide/briefcase-business.svg" Width="20" Height="20"/>
                                 <Border Canvas.Left="20" Canvas.Top="18">
-                                    <Grid Background="#444444" Width="18" Height="18">
+                                    <Grid Background="#18181C" Width="18" Height="18">
                                         <svg:SvgViewbox RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" Source="/Resources/Media/Images/Icons/Lucide/list.svg" Width="10" Height="10"/>
                                     </Grid>
                                 </Border>
                             </Canvas>                            
                         </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="5,0,10,0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34">
+                        <TextBlock VerticalAlignment="Center" Margin="10,5,5,0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
                                     <!-- Default Value client name -->
@@ -106,8 +109,7 @@
                                     </Style.Triggers>
                                 </Style>
                             </TextBlock.Style>
-                        </TextBlock>
-                        
+                        </TextBlock>                        
                     </StackPanel>
                 </Grid>
                 
@@ -125,6 +127,34 @@
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
+
+                        <Border.Triggers>
+                            <!-- click animation -->
+                            <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+
                         <svg:SvgViewbox                       
                             Margin="0,1,0,0"
                             RenderOptions.BitmapScalingMode="HighQuality"
@@ -306,12 +336,40 @@
                     
                     <!-- delete client -->
                     <Grid Grid.Column="0">
-                        <TextBlock Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteClient()]" conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Delete Client" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" Foreground="#B04141" FontWeight="Regular" FontSize="16" />
+                        <Border>
+                            <Border.Triggers>
+                                <!-- click animation -->
+                                <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+
+                                <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Border.Triggers>
+                            <TextBlock Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteClient()]" conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Delete Client" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" Foreground="#B04141" FontWeight="Regular" FontSize="16" />                            
+                        </Border>
                     </Grid>
 
                     <!-- save -->
-                    <Grid Grid.Column="2">
-                        <Border Cursor="Hand" x:Name="SubmitBorder" MouseLeave="SubmitBorder_MouseLeave" MouseLeftButtonUp="SubmitBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder_MouseLeftButtonDown" IsEnabled="{Binding EnableSubmitBtn}" Opacity="{Binding OpacitySubmitBtn}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmEditClient()]" CornerRadius="25" Height="45" Width="200">
+                    <Grid Grid.Column="2" Opacity="{Binding OpacitySubmitBtn}">
+                        <Border Cursor="Hand" x:Name="SubmitBorder" IsEnabled="{Binding EnableSubmitBtn}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmEditClient()]" CornerRadius="25" Height="45" Width="200">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <Setter Property="BorderThickness" Value="1.5" />
@@ -336,6 +394,34 @@
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>
+
+                            <Border.Triggers>
+                                <!-- click animation -->
+                                <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+
+                                <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Border.Triggers>
+
                             <TextBlock conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Save Changes" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="18" />
                         </Border>                        
                     </Grid>                    

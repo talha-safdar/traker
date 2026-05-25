@@ -24,6 +24,7 @@ namespace Traker.ViewModels.Edit
 
         #region Public Variables
         public DashboardModel SelectedJob;
+        public bool IsOpenFromEditClient;
         #endregion
 
         #region Private View Variables
@@ -60,6 +61,7 @@ namespace Traker.ViewModels.Edit
             _state = state;
 
             SelectedJob = new DashboardModel();
+            IsOpenFromEditClient = false;
 
             _businessName = string.Empty;
             _createdDate = DateOnly.MinValue;
@@ -215,7 +217,8 @@ namespace Traker.ViewModels.Edit
             try
             {
                 await TryCloseAsync();
-                _state.WindowFormOpen = false;
+                // if is opened from edit client window then don't close the overlay background
+                _state.WindowFormOpen = IsOpenFromEditClient == true ? true : false; 
                 // price
                 decimal.TryParse(Price,
                 NumberStyles.Currency,
@@ -326,6 +329,10 @@ namespace Traker.ViewModels.Edit
                 if (_state.messageBoxVM.Output == true)
                 {
                     await Task.Run(async() => { 
+                        await TryCloseAsync();
+                        // if is opened from edit client window then don't close the overlay background
+                        _state.WindowFormOpen = IsOpenFromEditClient == true ? true : false;
+
                         // delete job folder (if only one job then delete whole client folder)
                         // it deletes the current job folder then it checks if it was the last one if true, then delete client folder
                         if (await FileStore.DeleteJobFolder(SelectedJob.ClientId, SelectedJob.JobId, SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName.Trim() : SelectedJob.CompanyName.Trim(), SelectedJob.JobTitle.Trim()) == true)
@@ -343,7 +350,6 @@ namespace Traker.ViewModels.Edit
                         }
 
                         await _events.PublishOnUIThreadAsync(new RefreshDatabase()); // report back to dashboard for refresh
-                        await TryCloseAsync();                   
                     });
                 }
             }
@@ -387,13 +393,15 @@ namespace Traker.ViewModels.Edit
                     if (_state.messageBoxVM.Output == true)
                     {
                         await TryCloseAsync();
-                        _state.WindowFormOpen = false;
+                        // if is opened from edit client window then don't close the overlay background
+                        _state.WindowFormOpen = IsOpenFromEditClient == true ? true : false;
                     }
                 }
                 else
                 {
                     await TryCloseAsync();
-                    _state.WindowFormOpen = false;
+                    // if is opened from edit client window then don't close the overlay background
+                    _state.WindowFormOpen = IsOpenFromEditClient == true ? true : false;
                 }
             }
             catch (Exception ex)

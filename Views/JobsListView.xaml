@@ -11,7 +11,7 @@
              d:DesignHeight="450" d:DesignWidth="800" 
              Height="800" Width="1000">
 
-    <Border Margin="5" Background="{StaticResource FormMainBackground}" CornerRadius="20" BorderThickness="1.5" SnapsToDevicePixels="True">
+    <Border Margin="5" Background="{StaticResource FormMainBackground}" CornerRadius="20" BorderThickness="1.5" SnapsToDevicePixels="True" cal:Message.Attach="[Event PreviewMouseDown] = [Action OnMouseDownEvent($source)]">
         <Border.BorderBrush>
             <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
                 <GradientStop Color="LightGray" Offset="0" />
@@ -42,6 +42,34 @@
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
+
+                    <Border.Triggers>
+                        <!-- click animation -->
+                        <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+
+                        <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Border.Triggers>
+
                     <svg:SvgViewbox                       
                         Margin="0,1,0,0"
                         RenderOptions.BitmapScalingMode="HighQuality"
@@ -89,21 +117,7 @@
                             <GradientStop Color="Transparent" Offset="1" />
                         </LinearGradientBrush>
                     </Border.BorderBrush>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                    
                     <ListBox ItemsSource="{Binding JobsList}"
                              Background="Transparent"
                             BorderThickness="0"
@@ -121,9 +135,6 @@
                                 <VirtualizingStackPanel/>
                             </ItemsPanelTemplate>
                         </ListBox.ItemsPanel>
-
-
-
 
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
@@ -145,9 +156,6 @@
                             </Style>
                         </ListBox.ItemContainerStyle>
 
-
-
-
                         <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Border 
@@ -159,6 +167,7 @@
                                         Margin="20,0,20,0" 
                                         Padding="10"
                                         cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SelectJob($dataContext)];
+                                                            [Event MouseEnter] = [Action SelectJob($dataContext)];
                                                             [Event MouseRightButtonUp] = [Action OpenContextMenu($dataContext)];"
                                             Cursor="Hand"
                                         MouseLeftButtonDown="EditJob">
@@ -239,23 +248,9 @@
 
                                             <!-- full name / job title -->
                                             <Grid Margin="30,0,0,0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="*" /> <!-- title -->
-                                                    <RowDefinition Height="0.5*" />                                                    <!-- spacer -->
-                                                    <RowDefinition Height="*" /> <!-- job title-->
-                                                </Grid.RowDefinitions>
-                                                
-                                                <!-- title -->
-                                                <Grid Grid.Row="0">
-                                                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Job Title" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="#888888" FontSize="24" />
-                                                </Grid>
-
-                                                <!-- spacer -->
-                                                <Grid Grid.Row="1" Margin="0,10" />
-
                                                 <!-- job title -->
                                                 <Grid Grid.Row="2">
-                                                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="{Binding JobTitle}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Medium" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />                                                    
+                                                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="{Binding JobTitle}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />                                                    
                                                 </Grid>
                                             </Grid>
 

@@ -104,6 +104,8 @@ V1:
 - check submit button for enable/disable for user settings
 #- fix button on disable in forms to become opacity low
 #- redsign the job context menu
+#- do text length test everywhere
+#- refres jobslist on change done?
 
 V2:
 #- the selected not invoiced then confirmation box yes/no. that row with invoice details will be saved in a e.g. "rubbish" folder in txt. 
@@ -767,3 +769,11 @@ User context menu:
 | Icon hover        |                  `#E0E0E0` |
 | Text normal       |                  `#CFCFD6` |
 | Text hover        |                  `#FFFFFF` |
+
+icon buttons
+| State    | Icon background |    Border |      Icon |
+| -------- | --------------: | --------: | --------: |
+| Normal   |       `#18181C` | `#2A2A2F` | `#E0E0E0` |
+| Hover    |       `#25252B` | `#8FA3C7` | `#FFFFFF` |
+| Pressed  |       `#101012` | `#A7B4CC` | `#CFCFD6` |
+| Disabled |       `#101012` | `#1F1F25` | `#5F5F66` |

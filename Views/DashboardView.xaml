@@ -60,7 +60,7 @@
                         
                             <!-- add client -->
                             <Grid Grid.Column="0" Margin="10,0,0,0">
-                                <Border x:Name="SubmitAddClientBorder" MouseLeave="SubmitAddClientBorder_MouseLeave" MouseLeftButtonUp="SubmitAddClientBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitAddClientBorder_MouseLeftButtonDown" ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="2000" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" VerticalAlignment="Center" CornerRadius="25" Height="50">
+                                <Border x:Name="SubmitAddClientBorder" ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="2000" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" VerticalAlignment="Center" CornerRadius="25" Height="50">
                                     <Border.ToolTip>
                                         <ToolTip Style="{StaticResource DarkToolTip}">
                                             <TextBlock Text="Add a new client with job" />
@@ -71,6 +71,7 @@
                                             <!-- 1. Base Background (rgba 255,255,255, 0.05) -->
                                             <Setter Property="Background" Value="#1D1D22" />
                                             <Setter Property="BorderBrush" Value="#34343A" />
+                                            <Setter Property="BorderThickness" Value="1.5" />
 
                                             <!-- 2. The 1px Gradient Border -->
                                             <Setter Property="BorderThickness" Value="1.5" />
@@ -86,26 +87,42 @@
                                             </Setter>
 
                                             <Style.Triggers>
-                                                <!-- 3. Hover State -->
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <!-- Increase opacity to rgba 255,255,255, 0.1 -->
-                                                    <Setter Property="Background" Value="#25252B" />
-                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
                                                     <Setter Property="Cursor" Value="Hand" />
-
-                                                    <!-- 4. Subtle Glow -->
-                                                    <Setter Property="Effect">
-                                                        <Setter.Value>
-                                                            <DropShadowEffect BlurRadius="10" 
-                                                            Color="LightGray" 
-                                                            Opacity="0.15" 
-                                                            ShadowDepth="0" />
-                                                        </Setter.Value>
-                                                    </Setter>
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>
                                     </Border.Style>
+
+                                    <Border.Triggers>
+                                        <!-- click animation -->
+                                        <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+
+                                        <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+
+                                        <EventTrigger RoutedEvent="MouseLeave">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </Border.Triggers>
+
+
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                         <Border SnapsToDevicePixels="True" BorderThickness="1" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" VerticalAlignment="Center" CornerRadius="25" Height="50">
                                             <svg:SvgViewbox
@@ -148,18 +165,21 @@
                             </Grid>
                         
                             <!-- add job -->
-                            <Grid Grid.Column="2" Margin="0,0,10,0">
-                                <Border x:Name="SubmitAddJobBorder" MouseLeave="SubmitAddJobBorder_MouseLeave" MouseLeftButtonUp="SubmitAddJobBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitAddJobBorder_MouseLeftButtonDown" ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="2000" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddJob()]" VerticalAlignment="Center" CornerRadius="25" Height="50">
+                            <Grid Grid.Column="2" Margin="0,0,10,0" Opacity="{Binding OpacityBtns}">
+                                <Border x:Name="SubmitAddJobBorder" ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="2000" IsEnabled="{Binding EnableBtns}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddJob()]" VerticalAlignment="Center" CornerRadius="25" Height="50">
                                     <Border.ToolTip>
                                         <ToolTip Style="{StaticResource DarkToolTip}">
                                             <TextBlock Text="Add job to an existing client" />
                                         </ToolTip>
                                     </Border.ToolTip>
+
                                     <Border.Style>
                                         <Style TargetType="Border">
                                             <!-- 1. Base Background (rgba 255,255,255, 0.05) -->
                                             <Setter Property="Background" Value="#1D1D22" />
                                             <Setter Property="BorderBrush" Value="#34343A" />
+                                            <Setter Property="BorderThickness" Value="1.5" />
+                                            <Setter Property="BorderThickness" Value="1.5" />
 
                                             <!-- 2. The 1px Gradient Border -->
                                             <Setter Property="BorderThickness" Value="1.5" />
@@ -175,26 +195,41 @@
                                             </Setter>
 
                                             <Style.Triggers>
-                                                <!-- 3. Hover State -->
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <!-- Increase opacity to rgba 255,255,255, 0.1 -->
-                                                    <Setter Property="Background" Value="#25252B" />
-                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
                                                     <Setter Property="Cursor" Value="Hand" />
-
-                                                    <!-- 4. Subtle Glow -->
-                                                    <Setter Property="Effect">
-                                                        <Setter.Value>
-                                                            <DropShadowEffect BlurRadius="10" 
-                                                        Color="LightGray" 
-                                                        Opacity="0.15" 
-                                                        ShadowDepth="0" />
-                                                        </Setter.Value>
-                                                    </Setter>
-                                                </Trigger>
-                                            </Style.Triggers>
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
+                                                </Trigger>                                                
+                                            </Style.Triggers>                             
                                         </Style>
                                     </Border.Style>
+
+                                    <Border.Triggers>
+                                        <!-- click animation -->
+                                        <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+
+                                        <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+
+                                        <EventTrigger RoutedEvent="MouseLeave">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </Border.Triggers>
+
                                     <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <Border SnapsToDevicePixels="True" BorderThickness="1" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" VerticalAlignment="Center" CornerRadius="25" Height="50">
@@ -213,7 +248,7 @@
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
-                                                </TextBlock.Style>
+                                                </TextBlock.Style>                                                
                                             </TextBlock>
                                         </StackPanel>
                                     </StackPanel>                         
@@ -580,7 +615,7 @@
 
                             <!-- profile / account -->
                             <Grid Grid.Row="4">
-                                <Border x:Name="SubmitUserBorder" MouseLeave="SubmitUserBorder_MouseLeave" MouseLeftButtonUp="SubmitUserBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitUserBorder_MouseLeftButtonDown" ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenUserContenxtMenu($source)]" CornerRadius="30" Height="65" Padding="5,0" BorderThickness="1.5">
+                                <Border x:Name="SubmitUserBorder" ToolTipService.ShowDuration="1000" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenUserContenxtMenu($source)]" CornerRadius="30" Height="65" Padding="5,0" BorderThickness="1.5">
                                     <Border.Style>
                                         <Style TargetType="Border">
                                             <Setter Property="Background" Value="#151518"/>
@@ -594,6 +629,34 @@
                                             </Style.Triggers>
                                         </Style>
                                     </Border.Style>
+
+                                    <Border.Triggers>
+                                        <!-- click animation -->
+                                        <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+
+                                        <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+
+                                        <EventTrigger RoutedEvent="MouseLeave">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </Border.Triggers>
+
                                     <Border.ToolTip>
                                         <ToolTip Style="{StaticResource DarkToolTip}">
                                             <TextBlock Text="Edit Your Information" />
@@ -661,15 +724,6 @@
                         </TextBlock>
                     </Grid>
 
-                    <!--<Border Margin="20,0">
-                        <Grid>
-                            --><!-- dark cut --><!--
-                            <Border Height="1" VerticalAlignment="Top" Background="#050506"/>
-                            --><!-- subtle lower highlight --><!--
-                            <Border Height="1" VerticalAlignment="Top" Margin="0,1,0,0" Background="#1F1F25"/>
-                        </Grid>
-                    </Border>-->
-
                     <!-- line spacer -->
                     <Grid Grid.Column="1" VerticalAlignment="Center">
                         <Border Margin="30,0" Height="1" SnapsToDevicePixels="True">
@@ -688,10 +742,10 @@
 
                     <!-- filter/sort -->
                     <Grid Grid.Column="2" VerticalAlignment="Center">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,0">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,0" Opacity="{Binding OpacityBtns}" >
                             
                             <!-- filter -->
-                            <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" x:Name="SubmitFilterBorder" MouseLeave="SubmitFilterBorder_MouseLeave" MouseLeftButtonUp="SubmitFilterBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitFilterBorder_MouseLeftButtonDown" Cursor="Hand" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" Margin="0,0,10,0" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFilterContextMenu($source)]" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                            <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" x:Name="SubmitFilterBorder" Cursor="Hand" IsEnabled="{Binding EnableBtns}" SnapsToDevicePixels="True" Margin="0,0,10,0" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFilterContextMenu($source)]" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Setter Property="BorderThickness" Value="1.5"/>
@@ -708,7 +762,34 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Border.Style>
-                                
+
+                                <Border.Triggers>
+                                    <!-- click animation -->
+                                    <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+
+                                    <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+
+                                    <EventTrigger RoutedEvent="MouseLeave">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Border.Triggers>
+
                                 <Border.ToolTip>
                                     <ToolTip Style="{StaticResource DarkToolTip}">
                                         <TextBlock Text="Filter Jobs" />
@@ -722,7 +803,7 @@
                             </Border>
                             
                             <!-- sort -->
-                            <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" x:Name="SubmitSortBorder" MouseLeave="SubmitSortBorder_MouseLeave" MouseLeftButtonUp="SubmitSortBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitSortBorder_MouseLeftButtonDown" Cursor="Hand" IsEnabled="{Binding EnableBtns}" Opacity="{Binding OpacityBtns}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenSortContextMenu($source)]" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                            <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" x:Name="SubmitSortBorder" Cursor="Hand" IsEnabled="{Binding EnableBtns}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenSortContextMenu($source)]" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Setter Property="BorderThickness" Value="1.5"/>
@@ -739,6 +820,34 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Border.Style>
+
+                                <Border.Triggers>
+                                    <!-- click animation -->
+                                    <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+
+                                    <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+
+                                    <EventTrigger RoutedEvent="MouseLeave">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Border.Triggers>
+
                                 <Border.ToolTip>
                                     <ToolTip Style="{StaticResource DarkToolTip}">
                                         <TextBlock Text="Sort Jobs" />
@@ -1114,7 +1223,7 @@
                     <!--</ScrollViewer>-->
 
                         <!-- add client -->
-                        <Border Cursor="Hand" x:Name="SubmitAddClientEmptyBorder" MouseLeave="SubmitAddClientEmptyBorder_MouseLeave" MouseLeftButtonUp="SubmitAddClientEmptyBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitAddClientEmptyBorder_MouseLeftButtonDown" ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="5000" Visibility="{Binding EnableBtns, Converter={StaticResource BoolToVisCollapsedInverse}}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" SnapsToDevicePixels="True" BorderThickness="1.5" Background="#1E1E1E" VerticalAlignment="Center" HorizontalAlignment="Center" CornerRadius="30" Height="60" Width="240">
+                        <Border Cursor="Hand" x:Name="SubmitAddClientEmptyBorder" ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="5000" Visibility="{Binding EnableBtns, Converter={StaticResource BoolToVisCollapsedInverse}}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" SnapsToDevicePixels="True" BorderThickness="1.5" Background="#1E1E1E" VerticalAlignment="Center" HorizontalAlignment="Center" CornerRadius="30" Height="60" Width="240">
                             <Border.ToolTip>
                                 <ToolTip Style="{StaticResource DarkToolTip}"
                                     Content="Click to add client"/>
@@ -1144,6 +1253,34 @@
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>
+
+                            <Border.Triggers>
+                                <!-- click animation -->
+                                <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+
+                                <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Border.Triggers>
+
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <svg:SvgViewbox
                                     HorizontalAlignment="Left"

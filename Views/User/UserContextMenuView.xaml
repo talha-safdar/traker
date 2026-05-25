@@ -8,14 +8,15 @@
              xmlns:local="clr-namespace:Traker.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Border Background="#101012" CornerRadius="15" BorderThickness="1.5" BorderBrush="#34343A" HorizontalAlignment="Left" Margin="20,0,0,0" Height="190" VerticalAlignment="Center">
+    <Border Background="{StaticResource ContextMneuMainBackground}" CornerRadius="15" BorderThickness="1.5" BorderBrush="{StaticResource ContextMneuMainBorder}" HorizontalAlignment="Left" Margin="20,0,0,0" Height="190" VerticalAlignment="Center">
         <Border.Effect>
             <DropShadowEffect Color="Black" BlurRadius="15" Opacity="0.8" ShadowDepth="2" />
         </Border.Effect>
 
         <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="10,10,10,0" Width="150">
+            
             <!-- user -->
-            <Border Cursor="Hand" x:Name="UserBorder" MouseLeave="UserBorder_MouseLeave" MouseLeftButtonUp="UserBorder_MouseLeftButtonUp" MouseLeftButtonDown="UserBorder_MouseLeftButtonDown" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenOption('user')]" CornerRadius="20" Height="40" Margin="5,0,5,15">
+            <Border Cursor="Hand" x:Name="UserBorder" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenOption('user')]" CornerRadius="20" Height="40" Margin="5,0,5,15">
                 <Border.Style>
                     <Style TargetType="Border">
                         <Setter Property="BorderThickness" Value="1.5"/>
@@ -29,6 +30,33 @@
                         </Style.Triggers>
                     </Style>
                 </Border.Style>
+
+                <Border.Triggers>
+                    <!-- click animation -->
+                    <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+
+                    <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+
+                    <EventTrigger RoutedEvent="MouseLeave">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Border.Triggers>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0,0,0">
                     <Border Opacity="0.5" Background="Transparent"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="28" Width="28">
@@ -54,7 +82,7 @@
             </Border>
 
             <!-- business -->
-            <Border Cursor="Hand" x:Name="BusinessBorder" MouseLeave="BusinessBorder_MouseLeave" MouseLeftButtonUp="BusinessBorder_MouseLeftButtonUp" MouseLeftButtonDown="BusinessBorder_MouseLeftButtonDown" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenOption('business')]" CornerRadius="20" Height="40" Margin="5,0,5,15">
+            <Border Cursor="Hand" x:Name="BusinessBorder" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenOption('business')]" CornerRadius="20" Height="40" Margin="5,0,5,15">
                 <Border.Style>
                     <Style TargetType="Border">
                         <Setter Property="BorderThickness" Value="1.5"/>
@@ -69,6 +97,32 @@
                     </Style>
                 </Border.Style>
 
+                <Border.Triggers>
+                    <!-- click animation -->
+                    <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+
+                    <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+
+                    <EventTrigger RoutedEvent="MouseLeave">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Border.Triggers>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0,0,0">
                     <Border Opacity="0.5" Background="Transparent"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="28" Width="28">
@@ -94,7 +148,7 @@
             </Border>
             
             <!-- bank -->
-            <Border Cursor="Hand" x:Name="BankBorder" MouseLeave="BankBorder_MouseLeave" MouseLeftButtonUp="BankBorder_MouseLeftButtonUp" MouseLeftButtonDown="BankBorder_MouseLeftButtonDown" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenOption('bank')]" CornerRadius="20" Height="40" Margin="5,0,5,15">
+            <Border Cursor="Hand" x:Name="BankBorder" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenOption('bank')]" CornerRadius="20" Height="40" Margin="5,0,5,15">
                 <Border.Style>
                     <Style TargetType="Border">
                         <Setter Property="BorderThickness" Value="1.5"/>
@@ -109,6 +163,32 @@
                     </Style>
                 </Border.Style>
 
+                <Border.Triggers>
+                    <!-- click animation -->
+                    <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+
+                    <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+
+                    <EventTrigger RoutedEvent="MouseLeave">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Border.Triggers>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0,0,0">
                     <Border Opacity="0.5" Background="Transparent"  HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="28" Width="28">

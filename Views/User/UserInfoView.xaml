@@ -49,6 +49,34 @@
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
+
+                    <Border.Triggers>
+                        <!-- click animation -->
+                        <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+
+                        <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Border.Triggers>
+
                     <svg:SvgViewbox                       
                         Margin="0,1,0,0"
                         RenderOptions.BitmapScalingMode="HighQuality"
@@ -145,6 +173,36 @@
                                                     <GradientStop Color="Transparent" Offset="1" />
                                                 </LinearGradientBrush>
                                             </Border.BorderBrush>
+
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+
+                                                    <Setter Property="Background" Value="{Binding BackgroundButtons[0]}" />
+                                                    <Setter Property="BorderThickness" Value="1.5" />
+
+                                                    <!-- Default BorderBrush -->
+                                                    <Setter Property="BorderBrush">
+                                                        <Setter.Value>
+                                                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                                                                <GradientStop Color="#FFFFFF" Offset="0" />
+                                                                <GradientStop Color="Transparent" Offset="1" />
+                                                            </LinearGradientBrush>
+                                                        </Setter.Value>
+                                                    </Setter>
+
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ToggleButtons[0]}" Value="True">
+                                                            <Setter Property="Opacity" Value="0.5"/>
+                                                        </DataTrigger>
+
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <!-- Increase opacity to rgba 255,255,255, 0.1 -->
+                                                            <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+
                                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Individual" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Medium" FontSize="16">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
@@ -170,6 +228,36 @@
                                                     <GradientStop Color="Transparent" Offset="1" />
                                                 </LinearGradientBrush>
                                             </Border.BorderBrush>
+
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+
+                                                    <Setter Property="Background" Value="{Binding BackgroundButtons[1]}" />
+                                                    <Setter Property="BorderThickness" Value="1.5" />
+
+                                                    <!-- Default BorderBrush -->
+                                                    <Setter Property="BorderBrush">
+                                                        <Setter.Value>
+                                                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
+                                                                <GradientStop Color="#FFFFFF" Offset="0" />
+                                                                <GradientStop Color="Transparent" Offset="1" />
+                                                            </LinearGradientBrush>
+                                                        </Setter.Value>
+                                                    </Setter>
+
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ToggleButtons[1]}" Value="True">
+                                                            <Setter Property="Opacity" Value="0.5"/>
+                                                        </DataTrigger>
+
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <!-- Increase opacity to rgba 255,255,255, 0.1 -->
+                                                            <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+
                                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Company" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Medium" FontSize="16">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
@@ -197,8 +285,8 @@
             <!-- butons -->
             <Grid Grid.Row="2">
                 <!-- submit -->
-                <Grid Grid.Column="2">
-                    <Border x:Name="SubmitBorder" IsEnabled="{Binding EnableSubmitBtn}" Opacity="{Binding OpacitySubmitBtn}" MouseLeave="SubmitBorder_MouseLeave" MouseLeftButtonUp="SubmitBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder_MouseLeftButtonDown" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmUserInfoChanges()]" CornerRadius="23" Height="45" Width="200">
+                <Grid Grid.Column="2" Opacity="{Binding OpacitySubmitBtn}">
+                    <Border x:Name="SubmitBorder" IsEnabled="{Binding EnableSubmitBtn}" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmUserInfoChanges()]" CornerRadius="23" Height="45" Width="200">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="BorderThickness" Value="1.5" />
@@ -223,6 +311,34 @@
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
+
+                        <Border.Triggers>
+                            <!-- click animation -->
+                            <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+
                         <TextBlock conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Save Changes" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="18" />
                     </Border>
                 </Grid>

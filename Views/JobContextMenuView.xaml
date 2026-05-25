@@ -9,7 +9,12 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" 
              d:DesignWidth="250">
-    <Border Background="#1E1E1E" CornerRadius="20" BorderBrush="#3F3F46" BorderThickness="1" Width="280" Height="335">
+    <Border Background="{StaticResource ContextMneuMainBackground}" CornerRadius="20" BorderBrush="{StaticResource ContextMneuMainBorder}" BorderThickness="1.5" Width="280" Height="335">
+        <Border.Effect>
+            <DropShadowEffect Color="Black" BlurRadius="15" Opacity="0.8" ShadowDepth="2" />
+        </Border.Effect>
+
+
         <Grid Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.4*" /> <!-- stauts -->
@@ -43,6 +48,34 @@
                                 </Style.Triggers>                                
                             </Style>
                         </Border.Style>
+
+                        <Border.Triggers>
+                            <!-- click animation -->
+                            <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="⏳ Active" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="{StaticResource JobStatusActive}" FontSize="14" />
                     </Border>
                 </Grid>
@@ -66,6 +99,34 @@
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
+
+                        <Border.Triggers>
+                            <!-- click animation -->
+                            <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="✔ Done" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="{StaticResource JobStatusDone}" FontSize="14" />
                     </Border>
                 </Grid>
@@ -79,6 +140,7 @@
                     <RowDefinition Height="*" /> <!-- client -->
                 </Grid.RowDefinitions>
 
+                <!-- edit invoice OR -->
                 <Grid Grid.Row="0">
                     <Grid.Style>
                         <Style TargetType="Grid">
@@ -99,23 +161,53 @@
                             </Style.Triggers>
                         </Style>
                     </Grid.Style>
-                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditInvoice()]" CornerRadius="20" Height="40" Background="#242424" BorderThickness="1">
+                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditInvoice()]" CornerRadius="20" Height="40">
                         <Border.Style>
                             <Style TargetType="Border">
-                                <Setter Property="BorderBrush" Value="#242424"/>
+                                <Setter Property="BorderThickness" Value="1.5"/>
+                                <Setter Property="Background" Value="#151518"/>
+                                <Setter Property="BorderBrush" Value="Transparent"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="BorderBrush" Value="#80D3D3D3"/>
-                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="Background" Value="#1D1D22"/>
+                                        <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
+
+                        <Border.Triggers>
+                            <!-- click animation -->
+                            <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0" Text="📋 Edit Invoice" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
                     </Border>
                 </Grid>
 
-                <!-- invoice -->
+                <!-- create invoice OR -->
                 <Grid Grid.Row="0">
                     <Grid.Style>
                         <Style TargetType="Grid">
@@ -142,54 +234,152 @@
                             </Style.Triggers>
                         </Style>
                     </Grid.Style>
-                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action CreateInvoice()]" CornerRadius="20" Height="40" Background="#242424" BorderThickness="1">
+                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action CreateInvoice()]" CornerRadius="20" Height="40">
                         <Border.Style>
                             <Style TargetType="Border">
-                                <Setter Property="BorderBrush" Value="#242424"/>
+                                <Setter Property="BorderThickness" Value="1.5"/>
+                                <Setter Property="Background" Value="#151518"/>
+                                <Setter Property="BorderBrush" Value="Transparent"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="BorderBrush" Value="#80D3D3D3"/>
-                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="Background" Value="#1D1D22"/>
+                                        <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
+
+                        <Border.Triggers>
+                            <!-- click animation -->
+                            <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0" Text="📋 Create Invoice" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
                     </Border>
                 </Grid>
 
                 <!-- folder -->
                 <Grid Grid.Row="1">
-                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFolder()]" CornerRadius="20" Height="40" Background="#242424" BorderThickness="1">
+                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFolder()]" CornerRadius="20" Height="40">
                         <Border.Style>
                             <Style TargetType="Border">
-                                <Setter Property="BorderBrush" Value="#242424"/>
+                                <Setter Property="BorderThickness" Value="1.5"/>
+                                <Setter Property="Background" Value="#151518"/>
+                                <Setter Property="BorderBrush" Value="Transparent"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="BorderBrush" Value="#80D3D3D3"/>
-                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="Background" Value="#1D1D22"/>
+                                        <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
+
+                        <Border.Triggers>
+                            <!-- click animation -->
+                            <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0" Text="📂 Open Folder" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
                     </Border>
                 </Grid>
 
                 <!-- client -->
                 <Grid Grid.Row="2">
-                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditClient()]" CornerRadius="20" Height="40" Background="#242424" BorderThickness="1">
+                    <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditClient()]" CornerRadius="20" Height="40">
                         <Border.Style>
                             <Style TargetType="Border">
-                                <Setter Property="BorderBrush" Value="#242424"/>
+                                <Setter Property="Opacity" Value="1" />
+                                <Setter Property="BorderThickness" Value="1.5"/>
+                                <Setter Property="Background" Value="#151518"/>
+                                <Setter Property="BorderBrush" Value="Transparent"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="BorderBrush" Value="#80D3D3D3"/>
-                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="Background" Value="#1D1D22"/>
+                                        <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                                     </Trigger>
+                                    
+                                    <!-- if typeicon is empty then that means it is open from Jobslist, hence disable edit client -->
+                                    <DataTrigger Binding="{Binding SelectedJob.TypeIcon}" Value="">
+                                        <Setter Property="Opacity" Value="0.5" />
+                                        <Setter Property="IsEnabled" Value="False" />
+                                        <Setter Property="Cursor" Value="Arrow" />
+                                    </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
+
+                        <Border.Triggers>
+                            <!-- click animation -->
+                            <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0" Text="👤 Edit Client" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#E4E4E7" FontSize="14" />
                     </Border>
                 </Grid>
@@ -208,12 +398,37 @@
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
+
+                    <Border.Triggers>
+                        <!-- click animation -->
+                        <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+
+                        <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Border.Triggers>
+
                     <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" Text="Delete Job" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" Foreground="#B04141" FontSize="14" />
                 </Border>
             </Grid>
         </Grid>
-        <Border.Effect>
-            <DropShadowEffect BlurRadius="15" Opacity="0.3" ShadowDepth="2"/>
-        </Border.Effect>
     </Border>
 </UserControl>

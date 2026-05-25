@@ -24,39 +24,5 @@ namespace Traker.Views
         {
             InitializeComponent();
         }
-
-        #region left button animation
-        private void LeftBorder_MouseLeftButtonDown( object sender,  MouseButtonEventArgs e)
-        {
-            LeftBorder.Opacity = 0.5;
-        }
-
-        private void LeftBorder_MouseLeftButtonUp( object sender, MouseButtonEventArgs e)
-        {
-            LeftBorder.Opacity = 1.0;
-        }
-
-        private void LeftBorder_MouseLeave(object sender, MouseEventArgs e)
-        {
-            LeftBorder.Opacity = 1.0;
-        }
-        #endregion
-
-        #region right button animation
-        private void RightBorder_MouseLeftButtonDown( object sender,  MouseButtonEventArgs e)
-        {
-            RightBorder.Opacity = 0.5;
-        }
-
-        private void RightBorder_MouseLeftButtonUp( object sender, MouseButtonEventArgs e)
-        {
-            RightBorder.Opacity = 1.0;
-        }
-
-        private void RightBorder_MouseLeave(object sender, MouseEventArgs e)
-        {
-            RightBorder.Opacity = 1.0;
-        }
-        #endregion
     }
 }

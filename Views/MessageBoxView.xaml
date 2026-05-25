@@ -144,7 +144,7 @@
             <Grid Grid.Row="4">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <!-- LEFT -->
-                    <Border Margin="0,0,5,0" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action LeftButton()]" x:Name="LeftBorder" MouseLeave="LeftBorder_MouseLeave" MouseLeftButtonUp="LeftBorder_MouseLeftButtonUp" MouseLeftButtonDown="LeftBorder_MouseLeftButtonDown" SnapsToDevicePixels="True" BorderThickness="1.5" VerticalAlignment="Center" CornerRadius="10" Height="40" Width="175">
+                    <Border Margin="0,0,5,0" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action LeftButton()]" x:Name="LeftBorder" SnapsToDevicePixels="True" BorderThickness="1.5" VerticalAlignment="Center" CornerRadius="10" Height="40" Width="175">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <!-- 1. Base Background (rgba 255,255,255, 0.05) -->
@@ -191,6 +191,34 @@
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
+
+                        <Border.Triggers>
+                            <!-- click animation -->
+                            <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Medium" FontSize="14">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
@@ -222,7 +250,7 @@
                     </Border>
                     
                     <!-- RIGHT -->
-                    <Border Margin="5,0,0,0" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action RightButton()]" x:Name="RightBorder" MouseLeave="RightBorder_MouseLeave" MouseLeftButtonUp="RightBorder_MouseLeftButtonUp" MouseLeftButtonDown="RightBorder_MouseLeftButtonDown" SnapsToDevicePixels="True" BorderThickness="1.5" VerticalAlignment="Center" CornerRadius="10" Height="40" Width="175">
+                    <Border Margin="5,0,0,0" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action RightButton()]" x:Name="RightBorder" SnapsToDevicePixels="True" BorderThickness="1.5" VerticalAlignment="Center" CornerRadius="10" Height="40" Width="175">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <!-- 1. Base Background (rgba 255,255,255, 0.05) -->
@@ -262,6 +290,34 @@
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
+
+                        <Border.Triggers>
+                            <!-- click animation -->
+                            <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Medium" FontSize="14">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">

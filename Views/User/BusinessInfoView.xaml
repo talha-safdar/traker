@@ -53,6 +53,34 @@
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
+
+                        <Border.Triggers>
+                            <!-- click animation -->
+                            <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+
                         <svg:SvgViewbox                       
                             Margin="0,1,0,0"
                             RenderOptions.BitmapScalingMode="HighQuality"
@@ -125,9 +153,9 @@
 
                 <!-- butons -->
                 <Grid Grid.Row="2">
-                    <!-- save -->
-                    <Grid Grid.Column="2">
-                        <Border Cursor="Hand" IsEnabled="{Binding EnableSubmitBtn}" Opacity="{Binding OpacitySubmitBtn}" x:Name="SubmitBorder1" MouseLeave="SubmitBorder1_MouseLeave" MouseLeftButtonUp="SubmitBorder1_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder1_MouseLeftButtonDown" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBusinessInfoChanges()]" CornerRadius="23" Height="45" Width="200">
+                    <!-- submit -->
+                    <Grid Grid.Column="2" Opacity="{Binding OpacitySubmitBtn}">
+                        <Border Cursor="Hand" IsEnabled="{Binding EnableSubmitBtn}" x:Name="SubmitBorder1" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBusinessInfoChanges()]" CornerRadius="23" Height="45" Width="200">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <Setter Property="BorderThickness" Value="1.5" />
@@ -152,6 +180,34 @@
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>
+
+                            <Border.Triggers>
+                                <!-- click animation -->
+                                <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+
+                                <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Border.Triggers>
+
                             <TextBlock conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Save Changes" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="18" />
                         </Border>
                     </Grid>
@@ -194,6 +250,34 @@
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
+
+                        <Border.Triggers>
+                            <!-- click animation -->
+                            <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+
                         <svg:SvgViewbox                       
                             Margin="0,1,0,0"
                             RenderOptions.BitmapScalingMode="HighQuality"
@@ -299,8 +383,8 @@
                 <!-- butons -->
                 <Grid Grid.Row="2">
                     <!-- submit -->
-                    <Grid Grid.Column="2">
-                        <Border IsEnabled="{Binding EnableSubmitBtn}" Opacity="{Binding OpacitySubmitBtn}" Cursor="Hand" x:Name="SubmitBorder" MouseLeave="SubmitBorder_MouseLeave" MouseLeftButtonUp="SubmitBorder_MouseLeftButtonUp" MouseLeftButtonDown="SubmitBorder_MouseLeftButtonDown" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBusinessInfoChanges()]" CornerRadius="23" Height="45" Width="200">
+                    <Grid Grid.Column="2" Opacity="{Binding OpacitySubmitBtn}">
+                        <Border IsEnabled="{Binding EnableSubmitBtn}" Cursor="Hand" x:Name="SubmitBorder" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmBusinessInfoChanges()]" CornerRadius="23" Height="45" Width="200">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <Setter Property="BorderThickness" Value="1.5" />
@@ -325,6 +409,33 @@
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>
+
+                            <Border.Triggers>
+                                <!-- click animation -->
+                                <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="{StaticResource ClickOpacity}" Duration="0:0:0.01" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+
+                                <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.0" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Border.Triggers>
 
                             <TextBlock conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Save Changes" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="18" />
                         </Border>

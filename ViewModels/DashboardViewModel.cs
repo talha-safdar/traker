@@ -23,7 +23,11 @@ namespace Traker.ViewModels
     using Traker.ViewModels.Edit;
     using Traker.ViewModels.User;
 
-    public class DashboardViewModel : Screen, IHandle<RefreshDatabase>, IHandle<DashboardVMEvents>
+    public class DashboardViewModel : Screen,
+    #region Interfaces
+        IHandle<RefreshDatabase>, 
+        IHandle<DashboardVMEvents>
+    #endregion
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
@@ -641,7 +645,7 @@ namespace Traker.ViewModels
         {
             try
             {
-                var rows = await Database.FetchDashboardRows(CurrentPage, PageSize, CurrentSortColumn, CurrentSortDirection, StatusFilter, ClientTypeFilter);
+                List<DashboardModel> rows = await Database.FetchDashboardRows(CurrentPage, PageSize, CurrentSortColumn, CurrentSortDirection, StatusFilter, ClientTypeFilter);
 
                 List<DashboardModel> cards = new List<DashboardModel>();
                                

@@ -117,6 +117,7 @@ namespace Traker.ViewModels.Edit
                 if (string.IsNullOrEmpty(_invoicePath))
                 {
                     await TryCloseAsync();
+                    _state.WindowFormOpen = false;
                     if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
                     {
                         _state.messageBoxVM.Symbol = 1;

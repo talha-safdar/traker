@@ -17,7 +17,14 @@ using Traker.ViewModels.Edit;
 namespace Traker.ViewModels
 {
     using Database;
-    public class JobsListViewModel : Screen
+    using System.Net;
+    using System.Windows.Controls;
+    using Traker.Events.DashboardVM;
+
+    public class JobsListViewModel : Screen,
+    #region Interfaces
+        IHandle<RefreshDatabase>
+    #endregion
     {
         #region Caliburn Variables
         private readonly IEventAggregator _events;
@@ -38,6 +45,7 @@ namespace Traker.ViewModels
 
         #region Private Class Field Variables
         private EditJobViewModel _editJobViewModel;
+        private int _clientId;
         #endregion
 
         public JobsListViewModel(IEventAggregator events, IWindowManager windowManager, DataService dataService, AppState state)
@@ -54,6 +62,9 @@ namespace Traker.ViewModels
             SelectedJob = new DashboardModel();
 
             _editJobViewModel = new EditJobViewModel(_events, _windowManager, _state);
+            _clientId = -1;
+
+            _events.SubscribeOnPublishedThread(this);
         }
 
         #region Caliburn Functions
@@ -61,42 +72,12 @@ namespace Traker.ViewModels
         {
             try
             {
-                List<JobsModel> jobsModel = await Database.FetchJobsByClientId(SelectedJob.ClientId);
-
+                _clientId = SelectedJob.ClientId;
                 _businessName = SelectedJob.ClientType == Names.Individual ? SelectedJob.ClientName : SelectedJob.CompanyName;
                 _clientType = SelectedJob.TypeIcon;
 
-                foreach (var job in jobsModel)
-                {
-                    DashboardModel currentJob = new DashboardModel
-                    {
-                        ClientId = job.ClientId,
-                        TypeIcon = SelectedJob.TypeIcon,
-                        ClientName = SelectedJob.ClientName,
-                        ClientEmail = SelectedJob.ClientEmail,
-                        ClientPhone = SelectedJob.ClientPhone,
-                        CompanyName = SelectedJob.CompanyName,
-                        Address = SelectedJob.Address,
-                        City = SelectedJob.City,
-                        Postcode = SelectedJob.Postcode,
-                        Country = SelectedJob.Country,
-                        CreatedDate = SelectedJob.CreatedDate,
-                        IsActive = SelectedJob.IsActive,
+                await RefreshJobsList();
 
-                        JobId = job.JobId,
-                        JobTitle = job.Title,
-                        JobDescription = job.Description,
-                        Price = job.FinalPrice,
-                        AmountReceived = job.AmountReceived,
-                        JobStatus = job.Status.ToString(),
-                        StartDate = job.StartDate,
-                        DueDate = job.DueDate,
-
-                        HasInvoice = await Database.CheckIfJobHasInvoice(job.JobId),
-                        InvoiceStatus = await Database.GetInvoiceStatusByJobId(job.JobId) ?? Names.NotInvoiced
-                    };
-                    _jobsList.Add(currentJob);
-                }
             }
             catch (Exception ex)
             {
@@ -112,9 +93,53 @@ namespace Traker.ViewModels
             }
             await base.OnInitializedAsync(cancellationToken);
         }
+
+        protected override Task OnDeactivateAsync(bool close, CancellationToken cancellationToken)
+        {
+            _events.Unsubscribe(this);
+            return base.OnDeactivateAsync(close, cancellationToken);
+        }
         #endregion
 
         #region Public View FUnctions
+        public async Task OpenContextMenu(DashboardModel selectedJob)
+        {
+            try
+            {
+                if (SelectedJob != null)
+                {
+                    selectedJob.ClientName = SelectedJob.ClientName;
+                    selectedJob.ClientEmail = SelectedJob.ClientEmail;
+                    selectedJob.ClientPhone = SelectedJob.ClientPhone;
+                    selectedJob.Address = SelectedJob.Address;
+                    selectedJob.City = SelectedJob.City;
+                    selectedJob.Postcode = SelectedJob.Postcode;
+                    selectedJob.Country = SelectedJob.Country;
+                    selectedJob.CreatedDate = SelectedJob.CreatedDate;
+                    selectedJob.ClientType = SelectedJob.ClientType; // pass the type from maun SelectedJob as it is not included in the jobs list cards
+
+                    if (SelectedJob.ClientId == selectedJob.ClientId)
+                    {
+                        _state.JobContextMenuViewModel = new JobContextMenuViewModel(_events, _windowManager, _dataService, _state);
+                        _state.JobContextMenuViewModel.SelectedJob = selectedJob; // pass job selected data
+                        await _windowManager.ShowPopupAsync(_state.JobContextMenuViewModel, null, CustomWindow.SettingsForDialog(310, 335, false)); // vertical, horizontal
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Open Options Menu";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"JobsListViewModel: OpenContextMenu() FAIL\n\t{ex.Message}");
+            }
+        }
+
         public async Task HandleKeyPress(KeyEventArgs e)
         {
             try
@@ -144,6 +169,7 @@ namespace Traker.ViewModels
             {
                 _editJobViewModel = new EditJobViewModel(_events, _windowManager, _state);
                 _editJobViewModel.SelectedJob = jobSelected; // pass selected row to EditJobViewModel
+                _editJobViewModel.IsOpenFromEditClient = true;
                 await _windowManager.ShowWindowAsync(_editJobViewModel, null, CustomWindow.SettingsForDialog(800, 1000, false));
             }
             catch (Exception ex)
@@ -202,6 +228,135 @@ namespace Traker.ViewModels
                 }
                 Logger.LogActivity(Logger.ERROR, $"JobsListViewModel: Exit() FAIL\n\t{ex.Message}");
             }
+        }
+
+        public async Task OnMouseDownEvent(Grid gridSource)
+        {
+            await Task.Run(async () =>
+            {
+                try
+                {
+                    // disable all context menus on click away
+                    if (_state.JobContextMenuViewModel != null)
+                    {
+                        await _state.JobContextMenuViewModel.TryCloseAsync(false);
+                        _state.JobContextMenuViewModel = null;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await Execute.OnUIThreadAsync(async () =>
+                    {
+                        if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                        {
+                            _state.messageBoxVM.Symbol = 2;
+                            _state.messageBoxVM.HeadMessage = "Close Window";
+                            _state.messageBoxVM.Message = ex.Message;
+                            _state.messageBoxVM.ButtonStyle = Names.OK;
+                            await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                        }
+                    });
+                    Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: OnMouseDownEvent() FAIL\n\t{ex.Message}");
+                }
+            });
+        }
+        #endregion
+
+        #region Private Functions
+        private async Task RefreshJobsList(bool showLoading = true)
+        {
+            try
+            {
+                _state.IsBusy = showLoading == true ? true : false;
+                _state.LoadingMessage = showLoading == true ? "P L E A S E   W A I T " : string.Empty;
+                await Task.Delay(50); // let rendering breath
+
+                JobsList.Clear();
+
+                var data = await SetJobsList(); // get new data
+
+                JobsList = new ObservableCollection<DashboardModel>(data); // refresh the UI with new data
+            }
+            catch (Exception ex)
+            {
+                if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                {
+                    _state.messageBoxVM.Symbol = 2;
+                    _state.messageBoxVM.HeadMessage = "Refresh Dashboard";
+                    _state.messageBoxVM.Message = ex.Message;
+                    _state.messageBoxVM.ButtonStyle = Names.OK;
+                    _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                }
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: RefreshDashboard() FAIL\n\t{ex.Message}");
+            }
+            finally
+            {
+                _state.IsBusy = false;
+                _state.LoadingMessage = string.Empty;
+            }
+        }
+        
+        private async Task<List<DashboardModel>> SetJobsList()
+        {
+            try
+            {
+                List<JobsModel> jobsModel = await Database.FetchJobsByClientId(_clientId);
+
+                List<DashboardModel> cards = new List<DashboardModel>();
+
+                foreach (var job in jobsModel)
+                {
+                    cards.Add(new DashboardModel
+                    {
+                        ClientId = job.ClientId,
+                        ClientType = SelectedJob.ClientType,
+                        ClientName = SelectedJob.ClientName,
+                        ClientEmail = SelectedJob.ClientEmail,
+                        ClientPhone = SelectedJob.ClientPhone,
+                        Address = SelectedJob.Address,
+                        City = SelectedJob.City,
+                        Postcode = SelectedJob.Postcode,
+                        Country = SelectedJob.Country,
+                        CreatedDate = SelectedJob.CreatedDate,
+
+                        JobId = job.JobId,
+                        JobTitle = job.Title,
+                        JobDescription = job.Description,
+                        Price = job.FinalPrice,
+                        AmountReceived = job.AmountReceived,
+                        JobStatus = job.Status.ToString(),
+                        StartDate = job.StartDate,
+                        DueDate = job.DueDate,
+
+                        HasInvoice = await Database.CheckIfJobHasInvoice(job.JobId),
+                        InvoiceStatus = await Database.GetInvoiceStatusByJobId(job.JobId) ?? Names.NotInvoiced
+                    });
+                }
+                return cards;
+            }
+            catch (Exception ex)
+            {
+                await Execute.OnUIThreadAsync(async () =>
+                {
+                    if (Application.Current.Windows.OfType<Window>().Any(w => w.DataContext == _state.messageBoxVM) == false)
+                    {
+                        _state.messageBoxVM.Symbol = 2;
+                        _state.messageBoxVM.HeadMessage = "Setup Dashboard";
+                        _state.messageBoxVM.Message = ex.Message;
+                        _state.messageBoxVM.ButtonStyle = Names.OK;
+                        await _windowManager.ShowDialogAsync(_state.messageBoxVM, null, CustomWindow.SettingsForDialog(450, 250, false));
+                    }
+                });
+                Logger.LogActivity(Logger.ERROR, $"DashboardViewModel: SetupDashboardData() FAIL\n\t{ex.Message}");
+                return new List<DashboardModel>();
+            }
+        }
+        #endregion
+
+        #region Event Handlers
+        public async Task HandleAsync(RefreshDatabase message, CancellationToken cancellationToken)
+        {
+            await RefreshJobsList();
         }
         #endregion
 
