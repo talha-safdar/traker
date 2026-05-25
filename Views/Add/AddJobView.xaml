@@ -30,9 +30,14 @@
 
         <Grid Margin="30,20,30,20">
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.1*" />                <!-- top bar        -->
-                <RowDefinition Height="*" />                <!-- main contents       -->
-                <RowDefinition Height="0.15*" />                <!-- buttons        -->
+                <!-- top bar -->
+                <RowDefinition Height="0.1*" />
+                
+                <!-- main contents -->
+                <RowDefinition Height="*" />
+                
+                <!-- buttons -->
+                <RowDefinition Height="0.15*" />
             </Grid.RowDefinitions>
 
             <!-- top bar -->
@@ -40,11 +45,11 @@
                 <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action Exit()]" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="35" Width="35">
                     <Border.Style>
                         <Style TargetType="Border">
-                            <Setter Property="Background" Value="#25252B"/>
+                            <Setter Property="Background" Value="{StaticResource FormCloseBackground}"/>
                             <Setter Property="Opacity" Value="1"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#B94A48"/>
+                                    <Setter Property="Background" Value="{StaticResource FormCloseHoverBackground}"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -96,10 +101,17 @@
                     </Border.BorderBrush>
                     <Grid Margin="20,0" VerticalAlignment="Center">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />                            <!-- client selection -->
-                            <RowDefinition Height="*" />                            <!-- job title -->
-                            <RowDefinition Height="*" />                            <!-- price -->
-                            <RowDefinition Height="*" />                            <!-- due date -->
+                            <!-- client selection -->
+                            <RowDefinition Height="*" />
+                            
+                            <!-- job title -->
+                            <RowDefinition Height="*" />
+                            
+                            <!-- price -->
+                            <RowDefinition Height="*" />
+                            
+                            <!-- due date -->
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
                         <!-- client selection -->
@@ -110,13 +122,13 @@
                                     <Run Text="{Binding AddJob.Count, Mode=OneWay}" />
                                 </TextBlock>
                                 <ComboBox Style="{DynamicResource ComboBoxNormal}"
-                                          MaxDropDownHeight="300"
-                                      IsEditable="False"
-                                      FontWeight="Regular"
-                                      HorizontalAlignment="Stretch" 
-                                      FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
-                                      ItemsSource="{Binding AddJob}"
-                                      SelectedItem="{Binding SelectedClient, Mode=TwoWay}">
+                                        MaxDropDownHeight="300"
+                                        IsEditable="False"
+                                        FontWeight="Regular"
+                                        HorizontalAlignment="Stretch" 
+                                        FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
+                                        ItemsSource="{Binding AddJob}"
+                                        SelectedItem="{Binding SelectedClient, Mode=TwoWay}">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Margin="0,0" HorizontalAlignment="Stretch">
@@ -142,7 +154,6 @@
                                     behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces" />
                             </StackPanel>
                         </Grid>
-
 
                         <!-- price -->
                         <Grid Grid.Row="2" Margin="0,0,0,25">
@@ -173,7 +184,7 @@
                     <Border.Style>
                         <Style TargetType="Border">
                             <Setter Property="BorderThickness" Value="1.5" />
-                            <Setter Property="Background" Value="#1D1D22" />
+                            <Setter Property="Background" Value="{StaticResource FormSubmitBackground}" />
 
                             <!-- DEFAULT STATE -->
                             <Setter Property="BorderBrush">
@@ -188,7 +199,7 @@
                             <!-- HOVER STATE -->
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#25252B"/>
+                                    <Setter Property="Background" Value="{StaticResource FormSubmitHoverBackground}"/>
                                     <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                                 </Trigger>
                             </Style.Triggers>
@@ -222,7 +233,7 @@
                         </EventTrigger>
                     </Border.Triggers>
 
-                    <TextBlock conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Add Job" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="16" />
+                    <TextBlock conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Add Job" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="SemiBold" Foreground="{StaticResource FormSubmitText}" FontSize="16" />
                 </Border>
             </Grid>
         </Grid>

@@ -26,11 +26,25 @@
     <SolidColorBrush x:Key="ClickedButton" Color="#202027" />
 
     <!-- window forms -->
+    <SolidColorBrush x:Key="FormCloseBackground" Color="#25252B" />
+    <SolidColorBrush x:Key="FormCloseHoverBackground" Color="#B94A48" />
+    
     <SolidColorBrush x:Key="FormMainBackground" Color="#151518" />
     <SolidColorBrush x:Key="FormFontColour" Color="#8E8E96" />
     <SolidColorBrush x:Key="FormInnerBackground" Color="#1D1D22" />
     <SolidColorBrush x:Key="FormInnerInnerBackground" Color="#1A1A1F" />
     <SolidColorBrush x:Key="FormInnerBorder" Color="#3A3A42" /> <!-- gradient -->
+    
+    <SolidColorBrush x:Key="FormSubmitBackground" Color="#1A1A1F" />
+    <SolidColorBrush x:Key="FormSubmitHoverBackground" Color="#25252B" />
+    <SolidColorBrush x:Key="FormSubmitText" Color="#E0E0E0" />
+
+    <SolidColorBrush x:Key="DeleteText" Color="#B04141" />
+    <SolidColorBrush x:Key="PlaceHolder" Color="#888888" />
+    <!-- window forms -->
+    
+    
+    
     
     <!-- sort/filter -->
     <SolidColorBrush x:Key="SortFilterMainBackground" Color="#101012" /> <!-- gradient -->
@@ -40,6 +54,10 @@
     <SolidColorBrush x:Key="ContextMneuMainBackground" Color="#101012" />
     <SolidColorBrush x:Key="ContextMneuMainBorder" Color="#34343A" />
 
+    <!-- icon -->
+    <SolidColorBrush x:Key="IconBackground" Color="#18181C" />
+    <SolidColorBrush x:Key="IconBorder" Color="#2A2A2F" />
+    <SolidColorBrush x:Key="IconHoverBackground" Color="#25252B" />
 
     <!-- click animations -->
     <sys:Double x:Key="ClickOpacity">0.5</sys:Double>

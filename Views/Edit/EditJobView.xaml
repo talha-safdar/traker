@@ -10,8 +10,11 @@
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:behaviours="clr-namespace:Traker.Behaviours"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Height="800" Width="1000"
-                          Focusable="True"
+             d:DesignHeight="450" 
+             d:DesignWidth="800" 
+             Height="800" 
+             Width="1000"
+             Focusable="True"
              cal:Message.Attach="[Event PreviewKeyDown] = [Action HandleKeyPress($eventArgs)]">
 
     <UserControl.Resources>
@@ -31,16 +34,26 @@
 
         <Grid Margin="30,20,30,20">
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.1*" />                <!-- top bar        -->
-                <RowDefinition Height="*" />                <!-- main contents       -->
-                <RowDefinition Height="0.15*" />                <!-- buttons        -->
+                
+                <!-- top bar -->
+                <RowDefinition Height="0.1*" />
+                
+                <!-- main contents -->
+                <RowDefinition Height="*" />
+                
+                <!-- buttons -->
+                <RowDefinition Height="0.15*" />
             </Grid.RowDefinitions>
 
             <!-- top bar -->
             <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>                    <!-- button -->
-                    <ColumnDefinition Width="0.1*"/>                    <!-- close -->
+                    
+                    <!-- button -->
+                    <ColumnDefinition Width="*"/>
+                    
+                    <!-- close -->
+                    <ColumnDefinition Width="0.1*"/>
                 </Grid.ColumnDefinitions>
 
                 <!-- button -->
@@ -53,11 +66,11 @@
                     <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action Exit()]" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="35" Width="35">
                         <Border.Style>
                             <Style TargetType="Border">
-                                <Setter Property="Background" Value="#25252B"/>
+                                <Setter Property="Background" Value="{StaticResource FormCloseBackground}"/>
                                 <Setter Property="Opacity" Value="1"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#B94A48"/>
+                                        <Setter Property="Background" Value="{StaticResource FormCloseHoverBackground}"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -91,10 +104,10 @@
                         </Border.Triggers>
 
                         <svg:SvgViewbox                       
-        Margin="0,1,0,0"
-        RenderOptions.BitmapScalingMode="HighQuality"
-        SnapsToDevicePixels="True"
-        Source="/Resources/Media/Images/Icons/Lucide/x.svg" Width="15" Height="15"/>
+                            Margin="0,1,0,0"
+                            RenderOptions.BitmapScalingMode="HighQuality"
+                            SnapsToDevicePixels="True"
+                            Source="/Resources/Media/Images/Icons/Lucide/x.svg" Width="15" Height="15"/>
                     </Border>
                 </Grid>
             </Grid>
@@ -103,8 +116,10 @@
             <Grid Grid.Row="1">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />                        <!-- job title / description -->
-                        <ColumnDefinition Width="*" />                        <!-- job info -->
+                        <ColumnDefinition Width="*" />
+                        <!-- job title / description -->
+                        <ColumnDefinition Width="*" />
+                        <!-- job info -->
                     </Grid.ColumnDefinitions>
 
                     <!-- title / status -->
@@ -119,8 +134,10 @@
 
                             <Grid Margin="30">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="auto" />                                    <!-- job title -->
-                                    <RowDefinition Height="auto" />                                    <!-- job description-->
+                                    <RowDefinition Height="auto" />
+                                    <!-- job title -->
+                                    <RowDefinition Height="auto" />
+                                    <!-- job description-->
                                 </Grid.RowDefinitions>
 
                                 <!-- job title -->
@@ -158,11 +175,21 @@
 
                             <Grid Margin="30">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />                                    <!-- stauts -->
-                                    <RowDefinition Height="*" />                                    <!-- price -->
-                                    <RowDefinition Height="*" />                                    <!-- received -->
-                                    <RowDefinition Height="0.7*" />                                    <!-- remaining -->
-                                    <RowDefinition Height="*" />                                    <!-- dates -->
+                                    
+                                    <!-- stauts -->
+                                    <RowDefinition Height="*" />
+                                    
+                                    <!-- price -->
+                                    <RowDefinition Height="*" />
+                                    
+                                    <!-- received -->
+                                    <RowDefinition Height="*" />
+                                    
+                                    <!-- remaining -->
+                                    <RowDefinition Height="0.7*" />
+                                    
+                                    <!-- dates -->
+                                    <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
 
                                 <!-- stauts -->
@@ -182,8 +209,8 @@
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock Margin="5,0,0,5" Text="Price" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                         <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Price, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
-                                    behaviours:TextboxFilter.EnableFilter="True"
-                                    behaviours:TextboxFilter.FilterMode="Currency">
+                                            behaviours:TextboxFilter.EnableFilter="True"
+                                            behaviours:TextboxFilter.FilterMode="Currency">
                                             <i:Interaction.Triggers>
                                                 <i:EventTrigger EventName="GotFocus">
                                                     <cal:ActionMessage MethodName="PriceFocused"/>
@@ -201,8 +228,8 @@
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock Margin="5,0,0,5" Text="Received" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                         <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding AmountReceived, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
-                                    behaviours:TextboxFilter.EnableFilter="True"
-                                    behaviours:TextboxFilter.FilterMode="Currency">                                            
+                                            behaviours:TextboxFilter.EnableFilter="True"
+                                            behaviours:TextboxFilter.FilterMode="Currency">
                                             <i:Interaction.Triggers>
                                                 <i:EventTrigger EventName="GotFocus">
                                                     <cal:ActionMessage MethodName="ReceivedFocused"/>
@@ -228,8 +255,12 @@
                                 <!-- dates -->
                                 <Grid Grid.Row="4">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />                                        <!-- start -->
-                                        <ColumnDefinition Width="*" />                                        <!-- due -->
+                                        
+                                        <!-- start -->
+                                        <ColumnDefinition Width="*" />
+                                        
+                                        <!-- due -->
+                                        <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
 
                                     <!-- start date -->
@@ -242,7 +273,7 @@
                                                 Text="{Binding StartDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="10" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans"
                                                 behaviours:TextboxFilter.EnableFilter="True"
                                                 behaviours:TextboxFilter.FilterMode="DateDDMMYYYY" />
-                                                <TextBlock Opacity="0.3" IsHitTestVisible="False" Visibility="{Binding ElementName=StartDateInput, Path=Text.IsEmpty, Converter={StaticResource BoolToVisCollapsed}}" Background="Transparent" VerticalAlignment="Center" Margin="10,5,0,5" Text="dd/mm/yyyy" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="22"/>
+                                                <TextBlock Opacity="0.3" IsHitTestVisible="False" Visibility="{Binding ElementName=StartDateInput, Path=Text.IsEmpty, Converter={StaticResource BoolToVisCollapsed}}" Background="Transparent" VerticalAlignment="Center" Margin="10,5,0,5" Text="dd/mm/yyyy" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource PlaceHolder}" FontSize="22"/>
                                             </Grid>
                                         </StackPanel>
                                     </Grid>
@@ -264,9 +295,15 @@
             <!-- butons -->
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto" />                        <!-- delete client -->
-                    <ColumnDefinition Width="*" />                        <!-- spacer -->
-                    <ColumnDefinition Width="auto" />                        <!-- save -->
+                    
+                    <!-- delete client -->
+                    <ColumnDefinition Width="auto" />
+                    
+                    <!-- spacer -->
+                    <ColumnDefinition Width="*" />
+                    
+                    <!-- save -->
+                    <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
 
                 <!-- delete job -->
@@ -298,7 +335,7 @@
                                 </BeginStoryboard>
                             </EventTrigger>
                         </Border.Triggers>
-                        <TextBlock Cursor="Hand" conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteJob()]" HorizontalAlignment="Center" Text="Delete Job" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" Foreground="#B04141" FontWeight="Regular" FontSize="16" />                        
+                        <TextBlock Cursor="Hand" conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteJob()]" HorizontalAlignment="Center" Text="Delete Job" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" Foreground="{StaticResource DeleteText}" FontWeight="Regular" FontSize="16" />
                     </Border>
                 </Grid>
 
@@ -308,7 +345,7 @@
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="BorderThickness" Value="1.5" />
-                                <Setter Property="Background" Value="#1D1D22" />
+                                <Setter Property="Background" Value="{StaticResource FormSubmitBackground}" />
 
                                 <!-- DEFAULT STATE -->
                                 <Setter Property="BorderBrush">
@@ -323,7 +360,7 @@
                                 <!-- HOVER STATE -->
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#25252B"/>
+                                        <Setter Property="Background" Value="{StaticResource FormSubmitHoverBackground}"/>
                                         <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                                     </Trigger>
                                 </Style.Triggers>
@@ -357,7 +394,7 @@
                             </EventTrigger>
                         </Border.Triggers>
 
-                        <TextBlock conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Save Changes" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="18" />
+                        <TextBlock conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Save Changes" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="SemiBold" Foreground="{StaticResource FormSubmitText}" FontSize="18" />
                     </Border>
                 </Grid>
             </Grid>

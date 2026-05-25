@@ -26,7 +26,6 @@ namespace Traker.ViewModels
         public Visibility IsVisible { get; set; } = Visibility.Collapsed; // for showing the window elements all at the same time
         #endregion
 
-
         public MessageBoxViewModel() { }
 
         #region Caliburn Functions

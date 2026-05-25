@@ -203,6 +203,7 @@ namespace Traker.ViewModels
         }
         #endregion
 
+        #region Public View Functions
         public async Task OnMouseDownEvent(Grid gridSource)
         {
             try
@@ -277,6 +278,7 @@ namespace Traker.ViewModels
 
             return Task.CompletedTask;
         }
+        #endregion
 
         #region Event Handlers
         public Task HandleAsync(ShellVM message, CancellationToken cancellationToken)

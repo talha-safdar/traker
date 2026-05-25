@@ -9,8 +9,11 @@
              xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
              xmlns:behaviours="clr-namespace:Traker.Behaviours"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Height="800" Width="1000"
-                          Focusable="True"
+             d:DesignHeight="450" 
+             d:DesignWidth="800" 
+             Height="800" 
+             Width="1000"
+             Focusable="True"
              cal:Message.Attach="[Event PreviewKeyDown] = [Action HandleKeyPress($eventArgs)]">
 
     <Border Margin="5" Background="{StaticResource FormMainBackground}" CornerRadius="20" BorderThickness="1.5" SnapsToDevicePixels="True">
@@ -26,18 +29,26 @@
 
         <Grid Margin="30,20,30,20">
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.1*" />                <!-- top bar        -->
-                <RowDefinition Height="auto" />                <!-- main contents       -->
-                <RowDefinition Height="0.15*" />                <!-- buttons        -->
+                <!-- top bar -->
+                <RowDefinition Height="0.1*" />
+                
+                <!-- main contents -->
+                <RowDefinition Height="auto" />
+                
+                <!-- buttons -->
+                <RowDefinition Height="0.15*" />
             </Grid.RowDefinitions>
 
             <!-- top bar -->
             <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/> <!-- button -->
-                    <ColumnDefinition Width="*"/> <!-- close -->
+                    <!-- button -->
+                    <ColumnDefinition Width="*"/>
+                    
+                    <!-- close -->
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                
+
                 <!-- button -->
                 <Grid Grid.Column="0">
                     <StackPanel Orientation="Horizontal">
@@ -49,11 +60,11 @@
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <Setter Property="BorderThickness" Value="1.5"/>
-                                    <Setter Property="Background" Value="#18181C"/>
-                                    <Setter Property="BorderBrush" Value="#2A2A2F"/>
+                                    <Setter Property="Background" Value="{StaticResource IconBackground}"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource IconBorder}"/>
                                     <Style.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="#25252B"/>
+                                            <Setter Property="Background" Value="{StaticResource IconHoverBackground}"/>
                                             <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                                         </Trigger>
                                     </Style.Triggers>
@@ -90,11 +101,11 @@
                             <Canvas>
                                 <svg:SvgViewbox Canvas.Left="10" Canvas.Top="10" RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" Source="/Resources/Media/Images/Icons/Lucide/briefcase-business.svg" Width="20" Height="20"/>
                                 <Border Canvas.Left="20" Canvas.Top="18">
-                                    <Grid Background="#18181C" Width="18" Height="18">
+                                    <Grid Background="{StaticResource IconBackground}" Width="18" Height="18">
                                         <svg:SvgViewbox RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" Source="/Resources/Media/Images/Icons/Lucide/list.svg" Width="10" Height="10"/>
                                     </Grid>
                                 </Border>
-                            </Canvas>                            
+                            </Canvas>
                         </Border>
                         <TextBlock VerticalAlignment="Center" Margin="10,5,5,0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34">
                             <TextBlock.Style>
@@ -109,20 +120,20 @@
                                     </Style.Triggers>
                                 </Style>
                             </TextBlock.Style>
-                        </TextBlock>                        
+                        </TextBlock>
                     </StackPanel>
                 </Grid>
-                
+
                 <!-- close -->
                 <Grid Grid.Column="1">
                     <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action Exit()]" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="35" Width="35">
                         <Border.Style>
                             <Style TargetType="Border">
-                                <Setter Property="Background" Value="#25252B"/>
+                                <Setter Property="Background" Value="{StaticResource FormCloseBackground}"/>
                                 <Setter Property="Opacity" Value="1"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#B94A48"/>
+                                        <Setter Property="Background" Value="{StaticResource FormCloseHoverBackground}"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -168,8 +179,12 @@
             <Grid Grid.Row="1">
                 <Grid Margin="0,0" VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />                            <!-- client -->
-                        <ColumnDefinition Width="*" />                            <!-- address -->
+                        <ColumnDefinition Width="*" />
+
+                        <!-- client -->
+                        <ColumnDefinition Width="*" />
+
+                        <!-- address -->
                     </Grid.ColumnDefinitions>
 
                     <!-- client -->
@@ -183,11 +198,20 @@
                             </Border.BorderBrush>
                             <Grid Margin="30">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />                                    <!-- client type -->
-                                    <RowDefinition Height="*" />                                    <!-- business name -->
-                                    <RowDefinition Height="*" />                                    <!-- full name -->
-                                    <RowDefinition Height="*" />                                    <!-- email address -->
-                                    <RowDefinition Height="*" />                                    <!-- phone numbers -->
+                                    <!-- client type -->
+                                    <RowDefinition Height="*" />
+                                    
+                                    <!-- business name -->
+                                    <RowDefinition Height="*" />
+                                    
+                                    <!-- full name -->
+                                    <RowDefinition Height="*" />
+                                    
+                                    <!-- email address -->
+                                    <RowDefinition Height="*" />
+                                    
+                                    <!-- phone numbers -->
+                                    <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
 
                                 <!-- client type -->
@@ -259,9 +283,9 @@
                                     </StackPanel>
                                 </Grid>
                             </Grid>
-                        </Border>                        
-                    </Grid> 
-                        
+                        </Border>
+                    </Grid>
+
                     <!-- address -->
                     <Grid Grid.Column="1">
                         <Border Background="{StaticResource FormInnerBackground}" CornerRadius="15" BorderThickness="1.5" Margin="40,20" SnapsToDevicePixels="True">
@@ -273,11 +297,16 @@
                             </Border.BorderBrush>
                             <Grid Margin="30">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />                                    <!-- home address -->
-                                    <RowDefinition Height="*" />                                    <!-- home address -->
-                                    <RowDefinition Height="*" />                                    <!-- city -->
-                                    <RowDefinition Height="*" />                                    <!-- postcode -->
-                                    <RowDefinition Height="*" />                                    <!-- country -->
+                                    <RowDefinition Height="*" />
+                                    <!-- home address -->
+                                    <RowDefinition Height="*" />
+                                    <!-- home address -->
+                                    <RowDefinition Height="*" />
+                                    <!-- city -->
+                                    <RowDefinition Height="*" />
+                                    <!-- postcode -->
+                                    <RowDefinition Height="*" />
+                                    <!-- country -->
                                 </Grid.RowDefinitions>
 
                                 <!-- home address -->
@@ -320,7 +349,7 @@
                                     </StackPanel>
                                 </Grid>
                             </Grid>
-                        </Border>                        
+                        </Border>
                     </Grid>
                 </Grid>
             </Grid>
@@ -329,12 +358,17 @@
             <Grid Grid.Row="2">
                 <Grid Margin="40,0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto" /> <!-- delete client -->
-                        <ColumnDefinition Width="*" /> <!-- spacer -->
-                        <ColumnDefinition Width="auto" /> <!-- save -->
+                        <!-- delete client -->
+                        <ColumnDefinition Width="auto" />
+                        
+                        <!-- spacer -->
+                        <ColumnDefinition Width="*" />
+                        
+                        <!-- save -->
+                        <ColumnDefinition Width="auto" />
                     </Grid.ColumnDefinitions>
-                    
-                    <!-- delete client -->
+
+                    <!-- delete -->
                     <Grid Grid.Column="0">
                         <Border>
                             <Border.Triggers>
@@ -363,17 +397,17 @@
                                     </BeginStoryboard>
                                 </EventTrigger>
                             </Border.Triggers>
-                            <TextBlock Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteClient()]" conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Delete Client" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" Foreground="#B04141" FontWeight="Regular" FontSize="16" />                            
+                            <TextBlock Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteClient()]" conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Delete Client" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" Foreground="{StaticResource DeleteText}" FontWeight="Regular" FontSize="16" />
                         </Border>
                     </Grid>
 
-                    <!-- save -->
+                    <!-- submit -->
                     <Grid Grid.Column="2" Opacity="{Binding OpacitySubmitBtn}">
                         <Border Cursor="Hand" x:Name="SubmitBorder" IsEnabled="{Binding EnableSubmitBtn}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action ConfirmEditClient()]" CornerRadius="25" Height="45" Width="200">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <Setter Property="BorderThickness" Value="1.5" />
-                                    <Setter Property="Background" Value="#1D1D22" />
+                                    <Setter Property="Background" Value="{StaticResource FormSubmitBackground}" />
 
                                     <!-- DEFAULT STATE -->
                                     <Setter Property="BorderBrush">
@@ -388,7 +422,7 @@
                                     <!-- HOVER STATE -->
                                     <Style.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="#25252B"/>
+                                            <Setter Property="Background" Value="{StaticResource FormSubmitHoverBackground}"/>
                                             <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                                         </Trigger>
                                     </Style.Triggers>
@@ -422,9 +456,9 @@
                                 </EventTrigger>
                             </Border.Triggers>
 
-                            <TextBlock conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Save Changes" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="18" />
-                        </Border>                        
-                    </Grid>                    
+                            <TextBlock conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Save Changes" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="SemiBold" Foreground="{StaticResource FormSubmitText}" FontSize="18" />
+                        </Border>
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>
