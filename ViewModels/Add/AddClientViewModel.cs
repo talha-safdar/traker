@@ -68,13 +68,6 @@ namespace Traker.ViewModels.Add
                 // submit button
                 EnableSubmitBtn = false;
                 OpacitySubmitBtn = _halfOpacity;
-
-
-
-                BusinessName = "ABC";
-                JobTitle = "Count";
-                Price = "500.45";
-                DueDate = "12/12/2026";
             }
             catch (Exception ex)
             {

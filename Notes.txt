@@ -104,11 +104,13 @@ V1:
 - check submit button for enable/disable for user settings
 - fix button on disable in forms to become opacity low
 - redsign the job context menu
-#- do text length test everywhere
+- do text length test everywhere
 - refres jobslist on change done?
-#- for view invoice warning try provide path
+- for view invoice warning try provide path
+- add overlay state for user windows
+#- placeholder colour global for add and edit job
 
-V2:
+V2 Avalonia:
 #- the selected not invoiced then confirmation box yes/no. that row with invoice details will be saved in a e.g. "rubbish" folder in txt. 
 #- on edit row add a spy signal "amber" for changes that have not been saved yet
 #- database export/import?
@@ -131,8 +133,7 @@ Not finalised
 #- make job status clickable to sort automatically
 #- allow user to decide items per page
 #- in-page sorting-filtering
-
-
+#- status if client seen the invoice but didnt pay
 
 
 

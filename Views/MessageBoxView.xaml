@@ -8,8 +8,10 @@
              xmlns:cal="http://caliburnmicro.com"
              xmlns:names="clr-namespace:Traker.Helper"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
-             Width="400" Height="250">
+             d:DesignHeight="450" 
+             d:DesignWidth="800"
+             Width="400" 
+             Height="250">
 
     <Border Visibility="{Binding IsVisible}" Background="#151518" CornerRadius="20" BorderThickness="1.5" SnapsToDevicePixels="True" Margin="5">
         <Border.Effect>

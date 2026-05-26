@@ -12,11 +12,13 @@
         WindowStartupLocation="CenterScreen"
         ShowInTaskbar="False"
         Topmost="True"
-        Background="Transparent" Width="450" Height="300">
+        Background="Transparent" 
+        Width="450" 
+        Height="300">
+    
     <Border Margin="10" CornerRadius="25">
         <Border.Background>
             <LinearGradientBrush x:Name="AnimatedGradient" StartPoint="-0.2,-0.2" EndPoint="1.2,1.2">
-
                 <GradientStop Color="#101012" Offset="0.00"/>
                 <GradientStop Color="#111114" Offset="0.12"/>
                 <GradientStop Color="#121216" Offset="0.24"/>
@@ -30,38 +32,42 @@
                     <TranslateTransform x:Name="GradientMove"/>
                 </LinearGradientBrush.RelativeTransform>
             </LinearGradientBrush>
-            </Border.Background>
-            <Border.Triggers>
-                <EventTrigger RoutedEvent="Loaded">
-                    <BeginStoryboard>
-                        <Storyboard RepeatBehavior="Forever" AutoReverse="True">
-                            <DoubleAnimation
+        </Border.Background>
+        <Border.Triggers>
+            <EventTrigger RoutedEvent="Loaded">
+                <BeginStoryboard>
+                    <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                        <DoubleAnimation
                         Storyboard.TargetName="GradientMove"
                         Storyboard.TargetProperty="X"
                         From="-0.8"
                         To="0.8"
                         Duration="0:0:6"/>
 
-                            <DoubleAnimation
+                        <DoubleAnimation
                         Storyboard.TargetName="GradientMove"
                         Storyboard.TargetProperty="Y"
                         From="-0.8"
                         To="0.8"
                         Duration="0:0:6"/>
 
-                        </Storyboard>
-                    </BeginStoryboard>
-                </EventTrigger>
-            </Border.Triggers>
-            <Border.Effect>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Border.Triggers>
+        <Border.Effect>
             <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.12" Color="white" />
         </Border.Effect>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" /> <!-- logo name -->
-                <RowDefinition Height="*" /> <!-- text -->
+                
+                <!-- logo name -->
+                <RowDefinition Height="*" />
+                
+                <!-- text -->
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            
+
             <!-- logo name -->
             <Grid Grid.RowSpan="3">
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="TRAKER" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="ExtraBlack" Foreground="#E0E0E0" FontSize="36">

@@ -7,17 +7,26 @@
              xmlns:local="clr-namespace:Traker.Views"
              xmlns:cal="http://caliburnmicro.com"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" 
+             d:DesignWidth="800">
+    
     <Border Width="295" VerticalAlignment="Center" Background="{StaticResource SortFilterMainBackground}" CornerRadius="20" BorderThickness="1.5" BorderBrush="#34343A">
         <Border.Effect>
             <DropShadowEffect BlurRadius="15" Opacity="0.3" ShadowDepth="2"/>
         </Border.Effect>
+        
         <Grid VerticalAlignment="Center">
             <Grid Margin="5">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />                    <!-- order -->
-                    <RowDefinition Height="auto" />                    <!-- spacer -->
-                    <RowDefinition Height="auto" />                    <!-- options -->
+                    
+                    <!-- order -->
+                    <RowDefinition Height="auto" />
+                    
+                    <!-- spacer -->
+                    <RowDefinition Height="auto" />
+                    
+                    <!-- options -->
+                    <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
                 <!-- order -->
@@ -31,8 +40,12 @@
                         </Border.BorderBrush>
                         <Grid Margin="10,10">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />                                <!-- ascending -->
-                                <ColumnDefinition Width="*" />                                <!-- descending -->
+                                
+                                <!-- ascending -->
+                                <ColumnDefinition Width="*" />
+                                
+                                <!-- descending -->
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
                             <!-- ascending -->
@@ -60,9 +73,9 @@
                                     </Border.Effect>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,3,0,0">
                                         <svg:SvgViewbox                         
-                                    RenderOptions.BitmapScalingMode="HighQuality"
-                                    SnapsToDevicePixels="True"
-                                    Source="/Resources/Media/Images/Icons/Lucide/arrow-down-narrow-wide.svg" Width="15" Height="15"/>
+                                            RenderOptions.BitmapScalingMode="HighQuality"
+                                            SnapsToDevicePixels="True"
+                                            Source="/Resources/Media/Images/Icons/Lucide/arrow-down-narrow-wide.svg" Width="15" Height="15"/>
                                         <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Ascending" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" FontSize="14">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
@@ -131,7 +144,7 @@
                         </Grid>
                     </Border>
                 </Grid>
-                
+
                 <!-- spacer -->
                 <Grid Grid.Row="1" Margin="0,0,0,0" />
 

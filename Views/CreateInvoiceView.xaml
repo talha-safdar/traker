@@ -9,8 +9,9 @@
              xmlns:conv="clr-namespace:Traker.Converters"
              xmlns:local="clr-namespace:Traker.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
-                          Focusable="True"
+             d:DesignHeight="450" 
+             d:DesignWidth="800"
+             Focusable="True"
              cal:Message.Attach="[Event PreviewKeyDown] = [Action HandleKeyPress($eventArgs)]"
              Height="800" Width="1000">
 
@@ -27,9 +28,15 @@
 
         <Grid Margin="30,20,30,20">
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.1*" />                <!-- top bar        -->
-                <RowDefinition Height="auto" />                <!-- main contents       -->
-                <RowDefinition Height="0.15*" />                <!-- buttons        -->
+                
+                <!-- top bar -->
+                <RowDefinition Height="0.1*" />
+                
+                <!-- main contents -->
+                <RowDefinition Height="auto" />
+                
+                <!-- buttons -->
+                <RowDefinition Height="0.15*" />
             </Grid.RowDefinitions>
 
             <!-- top bar -->
@@ -38,11 +45,11 @@
                 <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action Exit()]" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="35" Width="35">
                     <Border.Style>
                         <Style TargetType="Border">
-                            <Setter Property="Background" Value="#25252B"/>
+                            <Setter Property="Background" Value="{StaticResource FormCloseBackground}"/>
                             <Setter Property="Opacity" Value="1"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#B94A48"/>
+                                    <Setter Property="Background" Value="{StaticResource FormCloseHoverBackground}"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -95,8 +102,12 @@
 
                     <Grid Margin="30">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="*" /> <!-- client info -->
-                            <RowDefinition Height="*" /> <!-- money info -->
+                            
+                            <!-- client info -->
+                            <RowDefinition Height="*" />
+                            
+                            <!-- money info -->
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
                         <!-- client info -->
@@ -177,7 +188,7 @@
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            
+
                             <!-- due date -->
                             <Grid Grid.Column="0" Grid.Row="0" Margin="0,0,5,25">
                                 <StackPanel Orientation="Vertical">
@@ -187,7 +198,7 @@
                                         behaviours:TextboxFilter.FilterMode="DateDDMMYYYY" />
                                 </StackPanel>
                             </Grid>
-                            
+
                             <!-- subtotal -->
                             <Grid Grid.Column="1" Grid.Row="0" Margin="5,0,5,25">
                                 <StackPanel Orientation="Vertical">
@@ -195,7 +206,7 @@
                                     <TextBox Opacity="0.6" IsHitTestVisible="False" Focusable="False" Style="{DynamicResource TextBoxNormal}" Text="{Binding Subtotal, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                                 </StackPanel>
                             </Grid>
-                            
+
                             <!-- vat -->
                             <Grid Grid.Column="2" Grid.Row="0" Margin="5,0,0,25">
                                 <StackPanel Orientation="Vertical">
@@ -203,7 +214,7 @@
                                     <ComboBox TabIndex="6" Style="{DynamicResource ComboBoxNormal}" ItemsSource="{Binding InvoiceStatusEdit}" SelectedItem="{Binding VatValue, Mode=TwoWay}" SelectedValuePath="Content" FontSize="22" />
                                 </StackPanel>
                             </Grid>
-                            
+
                             <!-- total -->
                             <Grid Grid.ColumnSpan="3" Grid.Row="1" HorizontalAlignment="Center">
                                 <StackPanel Orientation="Vertical">
@@ -226,7 +237,7 @@
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="BorderThickness" Value="1.5" />
-                                <Setter Property="Background" Value="#1D1D22" />
+                                <Setter Property="Background" Value="{StaticResource FormSubmitBackground}" />
 
                                 <!-- DEFAULT STATE -->
                                 <Setter Property="BorderBrush">
@@ -241,7 +252,7 @@
                                 <!-- HOVER STATE -->
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#25252B"/>
+                                        <Setter Property="Background" Value="{StaticResource FormSubmitHoverBackground}"/>
                                         <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                                     </Trigger>
                                 </Style.Triggers>
@@ -274,8 +285,8 @@
                                 </BeginStoryboard>
                             </EventTrigger>
                         </Border.Triggers>
-                        
-                        <TextBlock conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Create Invoice" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="18" />
+
+                        <TextBlock conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Create Invoice" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="SemiBold" Foreground="{StaticResource FormSubmitText}" FontSize="18" />
                     </Border>
                 </Grid>
             </Grid>

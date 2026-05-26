@@ -7,16 +7,23 @@
              xmlns:cal="http://caliburnmicro.com"
              xmlns:local="clr-namespace:Traker.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" 
+             d:DesignWidth="800">
+    
     <Border Width="295" VerticalAlignment="Center" Background="{StaticResource SortFilterMainBackground}" CornerRadius="16" BorderThickness="1.5" BorderBrush="#34343A">
         <Border.Effect>
             <DropShadowEffect BlurRadius="15" Opacity="0.3" ShadowDepth="2"/>
         </Border.Effect>
+        
         <Grid VerticalAlignment="Center">
             <Grid Margin="5">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />                    <!-- stauts -->
-                    <RowDefinition Height="auto" />                    <!-- client type -->
+                    
+                    <!-- stauts -->
+                    <RowDefinition Height="auto" />
+                    
+                    <!-- client type -->
+                    <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
                 <!-- status -->
@@ -68,14 +75,18 @@
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
                                         <Grid Width="90">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="auto" /> <!-- dot -->
-                                                <ColumnDefinition Width="*" /> <!-- text -->
+                                                
+                                                <!-- dot -->
+                                                <ColumnDefinition Width="auto" />
+                                                
+                                                <!-- text -->
+                                                <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            
+
                                             <!-- dot -->
                                             <Grid Grid.Column="0">
                                                 <Border Background="{StaticResource JobStatusNew}" Height="10" Width="10" CornerRadius="20" />
-                                            </Grid>                                            
+                                            </Grid>
 
                                             <!-- text -->
                                             <Grid Grid.Column="2">
@@ -126,10 +137,12 @@
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
                                         <Grid Width="90">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="auto" />
+                                                
                                                 <!-- dot -->
-                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="auto" />
+                                                
                                                 <!-- text -->
+                                                <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
 
                                             <!-- dot -->
@@ -186,10 +199,12 @@
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
                                         <Grid Width="90">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="auto" />
+                                                
                                                 <!-- dot -->
-                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="auto" />
+                                                
                                                 <!-- text -->
+                                                <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
 
                                             <!-- dot -->
@@ -246,10 +261,12 @@
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
                                         <Grid Width="90">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="auto" />
+                                                
                                                 <!-- dot -->
-                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="auto" />
+                                                
                                                 <!-- text -->
+                                                <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
 
                                             <!-- dot -->
@@ -306,10 +323,12 @@
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
                                         <Grid Width="90">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="auto" />
+                                                
                                                 <!-- dot -->
-                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="auto" />
+                                                
                                                 <!-- text -->
+                                                <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
 
                                             <!-- dot -->
@@ -366,10 +385,12 @@
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,0,0">
                                         <Grid Width="90">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="auto" />
+                                                
                                                 <!-- dot -->
-                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="auto" />
+                                                
                                                 <!-- text -->
+                                                <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
 
                                             <!-- dot -->
@@ -415,9 +436,15 @@
 
                         <Grid Margin="10,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />                                <!-- individual -->
-                                <ColumnDefinition Width="0.1*" />                                <!-- spacer -->
-                                <ColumnDefinition Width="*" />                                <!-- company-->
+                                
+                                <!-- individual -->
+                                <ColumnDefinition Width="*" />
+                                
+                                <!-- spacer -->
+                                <ColumnDefinition Width="0.1*" />
+                                
+                                <!-- company-->
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
                             <!-- individual -->
@@ -445,9 +472,9 @@
                                     </Border.Effect>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,3,0,0">
                                         <svg:SvgViewbox                         
-                                        RenderOptions.BitmapScalingMode="HighQuality"
-                                        SnapsToDevicePixels="True"
-                                        Source="/Resources/Media/Images/Icons/Lucide/user-round.svg" Width="15" Height="15"/>
+                                            RenderOptions.BitmapScalingMode="HighQuality"
+                                            SnapsToDevicePixels="True"
+                                            Source="/Resources/Media/Images/Icons/Lucide/user-round.svg" Width="15" Height="15"/>
                                         <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Individual" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" FontSize="14">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
@@ -495,9 +522,9 @@
                                     </Border.Effect>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,3,0,0">
                                         <svg:SvgViewbox                         
-                                        RenderOptions.BitmapScalingMode="HighQuality"
-                                        SnapsToDevicePixels="True"
-                                        Source="/Resources/Media/Images/Icons/Lucide/building.svg" Width="15" Height="15"/>
+                                            RenderOptions.BitmapScalingMode="HighQuality"
+                                            SnapsToDevicePixels="True"
+                                            Source="/Resources/Media/Images/Icons/Lucide/building.svg" Width="15" Height="15"/>
                                         <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Comapny" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="Regular" FontSize="14">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">

@@ -30,9 +30,15 @@
 
         <Grid Margin="30,20,30,20">
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.1*" />                <!-- top bar        -->
-                <RowDefinition Height="*" />                <!-- main contents       -->
-                <RowDefinition Height="0.15*" />                <!-- buttons        -->
+                
+                <!-- top bar -->
+                <RowDefinition Height="0.1*" />
+                
+                <!-- main contents -->
+                <RowDefinition Height="*" />
+                
+                <!-- buttons -->
+                <RowDefinition Height="0.15*" />
             </Grid.RowDefinitions>
 
             <!-- top bar -->
@@ -41,11 +47,11 @@
                 <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action Exit()]" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="35" Width="35">
                     <Border.Style>
                         <Style TargetType="Border">
-                            <Setter Property="Background" Value="#25252B"/>
+                            <Setter Property="Background" Value="{StaticResource FormCloseBackground}"/>
                             <Setter Property="Opacity" Value="1"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#B94A48"/>
+                                    <Setter Property="Background" Value="{StaticResource FormCloseHoverBackground}"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -98,11 +104,21 @@
 
                     <Grid Margin="30">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="auto" />                            <!-- name -->
-                            <RowDefinition Height="auto" />                            <!-- account -->
-                            <RowDefinition Height="auto" />                            <!-- number / sortcode -->
-                            <RowDefinition Height="auto" />                            <!-- iban -->
-                            <RowDefinition Height="auto" />                            <!-- bic -->
+                            
+                            <!-- name -->
+                            <RowDefinition Height="auto" />
+                            
+                            <!-- account -->
+                            <RowDefinition Height="auto" />
+                            
+                            <!-- number / sortcode -->
+                            <RowDefinition Height="auto" />
+                            
+                            <!-- iban -->
+                            <RowDefinition Height="auto" />
+                            
+                            <!-- bic -->
+                            <RowDefinition Height="auto" />
                         </Grid.RowDefinitions>
 
                         <!-- name -->
@@ -124,10 +140,14 @@
                         <!-- number / sortcode -->
                         <Grid Grid.Row="2" Margin="0,0,0,25">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" /> <!-- number -->
-                                <ColumnDefinition Width="*" /> <!-- sortcode -->
+                                
+                                <!-- number -->
+                                <ColumnDefinition Width="*" />
+                                
+                                <!-- sortcode -->
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            
+
                             <!-- number -->
                             <Grid Grid.Column="0" Margin="0,0,5,0">
                                 <StackPanel Orientation="Vertical">
@@ -135,14 +155,14 @@
                                     <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding AccountNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                                 </StackPanel>
                             </Grid>
-                            
+
                             <!-- sortcode -->
                             <Grid Grid.Column="1">
                                 <StackPanel Orientation="Vertical" Margin="5,0,0,0">
                                     <TextBlock Margin="5,0,0,5" Text="Sort code" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                     <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Sortcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                                 </StackPanel>
-                            </Grid>      
+                            </Grid>
                         </Grid>
 
                         <!-- iban -->
@@ -172,7 +192,7 @@
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="BorderThickness" Value="1.5" />
-                                <Setter Property="Background" Value="#1D1D22" />
+                                <Setter Property="Background" Value="{StaticResource FormSubmitBackground}" />
 
                                 <!-- DEFAULT STATE -->
                                 <Setter Property="BorderBrush">
@@ -187,7 +207,7 @@
                                 <!-- HOVER STATE -->
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#25252B"/>
+                                        <Setter Property="Background" Value="{StaticResource FormSubmitHoverBackground}"/>
                                         <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                                     </Trigger>
                                 </Style.Triggers>
@@ -221,7 +241,7 @@
                             </EventTrigger>
                         </Border.Triggers>
 
-                        <TextBlock conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Save Changes" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="18" />
+                        <TextBlock conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Save Changes" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="SemiBold" Foreground="{StaticResource FormSubmitText}" FontSize="18" />
                     </Border>
                 </Grid>
             </Grid>

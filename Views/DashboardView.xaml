@@ -17,26 +17,31 @@
         <conv:DigitLengthConverter  x:Key="DigitLengthConverter"/>
     </UserControl.Resources>
 
-    <!--
-        
+    <!--        
     use staticresource for static styles
-    and dyanmicresource for theme changing
-    
+    and dyanmicresource for theme changing    
     -->
 
     <Grid Background="#080808" cal:Message.Attach="[Event PreviewMouseDown] = [Action OnMouseDownEvent($source)]">
         <Grid.ColumnDefinitions>
-            <!--<ColumnDefinition Width="0.235*" /> --><!-- side panel -->
-            <ColumnDefinition Width="auto" MinWidth="400" /> <!-- side panel -->
-            <ColumnDefinition Width="*" MinWidth="800" /> <!-- main panel -->
-        </Grid.ColumnDefinitions>
             
+            <!-- side panel -->
+            <ColumnDefinition Width="auto" MinWidth="400" />
+            
+            <!-- main panel -->
+            <ColumnDefinition Width="*" MinWidth="800" />
+        </Grid.ColumnDefinitions>
+
         <!-- side panel -->
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <Grid Grid.Column="0" Margin="20,20,10,20">     
+            <Grid Grid.Column="0" Margin="20,20,10,20">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="0.1*" /> <!-- buttons -->
-                    <RowDefinition Height="*" /> <!-- information status -->
+                    
+                    <!-- buttons -->
+                    <RowDefinition Height="0.1*" />
+                    
+                    <!-- information status -->
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <!-- buttons -->
@@ -53,11 +58,17 @@
 
                         <Grid Margin="0,10">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" /> <!-- add client -->
-                                <ColumnDefinition Width="0.15*" /> <!-- spacer -->
-                                <ColumnDefinition Width="*" /> <!-- add job -->
-                            </Grid.ColumnDefinitions>                       
-                        
+                                
+                                <!-- add client -->
+                                <ColumnDefinition Width="*" />
+                                
+                                <!-- spacer -->
+                                <ColumnDefinition Width="0.15*" />
+                                
+                                <!-- add job -->
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
                             <!-- add client -->
                             <Grid Grid.Column="0" Margin="10,0,0,0">
                                 <Border x:Name="SubmitAddClientBorder" ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="2000" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" VerticalAlignment="Center" CornerRadius="25" Height="50">
@@ -126,14 +137,14 @@
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                         <Border SnapsToDevicePixels="True" BorderThickness="1" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" VerticalAlignment="Center" CornerRadius="25" Height="50">
                                             <svg:SvgViewbox
-                                        RenderOptions.BitmapScalingMode="HighQuality"
-                                        SnapsToDevicePixels="True"
-                                        Source="/Resources/Media/Images/Icons/Lucide/user-round-plus.svg" Width="25" Height="25"/>
-                                    </Border>
+                                                RenderOptions.BitmapScalingMode="HighQuality"
+                                                SnapsToDevicePixels="True"
+                                                Source="/Resources/Media/Images/Icons/Lucide/user-round-plus.svg" Width="25" Height="25"/>
+                                        </Border>
                                         <TextBlock VerticalAlignment="Center" Margin="15,0,0,0" Text="Add Client" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="13">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
-                                                    <Setter Property="Foreground" Value="#888888"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource FormFontColour}"/>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsMouseOver, ElementName=SubmitAddClientBorder}" Value="True">
                                                             <Setter Property="Foreground" Value="White"/>
@@ -145,10 +156,10 @@
                                     </StackPanel>
                                 </Border>
                             </Grid>
-                        
+
                             <!-- spacer -->
                             <Grid Grid.Column="1">
-                                <!-- spacer -->                            
+                                <!-- spacer -->
                                 <Border Margin="10,10" Width="1" SnapsToDevicePixels="True">
                                     <Border.Background>
                                         <!-- StartPoint/EndPoint set to Y-axis (0,0 to 0,1) for vertical fade -->
@@ -163,7 +174,7 @@
                                     </Border.Background>
                                 </Border>
                             </Grid>
-                        
+
                             <!-- add job -->
                             <Grid Grid.Column="2" Margin="0,0,10,0" Opacity="{Binding OpacityBtns}">
                                 <Border x:Name="SubmitAddJobBorder" ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="2000" IsEnabled="{Binding EnableBtns}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddJob()]" VerticalAlignment="Center" CornerRadius="25" Height="50">
@@ -198,8 +209,8 @@
                                                 <Trigger Property="IsMouseOver" Value="True">
                                                     <Setter Property="Cursor" Value="Hand" />
                                                     <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
-                                                </Trigger>                                                
-                                            </Style.Triggers>                             
+                                                </Trigger>
+                                            </Style.Triggers>
                                         </Style>
                                     </Border.Style>
 
@@ -234,24 +245,24 @@
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <Border SnapsToDevicePixels="True" BorderThickness="1" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" VerticalAlignment="Center" CornerRadius="25" Height="50">
                                                 <svg:SvgViewbox
-                                            RenderOptions.BitmapScalingMode="HighQuality"
-                                            SnapsToDevicePixels="True"
-                                            Source="/Resources/Media/Images/Icons/Lucide/briefcase-business.svg" Width="25" Height="25"/>
-                                        </Border>
+                                                    RenderOptions.BitmapScalingMode="HighQuality"
+                                                    SnapsToDevicePixels="True"
+                                                    Source="/Resources/Media/Images/Icons/Lucide/briefcase-business.svg" Width="25" Height="25"/>
+                                            </Border>
                                             <TextBlock VerticalAlignment="Center" Margin="15,0,0,0" Text="Add Job" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" FontSize="13">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
-                                                        <Setter Property="Foreground" Value="#888888"/>
+                                                        <Setter Property="Foreground" Value="{StaticResource FormFontColour}"/>
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding IsMouseOver, ElementName=SubmitAddJobBorder}" Value="True">
                                                                 <Setter Property="Foreground" Value="White"/>
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
-                                                </TextBlock.Style>                                                
+                                                </TextBlock.Style>
                                             </TextBlock>
                                         </StackPanel>
-                                    </StackPanel>                         
+                                    </StackPanel>
                                 </Border>
                             </Grid>
                         </Grid>
@@ -271,11 +282,21 @@
                         </Border.BorderBrush>
                         <Grid Margin="20">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="auto" /> <!-- jobs information -->
-                                <RowDefinition Height="0.05*" /> <!-- spacer -->
-                                <RowDefinition Height="auto" /> <!-- money information -->
-                                <RowDefinition Height="0.15*" /> <!-- spacer -->
-                                <RowDefinition Height="auto" /> <!-- profile / account -->
+                                
+                                <!-- jobs information -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- spacer -->
+                                <RowDefinition Height="0.05*" />
+                                
+                                <!-- money information -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- spacer -->
+                                <RowDefinition Height="0.15*" />
+                                
+                                <!-- profile / account -->
+                                <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
 
                             <!-- jobs information -->
@@ -346,10 +367,10 @@
                                                     </Style>
                                                 </TextBlock.Style>
                                             </TextBlock>
-                                        </StackPanel>    
+                                        </StackPanel>
                                     </Border>
                                 </Grid>
-                            
+
                                 <!-- active -->
                                 <Grid Grid.Column="1" Grid.Row="0" Margin="10,0,10,20">
                                     <Border CornerRadius="10" BorderThickness="1" SnapsToDevicePixels="True">
@@ -470,7 +491,7 @@
                                             </TextBlock>
                                         </StackPanel>
                                     </Border>
-                                </Grid>                            
+                                </Grid>
 
                                 <!-- invoiced -->
                                 <Grid Grid.Column="1" Grid.Row="1" Margin="10,0,10,0">
@@ -533,19 +554,27 @@
                                     </Border>
                                 </Grid>
                             </Grid>
-                        
+
                             <!-- spacer -->
                             <Grid Grid.Row="1" />
 
                             <!-- money information -->
                             <Grid Grid.Row="2" Width="325">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" /> <!-- gross -->
-                                    <RowDefinition Height="*" /> <!-- received -->
-                                    <RowDefinition Height="*" /> <!-- overdue -->
-                                    <RowDefinition Height="*" /> <!-- outstanding -->
+                                    
+                                    <!-- gross -->
+                                    <RowDefinition Height="*" />
+                                    
+                                    <!-- received -->
+                                    <RowDefinition Height="*" />
+                                    
+                                    <!-- overdue -->
+                                    <RowDefinition Height="*" />
+                                    
+                                    <!-- outstanding -->
+                                    <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
-                            
+
                                 <!-- gross payment -->
                                 <Grid Grid.Row="0">
                                     <StackPanel Orientation="Vertical" Margin="10,10,10,30">
@@ -554,11 +583,11 @@
                                             <Border.BorderBrush>
                                                 <SolidColorBrush Color="LightGray" Opacity="0.25" />
                                             </Border.BorderBrush>
-                                            <TextBox Style="{StaticResource TextBoxReadOnly}" Cursor="Arrow" Foreground="{StaticResource FontSecondaryBrush}" IsReadOnly="True" Text="{Binding GrossAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="False" TextWrapping="NoWrap" Padding="15,10,10,10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderThickness="0" />                                        
+                                            <TextBox Style="{StaticResource TextBoxReadOnly}" Cursor="Arrow" Foreground="{StaticResource FontSecondaryBrush}" IsReadOnly="True" Text="{Binding GrossAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="False" TextWrapping="NoWrap" Padding="15,10,10,10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderThickness="0" />
                                         </Border>
                                     </StackPanel>
                                 </Grid>
-                                                        
+
                                 <!-- outstanding payment -->
                                 <Grid Grid.Row="1">
                                     <StackPanel Orientation="Vertical" Margin="10,10,10,30">
@@ -581,12 +610,12 @@
                                             <TextBox Style="{StaticResource TextBoxReadOnly}" Cursor="Arrow" Foreground="{StaticResource FontSecondaryBrush}" IsReadOnly="True" Text="{Binding OutstandingAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="False" TextWrapping="NoWrap" Padding="15,10,10,10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderThickness="0" />
                                         </Border>
                                     </StackPanel>
-                                </Grid>     
-                            
+                                </Grid>
+
                                 <!-- received payment -->
                                 <Grid Grid.Row="2">
-                                        <StackPanel Orientation="Vertical" Margin="10">
-                                            <TextBlock Margin="5,0,0,5" Text="Received" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
+                                    <StackPanel Orientation="Vertical" Margin="10">
+                                        <TextBlock Margin="5,0,0,5" Text="Received" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontSecondaryBrush}" FontSize="22" />
                                         <Border CornerRadius="10" BorderThickness="1.5" SnapsToDevicePixels="True">
                                             <Border.BorderBrush>
                                                 <SolidColorBrush Color="LightGray" Opacity="0.25" />
@@ -594,7 +623,7 @@
                                             <TextBox Style="{StaticResource TextBoxReadOnly}" Cursor="Arrow" Foreground="{StaticResource FontSecondaryBrush}" IsReadOnly="True" Text="{Binding ReceivedAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="False" TextWrapping="NoWrap" Padding="15,10,10,10" FontSize="32" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" BorderThickness="0" />
                                         </Border>
                                     </StackPanel>
-                                </Grid>              
+                                </Grid>
                             </Grid>
 
                             <!-- spacer -->
@@ -665,19 +694,23 @@
 
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" /> <!-- icon / name -->
-                                            <ColumnDefinition Width="auto" /> <!-- click icon -->
+                                            
+                                            <!-- icon / name -->
+                                            <ColumnDefinition Width="*" />
+                                            
+                                            <!-- click icon -->
+                                            <ColumnDefinition Width="auto" />
                                         </Grid.ColumnDefinitions>
-                                        
+
                                         <!-- icon / name -->
                                         <Grid Grid.Column="0">
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,0,0,0">
-                                                    <svg:SvgViewbox                         
+                                                <svg:SvgViewbox                         
                                                     RenderOptions.BitmapScalingMode="HighQuality"
                                                     SnapsToDevicePixels="True"
                                                     Source="/Resources/Media/Images/Icons/Lucide/user-round-cog.svg" Width="25" Height="25"/>
                                                 <TextBox VerticalAlignment="Center" HorizontalAlignment="Left" Background="Transparent" BorderThickness="0" IsReadOnly="True" AcceptsReturn="False" TextWrapping="NoWrap" Margin="15,4,0,0" Text="{Binding UserName}" Width="200" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="22" />
-                                            </StackPanel>    
+                                            </StackPanel>
                                         </Grid>
 
                                         <!-- click icon -->
@@ -698,22 +731,34 @@
                 </Grid>
             </Grid>
         </ScrollViewer>
-        
+
         <!-- main panel -->
         <Grid Grid.Column="1" Margin="10,10,20,20">
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto" /> <!-- search / filter / sort -->
-                <RowDefinition Height="*" /> <!-- job cards -->
-                <RowDefinition Height="0" /> <!-- info bar for V2 -->
+                
+                <!-- search / filter / sort -->
+                <RowDefinition Height="auto" />
+                
+                <!-- job cards -->
+                <RowDefinition Height="*" />
+                
+                <!-- info bar for V2 -->
+                <RowDefinition Height="0" />
             </Grid.RowDefinitions>
 
             <!-- search / filter / sort -->
             <Grid Grid.Row="0">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto" />                        <!-- total jobs (to become search bar) -->
-                        <ColumnDefinition Width="*" />                       <!-- line spacer -->
-                        <ColumnDefinition Width="auto" />                        <!-- filter/sort -->
+                        
+                        <!-- total jobs (to become search bar) -->
+                        <ColumnDefinition Width="auto" />
+                        
+                        <!-- line spacer -->
+                        <ColumnDefinition Width="*" />
+                        
+                        <!-- filter/sort -->
+                        <ColumnDefinition Width="auto" />
                     </Grid.ColumnDefinitions>
 
                     <!-- total jobs (to become search bar) -->
@@ -743,7 +788,7 @@
                     <!-- filter/sort -->
                     <Grid Grid.Column="2" VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,0" Opacity="{Binding OpacityBtns}" >
-                            
+
                             <!-- filter -->
                             <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" x:Name="SubmitFilterBorder" Cursor="Hand" IsEnabled="{Binding EnableBtns}" SnapsToDevicePixels="True" Margin="0,0,10,0" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenFilterContextMenu($source)]" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
                                 <Border.Style>
@@ -801,7 +846,7 @@
                                     SnapsToDevicePixels="True"
                                     Source="/Resources/Media/Images/Icons/Lucide/list-filter.svg" Width="15" Height="15"/>
                             </Border>
-                            
+
                             <!-- sort -->
                             <Border ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="1000" x:Name="SubmitSortBorder" Cursor="Hand" IsEnabled="{Binding EnableBtns}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action OpenSortContextMenu($source)]" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
                                 <Border.Style>
@@ -866,11 +911,9 @@
 
             <!-- job cards -->
             <Grid Grid.Row="1" Margin="0,10,0,0">
-                <Border Background="#0C0C0E" BorderBrush="#24242A" BorderThickness="1.5" CornerRadius="20" SnapsToDevicePixels="True">
+                <Border Background="{StaticResource JobsCardsBackground}" BorderBrush="{StaticResource JobsCardsBorder}" BorderThickness="1.5" CornerRadius="20" SnapsToDevicePixels="True">
                     <Grid>
-
-                        <!--<ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10,20,10,10" Padding="0,0,10,0" CanContentScroll="True">-->
-                            <ListBox ItemsSource="{Binding DashboardData}"
+                        <ListBox ItemsSource="{Binding DashboardData}"
                                         Background="Transparent"
                                         BorderThickness="0"
                                         Padding="0"
@@ -882,11 +925,11 @@
                                         VirtualizingPanel.ScrollUnit="Pixel"
                                         VirtualizingPanel.CacheLength="2"
                                         VirtualizingPanel.CacheLengthUnit="Page">
-                                <ListBox.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <VirtualizingStackPanel/>
-                                    </ItemsPanelTemplate>
-                                </ListBox.ItemsPanel>
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
 
                             <ListBox.ItemContainerStyle>
                                 <Style TargetType="ListBoxItem">
@@ -918,11 +961,11 @@
                                         CornerRadius="20" 
                                         Margin="20,0,20,0" 
                                         Padding="10"
-                                            cal:Message.Attach="
-                                                            [Event MouseLeftButtonUp] = [Action SelectJob($dataContext)];
-                                                            [Event MouseEnter] = [Action SelectJob($dataContext)];
-                                                            [Event MouseRightButtonUp] = [Action OpenContextMenu($dataContext)];"
-                                            Cursor="Hand"
+                                        cal:Message.Attach="
+                                            [Event MouseLeftButtonUp] = [Action SelectJob($dataContext)];
+                                            [Event MouseEnter] = [Action SelectJob($dataContext)];
+                                            [Event MouseRightButtonUp] = [Action OpenContextMenu($dataContext)];"
+                                        Cursor="Hand"
                                         MouseLeftButtonDown="EditJob">
 
                                         <Border.ToolTip>
@@ -947,7 +990,7 @@
                                                 </TextBlock>
                                             </ToolTip>
                                         </Border.ToolTip>
-                                        
+
                                         <Border.Style>
                                             <Style TargetType="Border">
                                                 <!-- 1. Default BorderBrush -->
@@ -999,13 +1042,27 @@
 
                                         <Grid>
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="0.3*" />                                                <!-- type -->
-                                                <ColumnDefinition Width="*" />                                                <!-- full name / job title -->
-                                                <ColumnDefinition Width="0.2*" />                                                <!-- spacer -->
-                                                <ColumnDefinition Width="0.5*" />                                                <!-- job status / due date -->
-                                                <ColumnDefinition Width="0.2*" />                                                <!-- spacer -->
-                                                <ColumnDefinition Width="*" />                                                <!-- job price -->
-                                                <ColumnDefinition Width="auto" />                                                <!-- buttons -->
+                                                
+                                                <!-- type -->
+                                                <ColumnDefinition Width="0.3*" />
+                                                
+                                                <!-- full name / job title -->
+                                                <ColumnDefinition Width="*" />
+                                                
+                                                <!-- spacer -->
+                                                <ColumnDefinition Width="0.2*" />
+                                                
+                                                <!-- job status / due date -->
+                                                <ColumnDefinition Width="0.5*" />
+                                                
+                                                <!-- spacer -->
+                                                <ColumnDefinition Width="0.2*" />
+                                                
+                                                <!-- job price -->
+                                                <ColumnDefinition Width="*" />
+                                                
+                                                <!-- buttons -->
+                                                <ColumnDefinition Width="auto" />
                                             </Grid.ColumnDefinitions>
 
                                             <!-- type -->
@@ -1052,9 +1109,15 @@
                                             <!-- full name / job title -->
                                             <Grid Grid.Column="1" VerticalAlignment="Center">
                                                 <Grid.RowDefinitions>
-                                                    <RowDefinition Height="*" />                                                    <!-- full name -->
-                                                    <RowDefinition Height="*" />                                                    <!-- spacer -->
-                                                    <RowDefinition Height="*" />                                                    <!-- job title -->
+                                                    
+                                                    <!-- full name -->
+                                                    <RowDefinition Height="*" />
+                                                    
+                                                    <!-- spacer -->
+                                                    <RowDefinition Height="*" />
+                                                    
+                                                    <!-- job title -->
+                                                    <RowDefinition Height="*" />
                                                 </Grid.RowDefinitions>
 
                                                 <!-- full name -->
@@ -1080,7 +1143,7 @@
 
                                                 <!-- job title -->
                                                 <Grid Grid.Row="2">
-                                                    <TextBox HorizontalAlignment="Left" Background="Transparent" BorderThickness="0" IsReadOnly="True" AcceptsReturn="False" TextWrapping="NoWrap" Width="400" Margin="5,0,0,0" Opacity="0.8" Text="{Binding JobTitle}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#888888" FontSize="24" />
+                                                    <TextBox HorizontalAlignment="Left" Background="Transparent" BorderThickness="0" IsReadOnly="True" AcceptsReturn="False" TextWrapping="NoWrap" Width="400" Margin="5,0,0,0" Opacity="0.8" Text="{Binding JobTitle}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="24" />
                                                 </Grid>
                                             </Grid>
 
@@ -1091,9 +1154,15 @@
                                             <!-- job status / due date -->
                                             <Grid Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center">
                                                 <Grid.RowDefinitions>
-                                                    <RowDefinition Height="*" />                                                    <!-- job status -->
-                                                    <RowDefinition Height="0.5*" />                                                    <!-- spacer -->
-                                                    <RowDefinition Height="*" />                                                    <!-- due date -->
+                                                    
+                                                    <!-- job status -->
+                                                    <RowDefinition Height="*" />
+                                                    
+                                                    <!-- spacer -->
+                                                    <RowDefinition Height="0.5*" />
+                                                    
+                                                    <!-- due date -->
+                                                    <RowDefinition Height="*" />
                                                 </Grid.RowDefinitions>
 
                                                 <!-- job status -->
@@ -1145,9 +1214,9 @@
                                                         <TextBlock Margin="10,0,0,0" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="TextBlock">
-                                                                     <!-- job status due date -->
+                                                                    <!-- job status due date -->
                                                                     <Setter Property="Text" Value="{Binding DueDate}" />
-                                                                    
+
                                                                     <!-- invoiced status due date -->
                                                                     <Style.Triggers>
                                                                         <DataTrigger Binding="{Binding InvoiceStatus}" Value="Invoiced">
@@ -1174,44 +1243,44 @@
                                             <Grid Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
                                                 <TextBox HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0" Text="{Binding Price, StringFormat={}{0:C}}" Background="Transparent" BorderThickness="0" IsReadOnly="True" AcceptsReturn="False" TextWrapping="NoWrap" Width="300" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="#E0E0E0" FontSize="32" />
                                             </Grid>
-                                            
+
                                             <!-- buttons -->
-                                                <Grid Grid.Column="6">
-                                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                        <Border Opacity="0.5" Cursor="Hand" SnapsToDevicePixels="True" Margin="0,0,0,40" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditJob($source)]" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
-                                                            <Border.Style>
-                                                                <Style TargetType="Border">
-                                                                    <Setter Property="Background" Value="Transparent"/>
-                                                                    <Style.Triggers>
-                                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                                            <Setter Property="Background" Value="#FF2E2E2E"/>
-                                                                        </Trigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </Border.Style>
+                                            <Grid Grid.Column="6">
+                                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <Border Opacity="0.5" Cursor="Hand" SnapsToDevicePixels="True" Margin="0,0,0,40" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action EditJob($source)]" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="Background" Value="Transparent"/>
+                                                                <Style.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter Property="Background" Value="#FF2E2E2E"/>
+                                                                    </Trigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Border.Style>
 
-                                                            <svg:SvgViewbox                         
-                                                        RenderOptions.BitmapScalingMode="HighQuality"
-                                                        SnapsToDevicePixels="True"
-                                                        Source="/Resources/Media/Images/Icons/Lucide/pen.svg" Width="15" Height="15"/>
+                                                        <svg:SvgViewbox                         
+                                                            RenderOptions.BitmapScalingMode="HighQuality"
+                                                            SnapsToDevicePixels="True"
+                                                            Source="/Resources/Media/Images/Icons/Lucide/pen.svg" Width="15" Height="15"/>
                                                     </Border>
-                                                        <Border Visibility="Hidden" Opacity="0.5" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteJob()]" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
-                                                            <Border.Style>
-                                                                <Style TargetType="Border">
-                                                                    <Setter Property="Background" Value="Transparent"/>
-                                                                    <Style.Triggers>
-                                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                                            <Setter Property="Background" Value="#33FF0000"/>
-                                                                        </Trigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </Border.Style>
+                                                    <Border Visibility="Hidden" Opacity="0.5" Cursor="Hand" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action DeleteJob()]" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="40" Height="35" Width="35">
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="Background" Value="Transparent"/>
+                                                                <Style.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter Property="Background" Value="#33FF0000"/>
+                                                                    </Trigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Border.Style>
 
 
-                                                            <svg:SvgViewbox                         
-                                                    RenderOptions.BitmapScalingMode="HighQuality"
-                                                    SnapsToDevicePixels="True"
-                                                    Source="/Resources/Media/Images/Icons/Lucide/trash-2.svg" Width="15" Height="15"/>
+                                                        <svg:SvgViewbox                         
+                                                            RenderOptions.BitmapScalingMode="HighQuality"
+                                                            SnapsToDevicePixels="True"
+                                                            Source="/Resources/Media/Images/Icons/Lucide/trash-2.svg" Width="15" Height="15"/>
                                                     </Border>
                                                 </StackPanel>
                                             </Grid>
@@ -1220,7 +1289,6 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-                    <!--</ScrollViewer>-->
 
                         <!-- add client -->
                         <Border Cursor="Hand" x:Name="SubmitAddClientEmptyBorder" ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="5000" Visibility="{Binding EnableBtns, Converter={StaticResource BoolToVisCollapsedInverse}}" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" SnapsToDevicePixels="True" BorderThickness="1.5" Background="#1E1E1E" VerticalAlignment="Center" HorizontalAlignment="Center" CornerRadius="30" Height="60" Width="240">
@@ -1305,12 +1373,12 @@
                     </Grid>
                 </Border>
             </Grid>
-            
+
             <!-- pagination buttons -->
             <Grid Grid.Row="1" Grid.RowSpan="2">
                 <Border BorderThickness="1.5" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="25,0,0,15" Padding="8,2,8,1" CornerRadius="22">
                     <Border.Style>
-                        <Style TargetType="Border">     
+                        <Style TargetType="Border">
                             <Setter Property="Opacity" Value="0.5" />
                             <Setter Property="Background" Value="#151518" />
                             <Setter Property="BorderBrush" Value="#34343A" />
@@ -1387,17 +1455,13 @@
                                 SnapsToDevicePixels="True"
                                 Source="/Resources/Media/Images/Icons/Lucide/circle-chevron-right.svg" Width="30" Height="30"/>
                         </Border>
-                    
                     </StackPanel>
                 </Border>
-
-
             </Grid>
-            
+
             <!-- info bar for V2 -->
             <Grid Visibility="Collapsed" Grid.Row="2">
                 <Border Background="#202020" CornerRadius="20" BorderThickness="1.5" SnapsToDevicePixels="True" Margin="0,15,0,0">
-                    
                 </Border>
             </Grid>
         </Grid>

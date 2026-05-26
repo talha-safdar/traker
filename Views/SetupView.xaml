@@ -9,7 +9,8 @@
              xmlns:behaviours="clr-namespace:Traker.Behaviours"
              xmlns:cal="http://caliburnmicro.com"
              mc:Ignorable="d" 
-             d:DesignHeight="1000" d:DesignWidth="800">
+             d:DesignHeight="1000" 
+             d:DesignWidth="800">
 
     <UserControl.Resources>
         <conv:BoolToVisibilityCollapsed x:Key="BoolToVisCollapsed"/>
@@ -27,9 +28,15 @@
 
             <Grid Margin="30,20,30,20">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="0.2*" />                    <!-- top bar        -->
-                    <RowDefinition Height="auto" />                    <!-- main contents       -->
-                    <RowDefinition Height="0.15*" />                    <!-- buttons        -->
+                    
+                    <!-- top bar -->
+                    <RowDefinition Height="0.2*" />
+                    
+                    <!-- main contents -->
+                    <RowDefinition Height="auto" />
+                    
+                    <!-- buttons -->
+                    <RowDefinition Height="0.15*" />
                 </Grid.RowDefinitions>
 
                 <!-- top bar -->
@@ -55,37 +62,32 @@
                             </LinearGradientBrush>
                         </TextBlock.Foreground>
                         <TextBlock.Triggers>
-
-
-
                             <EventTrigger RoutedEvent="Loaded">
                                 <BeginStoryboard>
                                     <Storyboard>
 
                                         <DoubleAnimation
-                        Storyboard.TargetName="RevealStop"
-                        Storyboard.TargetProperty="Offset"
-                        From="0"
-                        To="1"
-                        Duration="0:0:3"/>
+                                            Storyboard.TargetName="RevealStop"
+                                            Storyboard.TargetProperty="Offset"
+                                            From="0"
+                                            To="1"
+                                            Duration="0:0:3"/>
 
                                         <DoubleAnimation
-                        Storyboard.TargetName="FadeStop"
-                        Storyboard.TargetProperty="Offset"
-                        From="0.18"
-                        To="1.18"
-                        Duration="0:0:3"/>
+                                            Storyboard.TargetName="FadeStop"
+                                            Storyboard.TargetProperty="Offset"
+                                            From="0.18"
+                                            To="1.18"
+                                            Duration="0:0:3"/>
 
                                         <ObjectAnimationUsingKeyFrames
-    Storyboard.TargetProperty="OpacityMask"
-    BeginTime="0:0:3">
+                                            Storyboard.TargetProperty="OpacityMask"
+                                            BeginTime="0:0:3">
                                             <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Null}"/>
                                         </ObjectAnimationUsingKeyFrames>
-
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
-
 
                             <EventTrigger RoutedEvent="Loaded">
                                 <BeginStoryboard>
@@ -102,8 +104,12 @@
                 <Grid Grid.Row="1" VerticalAlignment="Center" Margin="80,0,80,0">
                     <Grid Margin="30,0,30,0">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="auto" />                            <!-- instructions -->
-                            <RowDefinition Height="auto" />                            <!-- details -->
+                            
+                            <!-- instructions -->
+                            <RowDefinition Height="auto" />
+                            
+                            <!-- details -->
+                            <RowDefinition Height="auto" />
                         </Grid.RowDefinitions>
 
                         <!-- instructions -->
@@ -114,8 +120,12 @@
                         <!-- details -->
                         <Grid Grid.Row="1">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="auto" />                                <!-- user info -->
-                                <RowDefinition Height="auto" />                                <!-- type -->
+                                
+                                <!-- user info -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- type -->
+                                <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
 
                             <!-- user info -->
@@ -127,13 +137,21 @@
                                             <GradientStop Color="Transparent" Offset="1" />
                                         </LinearGradientBrush>
                                     </Border.BorderBrush>
-                                    
+
                                     <Grid Margin="30">
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto" />                                            <!-- name -->
-                                            <RowDefinition Height="auto" />                                            <!-- email -->
-                                            <RowDefinition Height="auto" />                                            <!-- phone -->
-                                            <RowDefinition Height="auto" />                                            <!-- type -->
+                                            
+                                            <!-- name -->
+                                            <RowDefinition Height="auto" />
+                                            
+                                            <!-- email -->
+                                            <RowDefinition Height="auto" />
+                                            
+                                            <!-- phone -->
+                                            <RowDefinition Height="auto" />
+                                            
+                                            <!-- type -->
+                                            <RowDefinition Height="auto" />
                                         </Grid.RowDefinitions>
 
                                         <!-- name -->
@@ -178,7 +196,7 @@
                                             <GradientStop Color="Transparent" Offset="1" />
                                         </LinearGradientBrush>
                                     </Border.BorderBrush>
-                                    
+
                                     <Grid Margin="30">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="auto" />
@@ -203,7 +221,7 @@
 
                                                         <Border.Style>
                                                             <Style TargetType="Border">
-                                                                
+
                                                                 <Setter Property="Background" Value="{Binding BackgroundButtons[0]}" />
                                                                 <Setter Property="BorderThickness" Value="1.5" />
 
@@ -216,7 +234,7 @@
                                                                         </LinearGradientBrush>
                                                                     </Setter.Value>
                                                                 </Setter>
-                                                                
+
                                                                 <Style.Triggers>
                                                                     <DataTrigger Binding="{Binding ToggleButtons[0]}" Value="True">
                                                                         <Setter Property="Opacity" Value="0.5"/>
@@ -300,22 +318,28 @@
                                 </Border>
                             </Grid>
                         </Grid>
-                    </Grid>                    
+                    </Grid>
                 </Grid>
 
                 <!-- butons -->
                 <Grid Grid.Row="2">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="0.5*" /> <!-- empty -->
-                        <ColumnDefinition Width="*" /> <!-- stage -->
-                        <ColumnDefinition Width="0.5*" /> <!-- next -->
+                        
+                        <!-- empty -->
+                        <ColumnDefinition Width="0.5*" />
+                        
+                        <!-- stage -->
+                        <ColumnDefinition Width="*" />
+                        
+                        <!-- next -->
+                        <ColumnDefinition Width="0.5*" />
                     </Grid.ColumnDefinitions>
-                    
+
                     <!-- empty -->
                     <Grid Grid.Column="0">
-                        
+
                     </Grid>
-                    
+
                     <!-- stage -->
                     <Grid Grid.Column="1">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -324,7 +348,7 @@
                             <svg:SvgViewbox Margin="0,0,0,0" Opacity="0.5" RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" Source="/Resources/Media/Images/Icons/Lucide/landmark.svg" Width="15" Height="15"/>
                         </StackPanel>
                     </Grid>
-                    
+
                     <!-- next -->
                     <Grid Grid.Column="2" Opacity="{Binding OpacityBtn}">
                         <!-- next -->
@@ -383,7 +407,7 @@
 
                             <svg:SvgViewbox Margin="2,2,0,0" RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" Source="/Resources/Media/Images/Icons/Lucide/chevron-right.svg" Width="20" Height="20"/>
                         </Border>
-                    </Grid>    
+                    </Grid>
                 </Grid>
             </Grid>
         </Border>
@@ -401,9 +425,15 @@
 
             <Grid Margin="30,20,30,20">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="0.2*" />                    <!-- top bar        -->
-                    <RowDefinition Height="auto" />                    <!-- main contents       -->
-                    <RowDefinition Height="0.15*" />                    <!-- buttons        -->
+                    
+                    <!-- top bar -->
+                    <RowDefinition Height="0.2*" />
+                    
+                    <!-- main contents -->
+                    <RowDefinition Height="auto" />
+                    
+                    <!-- buttons -->
+                    <RowDefinition Height="0.15*" />
                 </Grid.RowDefinitions>
 
                 <!-- top bar -->
@@ -442,11 +472,21 @@
 
                         <Grid Margin="30,20,30,0">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="auto" />                                <!-- name -->
-                                <RowDefinition Height="auto" />                                <!-- country -->
-                                <RowDefinition Height="auto" />                                <!-- city -->
-                                <RowDefinition Height="auto" />                                <!-- address -->
-                                <RowDefinition Height="auto" />                                <!-- postcode -->
+                                
+                                <!-- name -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- country -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- city -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- address -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- postcode -->
+                                <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
 
                             <!-- name -->
@@ -505,18 +545,19 @@
                 <!-- butons -->
                 <Grid Grid.Row="2">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="0.5*" />
+                        
                         <!-- empty -->
-                        <ColumnDefinition Width="*" />
-                        <!-- stage -->
                         <ColumnDefinition Width="0.5*" />
+                        
+                        <!-- stage -->
+                        <ColumnDefinition Width="*" />
+                        
                         <!-- next -->
+                        <ColumnDefinition Width="0.5*" />
                     </Grid.ColumnDefinitions>
 
                     <!-- empty -->
-                    <Grid Grid.Column="0">
-
-                    </Grid>
+                    <Grid Grid.Column="0" />
 
                     <!-- stage -->
                     <Grid Grid.Column="1">
@@ -581,7 +622,7 @@
                                     </BeginStoryboard>
                                 </EventTrigger>
                             </Border.Triggers>
-                            
+
                             <svg:SvgViewbox Margin="2,2,0,0" RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" Source="/Resources/Media/Images/Icons/Lucide/chevron-right.svg" Width="20" Height="20"/>
                         </Border>
                     </Grid>
@@ -601,9 +642,15 @@
 
             <Grid Margin="30,20,30,20">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="0.2*" />                    <!-- top bar        -->
-                    <RowDefinition Height="auto" />                    <!-- main contents       -->
-                    <RowDefinition Height="0.15*" />                    <!-- buttons        -->
+                    
+                    <!-- top bar -->
+                    <RowDefinition Height="0.2*" />
+                    
+                    <!-- main contents -->
+                    <RowDefinition Height="auto" />
+                    
+                    <!-- buttons -->
+                    <RowDefinition Height="0.15*" />
                 </Grid.RowDefinitions>
 
                 <!-- top bar -->
@@ -642,11 +689,21 @@
 
                         <Grid Margin="30,20,30,20">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="auto" />                                <!-- name -->
-                                <RowDefinition Height="auto" />                                <!-- country / city -->
-                                <RowDefinition Height="auto" />                                <!-- address -->
-                                <RowDefinition Height="auto" />                                <!-- postcode -->
-                                <RowDefinition Height="auto" />                                <!-- VAT / Reg -->
+                                
+                                <!-- name -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- country / city -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- address -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- postcode -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- VAT / Reg -->
+                                <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
 
                             <!-- name -->
@@ -662,8 +719,12 @@
                             <!-- country / city -->
                             <Grid Grid.Row="1" Margin="0,0,0,25">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />                                    <!-- country -->
-                                    <ColumnDefinition Width="*" />                                    <!-- city -->
+                                    
+                                    <!-- country -->
+                                    <ColumnDefinition Width="*" />
+                                    
+                                    <!-- city -->
+                                    <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
                                 <!-- country -->
@@ -710,8 +771,12 @@
                             <!-- vat / reg -->
                             <Grid Grid.Row="4">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />                                    <!-- vat -->
-                                    <ColumnDefinition Width="*" />                                    <!-- reg -->
+                                    
+                                    <!-- vat -->
+                                    <ColumnDefinition Width="*" />
+                                    
+                                    <!-- reg -->
+                                    <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
                                 <!-- vat -->
@@ -741,12 +806,15 @@
                 <!-- butons -->
                 <Grid Grid.Row="2">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="0.5*" />
+                        
                         <!-- empty -->
-                        <ColumnDefinition Width="*" />
-                        <!-- stage -->
                         <ColumnDefinition Width="0.5*" />
+                        
+                        <!-- stage -->
+                        <ColumnDefinition Width="*" />
+                        
                         <!-- next -->
+                        <ColumnDefinition Width="0.5*" />
                     </Grid.ColumnDefinitions>
 
                     <!-- empty -->
@@ -839,9 +907,15 @@
 
             <Grid Margin="30,20,30,20">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="0.2*" />                    <!-- top bar        -->
-                    <RowDefinition Height="auto" />                    <!-- main contents       -->
-                    <RowDefinition Height="0.15*" />                    <!-- buttons        -->
+                    
+                    <!-- top bar        -->
+                    <RowDefinition Height="0.2*" />
+                    
+                    <!-- main contents       -->
+                    <RowDefinition Height="auto" />
+                    
+                    <!-- buttons        -->
+                    <RowDefinition Height="0.15*" />
                 </Grid.RowDefinitions>
 
                 <!-- top bar -->
@@ -880,11 +954,21 @@
 
                         <Grid Margin="30,20,30,20">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="auto" />                                <!-- name -->
-                                <RowDefinition Height="auto" />                                <!-- account -->
-                                <RowDefinition Height="auto" />                                <!-- number / sortcode -->
-                                <RowDefinition Height="auto" />                                <!-- iban -->
-                                <RowDefinition Height="auto" />                                <!-- bic -->
+                                
+                                <!-- name -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- account -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- number / sortcode -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- iban -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- bic -->
+                                <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
 
                             <!-- name -->
@@ -910,8 +994,12 @@
                             <!-- number / sortcode -->
                             <Grid Grid.Row="2" Margin="0,0,0,25">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />                                    <!-- number -->
-                                    <ColumnDefinition Width="*" />                                    <!-- sortcode -->
+                                    
+                                    <!-- number -->
+                                    <ColumnDefinition Width="*" />
+                                    
+                                    <!-- sortcode -->
+                                    <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
                                 <!-- number -->
@@ -961,9 +1049,15 @@
                 <!-- butons -->
                 <Grid Grid.Row="2">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="0.5*" />                        <!-- empty -->
-                        <ColumnDefinition Width="*" />                        <!-- stage -->
-                        <ColumnDefinition Width="0.5*" />                        <!-- next -->
+                        
+                        <!-- empty -->
+                        <ColumnDefinition Width="0.5*" />
+                        
+                        <!-- stage -->
+                        <ColumnDefinition Width="*" />
+                        
+                        <!-- next -->
+                        <ColumnDefinition Width="0.5*" />
                     </Grid.ColumnDefinitions>
 
                     <!-- empty -->

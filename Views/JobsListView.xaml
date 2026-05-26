@@ -8,8 +8,10 @@
              xmlns:conv="clr-namespace:Traker.Converters"
              xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" 
-             Height="800" Width="1000">
+             d:DesignHeight="450" 
+             d:DesignWidth="800" 
+             Height="800" 
+             Width="1000">
 
     <Border Margin="5" Background="{StaticResource FormMainBackground}" CornerRadius="20" BorderThickness="1.5" SnapsToDevicePixels="True" cal:Message.Attach="[Event PreviewMouseDown] = [Action OnMouseDownEvent($source)]">
         <Border.BorderBrush>
@@ -24,8 +26,12 @@
 
         <Grid Margin="30,20,30,20">
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.05*" />                <!-- top bar        -->
-                <RowDefinition Height="*" />                <!-- main contents       -->
+                
+                <!-- top bar -->
+                <RowDefinition Height="0.05*" />
+                
+                <!-- main contents -->
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <!-- top bar -->
@@ -33,11 +39,11 @@
                 <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action Exit()]" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="35" Width="35">
                     <Border.Style>
                         <Style TargetType="Border">
-                            <Setter Property="Background" Value="#25252B"/>
+                            <Setter Property="Background" Value="{StaticResource FormCloseBackground}"/>
                             <Setter Property="Opacity" Value="1"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#B94A48"/>
+                                    <Setter Property="Background" Value="{StaticResource FormCloseHoverBackground}"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -81,14 +87,20 @@
             <!-- main contents -->
             <Grid Grid.Row="1" VerticalAlignment="Center" Margin="30,0,30,0" Height="600">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" /> <!-- client name -->
-                    <RowDefinition Height="0.03*" /> <!-- spacer -->
-                    <RowDefinition Height="*" /> <!-- list-->
+                    
+                    <!-- client name -->
+                    <RowDefinition Height="auto" />
+                    
+                    <!-- spacer -->
+                    <RowDefinition Height="0.03*" />
+                    
+                    <!-- list-->
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <!-- client name -->
                 <Grid Grid.Row="0">
-                    <Border Background="{StaticResource FormInnerBackground}" CornerRadius="15" SnapsToDevicePixels="True" HorizontalAlignment="Center" BorderThickness="1.5">            
+                    <Border Background="{StaticResource FormInnerBackground}" CornerRadius="15" SnapsToDevicePixels="True" HorizontalAlignment="Center" BorderThickness="1.5">
                         <Border.BorderBrush>
                             <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
                                 <!-- This whole gradient is now at 50% of its original opacity -->
@@ -97,13 +109,13 @@
                             </LinearGradientBrush>
                         </Border.BorderBrush>
                         <StackPanel Margin="10" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <svg:SvgViewbox   
+                            <svg:SvgViewbox   
                                     Opacity="0.7"
                                     RenderOptions.BitmapScalingMode="HighQuality"
                                     SnapsToDevicePixels="True"
                                     Source="{Binding ClientType}" Width="25" Height="25"/>
                             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" Text="{Binding BusinessName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="34" />
-                        </StackPanel>                        
+                        </StackPanel>
                     </Border>
                 </Grid>
 
@@ -117,7 +129,7 @@
                             <GradientStop Color="Transparent" Offset="1" />
                         </LinearGradientBrush>
                     </Border.BorderBrush>
-                    
+
                     <ListBox ItemsSource="{Binding JobsList}"
                              Background="Transparent"
                             BorderThickness="0"
@@ -157,33 +169,34 @@
                         </ListBox.ItemContainerStyle>
 
                         <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Border 
-                                        SnapsToDevicePixels="True"
-                                        BorderThickness="1.5"
-                                        ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="2000" 
-                                        Height="135"
-                                        CornerRadius="20" 
-                                        Margin="20,0,20,0" 
-                                        Padding="10"
-                                        cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SelectJob($dataContext)];
-                                                            [Event MouseEnter] = [Action SelectJob($dataContext)];
-                                                            [Event MouseRightButtonUp] = [Action OpenContextMenu($dataContext)];"
-                                            Cursor="Hand"
-                                        MouseLeftButtonDown="EditJob">
-                                        
-                                        <Border.BorderBrush>
-                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                <!-- The "Rim Light" on the top edge -->
-                                                <GradientStop Color="#40FFFFFF" Offset="0" />
-                                                <!-- Fades to transparent so the bottom/sides stay dark -->
-                                                <GradientStop Color="Transparent" Offset="0.2" />
-                                            </LinearGradientBrush>
-                                        </Border.BorderBrush>
-                                        <Border.ToolTip>
-                                            <ToolTip Style="{StaticResource DarkToolTip}"
+                            <DataTemplate>
+                                <Border 
+                                    SnapsToDevicePixels="True"
+                                    BorderThickness="1.5"
+                                    ToolTipService.InitialShowDelay="0" ToolTipService.ShowDuration="2000" 
+                                    Height="135"
+                                    CornerRadius="20" 
+                                    Margin="20,0,20,0" 
+                                    Padding="10"
+                                    cal:Message.Attach="
+                                        [Event MouseLeftButtonUp] = [Action SelectJob($dataContext)];
+                                        [Event MouseEnter] = [Action SelectJob($dataContext)];
+                                        [Event MouseRightButtonUp] = [Action OpenContextMenu($dataContext)];"
+                                    Cursor="Hand"
+                                    MouseLeftButtonDown="EditJob">
+
+                                    <Border.BorderBrush>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <!-- The "Rim Light" on the top edge -->
+                                            <GradientStop Color="#40FFFFFF" Offset="0" />
+                                            <!-- Fades to transparent so the bottom/sides stay dark -->
+                                            <GradientStop Color="Transparent" Offset="0.2" />
+                                        </LinearGradientBrush>
+                                    </Border.BorderBrush>
+                                    <Border.ToolTip>
+                                        <ToolTip Style="{StaticResource DarkToolTip}"
                                                 Content="Double-click to edit job | right click for more"/>
-                                        </Border.ToolTip>
+                                    </Border.ToolTip>
 
 
                                     <Border.Style>
@@ -203,11 +216,11 @@
                                             <Setter Property="Effect">
                                                 <Setter.Value>
                                                     <DropShadowEffect Color="Black" 
-                  BlurRadius="15" 
-                 Direction="270"
-                  ShadowDepth="5" 
-                  Opacity="0.4" 
-                  RenderingBias="Quality"/>
+                                                        BlurRadius="15" 
+                                                        Direction="270"
+                                                        ShadowDepth="5" 
+                                                        Opacity="0.4" 
+                                                        RenderingBias="Quality"/>
                                                 </Setter.Value>
                                             </Setter>
 
@@ -215,19 +228,13 @@
                                                 <Trigger Property="IsMouseOver" Value="True">
                                                     <Setter Property="Background" Value="#1D1D22"/>
                                                     <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
-                                                    <!-- on pressed:
-                Background: #202027
-                Border:     #A7B4CC-->
-
-
-                                                    <!-- 3. Increased Blur Shadow on Hover -->
                                                     <Setter Property="Effect">
                                                         <Setter.Value>
                                                             <DropShadowEffect Color="Black" 
-                      BlurRadius="30" 
-                      ShadowDepth="0" 
-                      Opacity="0.8" 
-                      RenderingBias="Quality"/>
+                                                                BlurRadius="30" 
+                                                                ShadowDepth="0" 
+                                                                Opacity="0.8" 
+                                                                RenderingBias="Quality"/>
                                                         </Setter.Value>
                                                     </Setter>
                                                 </Trigger>
@@ -235,64 +242,78 @@
                                         </Style>
                                     </Border.Style>
 
-
-
                                     <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />                                                <!-- job title -->
-                                                <ColumnDefinition Width="0.1*" />                                                <!-- spacer -->
-                                                <ColumnDefinition Width="*" />                                                <!-- job status / due date -->
-                                                <ColumnDefinition Width="0.1*" />                                                <!-- spacer -->
-                                                <ColumnDefinition Width="*" />                                                <!-- job price -->
-                                            </Grid.ColumnDefinitions>
-
+                                        <Grid.ColumnDefinitions>
+                                            
                                             <!-- job title -->
-                                            <Grid Margin="30,0,0,0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                            <ColumnDefinition Width="*" />
+                                            
+                                            <!-- spacer -->
+                                            <ColumnDefinition Width="0.1*" />
+                                            
+                                            <!-- job status / due date -->
+                                            <ColumnDefinition Width="*" />
+                                            
+                                            <!-- spacer -->
+                                            <ColumnDefinition Width="0.1*" />
+                                            
+                                            <!-- job price -->
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- job title -->
+                                        <Grid Margin="30,0,0,0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center">
                                             <TextBox HorizontalAlignment="Left" Background="Transparent" BorderThickness="0" IsReadOnly="True" AcceptsReturn="False" TextWrapping="NoWrap" Width="200" Margin="5,0,0,0" Opacity="0.8" Text="{Binding JobTitle}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="SemiBold" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />
                                         </Grid>
 
-                                            <!-- spacer-->
+                                        <!-- spacer-->
                                         <Grid Grid.Column="1" />
 
                                         <!-- job status / due date -->
-                                            <Grid Grid.Column="2" HorizontalAlignment="Center">
-                                                <Grid Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="*" />                                                        <!-- job status -->
-                                                        <RowDefinition Height="0.5*" />                                                        <!-- spacer -->
-                                                        <RowDefinition Height="*" />                                                        <!-- due date -->
-                                                    </Grid.RowDefinitions>
-
+                                        <Grid Grid.Column="2" HorizontalAlignment="Center">
+                                            <Grid Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <Grid.RowDefinitions>
+                                                    
                                                     <!-- job status -->
-                                                    <Grid Grid.Row="0">
+                                                    <RowDefinition Height="*" />
+                                                    
+                                                    <!-- spacer -->
+                                                    <RowDefinition Height="0.5*" />
+                                                    
+                                                    <!-- due date -->
+                                                    <RowDefinition Height="*" />
+                                                </Grid.RowDefinitions>
+
+                                                <!-- job status -->
+                                                <Grid Grid.Row="0">
                                                     <TextBlock Margin="0" Text="{Binding JobStatus}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Black" FontSize="24" Foreground="{StaticResource FontPrimaryBrush}" />
                                                 </Grid>
 
-                                                    <!-- spacer -->
-                                                    <Grid Grid.Row="1" Margin="0,10" />
+                                                <!-- spacer -->
+                                                <Grid Grid.Row="1" Margin="0,10" />
 
-                                                    <!-- due date -->
-                                                    <Grid Grid.Row="2">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBlock HorizontalAlignment="Left" Margin="0" Text="Due" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="24" />
-                                                            <TextBlock Margin="10,0,0,0" Text="{Binding DueDate}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />
-                                                        </StackPanel>
-                                                    </Grid>
+                                                <!-- due date -->
+                                                <Grid Grid.Row="2">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock HorizontalAlignment="Left" Margin="0" Text="Due" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FontSecondaryBrush}" FontSize="24" />
+                                                        <TextBlock Margin="10,0,0,0" Text="{Binding DueDate}" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FontPrimaryBrush}" FontSize="24" />
+                                                    </StackPanel>
                                                 </Grid>
                                             </Grid>
+                                        </Grid>
 
-                                            <!-- spacer -->
+                                        <!-- spacer -->
                                         <Grid Grid.Column="3" />
 
                                         <!-- job price -->
-                                            <Grid Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <Grid Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBox HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0" Text="{Binding Price, StringFormat={}{0:C}}" Background="Transparent" BorderThickness="0" IsReadOnly="True" AcceptsReturn="False" TextWrapping="NoWrap" Width="200" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" FontWeight="Bold" Foreground="#E0E0E0" FontSize="32" />
                                         </Grid>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                 </Border>
             </Grid>
         </Grid>

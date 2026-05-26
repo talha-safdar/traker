@@ -9,31 +9,41 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" 
              d:DesignWidth="250">
+    
     <Border Background="{StaticResource ContextMneuMainBackground}" CornerRadius="20" BorderBrush="{StaticResource ContextMneuMainBorder}" BorderThickness="1.5" Width="280" Height="335">
         <Border.Effect>
             <DropShadowEffect Color="Black" BlurRadius="15" Opacity="0.8" ShadowDepth="2" />
         </Border.Effect>
 
-
         <Grid Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.4*" /> <!-- stauts -->
-                <RowDefinition Height="*" /> <!-- main buttons -->
-                <RowDefinition Height="0.4*" /> <!-- delete -->
+                
+                <!-- stauts -->
+                <RowDefinition Height="0.4*" />
+                
+                <!-- main buttons -->
+                <RowDefinition Height="*" />
+                
+                <!-- delete -->
+                <RowDefinition Height="0.4*" />
             </Grid.RowDefinitions>
-            
+
             <!-- status -->
             <Grid Grid.Row="0" Margin="5,0" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" /> <!-- active -->
-                    <ColumnDefinition Width="*" /> <!-- done -->
+                    
+                    <!-- active -->
+                    <ColumnDefinition Width="*" />
+                    
+                    <!-- done -->
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                
+
                 <!-- active -->
                 <Grid Grid.Column="0" IsEnabled="{Binding ActiveDoneEnable[0]}" Opacity="{Binding ActiveDoneOpacity[0]}">
                     <Border SnapsToDevicePixels="True" Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action SetStatus('Active')]" Background="Transparent" CornerRadius="10" Height="35" Margin="0,0,5,0" BorderThickness="1" BorderBrush="{StaticResource JobStatusActive}">
                         <Border.Style>
-                            <Style TargetType="Border">           
+                            <Style TargetType="Border">
                                 <Setter Property="Opacity" Value="1"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding SelectedJob.JobStatus}" Value="Invoiced">
@@ -45,7 +55,7 @@
                                     <Trigger Property="IsMouseOver" Value="True">
                                         <Setter Property="Opacity" Value="0.8"/>
                                     </Trigger>
-                                </Style.Triggers>                                
+                                </Style.Triggers>
                             </Style>
                         </Border.Style>
 
@@ -135,9 +145,15 @@
             <!-- main buttons -->
             <Grid Grid.Row="1" Margin="5,0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*" /> <!-- folder -->
-                    <RowDefinition Height="*" /> <!-- invoice -->
-                    <RowDefinition Height="*" /> <!-- client -->
+                    
+                    <!-- folder -->
+                    <RowDefinition Height="*" />
+                    
+                    <!-- invoice -->
+                    <RowDefinition Height="*" />
+                    
+                    <!-- client -->
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <!-- edit invoice OR -->
@@ -342,7 +358,7 @@
                                         <Setter Property="Background" Value="#1D1D22"/>
                                         <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                                     </Trigger>
-                                    
+
                                     <!-- if typeicon is empty then that means it is open from Jobslist, hence disable edit client -->
                                     <DataTrigger Binding="{Binding SelectedJob.TypeIcon}" Value="">
                                         <Setter Property="Opacity" Value="0.5" />

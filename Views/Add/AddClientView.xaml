@@ -34,6 +34,7 @@
 
         <Grid Margin="30,20,30,20">
             <Grid.RowDefinitions>
+                
                 <!-- top bar -->
                 <RowDefinition Height="0.1*" />
                 
@@ -105,16 +106,21 @@
                     </Border.BorderBrush>
                     <Grid Margin="20,0" VerticalAlignment="Center">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
+                            
                             <!-- client type -->
                             <RowDefinition Height="*" />
+                            
                             <!-- client name -->
                             <RowDefinition Height="*" />
+                            
                             <!-- job title -->
                             <RowDefinition Height="*" />
+                            
                             <!-- price -->
                             <RowDefinition Height="*" />
+                            
                             <!-- due date -->
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
                         <!-- client type -->
@@ -181,6 +187,7 @@
 
             <!-- butons -->
             <Grid Grid.Row="2" Opacity="{Binding OpacitySubmitBtn}" >
+                <!-- submit -->
                 <Border Cursor="Hand" x:Name="SubmitBorder" IsEnabled="{Binding EnableSubmitBtn}" SnapsToDevicePixels="True" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action AddClient()]" CornerRadius="25" Height="45" Margin="150,0">
                     <Border.Style>
                         <Style TargetType="Border">

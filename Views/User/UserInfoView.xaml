@@ -16,6 +16,7 @@
     <UserControl.Resources>
         <conv:BoolToVisibilityCollapsed x:Key="BoolToVisCollapsed"/>
     </UserControl.Resources>
+    
     <Border Background="{StaticResource FormMainBackground}" CornerRadius="20" BorderThickness="1.5" SnapsToDevicePixels="True">
         <Border.BorderBrush>
             <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.25">
@@ -29,9 +30,15 @@
 
         <Grid Margin="30,20,30,20">
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.1*" />                <!-- top bar        -->
-                <RowDefinition Height="*" />                <!-- main contents       -->
-                <RowDefinition Height="0.15*" />                <!-- buttons        -->
+                
+                <!-- top bar -->
+                <RowDefinition Height="0.1*" />
+                
+                <!-- main contents -->
+                <RowDefinition Height="*" />
+                
+                <!-- buttons -->
+                <RowDefinition Height="0.15*" />
             </Grid.RowDefinitions>
 
             <!-- top bar -->
@@ -40,11 +47,11 @@
                 <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action Exit()]" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="35" Width="35">
                     <Border.Style>
                         <Style TargetType="Border">
-                            <Setter Property="Background" Value="#25252B"/>
+                            <Setter Property="Background" Value="{StaticResource FormCloseBackground}"/>
                             <Setter Property="Opacity" Value="1"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#B94A48"/>
+                                    <Setter Property="Background" Value="{StaticResource FormCloseHoverBackground}"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -88,8 +95,12 @@
             <!-- main contents -->
             <Grid Grid.Row="1" VerticalAlignment="Center">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />                    <!-- user info -->
-                    <RowDefinition Height="auto" />                    <!-- business type -->
+                    
+                    <!-- user info -->
+                    <RowDefinition Height="auto" />
+                    
+                    <!-- business type -->
+                    <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
                 <!-- user info -->
@@ -101,12 +112,18 @@
                                 <GradientStop Color="Transparent" Offset="1" />
                             </LinearGradientBrush>
                         </Border.BorderBrush>
-                        
+
                         <Grid Margin="30">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="auto" />                                <!-- name -->
-                                <RowDefinition Height="auto" />                                <!-- email -->
-                                <RowDefinition Height="auto" />                                <!-- phone -->
+                                
+                                <!-- name -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- email -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- phone -->
+                                <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
 
                             <!-- name -->
@@ -145,7 +162,7 @@
                                 <GradientStop Color="Transparent" Offset="1" />
                             </LinearGradientBrush>
                         </Border.BorderBrush>
-                        
+
                         <Grid Margin="30">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto" />
@@ -157,7 +174,7 @@
                             <Grid Grid.Row="0" Margin="0,0,0,25">
                                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="Busienss Type" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Bold" Foreground="{StaticResource FormFontColour}" FontSize="28" />
                             </Grid>
-                            
+
                             <!-- spacer -->
                             <Grid Grid.Row="1" />
 
@@ -196,7 +213,6 @@
                                                         </DataTrigger>
 
                                                         <Trigger Property="IsMouseOver" Value="True">
-                                                            <!-- Increase opacity to rgba 255,255,255, 0.1 -->
                                                             <Setter Property="BorderBrush" Value="{StaticResource AccentColour}" />
                                                         </Trigger>
                                                     </Style.Triggers>
@@ -273,7 +289,7 @@
                                                     </Style>
                                                 </TextBlock.Style>
                                             </TextBlock>
-                                        </Border>                                        
+                                        </Border>
                                     </StackPanel>
                                 </Border>
                             </Grid>

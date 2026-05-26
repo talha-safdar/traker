@@ -474,8 +474,15 @@ namespace Traker.Database
 
                             OR
                             (
-                                @StatusFilter IN ('New', 'Active', 'Done', 'Invoiced')
+                                @StatusFilter IN ('New', 'Active', 'Done')
                                 AND j.Status = @StatusFilter
+                            )
+
+                            OR
+                            (
+                                @StatusFilter = 'Invoiced'
+                                AND j.Status = 'Invoiced'
+                                AND i.Status = 'Invoiced'
                             )
 
                             OR

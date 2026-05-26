@@ -25,6 +25,10 @@
     <SolidColorBrush x:Key="HoverButton" Color="#1D1D22" />
     <SolidColorBrush x:Key="ClickedButton" Color="#202027" />
 
+    <!-- dashboard -->
+    <SolidColorBrush x:Key="JobsCardsBackground" Color="#0C0C0E" />
+    <SolidColorBrush x:Key="JobsCardsBorder" Color="#24242A" />
+    
     <!-- window forms -->
     <SolidColorBrush x:Key="FormCloseBackground" Color="#25252B" />
     <SolidColorBrush x:Key="FormCloseHoverBackground" Color="#B94A48" />
@@ -61,8 +65,6 @@
 
     <!-- click animations -->
     <sys:Double x:Key="ClickOpacity">0.5</sys:Double>
-
-
 
 
 

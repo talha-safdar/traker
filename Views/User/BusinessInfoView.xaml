@@ -33,9 +33,15 @@
 
             <Grid Margin="30,20,30,20">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="0.1*" />                <!-- top bar        -->
-                    <RowDefinition Height="*" />                <!-- main contents       -->
-                    <RowDefinition Height="0.15*" />                <!-- buttons        -->
+                    
+                    <!-- top bar -->
+                    <RowDefinition Height="0.1*" />
+                    
+                    <!-- main contents -->
+                    <RowDefinition Height="*" />
+                    
+                    <!-- buttons -->
+                    <RowDefinition Height="0.15*" />
                 </Grid.RowDefinitions>
 
                 <!-- top bar -->
@@ -44,16 +50,15 @@
                     <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action Exit()]" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="35" Width="35">
                         <Border.Style>
                             <Style TargetType="Border">
-                                <Setter Property="Background" Value="#25252B"/>
+                                <Setter Property="Background" Value="{StaticResource FormCloseBackground}"/>
                                 <Setter Property="Opacity" Value="1"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#B94A48"/>
+                                        <Setter Property="Background" Value="{StaticResource FormCloseHoverBackground}"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
-
                         <Border.Triggers>
                             <!-- click animation -->
                             <EventTrigger RoutedEvent="MouseLeftButtonDown">
@@ -101,13 +106,23 @@
 
                         <Grid Margin="30">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="auto" /> <!-- name -->
-                                <RowDefinition Height="auto" /> <!-- country -->
-                                <RowDefinition Height="auto" /> <!-- city -->
-                                <RowDefinition Height="auto" /> <!-- address -->
-                                <RowDefinition Height="auto" /> <!-- postcode -->
+                                
+                                <!-- name -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- country -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- city -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- address -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- postcode -->
+                                <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
-                        
+
                             <!-- name -->
                             <Grid Grid.Row="0" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
@@ -121,7 +136,7 @@
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="Country" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                     <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Country, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
-                                </StackPanel>                            
+                                </StackPanel>
                             </Grid>
 
                             <!-- city -->
@@ -129,7 +144,7 @@
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="City" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                     <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding City, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
-                                </StackPanel>                            
+                                </StackPanel>
                             </Grid>
 
                             <!-- address -->
@@ -139,15 +154,15 @@
                                     <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                                 </StackPanel>
                             </Grid>
-                        
+
                             <!-- postcode -->
                             <Grid Grid.Row="4" Margin="0,0,0,25">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="5,0,0,5" Text="Postcode" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
                                     <TextBox Style="{DynamicResource TextBoxNormal}" Text="{Binding Postcode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="35" AcceptsReturn="False" TextWrapping="Wrap" Padding="10" FontSize="22" FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
-                                </StackPanel>                            
+                                </StackPanel>
                             </Grid>
-                        </Grid>                    
+                        </Grid>
                     </Border>
                 </Grid>
 
@@ -159,7 +174,7 @@
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <Setter Property="BorderThickness" Value="1.5" />
-                                    <Setter Property="Background" Value="#1D1D22" />
+                                    <Setter Property="Background" Value="{StaticResource FormSubmitBackground}" />
 
                                     <!-- DEFAULT STATE -->
                                     <Setter Property="BorderBrush">
@@ -174,7 +189,7 @@
                                     <!-- HOVER STATE -->
                                     <Style.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="#25252B"/>
+                                            <Setter Property="Background" Value="{StaticResource FormSubmitHoverBackground}"/>
                                             <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                                         </Trigger>
                                     </Style.Triggers>
@@ -208,7 +223,7 @@
                                 </EventTrigger>
                             </Border.Triggers>
 
-                            <TextBlock conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Save Changes" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="SemiBold" Foreground="#E0E0E0" FontSize="18" />
+                            <TextBlock conv:TextBlockSpacer.LetterSpacing="2.01" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Save Changes" FontFamily="pack://Traker:,,,/Resources/Fonts/#Inter" FontWeight="SemiBold" Foreground="{StaticResource FormSubmitText}" FontSize="18" />
                         </Border>
                     </Grid>
                 </Grid>
@@ -230,9 +245,15 @@
 
             <Grid Margin="30,20,30,20">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="0.1*" />                    <!-- top bar        -->
-                    <RowDefinition Height="*" />                    <!-- main contents       -->
-                    <RowDefinition Height="0.15*" />                    <!-- buttons        -->
+                    
+                    <!-- top bar -->
+                    <RowDefinition Height="0.1*" />
+                    
+                    <!-- main contents -->
+                    <RowDefinition Height="*" />
+                    
+                    <!-- buttons -->
+                    <RowDefinition Height="0.15*" />
                 </Grid.RowDefinitions>
 
                 <!-- top bar -->
@@ -241,11 +262,11 @@
                     <Border Cursor="Hand" cal:Message.Attach="[Event MouseLeftButtonUp] = [Action Exit()]" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="20" Height="35" Width="35">
                         <Border.Style>
                             <Style TargetType="Border">
-                                <Setter Property="Background" Value="#25252B"/>
+                                <Setter Property="Background" Value="{StaticResource FormCloseBackground}"/>
                                 <Setter Property="Opacity" Value="1"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#B94A48"/>
+                                        <Setter Property="Background" Value="{StaticResource FormCloseHoverBackground}"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -295,14 +316,24 @@
                                 <GradientStop Color="Transparent" Offset="1" />
                             </LinearGradientBrush>
                         </Border.BorderBrush>
-                        
+
                         <Grid Margin="30">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="auto" />                                <!-- name -->
-                                <RowDefinition Height="auto" />                                <!-- country / city -->
-                                <RowDefinition Height="auto" />                                <!-- address -->
-                                <RowDefinition Height="auto" />                                <!-- postcode -->
-                                <RowDefinition Height="auto" />                                <!-- VAT / Reg -->
+                                
+                                <!-- name -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- country / city -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- address -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- postcode -->
+                                <RowDefinition Height="auto" />
+                                
+                                <!-- VAT / Reg -->
+                                <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
 
                             <!-- name -->
@@ -316,8 +347,10 @@
                             <!-- country / city -->
                             <Grid Grid.Row="1" Margin="0,0,0,25">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />                                    <!-- country -->
-                                    <ColumnDefinition Width="*" />                                    <!-- city -->
+                                    <ColumnDefinition Width="*" />
+                                    <!-- country -->
+                                    <ColumnDefinition Width="*" />
+                                    <!-- city -->
                                 </Grid.ColumnDefinitions>
 
                                 <!-- country -->
@@ -356,8 +389,10 @@
                             <!-- vat / reg -->
                             <Grid Grid.Row="4">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />                                    <!-- vat -->
-                                    <ColumnDefinition Width="*" />                                    <!-- reg -->
+                                    <ColumnDefinition Width="*" />
+                                    <!-- vat -->
+                                    <ColumnDefinition Width="*" />
+                                    <!-- reg -->
                                 </Grid.ColumnDefinitions>
 
                                 <!-- vat -->
@@ -388,7 +423,7 @@
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <Setter Property="BorderThickness" Value="1.5" />
-                                    <Setter Property="Background" Value="#1D1D22" />
+                                    <Setter Property="Background" Value="{StaticResource FormSubmitBackground}" />
 
                                     <!-- DEFAULT STATE -->
                                     <Setter Property="BorderBrush">
@@ -403,7 +438,7 @@
                                     <!-- HOVER STATE -->
                                     <Style.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="#25252B"/>
+                                            <Setter Property="Background" Value="{StaticResource FormSubmitHoverBackground}"/>
                                             <Setter Property="BorderBrush" Value="{StaticResource AccentColour}"/>
                                         </Trigger>
                                     </Style.Triggers>
