@@ -428,8 +428,8 @@ namespace Traker.ViewModels
                                 // section 4 (notes)
                                 mainContainer.Item().AlignLeft().PaddingBottom(40).Column(section4 =>
                                 {
-                                    section4.Item().Text("NOTES").Bold();
-                                    section4.Item().Text("I need curry!");
+                                    //section4.Item().Text("NOTES").Bold();
+                                    //section4.Item().Text("");
                                 });
 
                                 //mainContainer.Item().Height(60);
@@ -487,7 +487,10 @@ namespace Traker.ViewModels
                                     section5.RelativeItem().AlignRight().Column(companyInfo =>
                                     {
                                         companyInfo.Item().Text(_businessModel.BusinessName).FontSize(14);
-                                        companyInfo.Item().Text(_businessModel.Address).FontSize(14);
+                                        companyInfo.Item().Text(_businessModel.Address).FontSize(12);
+                                        companyInfo.Item().Text(_businessModel.Postcode).FontSize(12);
+                                        companyInfo.Item().Text(_businessModel.City).FontSize(12);
+                                        companyInfo.Item().Text(_businessModel.Country).FontSize(12);
                                     });
                                 });
 
