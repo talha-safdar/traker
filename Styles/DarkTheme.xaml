@@ -66,23 +66,6 @@
     <!-- click animations -->
     <sys:Double x:Key="ClickOpacity">0.5</sys:Double>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     <SolidColorBrush x:Key="MainBackgroundBrush" Color="#1A1A1A" />
     <SolidColorBrush x:Key="PanelBrush" Color="#252525" />
     <SolidColorBrush x:Key="PanelBorderBrush" Color="#333333" />
@@ -108,9 +91,6 @@
     <SolidColorBrush x:Key="Paid" Color="#22C55E" />
     <SolidColorBrush x:Key="Unpaid" Color="#EF4444" />
     
-
-
-
     <SolidColorBrush x:Key="TopBarBackgroundBrush" Color="#1a1a1a" />
 
     <SolidColorBrush x:Key="SidePanelBackgroundBrush" Color="#2E2E2E" />

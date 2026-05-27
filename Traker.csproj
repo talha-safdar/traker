@@ -11,6 +11,7 @@
     <Platforms>AnyCPU;x64</Platforms>
     <Company>$(Authors)</Company>
     <Authors>$(AssemblyName)</Authors>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
 
   <ItemGroup>

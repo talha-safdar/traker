@@ -52,6 +52,7 @@ namespace Traker.ViewModels.Edit
         private string _amountReceivedText;
         private bool _isEditingPrice;
         private bool _isEditingReceived;
+        private bool _dateIsCorrect; // checks the date input and makes sure start date is not bigger than due date
         #endregion
 
         public EditJobViewModel(IEventAggregator events, IWindowManager windowManager, AppState state)
@@ -82,6 +83,7 @@ namespace Traker.ViewModels.Edit
             _amountReceivedText = string.Empty;
             _isEditingPrice = false;
             _isEditingReceived = false;
+            _dateIsCorrect = false;
         }
 
         #region Caliburn Functions
@@ -244,13 +246,12 @@ namespace Traker.ViewModels.Edit
                 }
 
                 // check if anything changed first
-                string startDateCheck = SelectedJob.StartDate.ToString() == "01/01/0001" ? string.Empty : SelectedJob.StartDate.ToString();
                 if (SelectedJob.JobTitle != JobTitle ||
                     SelectedJob.JobDescription != JobDescription ||
                     SelectedJob.JobStatus != Status ||
                     SelectedJob.Price.ToString("C") != Price.ToString() ||
                     SelectedJob.AmountReceived.ToString("C") != AmountReceived.ToString() ||
-                    (SelectedJob.StartDate.ToString() == "01/01/0001" ? string.Empty : SelectedJob.StartDate.ToString()) != startDateCheck.ToString() ||
+                    (SelectedJob.StartDate.ToString() == "01/01/0001" ? string.Empty : SelectedJob.StartDate.ToString()) != StartDate.ToString() ||
                     SelectedJob.DueDate.ToString() != DueDate.ToString())
                 {
                     // check if job title changed 
@@ -424,7 +425,7 @@ namespace Traker.ViewModels.Edit
         {
             try
             {
-                if (string.IsNullOrEmpty(StartDate) == false)
+               if (string.IsNullOrEmpty(StartDate) == false)
                 {
                     bool startDate = DateTime.TryParseExact(StartDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate);
                     bool dueDate = DateTime.TryParseExact(DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDueDate);
@@ -433,25 +434,21 @@ namespace Traker.ViewModels.Edit
                     {
                         if (DateOnly.ParseExact(StartDate, "dd/MM/yyyy", CultureInfo.InvariantCulture) < DateOnly.ParseExact(DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture))
                         {
-                            EnableSubmitBtn = true;
-                            OpacitySubmitBtn = _fullOpacity;
+                            _dateIsCorrect = true;
                         }
                         else
                         {
-                            EnableSubmitBtn = false;
-                            OpacitySubmitBtn = _halfOpacity;
+                            _dateIsCorrect = false;
                         }
                     }
                     else
                     {
-                        EnableSubmitBtn = false;
-                        OpacitySubmitBtn = _halfOpacity;
+                        _dateIsCorrect = false;
                     }
                 }
                 else
                 {
-                    EnableSubmitBtn = true;
-                    OpacitySubmitBtn = _fullOpacity;
+                    _dateIsCorrect = true;
                 }
             }
             catch (Exception ex)
@@ -529,8 +526,8 @@ namespace Traker.ViewModels.Edit
                     Status != SelectedJob.JobStatus ||
                     Price != SelectedJob.Price.ToString("C") ||
                     AmountReceived != SelectedJob.AmountReceived.ToString("C") ||
-                    StartDate != (SelectedJob.StartDate == DateOnly.FromDateTime(DateTime.MinValue) ? string.Empty : SelectedJob.StartDate.ToString()) ||
-                    DueDate != SelectedJob.DueDate.ToString())
+                    (StartDate != (SelectedJob.StartDate == DateOnly.FromDateTime(DateTime.MinValue) ? string.Empty : SelectedJob.StartDate.ToString()) && _dateIsCorrect == true) ||
+                    (DueDate != SelectedJob.DueDate.ToString() && _dateIsCorrect == true))
                 {
                     EnableSubmitBtn = true;
                     OpacitySubmitBtn = _fullOpacity;
