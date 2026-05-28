@@ -18,26 +18,28 @@ namespace Traker.Helper
         /// You can customise the positioning by setting the "isAnchored" parameter 
         /// to true and providing the desired vertical and horizontal offsets.
         /// </summary>
-        public static dynamic SettingsForDialog(int height, int width, bool isAnchored, double verticalOffset = 0, double horizontalOffset = 0)
+        public static dynamic SettingsForDialog(int height, int width, bool isAnchored, UIElement placementTarget = null, PlacementMode placement = PlacementMode.Relative, double verticalOffset = 0, double horizontalOffset = 0)
         {
             try
             {
                 dynamic settings = new ExpandoObject();
+
                 settings.Title = string.Empty;
                 settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 settings.WindowStyle = WindowStyle.None;
                 settings.AllowsTransparency = true;
                 settings.Background = Brushes.Transparent;
                 settings.ResizeMode = ResizeMode.CanResize;
+
                 settings.MinHeight = height;
                 settings.MinWidth = width;
 
-                if (isAnchored == true)
+                if (isAnchored == true && placementTarget != null)
                 {
-                    // --- Required Context Settings ---
-                    settings.Placement = PlacementMode.Relative;
-                    settings.VerticalOffset = verticalOffset; // negative=up, positive=down
-                    settings.HorizontalOffset = horizontalOffset; // negative=left, positive=right
+                    settings.PlacementTarget = placementTarget;
+                    settings.Placement = placement;
+                    settings.VerticalOffset = verticalOffset;
+                    settings.HorizontalOffset = horizontalOffset;
                 }
                 return settings;
             }

@@ -11,6 +11,7 @@ namespace Traker.ViewModels
     using System.Security.Policy;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Controls.Primitives;
     using Traker.Data;
     using Traker.Events;
     using Traker.Events.DashboardVM;
@@ -178,27 +179,13 @@ namespace Traker.ViewModels
             {
                 if (anchorElement != null)
                 {
-                    var window = Window.GetWindow(anchorElement);
+                    double popupWidth = 295;
+                    double popupHeight = 160;
 
-                    // 1. Get the absolute position of the button on the screen
-                    Point locationFromScreen = anchorElement.PointToScreen(new Point(anchorElement.ActualWidth, 0));
-                    Point windowScreenPos = window.PointToScreen(new Point(0, 0));
+                    double popupLeft = anchorElement.ActualWidth - popupWidth;
+                    double popupTop = anchorElement.ActualHeight + 6;
 
-                    // 2. Adjust for DPI (High-res screens) - Very important for proper alignment
-                    var source = PresentationSource.FromVisual(anchorElement);
-                    if (source == null)
-                    {
-                        return; // Element isn't rendered yet, math will be 0,0
-                    }
-
-                    double dpiY = source.CompositionTarget.TransformToDevice.M22;
-                    double dpiX = source.CompositionTarget.TransformToDevice.M11;
-
-                    // 3. Calculate "Above": 
-                    double popupTop = (locationFromScreen.Y / dpiY) - 12.5; // positive=down, negative=up
-                    double popupLeft = (locationFromScreen.X / dpiX) - 295; // psotiive=right, negative=left
-
-                    await _windowManager.ShowPopupAsync(IoC.Get<FilterJobsViewModel>(), null, CustomWindow.SettingsForDialog(295, 160, true, popupTop, popupLeft)); // vertical, horizontal
+                    await _windowManager.ShowPopupAsync(IoC.Get<FilterJobsViewModel>(), null, CustomWindow.SettingsForDialog(160, 295, true, anchorElement, PlacementMode.Relative, popupTop, popupLeft));
                 }
             }
             catch (Exception ex)
@@ -221,29 +208,13 @@ namespace Traker.ViewModels
             {
                 if (anchorElement != null)
                 {
-                    var window = Window.GetWindow(anchorElement);
+                    double popupWidth = 295;
+                    double popupHeight = 160;
 
-                    // 1. Get the absolute position of the button on the screen
-                    Point locationFromScreen = anchorElement.PointToScreen(new Point(anchorElement.ActualWidth, 0));
-                    Point windowScreenPos = window.PointToScreen(new Point(0, 0));
+                    double popupLeft = anchorElement.ActualWidth - popupWidth;
+                    double popupTop = anchorElement.ActualHeight + 6;
 
-                    // 2. Adjust for DPI (High-res screens) - Very important for proper alignment
-                    var source = PresentationSource.FromVisual(anchorElement);
-                    if (source == null)
-                    {
-                        return; // Element isn't rendered yet, math will be 0,0
-                    }
-
-                    double dpiY = source.CompositionTarget.TransformToDevice.M22;
-                    double dpiX = source.CompositionTarget.TransformToDevice.M11;
-
-                    // 3. Calculate "Above": 
-                    double popupTop = (locationFromScreen.Y / dpiY) + 4; // positive=down, negative=up
-                    double popupLeft = (locationFromScreen.X / dpiX) - 295; // psotiive=right, negative=left
-
-                    //_sortJobsViewModel = new SortJobsViewModel();
-                    // for singleton use use IoC
-                    await _windowManager.ShowPopupAsync(IoC.Get<SortJobsViewModel>(), null, CustomWindow.SettingsForDialog(295, 205, true, popupTop, popupLeft)); // vertical, horizontal
+                    await _windowManager.ShowPopupAsync(IoC.Get<SortJobsViewModel>(), null, CustomWindow.SettingsForDialog(205, 295, true, anchorElement, PlacementMode.Relative, popupTop, popupLeft));
                 }
             }
             catch (Exception ex)
@@ -266,22 +237,8 @@ namespace Traker.ViewModels
             {
                 if (anchorElement != null)
                 {
-                    // 1. Get the absolute position of the button on the screen
-                    Point locationFromScreen = anchorElement.PointToScreen(new Point(0, 0));
-
-                    // 2. Adjust for DPI (High-res screens) - Very important for proper alignment
-                    var source = PresentationSource.FromVisual(anchorElement);
-                    double dpiY = source.CompositionTarget.TransformToDevice.M22;
-                    double dpiX = source.CompositionTarget.TransformToDevice.M11;
-
-                    // 3. Calculate "Above": 
-                    // Top = ButtonTop - PopupHeight
-                    // Left = ButtonLeft (aligned to the left of the button)
-                    double popupTop = (locationFromScreen.Y / dpiY) - 260;
-                    double popupLeft = (locationFromScreen.X / dpiX) - 20;
-
                     State.UserContextMenuViewModel = new UserContextMenuViewModel(_events, _windowManager, DataService, State);
-                    await _windowManager.ShowPopupAsync(State.UserContextMenuViewModel, null, CustomWindow.SettingsForDialog(310, 335, true, popupTop, popupLeft)); // vertical, horizontal
+                    await _windowManager.ShowPopupAsync(State.UserContextMenuViewModel, null, CustomWindow.SettingsForDialog(335, 310, true, anchorElement, PlacementMode.Top, 65 - 6, 0)); // 65=height of button
                 }
             }
             catch (Exception ex)

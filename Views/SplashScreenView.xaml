@@ -20,13 +20,29 @@
         <Border.Background>
             <LinearGradientBrush x:Name="AnimatedGradient" StartPoint="-0.2,-0.2" EndPoint="1.2,1.2">
                 <GradientStop Color="#101012" Offset="0.00"/>
+                <GradientStop Color="#101013" Offset="0.06"/>
+
                 <GradientStop Color="#111114" Offset="0.12"/>
+                <GradientStop Color="#111115" Offset="0.18"/>
+
                 <GradientStop Color="#121216" Offset="0.24"/>
+                <GradientStop Color="#121217" Offset="0.30"/>
+
                 <GradientStop Color="#131318" Offset="0.36"/>
+                <GradientStop Color="#131319" Offset="0.42"/>
+
                 <GradientStop Color="#14141A" Offset="0.48"/>
+                <GradientStop Color="#15151A" Offset="0.54"/>
+
                 <GradientStop Color="#15151B" Offset="0.60"/>
+                <GradientStop Color="#16161C" Offset="0.66"/>
+
                 <GradientStop Color="#17171D" Offset="0.72"/>
+                <GradientStop Color="#17171D" Offset="0.78"/>
+
                 <GradientStop Color="#18181E" Offset="0.84"/>
+                <GradientStop Color="#19191E" Offset="0.92"/>
+
                 <GradientStop Color="#1A1A1F" Offset="1.00"/>
                 <LinearGradientBrush.RelativeTransform>
                     <TranslateTransform x:Name="GradientMove"/>
