@@ -180,7 +180,6 @@ namespace Traker.ViewModels
                 if (anchorElement != null)
                 {
                     double popupWidth = 295;
-                    double popupHeight = 160;
 
                     double popupLeft = anchorElement.ActualWidth - popupWidth;
                     double popupTop = anchorElement.ActualHeight + 6;
@@ -209,7 +208,6 @@ namespace Traker.ViewModels
                 if (anchorElement != null)
                 {
                     double popupWidth = 295;
-                    double popupHeight = 160;
 
                     double popupLeft = anchorElement.ActualWidth - popupWidth;
                     double popupTop = anchorElement.ActualHeight + 6;
@@ -932,8 +930,8 @@ namespace Traker.ViewModels
              * "ClientType", ASC/DESC
              */
 
-            CurrentSortColumn = columnName;
-            CurrentSortDirection = sortDirection;
+            CurrentSortColumn = columnName ?? string.Empty;
+            CurrentSortDirection = sortDirection ?? string.Empty;
             await RefreshDashboard();
         }
 
