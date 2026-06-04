@@ -177,10 +177,6 @@ namespace Traker.Data
                 // 5️⃣ Build file name
                 string fullPath = Path.Combine(invoicesFolder, invoiceName);
 
-                Debug.WriteLine("Full name:" + invoiceName);
-                Debug.WriteLine("Full path:" + fullPath);
-                Debug.WriteLine("invoice path:" + invoicesFolder);
-
                 return Task.FromResult(fullPath);
             }
             catch (Exception ex)
@@ -497,7 +493,6 @@ namespace Traker.Data
                     // 1. Get the count of all subfolders inside Clients
                     string[] subFolders = Directory.GetDirectories(jobsFolder);
                     int folderCount = subFolders.Length;
-                    Debug.WriteLine("Delete folder job: " + folderCount);
 
                     if (folderCount == 0)
                     {
