@@ -85,10 +85,7 @@
 
                             <Grid Grid.Column="0" Margin="0,3">
                                 <Border Background="Transparent" MouseLeftButtonDown="DragWindow">
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <TextBlock conv:TextBlockSpacer.LetterSpacing="2.20" Text="TRAKER " FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="ExtraBlack" Foreground="#DCDCDC" FontSize="22" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-                                        <TextBlock Text="for Employers" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="#DCDCDC" Opacity="0.8" FontSize="16" Margin="0,0,0,2" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-                                    </StackPanel>
+                                    <TextBlock conv:TextBlockSpacer.LetterSpacing="2.20" Text="TRAKER " FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="ExtraBlack" Foreground="#DCDCDC" FontSize="22" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
                                 </Border>
                             </Grid>
 
