@@ -154,9 +154,7 @@
                                 <Grid Grid.Row="1">
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock Margin="5,0,0,5" Text="Job Description" FontFamily="pack://Traker:,,,/Resources/Fonts/#Montserrat" FontWeight="Regular" Foreground="{StaticResource FormFontColour}" FontSize="22"/>
-                                        <TextBox Style="{DynamicResource TextBoxNormal}" HorizontalAlignment="Left" Text="{Binding JobDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Padding="10" MaxLength="1000" Height="310" Width="340.5" AcceptsReturn="False" FontSize="22"  FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" 
-                                        behaviours:TextboxFilter.EnableFilter="True"
-                                        behaviours:TextboxFilter.FilterMode="AlphaNumericWithSpaces"/>
+                                        <TextBox Style="{DynamicResource TextBoxNormal}" HorizontalAlignment="Left" Text="{Binding JobDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Padding="10" MaxLength="1000" Height="310" Width="340.5" AcceptsReturn="False" FontSize="22"  FontFamily="pack://Traker:,,,/Resources/Fonts/#Public Sans" />
                                     </StackPanel>
                                 </Grid>
                             </Grid>
